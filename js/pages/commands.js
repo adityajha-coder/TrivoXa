@@ -243,10 +243,13 @@ const CommandsPage = {
                     <span class="tag tag-primary">Step ${step.id}</span>
                 </div>
                 ${matched.map(c => `
-                    <div style="padding:8px 10px;border-radius:var(--radius-sm);background:rgba(0,0,0,0.4);margin-bottom:6px;border:1px solid var(--border);">
-                        <span class="text-mono text-sm" style="color:var(--primary-light);">${Helpers.escapeHtml(c.cmd)}</span>
-                        <p class="text-xs text-muted" style="margin-top:3px;line-height:1.5;">${c.desc}</p>
-                        <div class="text-mono text-xs text-muted" style="margin-top:4px;opacity:0.6;"><i class="fa-solid fa-terminal" style="margin-right:3px;"></i>${Helpers.escapeHtml(c.example)}</div>
+                    <div style="padding:8px 10px;border-radius:var(--radius-sm);background:rgba(0,0,0,0.4);margin-bottom:6px;border:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                        <div style="flex:1;min-width:0;">
+                            <span class="text-mono text-sm" style="color:var(--primary-light);">${Helpers.escapeHtml(c.cmd)}</span>
+                            <p class="text-xs text-muted" style="margin-top:3px;line-height:1.5;">${c.desc}</p>
+                            <div class="text-mono text-xs text-muted" style="margin-top:4px;opacity:0.6;"><i class="fa-solid fa-terminal" style="margin-right:3px;"></i>${Helpers.escapeHtml(c.example)}</div>
+                        </div>
+                        <button class="cmd-copy-btn" onclick="CommandsPage.copyCmd('${Helpers.escapeHtml(c.example).replace(/'/g, "\\'")}'  , this)" title="Copy command"><i class="fa-regular fa-copy"></i></button>
                     </div>`).join('')}`;
         };
         flow.querySelector('.cmd-flow-node')?.click();
@@ -275,10 +278,36 @@ const CommandsPage = {
         if (!cmds.length) { grid.innerHTML = '<div class="empty-state"><i class="fa-solid fa-terminal"></i><h3>No commands found</h3></div>'; return; }
         grid.innerHTML = `<div class="grid-2">${cmds.map(c => `
             <div class="glass-card git-cmd-card">
-                <div class="cmd-syntax">${Helpers.escapeHtml(c.cmd)}</div>
+                <div class="flex-between" style="align-items:flex-start;">
+                    <div class="cmd-syntax">${Helpers.escapeHtml(c.cmd)}</div>
+                    <button class="cmd-copy-btn" onclick="CommandsPage.copyCmd('${Helpers.escapeHtml(c.example).replace(/'/g, "\\'")}'  , this)" title="Copy command"><i class="fa-regular fa-copy"></i></button>
+                </div>
                 <p class="cmd-desc">${c.desc}</p>
                 <div class="cmd-example"><i class="fa-solid fa-terminal" style="margin-right:4px;opacity:0.4;"></i>${Helpers.escapeHtml(c.example)}</div>
                 <div class="mt-sm flex-gap gap-sm"><span class="tag tag-primary">${c.cat}</span><span class="text-xs text-muted">Step ${c.step}</span></div>
             </div>`).join('')}</div>`;
+    },
+
+    copyCmd(text, btn) {
+        navigator.clipboard.writeText(text.trim()).then(() => {
+            const icon = btn.querySelector('i');
+            icon.className = 'fa-solid fa-check';
+            btn.classList.add('copied');
+            Toast.show('Copied to clipboard!', 'success');
+            setTimeout(() => { icon.className = 'fa-regular fa-copy'; btn.classList.remove('copied'); }, 1500);
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text.trim();
+            ta.style.cssText = 'position:fixed;opacity:0;';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            const icon = btn.querySelector('i');
+            icon.className = 'fa-solid fa-check';
+            btn.classList.add('copied');
+            Toast.show('Copied to clipboard!', 'success');
+            setTimeout(() => { icon.className = 'fa-regular fa-copy'; btn.classList.remove('copied'); }, 1500);
+        });
     }
 };

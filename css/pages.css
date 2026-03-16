@@ -370,3 +370,27 @@
     .dashboard-hero { flex-direction: column; }
     .dashboard-hero .hero-quick-search { min-width: unset; width: 100%; }
 }
+
+/* Command copy button */
+.cmd-copy-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+}
+.cmd-copy-btn:hover {
+    color: var(--primary-light);
+    background: rgba(212,168,67,0.1);
+}
+.cmd-copy-btn.copied {
+    color: var(--success);
+    background: rgba(62,207,110,0.1);
+}
