@@ -47,8 +47,40 @@ const GitHubHubPage = {
             <div class="page-enter">
                 <div class="page-header">
                     <h1>GitHub <span class="text-gradient">Hub</span></h1>
-                    <p>Explore GitHub profiles, activity feeds, and learn Git with visual command workflows.</p>
+                    <p>Explore GitHub profiles, activity feeds, and master Git with interactive command workflows.</p>
                 </div>
+
+                <div class="grid-2 mb-lg">
+                    <div class="glass-card hub-feature-card" data-tab-target="activity" style="cursor:pointer;">
+                        <div class="flex-gap mb-sm">
+                            <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(212,168,67,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-github" style="font-size:1.1rem;color:var(--primary-light);"></i></div>
+                            <div>
+                                <h3 style="font-size:0.95rem;font-weight:600;">GitHub Activity</h3>
+                                <p class="text-xs text-muted">Look up profiles, repos, and recent activity</p>
+                            </div>
+                        </div>
+                        <div class="flex-gap text-xs text-secondary" style="margin-top:8px;">
+                            <span><i class="fa-solid fa-user"></i> Profile Lookup</span>
+                            <span><i class="fa-solid fa-book"></i> Repositories</span>
+                            <span><i class="fa-solid fa-bolt"></i> Activity Feed</span>
+                        </div>
+                    </div>
+                    <div class="glass-card hub-feature-card" data-tab-target="commands" style="cursor:pointer;">
+                        <div class="flex-gap mb-sm">
+                            <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(62,207,110,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-terminal" style="font-size:1.1rem;color:var(--success);"></i></div>
+                            <div>
+                                <h3 style="font-size:0.95rem;font-weight:600;">Git Commands</h3>
+                                <p class="text-xs text-muted">35+ commands with workflow visualization</p>
+                            </div>
+                        </div>
+                        <div class="flex-gap text-xs text-secondary" style="margin-top:8px;">
+                            <span><i class="fa-solid fa-route"></i> 9-Step Workflow</span>
+                            <span><i class="fa-solid fa-filter"></i> Category Filter</span>
+                            <span><i class="fa-solid fa-search"></i> Search</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="tabs mb-lg" id="hub-tabs">
                     <button class="tab-item active" data-tab="activity"><i class="fa-brands fa-github" style="margin-right:4px;"></i> GitHub Activity</button>
                     <button class="tab-item" data-tab="commands"><i class="fa-solid fa-terminal" style="margin-right:4px;"></i> Git Commands</button>
@@ -111,6 +143,18 @@ const GitHubHubPage = {
         document.getElementById('gh-user-btn').addEventListener('click', () => this.lookupUser());
         document.getElementById('gh-user-input').addEventListener('keydown', e => { if (e.key === 'Enter') this.lookupUser(); });
         document.getElementById('cmd-search').addEventListener('input', Helpers.debounce(() => this.renderCommands(), 200));
+
+        document.querySelectorAll('.hub-feature-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const tab = card.dataset.tabTarget;
+                document.querySelectorAll('#hub-tabs .tab-item').forEach(t => t.classList.remove('active'));
+                document.querySelector(`#hub-tabs .tab-item[data-tab="${tab}"]`).classList.add('active');
+                this.activeTab = tab;
+                document.getElementById('hub-activity-section').style.display = tab === 'activity' ? 'block' : 'none';
+                document.getElementById('hub-commands-section').style.display = tab === 'commands' ? 'block' : 'none';
+                if (tab === 'commands' && !this._flowBuilt) { this.buildFlow(); this._flowBuilt = true; }
+            });
+        });
     },
 
     buildFlow() {
