@@ -74,13 +74,13 @@ const DashboardPage = {
                     <div class="glass-card tool-card" data-page="workspace">
                         <div class="tool-icon" style="background:rgba(62,207,110,0.06);color:var(--success);"><i class="fa-solid fa-laptop-code"></i></div>
                         <h3>My Workspace</h3>
-                        <p>Save personal code snippets and access boilerplate templates.</p>
+                        <p>Save and manage your personal code snippets.</p>
                         <i class="fa-solid fa-arrow-right tool-arrow"></i>
                     </div>
                     <div class="glass-card tool-card" data-page="tools-vault">
                         <div class="tool-icon" style="background:rgba(236,72,153,0.06);color:#ec4899;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
                         <h3>Tools Vault</h3>
-                        <p>Curated list of standard dev tools and cutting-edge AI utilities.</p>
+                        <p>Curated list of dev tools, AI utilities, and project boilerplates.</p>
                         <i class="fa-solid fa-arrow-right tool-arrow"></i>
                     </div>
                     <div class="glass-card tool-card" data-page="code-generator">
@@ -90,9 +90,9 @@ const DashboardPage = {
                         <i class="fa-solid fa-arrow-right tool-arrow"></i>
                     </div>
                     <div class="glass-card tool-card" data-page="code-git-explorer">
-                        <div class="tool-icon icon-success"><i class="fa-solid fa-cube"></i></div>
-                        <h3>Code & Git Explorer</h3>
-                        <p>Visualize repository structure and branch history in 3D.</p>
+                        <div class="tool-icon icon-success"><i class="fa-brands fa-github"></i></div>
+                        <h3>GitHub Explorer</h3>
+                        <p>Visualize repository structure, git history, and user profiles.</p>
                         <i class="fa-solid fa-arrow-right tool-arrow"></i>
                     </div>
                     <div class="glass-card tool-card" data-page="package-scout">

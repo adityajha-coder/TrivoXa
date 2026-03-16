@@ -33,10 +33,28 @@ const ToolsVaultPage = {
             { name: 'Bun', desc: 'Fast all-in-one JavaScript runtime', url: 'https://bun.sh' },
             { name: 'Zod', desc: 'TypeScript-first schema validation with static type inference', url: 'https://zod.dev' }
         ]},
+        { cat: 'Categories', items: [
+            { name: 'Remix', desc: 'Full stack web framework', url: 'https://remix.run' },
+            { name: 'Astro', desc: 'The web framework for content-driven websites', url: 'https://astro.build' },
+            { name: 'Svelte', desc: 'Cybernetically enhanced web apps', url: 'https://svelte.dev' },
+            { name: 'Nuxt', desc: 'The Intuitive Vue Framework', url: 'https://nuxt.com' }
+        ]},
         { cat: 'DevOps & Hosting', items: [
             { name: 'Netlify', desc: 'Build, deploy, and scale modern web projects', url: 'https://netlify.com' },
             { name: 'AWS', desc: 'Comprehensive cloud platform', url: 'https://aws.amazon.com' },
-            { name: 'Cloudflare', desc: 'Global platform for edge computing and security', url: 'https://cloudflare.com' }
+            { name: 'Cloudflare', desc: 'Global platform for edge computing and security', url: 'https://cloudflare.com' },
+            { name: 'Heroku', desc: 'Cloud platform as a service supporting several programming languages', url: 'https://heroku.com' }
+        ]},
+        { cat: 'Databases & Storage', items: [
+            { name: 'MongoDB', desc: 'Document based NoSQL database', url: 'https://www.mongodb.com' },
+            { name: 'PostgreSQL', desc: 'The world\'s most advanced open source relational database', url: 'https://postgresql.org' },
+            { name: 'Redis', desc: 'Open source in-memory data store', url: 'https://redis.io' },
+            { name: 'Firebase', desc: 'App development platform by Google', url: 'https://firebase.google.com' }
+        ]},
+        { cat: 'API & Networking', items: [
+            { name: 'Insomnia', desc: 'Design, test, and deploy APIs', url: 'https://insomnia.rest' },
+            { name: 'Ngrok', desc: 'Unified ingress platform', url: 'https://ngrok.com' },
+            { name: 'Postman', desc: 'API platform for building and using APIs', url: 'https://postman.com' }
         ]}
     ],
     boilerplates: [
@@ -47,7 +65,12 @@ const ToolsVaultPage = {
         { title: 'Next.js 14 Page', code: 'export default function Page() {\n  return (\n    <main className="flex min-h-screen flex-col items-center justify-between p-24">\n      <h1>Next.js Platform</h1>\n    </main>\n  );\n}' },
         { title: 'Tailwind Config Base', code: '/** @type {import("tailwindcss").Config} */\nmodule.exports = {\n  content: [\n    "./src/**/*.{js,jsx,ts,tsx}",\n  ],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n}' },
         { title: 'Dockerfile (Node)', code: 'FROM node:18-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm install\nCOPY . .\nEXPOSE 3000\nCMD ["npm", "start"]' },
-        { title: 'Django View (FBV)', code: 'from django.shortcuts import render\nfrom django.http import HttpResponse\n\ndef my_view(request):\n    return HttpResponse("Hello, Django!")' }
+        { title: 'Django View (FBV)', code: 'from django.shortcuts import render\nfrom django.http import HttpResponse\n\ndef my_view(request):\n    return HttpResponse("Hello, Django!")' },
+        { title: 'Docker Compose Base', code: 'version: "3.8"\nservices:\n  web:\n    build: .\n    ports:\n      - "8000:8000"\n    volumes:\n      - .:/code\n    environment:\n      - DEBUG=1' },
+        { title: 'FastAPI Main', code: 'from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get("/")\ndef read_root():\n    return {"Hello": "World"}' },
+        { title: 'React Context', code: 'import { createContext, useContext, useState } from "react";\n\nconst AppContext = createContext();\n\nexport const AppProvider = ({ children }) => {\n  const [state, setState] = useState(null);\n  return <AppContext.Provider value={{ state, setState }}>{children}</AppContext.Provider>;\n};\n\nexport const useAppContext = () => useContext(AppContext);' },
+        { title: 'Zustand Store', code: 'import { create } from "zustand";\n\nconst useStore = create((set) => ({\n  count: 0,\n  inc: () => set((state) => ({ count: state.count + 1 })),\n  dec: () => set((state) => ({ count: state.count - 1 })),\n}));\n\nexport default useStore;' },
+        { title: 'GitHub Actions CI', code: 'name: CI\n\non:\n  push:\n    branches: [ main ]\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v3\n    - name: Use Node.js\n      uses: actions/setup-node@v3\n      with:\n        node-version: "18.x"\n    - run: npm ci\n    - run: npm test' }
     ],
 
     render() {
