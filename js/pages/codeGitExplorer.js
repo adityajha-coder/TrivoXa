@@ -6,6 +6,7 @@ const CodeGitExplorerPage = {
     animationId: null,
     nodes: [],
     activeView: 'structure',
+    searchType: 'repo',
 
     render() {
         Navbar.renderTopbar('Code & Git Explorer');
@@ -16,12 +17,16 @@ const CodeGitExplorerPage = {
                     <h1>GitHub <span class="text-gradient">Explorer</span></h1>
                     <p>Visualize repository map, branches, commit history, or look up user profiles in one unified view.</p>
                 </div>
+                <div class="tabs mb-md" id="explorer-type-tabs" style="display:inline-flex;">
+                    <button class="tab-item active" data-type="repo"><i class="fa-solid fa-book-bookmark"></i> Repository</button>
+                    <button class="tab-item" data-type="user"><i class="fa-solid fa-user"></i> Username</button>
+                </div>
                 <div class="flex-gap mb-lg flex-wrap">
                     <div class="input-group" style="flex:1; min-width: 280px;">
                         <i class="input-icon fa-brands fa-github"></i>
-                        <input class="input-field has-icon" id="explorer-input" type="text" placeholder="e.g. facebook/react, https://github.com/vuejs, or a username" />
+                        <input class="input-field has-icon" id="explorer-input" type="text" placeholder="e.g. facebook/react or https://github.com/vuejs/core" />
                     </div>
-                    <button class="btn btn-primary" id="explorer-btn"><i class="fa-solid fa-cube"></i> Explore</button>
+                    <button class="btn btn-primary" id="explorer-btn"><i class="fa-solid fa-search"></i> Explore</button>
                 </div>
                 <div id="explorer-tabs-area" style="display:none;">
                     <div class="tabs mb-lg" id="explorer-tabs">
@@ -116,26 +121,41 @@ const CodeGitExplorerPage = {
             document.getElementById('explorer-structure-view').style.display = this.activeView === 'structure' ? 'block' : 'none';
             document.getElementById('explorer-git-view').style.display = this.activeView === 'git' ? 'block' : 'none';
         });
+
+        document.getElementById('explorer-type-tabs')?.addEventListener('click', e => {
+            const tab = e.target.closest('.tab-item');
+            if (!tab) return;
+            document.querySelectorAll('#explorer-type-tabs .tab-item').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            this.searchType = tab.dataset.type;
+            const input = document.getElementById('explorer-input');
+            if (this.searchType === 'user') {
+                input.placeholder = "e.g. torvalds or vuejs";
+            } else {
+                input.placeholder = "e.g. facebook/react or https://github.com/vuejs/core";
+            }
+        });
     },
 
     async load() {
         const input = document.getElementById('explorer-input').value.trim();
-        if (!input) { Toast.show('Enter a GitHub username or repo', 'error'); return; }
+        if (!input) { Toast.show(this.searchType === 'user' ? 'Enter a GitHub username' : 'Enter a GitHub repo URL', 'error'); return; }
         
-        const parsed = API.parseGitHubUrl(input);
         const btn = document.getElementById('explorer-btn');
         btn.innerHTML = '<div class="loader-spinner" style="width:16px;height:16px;border-width:2px;"></div>';
         btn.disabled = true;
 
-        if (!parsed && !input.includes('/')) {
+        if (this.searchType === 'user') {
             await this.loadUser(input);
             btn.innerHTML = '<i class="fa-solid fa-search"></i> Explore';
             btn.disabled = false;
             return;
         }
 
+        const parsed = API.parseGitHubUrl(input);
+
         if (!parsed) {
-            Toast.show('Enter a valid GitHub user or repo URL', 'error');
+            Toast.show('Enter a valid GitHub repo (e.g. owner/repo)', 'error');
             btn.innerHTML = '<i class="fa-solid fa-search"></i> Explore';
             btn.disabled = false;
             return;

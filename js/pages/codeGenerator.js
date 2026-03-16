@@ -84,13 +84,13 @@ const CodeGeneratorPage = {
         const sysPrompt = `You are an expert coder. Write ONLY the code for a ${prompt} component using ${this.currentFramework}. Do NOT include markdown blocks like \`\`\`html or \`\`\`javascript, and do NOT include any explanations. Output pure, valid code.`;
         
         try {
-            const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(sysPrompt)}`);
+            const response = await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(sysPrompt)}`);
             if(!response.ok) throw new Error('Generation failed');
             
             let code = await response.text();
             
             // basic cleanup in case AI ignores instructions
-            code = code.replace(/^\`\`\`[a-z]*\\n?/m, '').replace(/\\n?\`\`\`$/m, '');
+            code = code.replace(/^```[a-zA-Z]*\n?/gm, '').replace(/\n?```$/gm, '');
 
             document.getElementById('loading-overlay').style.display = 'none';
             document.getElementById('generator-output-area').style.display = 'block';
