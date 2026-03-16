@@ -1,13 +1,14 @@
 const Navbar = {
     navItems: [
         { id: 'dashboard', icon: 'fa-solid fa-grid-2', label: 'Dashboard' },
-        { id: 'ask-ai', icon: 'fa-solid fa-robot', label: 'Ask AI' },
-        { id: 'commands', icon: 'fa-solid fa-terminal', label: 'Commands' },
         { id: 'code-generator', icon: 'fa-solid fa-wand-magic-sparkles', label: 'Code Gen' },
-        { id: 'code-git-explorer', icon: 'fa-solid fa-cube', label: 'Explorer' },
-        { id: 'package-scout', icon: 'fa-solid fa-box-open', label: 'Packages' },
+        { id: 'workspace', icon: 'fa-solid fa-laptop-code', label: 'Workspace' },
+        { id: 'ask-ai', icon: 'fa-solid fa-robot', label: 'Ask AI' },
+        { id: 'tools-vault', icon: 'fa-solid fa-screwdriver-wrench', label: 'Tools' },
+        { id: 'commands', icon: 'fa-solid fa-terminal', label: 'Commands' },
         { id: 'free-apis', icon: 'fa-solid fa-plug', label: 'APIs' },
-        { id: 'github-hub', icon: 'fa-brands fa-github', label: 'GitHub' }
+        { id: 'package-scout', icon: 'fa-solid fa-box-open', label: 'Packages' },
+        { id: 'code-git-explorer', icon: 'fa-brands fa-github', label: 'Explorer' }
     ],
 
     render() {

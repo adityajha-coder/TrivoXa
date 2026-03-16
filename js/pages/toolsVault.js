@@ -1,0 +1,145 @@
+const ToolsVaultPage = {
+    tools: [
+        { cat: 'AI Assistants', items: [
+            { name: 'GitHub Copilot', desc: 'Your AI pair programmer', url: 'https://copilot.github.com' },
+            { name: 'Cursor', desc: 'The AI-first code editor', url: 'https://cursor.sh' },
+            { name: 'ChatGPT', desc: 'OpenAI conversational AI model', url: 'https://chat.openai.com' },
+            { name: 'Claude', desc: 'Next generation AI assistant by Anthropic', url: 'https://claude.ai' },
+            { name: 'Perplexity', desc: 'AI-powered search engine', url: 'https://perplexity.ai' },
+            { name: 'Midjourney', desc: 'AI image generation tool', url: 'https://midjourney.com' }
+        ]},
+        { cat: 'Frontend & UI', items: [
+            { name: 'Tailwind CSS', desc: 'Utility-first CSS framework', url: 'https://tailwindcss.com' },
+            { name: 'Framer Motion', desc: 'Production-ready animation library', url: 'https://www.framer.com/motion/' },
+            { name: 'Vercel', desc: 'Deploy web projects with the best frontend experience', url: 'https://vercel.com' },
+            { name: 'Shadcn UI', desc: 'Beautifully designed components that you can copy and paste', url: 'https://ui.shadcn.com' },
+            { name: 'Next.js', desc: 'The React Framework for the Web', url: 'https://nextjs.org' },
+            { name: 'Radix UI', desc: 'Unstyled, accessible components for React', url: 'https://www.radix-ui.com/' }
+        ]},
+        { cat: 'Backend & APIs', items: [
+            { name: 'Supabase', desc: 'Open source Firebase alternative', url: 'https://supabase.com' },
+            { name: 'Postman', desc: 'API platform for building and using APIs', url: 'https://postman.com' },
+            { name: 'Railway', desc: 'Infrastructure platform where you can provision infrastructure', url: 'https://railway.app' },
+            { name: 'PlanetScale', desc: 'Serverless MySQL platform', url: 'https://planetscale.com' },
+            { name: 'Render', desc: 'Unified cloud to build and run all your apps', url: 'https://render.com' },
+            { name: 'Stripe', desc: 'Financial infrastructure platform for the internet', url: 'https://stripe.com' }
+        ]},
+        { cat: 'Core Utilities', items: [
+            { name: 'Docker', desc: 'Accelerate how you build, share, and run applications', url: 'https://docker.com' },
+            { name: 'Figma', desc: 'Collaborative interface design tool', url: 'https://figma.com' },
+            { name: 'Prettier', desc: 'An opinionated code formatter', url: 'https://prettier.io' },
+            { name: 'ESLint', desc: 'Find and fix problems in your JavaScript code', url: 'https://eslint.org' },
+            { name: 'Vite', desc: 'Next Generation Frontend Tooling', url: 'https://vitejs.dev' },
+            { name: 'Bun', desc: 'Fast all-in-one JavaScript runtime', url: 'https://bun.sh' },
+            { name: 'Zod', desc: 'TypeScript-first schema validation with static type inference', url: 'https://zod.dev' }
+        ]},
+        { cat: 'DevOps & Hosting', items: [
+            { name: 'Netlify', desc: 'Build, deploy, and scale modern web projects', url: 'https://netlify.com' },
+            { name: 'AWS', desc: 'Comprehensive cloud platform', url: 'https://aws.amazon.com' },
+            { name: 'Cloudflare', desc: 'Global platform for edge computing and security', url: 'https://cloudflare.com' }
+        ]}
+    ],
+    boilerplates: [
+        { title: 'HTML5 Boilerplate', code: '<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <title>Document</title>\n</head>\n<body>\n    \n</body>\n</html>' },
+        { title: 'React Component', code: 'import React from "react";\n\nconst Component = () => {\n    return (\n        <div>\n            Hello World\n        </div>\n    );\n};\n\nexport default Component;' },
+        { title: 'Express Server', code: 'const express = require("express");\nconst app = express();\n\napp.use(express.json());\n\napp.get("/", (req, res) => {\n    res.send("Hello World");\n});\n\napp.listen(3000, () => console.log("Server running on port 3000"));' },
+        { title: 'Vue 3 Composition API', code: '<template>\n  <div>\n    <h1>{{ message }}</h1>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from "vue";\nconst message = ref("Hello Vue 3");\n</script>' },
+        { title: 'Next.js 14 Page', code: 'export default function Page() {\n  return (\n    <main className="flex min-h-screen flex-col items-center justify-between p-24">\n      <h1>Next.js Platform</h1>\n    </main>\n  );\n}' },
+        { title: 'Tailwind Config Base', code: '/** @type {import("tailwindcss").Config} */\nmodule.exports = {\n  content: [\n    "./src/**/*.{js,jsx,ts,tsx}",\n  ],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n}' },
+        { title: 'Dockerfile (Node)', code: 'FROM node:18-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm install\nCOPY . .\nEXPOSE 3000\nCMD ["npm", "start"]' },
+        { title: 'Django View (FBV)', code: 'from django.shortcuts import render\nfrom django.http import HttpResponse\n\ndef my_view(request):\n    return HttpResponse("Hello, Django!")' }
+    ],
+
+    render() {
+        Navbar.renderTopbar('Tools Vault');
+        const content = document.getElementById('page-content');
+        
+        content.innerHTML = `
+            <div class="page-enter">
+                <div class="page-header">
+                    <h1>Tools <span class="text-gradient">Vault</span></h1>
+                    <p>A curated collection of industry-leading dev tools, AI utilities, and frameworks to supercharge your workflow.</p>
+                </div>
+                <div class="tabs mb-md" id="tv-tabs">
+                    <button class="tab-item active" data-view="resources">Tools & Resources</button>
+                    <button class="tab-item" data-view="boilerplates">Boilerplates</button>
+                </div>
+                
+                <div id="tv-resources-view" class="flex-col flex-gap mb-xl">
+                    ${this.tools.map(section => `
+                        <div>
+                            <h2 class="mb-md" style="font-size:1.2rem; font-weight:600; color:var(--primary-light); border-bottom:1px solid var(--border); padding-bottom:10px;">
+                                ${section.cat}
+                            </h2>
+                            <div class="grid-3">
+                                ${section.items.map(tool => `
+                                    <a href="${tool.url}" target="_blank" rel="noopener noreferrer" class="glass-card tool-link-card" style="text-decoration:none; display:flex; flex-direction:column; transition:all 0.2s;">
+                                        <div style="font-weight:600; font-size:1.05rem; color:var(--text); margin-bottom:6px; display:flex; align-items:center; justify-content:space-between;">
+                                            ${tool.name}
+                                            <i class="fa-solid fa-arrow-up-right-from-square text-muted text-xs"></i>
+                                        </div>
+                                        <div class="text-sm text-secondary line-clamp-2">${tool.desc}</div>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div id="tv-boilerplates-view" style="display:none; padding-bottom:40px;">
+                    <div class="grid-2">
+                        ${this.boilerplates.map((b, idx) => `
+                            <div class="glass-card">
+                                <div class="flex-between mb-sm">
+                                    <div style="font-weight:600;">${b.title}</div>
+                                    <button class="btn btn-secondary btn-xs tv-copy-bp" data-idx="${idx}"><i class="fa-solid fa-copy"></i> Copy</button>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
+                                    <pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--primary-light);">${Helpers.escapeHtml(b.code)}</pre>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+            <style>
+            .tool-link-card:hover {
+                background: rgba(212,168,67,0.04);
+                border-color: rgba(212,168,67,0.3);
+                transform: translateY(-2px);
+            }
+            .tool-link-card i {
+                transition: color 0.2s;
+            }
+            .tool-link-card:hover i {
+                color: var(--primary-light);
+            }
+            </style>
+        `;
+
+        this.bindEvents();
+    },
+
+    bindEvents() {
+        document.getElementById('tv-tabs')?.addEventListener('click', e => {
+            const tab = e.target.closest('.tab-item');
+            if(!tab) return;
+            document.querySelectorAll('#tv-tabs .tab-item').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            const view = tab.dataset.view;
+            document.getElementById('tv-resources-view').style.display = view === 'resources' ? 'flex' : 'none';
+            document.getElementById('tv-boilerplates-view').style.display = view === 'boilerplates' ? 'block' : 'none';
+        });
+
+        document.getElementById('page-content').addEventListener('click', e => {
+            if(e.target.closest('.tv-copy-bp')) {
+                const idx = e.target.closest('.tv-copy-bp').dataset.idx;
+                if(this.boilerplates[idx]) {
+                    Helpers.copyToClipboard(this.boilerplates[idx].code);
+                    Toast.show('Boilerplate copied!', 'success');
+                }
+            }
+        });
+    }
+};

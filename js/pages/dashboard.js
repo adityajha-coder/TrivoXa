@@ -7,12 +7,12 @@ const DashboardPage = {
 
         content.innerHTML = `
             <div class="page-enter">
-                <div class="dashboard-hero">
-                    <div class="hero-text">
+                <div class="dashboard-hero" style="position:relative;">
+                    <div class="hero-text" style="position:relative; z-index:1;">
                         <h1>${greeting}, <span class="text-gradient">Developer</span> ⚡</h1>
                         <p>Welcome to Vertex — your all-in-one toolkit for code generation, repo exploration, package analysis, and Git mastery.</p>
                     </div>
-                    <div class="hero-actions">
+                    <div class="hero-actions" style="position:relative; z-index:1;">
                         <button class="btn btn-primary btn-lg" data-page="ask-ai"><i class="fa-solid fa-robot"></i> Ask AI</button>
                         <button class="btn btn-secondary btn-lg" data-page="commands"><i class="fa-solid fa-terminal"></i> Commands</button>
                     </div>
@@ -71,10 +71,22 @@ const DashboardPage = {
                     <h2 style="font-size:1.05rem;font-weight:600;"><i class="fa-solid fa-toolbox" style="color:var(--primary-light);margin-right:6px;"></i>All Tools</h2>
                 </div>
                 <div class="dashboard-tools-grid mb-lg">
+                    <div class="glass-card tool-card" data-page="workspace">
+                        <div class="tool-icon" style="background:rgba(62,207,110,0.06);color:var(--success);"><i class="fa-solid fa-laptop-code"></i></div>
+                        <h3>My Workspace</h3>
+                        <p>Save personal code snippets and access boilerplate templates.</p>
+                        <i class="fa-solid fa-arrow-right tool-arrow"></i>
+                    </div>
+                    <div class="glass-card tool-card" data-page="tools-vault">
+                        <div class="tool-icon" style="background:rgba(236,72,153,0.06);color:#ec4899;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                        <h3>Tools Vault</h3>
+                        <p>Curated list of standard dev tools and cutting-edge AI utilities.</p>
+                        <i class="fa-solid fa-arrow-right tool-arrow"></i>
+                    </div>
                     <div class="glass-card tool-card" data-page="code-generator">
                         <div class="tool-icon icon-primary"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                         <h3>Code Generator</h3>
-                        <p>Generate production-ready UI components in HTML, React, or Vue.</p>
+                        <p>Generate code components instantly using AI LLM integration.</p>
                         <i class="fa-solid fa-arrow-right tool-arrow"></i>
                     </div>
                     <div class="glass-card tool-card" data-page="code-git-explorer">
@@ -93,18 +105,6 @@ const DashboardPage = {
                         <div class="tool-icon icon-error"><i class="fa-solid fa-plug"></i></div>
                         <h3>Free APIs</h3>
                         <p>45+ curated free APIs organized by category for development.</p>
-                        <i class="fa-solid fa-arrow-right tool-arrow"></i>
-                    </div>
-                    <div class="glass-card tool-card" data-page="github-hub">
-                        <div class="tool-icon" style="background:rgba(212,168,67,0.06);color:var(--primary-light);"><i class="fa-brands fa-github"></i></div>
-                        <h3>GitHub Hub</h3>
-                        <p>Profile lookup, activity feed, and repository analytics.</p>
-                        <i class="fa-solid fa-arrow-right tool-arrow"></i>
-                    </div>
-                    <div class="glass-card tool-card" data-page="ask-ai">
-                        <div class="tool-icon" style="background:rgba(139,92,246,0.06);color:#8b5cf6;"><i class="fa-solid fa-robot"></i></div>
-                        <h3>Ask AI</h3>
-                        <p>Get smart tool recommendations for any project idea.</p>
                         <i class="fa-solid fa-arrow-right tool-arrow"></i>
                     </div>
                 </div>

@@ -4,10 +4,11 @@ const Router = {
         'ask-ai': () => AskAiPage.render(),
         'commands': () => CommandsPage.render(),
         'code-generator': () => CodeGeneratorPage.render(),
+        'workspace': () => WorkspacePage.render(),
+        'tools-vault': () => ToolsVaultPage.render(),
         'code-git-explorer': () => CodeGitExplorerPage.render(),
         'package-scout': () => PackageScoutPage.render(),
-        'free-apis': () => FreeApisPage.render(),
-        'github-hub': () => GitHubHubPage.render()
+        'free-apis': () => FreeApisPage.render()
     },
 
     navigate(page) {
@@ -33,6 +34,5 @@ const Router = {
 
     cleanupPage() {
         if (typeof CodeGitExplorerPage !== 'undefined' && CodeGitExplorerPage.cleanup) CodeGitExplorerPage.cleanup();
-        if (typeof GitHubHubPage !== 'undefined' && GitHubHubPage.cleanupCmd) GitHubHubPage.cleanupCmd();
     }
 };
