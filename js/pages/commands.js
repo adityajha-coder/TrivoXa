@@ -37,7 +37,13 @@ const CommandsPage = {
         { cmd: 'git clean -fd', desc: 'Remove untracked files and directories.', example: 'git clean -fd', cat: 'Advanced', step: 8 },
         { cmd: 'git submodule', desc: 'Manage sub-repositories inside your repo.', example: 'git submodule add <url>', cat: 'Advanced', step: 9 },
         { cmd: 'git archive', desc: 'Create a tar/zip archive of files from a tree.', example: 'git archive --format=zip HEAD > project.zip', cat: 'Advanced', step: 9 },
-        { cmd: 'git worktree', desc: 'Manage multiple working trees for parallel work.', example: 'git worktree add ../hotfix hotfix-branch', cat: 'Advanced', step: 9 }
+        { cmd: 'git worktree', desc: 'Manage multiple working trees for parallel work.', example: 'git worktree add ../hotfix hotfix-branch', cat: 'Advanced', step: 9 },
+        { cmd: 'git stash drop', desc: 'Remove a specific stash from your stash list.', example: 'git stash drop stash@{0}', cat: 'Advanced', step: 8 },
+        { cmd: 'git rebase -i', desc: 'Interactive rebase. Squashing and editing commits.', example: 'git rebase -i HEAD~3', cat: 'Branch', step: 7 },
+        { cmd: 'git commit --amend', desc: 'Modify the previous commit (add files or change msg).', example: 'git commit --amend -m "updated message"', cat: 'Basics', step: 3 },
+        { cmd: 'git branch -d', desc: 'Safely delete a branch (prevents deletion of unmerged branches).', example: 'git branch -d feature', cat: 'Branch', step: 6 },
+        { cmd: 'git tag -d', desc: 'Delete a local tag.', example: 'git tag -d v1.0.0', cat: 'Advanced', step: 9 },
+        { cmd: 'git fetch --all', desc: 'Fetch updates from all remote repositories.', example: 'git fetch --all', cat: 'Remote', step: 4 }
     ],
 
     npmCommands: [
@@ -65,7 +71,12 @@ const CommandsPage = {
         { cmd: 'npm audit', desc: 'Scan for vulnerabilities in dependencies.', example: 'npm audit', cat: 'Security', step: 8 },
         { cmd: 'npm audit fix', desc: 'Automatically fix vulnerable dependencies.', example: 'npm audit fix', cat: 'Security', step: 8 },
         { cmd: 'npm ci', desc: 'Clean install from lock file (for CI/CD).', example: 'npm ci', cat: 'Advanced', step: 9 },
-        { cmd: 'npx <pkg>', desc: 'Run a package without installing it globally.', example: 'npx create-react-app my-app', cat: 'Advanced', step: 9 }
+        { cmd: 'npx <pkg>', desc: 'Run a package without installing it globally.', example: 'npx create-react-app my-app', cat: 'Advanced', step: 9 },
+        { cmd: 'npm shrinkwrap', desc: 'Lock down dependencies for publication.', example: 'npm shrinkwrap', cat: 'Publish', step: 6 },
+        { cmd: 'npm adduser', desc: 'Add a registry user account.', example: 'npm adduser', cat: 'Publish', step: 6 },
+        { cmd: 'npm logout', desc: 'Log out of the registry.', example: 'npm logout', cat: 'Publish', step: 6 },
+        { cmd: 'npm dedupe', desc: 'Reduce duplication in the node_modules folder.', example: 'npm dedupe', cat: 'Advanced', step: 9 },
+        { cmd: 'npm link', desc: 'Symlink a package folder.', example: 'npm link', cat: 'Advanced', step: 9 }
     ],
 
     terminalCommands: [
@@ -98,7 +109,17 @@ const CommandsPage = {
         { cmd: 'unzip / tar -xzf', desc: 'Extract compressed archives.', example: 'tar -xzf backup.tar.gz', cat: 'Archive', step: 9 },
         { cmd: 'alias', desc: 'Create shortcuts for long commands.', example: 'alias gs="git status"', cat: 'Shortcuts', step: 10 },
         { cmd: 'history', desc: 'Show command history.', example: 'history | grep "npm"', cat: 'Shortcuts', step: 10 },
-        { cmd: 'clear / cls', desc: 'Clear the terminal screen.', example: 'clear', cat: 'Shortcuts', step: 10 }
+        { cmd: 'clear / cls', desc: 'Clear the terminal screen.', example: 'clear', cat: 'Shortcuts', step: 10 },
+        { cmd: 'df -h', desc: 'Show disk space usage.', example: 'df -h', cat: 'System', step: 6 },
+        { cmd: 'du -sh', desc: 'Estimate file and directory space usage.', example: 'du -sh *', cat: 'System', step: 6 },
+        { cmd: 'ln -s', desc: 'Create a symbolic link.', example: 'ln -s /path/to/target linkname', cat: 'Files', step: 2 },
+        { cmd: 'wget <url>', desc: 'Download files from the web non-interactively.', example: 'wget https://example.com/file.zip', cat: 'Network', step: 8 },
+        { cmd: 'curl -O <url>', desc: 'Download a file and save it with its original name.', example: 'curl -O https://example.com/file.zip', cat: 'Network', step: 8 },
+        { cmd: 'top / htop', desc: 'Interactive process viewer.', example: 'htop', cat: 'Process', step: 7 },
+        { cmd: 'watch -n', desc: 'Execute a program periodically, showing output.', example: 'watch -n 1 date', cat: 'Process', step: 7 },
+        { cmd: 'env', desc: 'Print environment variables.', example: 'env', cat: 'System', step: 6 },
+        { cmd: 'export', desc: 'Set an environment variable.', example: 'export VAR="value"', cat: 'System', step: 6 },
+        { cmd: 'source / .', desc: 'Execute commands from a file in current shell.', example: 'source ~/.bashrc', cat: 'System', step: 6 }
     ],
 
     flowSteps: {
@@ -152,19 +173,19 @@ const CommandsPage = {
                     <div class="glass-card cmd-type-card active" data-cmd="git" style="cursor:pointer;">
                         <div class="flex-gap">
                             <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(232,69,69,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-git-alt" style="font-size:1.1rem;color:var(--error);"></i></div>
-                            <div><h3 style="font-size:0.92rem;font-weight:600;">Git</h3><p class="text-xs text-muted">35 commands</p></div>
+                            <div><h3 style="font-size:0.92rem;font-weight:600;">Git</h3><p class="text-xs text-muted">41 commands</p></div>
                         </div>
                     </div>
                     <div class="glass-card cmd-type-card" data-cmd="npm" style="cursor:pointer;">
                         <div class="flex-gap">
                             <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(203,56,55,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-npm" style="font-size:1.3rem;color:#cb3837;"></i></div>
-                            <div><h3 style="font-size:0.92rem;font-weight:600;">npm</h3><p class="text-xs text-muted">25 commands</p></div>
+                            <div><h3 style="font-size:0.92rem;font-weight:600;">npm</h3><p class="text-xs text-muted">30 commands</p></div>
                         </div>
                     </div>
                     <div class="glass-card cmd-type-card" data-cmd="terminal" style="cursor:pointer;">
                         <div class="flex-gap">
                             <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(62,207,110,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-terminal" style="font-size:1rem;color:var(--success);"></i></div>
-                            <div><h3 style="font-size:0.92rem;font-weight:600;">Terminal</h3><p class="text-xs text-muted">30 commands</p></div>
+                            <div><h3 style="font-size:0.92rem;font-weight:600;">Terminal</h3><p class="text-xs text-muted">40 commands</p></div>
                         </div>
                     </div>
                 </div>

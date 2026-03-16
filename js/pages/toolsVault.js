@@ -6,23 +6,29 @@ const ToolsVaultPage = {
             { name: 'ChatGPT', desc: 'OpenAI conversational AI model', url: 'https://chat.openai.com' },
             { name: 'Claude', desc: 'Next generation AI assistant by Anthropic', url: 'https://claude.ai' },
             { name: 'Perplexity', desc: 'AI-powered search engine', url: 'https://perplexity.ai' },
-            { name: 'Midjourney', desc: 'AI image generation tool', url: 'https://midjourney.com' }
+            { name: 'Midjourney', desc: 'AI image generation tool', url: 'https://midjourney.com' },
+            { name: 'v0 by Vercel', desc: 'Generative UI system', url: 'https://v0.dev' },
+            { name: 'Tabnine', desc: 'AI assistant for software developers', url: 'https://www.tabnine.com' },
+            { name: 'Codeium', desc: 'Free AI code completion', url: 'https://codeium.com' }
         ]},
         { cat: 'Frontend & UI', items: [
             { name: 'Tailwind CSS', desc: 'Utility-first CSS framework', url: 'https://tailwindcss.com' },
             { name: 'Framer Motion', desc: 'Production-ready animation library', url: 'https://www.framer.com/motion/' },
-            { name: 'Vercel', desc: 'Deploy web projects with the best frontend experience', url: 'https://vercel.com' },
             { name: 'Shadcn UI', desc: 'Beautifully designed components that you can copy and paste', url: 'https://ui.shadcn.com' },
-            { name: 'Next.js', desc: 'The React Framework for the Web', url: 'https://nextjs.org' },
-            { name: 'Radix UI', desc: 'Unstyled, accessible components for React', url: 'https://www.radix-ui.com/' }
+            { name: 'React', desc: 'The library for web and native user interfaces', url: 'https://react.dev' },
+            { name: 'Vue.js', desc: 'The Progressive JavaScript Framework', url: 'https://vuejs.org' },
+            { name: 'Radix UI', desc: 'Unstyled, accessible components for React', url: 'https://www.radix-ui.com/' },
+            { name: 'Chakra UI', desc: 'Simple, modular and accessible component library', url: 'https://chakra-ui.com' },
+            { name: 'Material UI', desc: 'MUI offers a comprehensive suite of UI tools', url: 'https://mui.com' }
         ]},
         { cat: 'Backend & APIs', items: [
             { name: 'Supabase', desc: 'Open source Firebase alternative', url: 'https://supabase.com' },
-            { name: 'Postman', desc: 'API platform for building and using APIs', url: 'https://postman.com' },
-            { name: 'Railway', desc: 'Infrastructure platform where you can provision infrastructure', url: 'https://railway.app' },
+            { name: 'Express.js', desc: 'Fast, unopinionated, minimalist web framework for Node.js', url: 'https://expressjs.com' },
+            { name: 'NestJS', desc: 'A progressive Node.js framework', url: 'https://nestjs.com' },
+            { name: 'Appwrite', desc: 'Secure backend server for Web, Mobile & Flutter developers', url: 'https://appwrite.io' },
             { name: 'PlanetScale', desc: 'Serverless MySQL platform', url: 'https://planetscale.com' },
-            { name: 'Render', desc: 'Unified cloud to build and run all your apps', url: 'https://render.com' },
-            { name: 'Stripe', desc: 'Financial infrastructure platform for the internet', url: 'https://stripe.com' }
+            { name: 'Stripe', desc: 'Financial infrastructure platform for the internet', url: 'https://stripe.com' },
+            { name: 'Hasura', desc: 'Instant GraphQL APIs on your data', url: 'https://hasura.io' }
         ]},
         { cat: 'Core Utilities', items: [
             { name: 'Docker', desc: 'Accelerate how you build, share, and run applications', url: 'https://docker.com' },
@@ -31,30 +37,45 @@ const ToolsVaultPage = {
             { name: 'ESLint', desc: 'Find and fix problems in your JavaScript code', url: 'https://eslint.org' },
             { name: 'Vite', desc: 'Next Generation Frontend Tooling', url: 'https://vitejs.dev' },
             { name: 'Bun', desc: 'Fast all-in-one JavaScript runtime', url: 'https://bun.sh' },
-            { name: 'Zod', desc: 'TypeScript-first schema validation with static type inference', url: 'https://zod.dev' }
+            { name: 'Zod', desc: 'TypeScript-first schema validation with static type inference', url: 'https://zod.dev' },
+            { name: 'Webpack', desc: 'Static module bundler for modern JavaScript applications', url: 'https://webpack.js.org' }
         ]},
-        { cat: 'Categories', items: [
+        { cat: 'Full-Stack Frameworks', items: [
+            { name: 'Next.js', desc: 'The React Framework for the Web', url: 'https://nextjs.org' },
             { name: 'Remix', desc: 'Full stack web framework', url: 'https://remix.run' },
             { name: 'Astro', desc: 'The web framework for content-driven websites', url: 'https://astro.build' },
-            { name: 'Svelte', desc: 'Cybernetically enhanced web apps', url: 'https://svelte.dev' },
-            { name: 'Nuxt', desc: 'The Intuitive Vue Framework', url: 'https://nuxt.com' }
+            { name: 'SvelteKit', desc: 'Rapidly developing robust, performant web applications', url: 'https://kit.svelte.dev' },
+            { name: 'Nuxt', desc: 'The Intuitive Vue Framework', url: 'https://nuxt.com' },
+            { name: 'Laravel', desc: 'The PHP Framework for Web Artisans', url: 'https://laravel.com' },
+            { name: 'Ruby on Rails', desc: 'Web development that doesnt hurt', url: 'https://rubyonrails.org' }
         ]},
         { cat: 'DevOps & Hosting', items: [
+            { name: 'Vercel', desc: 'Deploy web projects with the best frontend experience', url: 'https://vercel.com' },
             { name: 'Netlify', desc: 'Build, deploy, and scale modern web projects', url: 'https://netlify.com' },
             { name: 'AWS', desc: 'Comprehensive cloud platform', url: 'https://aws.amazon.com' },
             { name: 'Cloudflare', desc: 'Global platform for edge computing and security', url: 'https://cloudflare.com' },
-            { name: 'Heroku', desc: 'Cloud platform as a service supporting several programming languages', url: 'https://heroku.com' }
+            { name: 'Heroku', desc: 'Cloud platform as a service', url: 'https://heroku.com' },
+            { name: 'DigitalOcean', desc: 'Cloud computing services for developers', url: 'https://www.digitalocean.com' },
+            { name: 'Railway', desc: 'Infrastructure platform where you can provision infrastructure', url: 'https://railway.app' },
+            { name: 'Render', desc: 'Unified cloud to build and run all your apps', url: 'https://render.com' }
         ]},
         { cat: 'Databases & Storage', items: [
             { name: 'MongoDB', desc: 'Document based NoSQL database', url: 'https://www.mongodb.com' },
             { name: 'PostgreSQL', desc: 'The world\'s most advanced open source relational database', url: 'https://postgresql.org' },
             { name: 'Redis', desc: 'Open source in-memory data store', url: 'https://redis.io' },
-            { name: 'Firebase', desc: 'App development platform by Google', url: 'https://firebase.google.com' }
+            { name: 'Firebase', desc: 'App development platform by Google', url: 'https://firebase.google.com' },
+            { name: 'MySQL', desc: 'Open-source relational database management system', url: 'https://www.mysql.com' },
+            { name: 'SQLite', desc: 'C-language library that implements a small, fast SQL database engine', url: 'https://www.sqlite.org' },
+            { name: 'Cassandra', desc: 'Open source NoSQL distributed database', url: 'https://cassandra.apache.org' }
         ]},
         { cat: 'API & Networking', items: [
             { name: 'Insomnia', desc: 'Design, test, and deploy APIs', url: 'https://insomnia.rest' },
             { name: 'Ngrok', desc: 'Unified ingress platform', url: 'https://ngrok.com' },
-            { name: 'Postman', desc: 'API platform for building and using APIs', url: 'https://postman.com' }
+            { name: 'Postman', desc: 'API platform for building and using APIs', url: 'https://postman.com' },
+            { name: 'GraphQL', desc: 'A query language for your API', url: 'https://graphql.org' },
+            { name: 'Apollo', desc: 'The supergraph platform', url: 'https://www.apollographql.com' },
+            { name: 'Axios', desc: 'Promise based HTTP client for the browser and node.js', url: 'https://axios-http.com' },
+            { name: 'Socket.io', desc: 'Bidirectional and low-latency communication for every platform', url: 'https://socket.io' }
         ]}
     ],
     boilerplates: [
@@ -70,7 +91,10 @@ const ToolsVaultPage = {
         { title: 'FastAPI Main', code: 'from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get("/")\ndef read_root():\n    return {"Hello": "World"}' },
         { title: 'React Context', code: 'import { createContext, useContext, useState } from "react";\n\nconst AppContext = createContext();\n\nexport const AppProvider = ({ children }) => {\n  const [state, setState] = useState(null);\n  return <AppContext.Provider value={{ state, setState }}>{children}</AppContext.Provider>;\n};\n\nexport const useAppContext = () => useContext(AppContext);' },
         { title: 'Zustand Store', code: 'import { create } from "zustand";\n\nconst useStore = create((set) => ({\n  count: 0,\n  inc: () => set((state) => ({ count: state.count + 1 })),\n  dec: () => set((state) => ({ count: state.count - 1 })),\n}));\n\nexport default useStore;' },
-        { title: 'GitHub Actions CI', code: 'name: CI\n\non:\n  push:\n    branches: [ main ]\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v3\n    - name: Use Node.js\n      uses: actions/setup-node@v3\n      with:\n        node-version: "18.x"\n    - run: npm ci\n    - run: npm test' }
+        { title: 'GitHub Actions CI', code: 'name: CI\n\non:\n  push:\n    branches: [ main ]\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v3\n    - name: Use Node.js\n      uses: actions/setup-node@v3\n      with:\n        node-version: "18.x"\n    - run: npm ci\n    - run: npm test' },
+        { title: 'Axios Interceptor', code: 'import axios from "axios";\n\nconst api = axios.create({ baseURL: "https://api.example.com" });\n\napi.interceptors.request.use(config => {\n  const token = localStorage.getItem("token");\n  if (token) config.headers.Authorization = `Bearer ${token}`;\n  return config;\n});\n\nexport default api;' },
+        { title: 'SvelteKit + Tailwind', code: 'import adapter from "@sveltejs/adapter-auto";\nimport { vitePreprocess } from "@sveltejs/vite-plugin-svelte";\n\n/** @type {import(\'@sveltejs/kit\').Config} */\nconst config = {\n  preprocess: vitePreprocess(),\n  kit: {\n    adapter: adapter()\n  }\n};\nexport default config;' },
+        { title: 'React Hook Form', code: 'import { useForm } from "react-hook-form";\n\nexport default function App() {\n  const { register, handleSubmit } = useForm();\n  const onSubmit = data => console.log(data);\n  return (\n    <form onSubmit={handleSubmit(onSubmit)}>\n      <input {...register("firstName")} />\n      <input type="submit" />\n    </form>\n  );\n}' }
     ],
 
     render() {

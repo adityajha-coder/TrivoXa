@@ -8,7 +8,8 @@ const Router = {
         'tools-vault': () => ToolsVaultPage.render(),
         'code-git-explorer': () => CodeGitExplorerPage.render(),
         'package-scout': () => PackageScoutPage.render(),
-        'free-apis': () => FreeApisPage.render()
+        'free-apis': () => FreeApisPage.render(),
+        'scaffolder': () => ScaffolderPage.render()
     },
 
     navigate(page) {

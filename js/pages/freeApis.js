@@ -44,7 +44,17 @@ const FreeApisPage = {
         { name: 'Pixabay', desc: 'Free images and video clips. Over 2.6 million royalty free stock media.', url: 'https://pixabay.com/api/docs', category: 'Photos', auth: 'API Key', cors: true },
         { name: 'Wikipedia API', desc: 'Access Wikipedia content, search articles, and get page summaries programmatically.', url: 'https://www.mediawiki.org/wiki/API:Main_page', category: 'Data', auth: 'None', cors: true },
         { name: 'Google Fonts API', desc: 'Access the entire Google Fonts library metadata and serve web fonts dynamically.', url: 'https://developers.google.com/fonts', category: 'Development', auth: 'API Key', cors: true },
-        { name: 'Recharts Data', desc: 'Generate mock chart data for testing visualization libraries and dashboards.', url: 'https://dummyjson.com', category: 'Testing', auth: 'None', cors: true }
+        { name: 'Recharts Data', desc: 'Generate mock chart data for testing visualization libraries and dashboards.', url: 'https://dummyjson.com', category: 'Testing', auth: 'None', cors: true },
+        { name: 'Bored API', desc: 'Let\'s find you something to do. Suggests random activities.', url: 'https://www.boredapi.com', category: 'Entertainment', auth: 'None', cors: true },
+        { name: 'Cat Facts API', desc: 'Daily cat facts for your applications and scripts.', url: 'https://catfact.ninja', category: 'Animals', auth: 'None', cors: true },
+        { name: 'Dog Facts API', desc: 'Get random facts about dogs.', url: 'https://dog-api.kinduff.com', category: 'Animals', auth: 'None', cors: true },
+        { name: 'Open Trivia DB', desc: 'Free to use, user-contributed trivia question database.', url: 'https://opentdb.com', category: 'Entertainment', auth: 'None', cors: true },
+        { name: 'ReqRes', desc: 'A hosted REST-API ready to respond to your AJAX requests.', url: 'https://reqres.in', category: 'Testing', auth: 'None', cors: true },
+        { name: 'JSONBin', desc: 'Free JSON storage service ideal for small web apps.', url: 'https://jsonbin.io', category: 'Development', auth: 'API Key', cors: true },
+        { name: 'Numbers API', desc: 'An API for interesting facts about numbers.', url: 'http://numbersapi.com', category: 'Data', auth: 'None', cors: true },
+        { name: 'CryptoCompare', desc: 'Streaming pricing data, historic data, and news for cryptocurrencies.', url: 'https://min-api.cryptocompare.com', category: 'Finance', auth: 'API Key', cors: true },
+        { name: 'Dad Jokes API', desc: 'Free API to get dad jokes in various formats (JSON, text, HTML).', url: 'https://icanhazdadjoke.com/api', category: 'Entertainment', auth: 'None', cors: true },
+        { name: 'Frankfurter', desc: 'Open-source API for current and historical foreign exchange rates published by the European Central Bank.', url: 'https://www.frankfurter.app', category: 'Finance', auth: 'None', cors: true }
     ],
 
     categories: [],

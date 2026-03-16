@@ -2,7 +2,11 @@ const ScaffolderPage = {
     stacks: {
         'mern': { label: 'MERN Stack', desc: 'MongoDB, Express, React, Node.js', cmd: 'mkdir -p client/src/components client/src/pages client/src/utils server/models server/routes server/controllers && touch client/src/App.js server/server.js server/.env' },
         'nextjs': { label: 'Next.js App Router', desc: 'React, Next.js, Tailwind', cmd: 'mkdir -p app/api app/components app/lib app/styles public && touch app/page.tsx app/layout.tsx next.config.js tailwind.config.ts' },
-        'django': { label: 'Django + React', desc: 'Python, Django REST, React', cmd: 'mkdir -p backend/api backend/core frontend/src/components frontend/src/pages && touch backend/manage.py frontend/src/index.js' }
+        'django': { label: 'Django + React', desc: 'Python, Django REST, React', cmd: 'mkdir -p backend/api backend/core frontend/src/components frontend/src/pages && touch backend/manage.py frontend/src/index.js' },
+        'vue': { label: 'Vue 3 + Vite', desc: 'Vue 3, Vite, Vue Router', cmd: 'mkdir -p src/assets src/components src/router src/views public && touch src/App.vue src/main.js index.html vite.config.js' },
+        'flutter': { label: 'Flutter App', desc: 'Dart, Flutter Framework', cmd: 'mkdir -p lib/screens lib/widgets lib/models lib/services assets/images && touch lib/main.dart pubspec.yaml' },
+        'springboot': { label: 'Spring Boot REST API', desc: 'Java, Spring Boot, Maven', cmd: 'mkdir -p src/main/java/com/app/controller src/main/java/com/app/model src/main/java/com/app/repository src/main/resources && touch pom.xml src/main/resources/application.properties' },
+        'reactnative': { label: 'React Native (Expo)', desc: 'React Native, Expo, Navigation', cmd: 'mkdir -p app/components app/screens app/navigation assets && touch app/_layout.tsx app/index.tsx app.json babel.config.js' }
     },
     
     currentStack: 'mern',
@@ -108,6 +112,61 @@ root/
 ├── public/
 ├── next.config.js
 └── tailwind.config.ts
+            `;
+        } else if(this.currentStack === 'vue') {
+            treeHTML = `
+root/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── router/
+│   ├── views/
+│   ├── App.vue
+│   └── main.js
+├── public/
+├── index.html
+└── vite.config.js
+            `;
+        } else if(this.currentStack === 'flutter') {
+            treeHTML = `
+root/
+├── lib/
+│   ├── models/
+│   ├── screens/
+│   ├── services/
+│   ├── widgets/
+│   └── main.dart
+├── assets/
+│   └── images/
+└── pubspec.yaml
+            `;
+        } else if(this.currentStack === 'springboot') {
+            treeHTML = `
+root/
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── com/
+│       │       └── app/
+│       │           ├── controller/
+│       │           ├── model/
+│       │           └── repository/
+│       └── resources/
+│           └── application.properties
+└── pom.xml
+            `;
+        } else if(this.currentStack === 'reactnative') {
+            treeHTML = `
+root/
+├── app/
+│   ├── components/
+│   ├── navigation/
+│   ├── screens/
+│   ├── _layout.tsx
+│   └── index.tsx
+├── assets/
+├── app.json
+└── babel.config.js
             `;
         } else {
             treeHTML = `

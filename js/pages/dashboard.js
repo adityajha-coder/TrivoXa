@@ -21,19 +21,19 @@ const DashboardPage = {
                 <div class="grid-4 mb-lg">
                     <div class="glass-card stat-card">
                         <div class="stat-icon icon-primary"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                        <div class="stat-value" data-count="5">0</div>
+                        <div class="stat-value" data-count="7">0</div>
                         <div class="stat-label">Developer Tools</div>
                         <div class="dash-mini-chart">${this.miniChart()}</div>
                     </div>
                     <div class="glass-card stat-card">
                         <div class="stat-icon icon-accent"><i class="fa-solid fa-plug"></i></div>
-                        <div class="stat-value" data-count="45">0</div>
+                        <div class="stat-value" data-count="55">0</div>
                         <div class="stat-label">Free APIs</div>
                         <div class="dash-mini-chart">${this.miniChart()}</div>
                     </div>
                     <div class="glass-card stat-card">
                         <div class="stat-icon icon-success"><i class="fa-solid fa-code-branch"></i></div>
-                        <div class="stat-value" data-count="90">0</div>
+                        <div class="stat-value" data-count="111">0</div>
                         <div class="stat-label">Total Commands</div>
                         <div class="dash-mini-chart">${this.miniChart()}</div>
                     </div>
@@ -60,9 +60,9 @@ const DashboardPage = {
                         <h3>Command Reference</h3>
                         <p>Master Git, npm, and terminal commands with step-by-step workflow visualizations and quick search.</p>
                         <div class="flex-gap text-xs text-muted" style="margin-top:10px;">
-                            <span><i class="fa-brands fa-git-alt"></i> 35 Git</span>
-                            <span><i class="fa-brands fa-npm"></i> 25 npm</span>
-                            <span><i class="fa-solid fa-terminal"></i> 30 Terminal</span>
+                            <span><i class="fa-brands fa-git-alt"></i> 41 Git</span>
+                            <span><i class="fa-brands fa-npm"></i> 30 npm</span>
+                            <span><i class="fa-solid fa-terminal"></i> 40 Terminal</span>
                         </div>
                     </div>
                 </div>
@@ -104,7 +104,13 @@ const DashboardPage = {
                     <div class="glass-card tool-card" data-page="free-apis">
                         <div class="tool-icon icon-error"><i class="fa-solid fa-plug"></i></div>
                         <h3>Free APIs</h3>
-                        <p>45+ curated free APIs organized by category for development.</p>
+                        <p>55+ curated free APIs organized by category for development.</p>
+                        <i class="fa-solid fa-arrow-right tool-arrow"></i>
+                    </div>
+                    <div class="glass-card tool-card" data-page="scaffolder">
+                        <div class="tool-icon" style="background:rgba(212,168,67,0.06);color:var(--primary-light);"><i class="fa-solid fa-folder-tree"></i></div>
+                        <h3>Project Scaffolder</h3>
+                        <p>Generate best-practice folder structures and setup scripts.</p>
                         <i class="fa-solid fa-arrow-right tool-arrow"></i>
                     </div>
                 </div>
