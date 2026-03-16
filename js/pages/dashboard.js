@@ -9,7 +9,7 @@ const DashboardPage = {
             <div class="page-enter">
                 <div class="dashboard-hero">
                     <h1>${greeting}, <span class="text-gradient">Developer</span> ⚡</h1>
-                    <p>Explore repositories, generate code, analyze packages, and master Git — all in one place.</p>
+                    <p>Welcome to Vertex — your all-in-one toolkit for code generation, repo exploration, package analysis, and Git mastery.</p>
                 </div>
 
                 <div class="grid-3 mb-lg">
@@ -53,7 +53,7 @@ const DashboardPage = {
                     <div class="glass-card tool-card" data-page="code-git-explorer">
                         <div class="tool-icon icon-success"><i class="fa-solid fa-cube"></i></div>
                         <h3>Code & Git Explorer</h3>
-                        <p>Visualize any repository's file structure and branch history in 3D.</p>
+                        <p>Visualize repository file structure and branch history in 3D.</p>
                         <i class="fa-solid fa-arrow-right tool-arrow"></i>
                     </div>
                     <div class="glass-card tool-card" data-page="package-scout">

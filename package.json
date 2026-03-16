@@ -1,0 +1,11 @@
+{
+  "name": "vertex",
+  "version": "1.0.0",
+  "description": "Vertex — All-in-one developer toolkit",
+  "scripts": {
+    "start": "npx -y serve . -l 3000",
+    "dev": "npx -y serve . -l 3000"
+  },
+  "keywords": ["developer", "toolkit", "git", "visualization"],
+  "license": "MIT"
+}

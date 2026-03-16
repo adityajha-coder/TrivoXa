@@ -1,6 +1,6 @@
 {
-    "name": "DevNexus — Developer Toolkit",
-    "short_name": "DevNexus",
+    "name": "Vertex — Developer Toolkit",
+    "short_name": "Vertex",
     "description": "All-in-one developer toolkit with code generation, repo visualization, and Git mastery.",
     "start_url": "/index.html",
     "display": "standalone",
@@ -9,14 +9,8 @@
     "orientation": "portrait-primary",
     "icons": [
         {
-            "src": "icons/icon-192.svg",
-            "sizes": "192x192",
-            "type": "image/svg+xml",
-            "purpose": "any"
-        },
-        {
-            "src": "icons/icon-512.svg",
-            "sizes": "512x512",
+            "src": "favicon.svg",
+            "sizes": "any",
             "type": "image/svg+xml",
             "purpose": "any"
         }
