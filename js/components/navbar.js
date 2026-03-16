@@ -1,7 +1,9 @@
 const Navbar = {
     navItems: [
         { id: 'dashboard', icon: 'fa-solid fa-grid-2', label: 'Dashboard' },
-        { id: 'code-generator', icon: 'fa-solid fa-wand-magic-sparkles', label: 'Code Generator' },
+        { id: 'ask-ai', icon: 'fa-solid fa-robot', label: 'Ask AI' },
+        { id: 'commands', icon: 'fa-solid fa-terminal', label: 'Commands' },
+        { id: 'code-generator', icon: 'fa-solid fa-wand-magic-sparkles', label: 'Code Gen' },
         { id: 'code-git-explorer', icon: 'fa-solid fa-cube', label: 'Explorer' },
         { id: 'package-scout', icon: 'fa-solid fa-box-open', label: 'Packages' },
         { id: 'free-apis', icon: 'fa-solid fa-plug', label: 'APIs' },

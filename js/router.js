@@ -1,6 +1,8 @@
 const Router = {
     routes: {
         'dashboard': () => DashboardPage.render(),
+        'ask-ai': () => AskAiPage.render(),
+        'commands': () => CommandsPage.render(),
         'code-generator': () => CodeGeneratorPage.render(),
         'code-git-explorer': () => CodeGitExplorerPage.render(),
         'package-scout': () => PackageScoutPage.render(),
