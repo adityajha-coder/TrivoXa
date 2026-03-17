@@ -470,13 +470,15 @@ const CodeGitExplorerPage = {
                 .nodeColor(node => node.color)
                 .nodeRelSize(3)
                 .nodeVal('val')
-                .dagMode('td')
-                .dagLevelDistance(35)
                 .linkColor(() => 'rgba(255,255,255,0.15)')
                 .linkWidth(0.5)
-                // Add minor collision so nodes at same dag level don't completely overlap
-                .d3Force('collision', d3.forceCollide(node => Math.cbrt(node.val) * 2 + 1))
-                .d3Force('charge', d3.forceManyBody().strength(-15))
+                .linkDirectionalParticles(2)
+                .linkDirectionalParticleWidth(1.5)
+                .linkDirectionalParticleSpeed(d => 0.005 + Math.random() * 0.005)
+                // Remove dagMode to allow natural force-directed clusters (like fireworks/dandelions)
+                .d3Force('charge', d3.forceManyBody().strength(-30))
+                .d3Force('link', d3.forceLink().distance(25))
+                .d3Force('collision', d3.forceCollide(node => Math.cbrt(node.val) * 2 + 2))
                 .onNodeClick(node => {
                     // Focus camera on node
                     const distance = 40;
