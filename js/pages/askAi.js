@@ -194,21 +194,34 @@ const AskAiPage = {
         // Live API fallback for generic questions or code explanation
         try {
             const queryData = "You are Vertex AI, an expert programming assistant. Keep answers brief, under 4 sentences. If they paste code and ask to explain it to a beginner, break it down simply. Write your response in unformatted plaintext without markdown blocks unless necessary. User Request: " + query;
-            const res = await fetch('https://text.pollinations.ai/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: [{ role: 'user', content: queryData }] })
-            });
-
-            if(!res.ok) throw new Error('API Error');
-            const replyText = await res.text();
+            
+            let replyText = '';
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 30000);
+                const res = await fetch('https://text.pollinations.ai/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: [{ role: 'user', content: queryData }], model: 'openai' }),
+                    signal: controller.signal
+                });
+                clearTimeout(timeout);
+                if (!res.ok) throw new Error('POST failed');
+                replyText = await res.text();
+            } catch(postErr) {
+                // Fallback to GET endpoint
+                const encoded = encodeURIComponent(queryData);
+                const res = await fetch(`https://text.pollinations.ai/${encoded}`, { method: 'GET' });
+                if (!res.ok) throw new Error('GET also failed');
+                replyText = await res.text();
+            }
             
             // Format basic code blocks if the AI returns them
             let formattedReply = replyText.replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:8px;font-size:12px;overflow-x:auto;">$1</pre>');
             
             this.addMsg(formattedReply.trim(), 'bot');
         } catch(e) {
-            this.addMsg('Sorry, I experienced a network error reaching the Vertex AI core. Please try again.', 'bot');
+            this.addMsg('Sorry, the AI service is temporarily unavailable. Please try again in a moment.', 'bot');
         } finally {
             document.getElementById('ai-bot-send').disabled = false;
             document.getElementById('ai-bot-send').innerHTML = '<i class="fa-solid fa-paper-plane"></i>';

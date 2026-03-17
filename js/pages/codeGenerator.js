@@ -162,21 +162,33 @@ const CodeGeneratorPage = {
         document.getElementById('generator-output-area').style.display = 'none';
         document.getElementById('loading-overlay').style.display = 'block';
 
-        const promptQuery = `You are an expert coder. Write ONLY the code for a ${prompt} component using ${this.currentFramework}. Do NOT include markdown blocks like \`\`\`html or \`\`\`javascript, and do NOT include any explanations. Output pure, valid code.`;
+        const systemPrompt = `You are an expert coder. Write ONLY the code for a ${prompt} component using ${this.currentFramework}. Do NOT include markdown blocks like \`\`\`html or \`\`\`javascript, and do NOT include any explanations. Output pure, valid code.`;
         
         try {
-            const response = await fetch('https://text.pollinations.ai/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: [{ role: 'user', content: promptQuery }] })
-            });
-
-            if(!response.ok) throw new Error('Generation failed');
+            let code = '';
+            try {
+                // Try POST endpoint first
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 30000);
+                const response = await fetch('https://text.pollinations.ai/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: [{ role: 'user', content: systemPrompt }], model: 'openai' }),
+                    signal: controller.signal
+                });
+                clearTimeout(timeout);
+                if (!response.ok) throw new Error('POST failed');
+                code = await response.text();
+            } catch(postErr) {
+                // Fallback to GET endpoint
+                const encoded = encodeURIComponent(systemPrompt);
+                const response = await fetch(`https://text.pollinations.ai/${encoded}`, { method: 'GET' });
+                if (!response.ok) throw new Error('GET also failed');
+                code = await response.text();
+            }
             
-            let code = await response.text();
-            
-            // basic cleanup in case AI ignores instructions
-            code = code.replace(/^```[a-zA-Z]*\n?/gm, '').replace(/\n?```$/gm, '');
+            // Cleanup markdown fences
+            code = code.replace(/^```[a-zA-Z]*\n?/gm, '').replace(/\n?```$/gm, '').trim();
 
             document.getElementById('loading-overlay').style.display = 'none';
             document.getElementById('generator-output-area').style.display = 'block';
@@ -187,7 +199,7 @@ const CodeGeneratorPage = {
             this.typeCode(el, code, 0);
         } catch(e) {
             document.getElementById('loading-overlay').style.display = 'none';
-            Toast.show('Failed to generate code. Try again.', 'error');
+            Toast.show('Failed to generate code. The AI service may be temporarily down. Try again.', 'error');
         }
     },
 
