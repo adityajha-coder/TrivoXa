@@ -105,7 +105,7 @@ const DashboardPage = {
                             <button class="btn btn-secondary btn-lg" data-page="commands"><i class="fa-solid fa-terminal"></i> Commands Ref</button>
                         </div>
                     </div>
-                    <div style="position:relative; z-index:1; opacity: 0.8; right: 20px;">
+                    <div class="hide-mobile" style="position:relative; z-index:1; opacity: 0.8; right: 20px;">
                         <i class="fa-solid fa-code" style="font-size: 8rem; color: var(--primary-light); filter: drop-shadow(0 0 40px rgba(212,168,67,0.4)); transform: rotate(-15deg);"></i>
                     </div>
                 </div>

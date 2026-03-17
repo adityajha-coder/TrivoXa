@@ -194,20 +194,14 @@ const AskAiPage = {
         // Live API fallback for generic questions or code explanation
         try {
             const queryData = "You are Vertex AI, an expert programming assistant. Keep answers brief, under 4 sentences. If they paste code and ask to explain it to a beginner, break it down simply. Write your response in unformatted plaintext without markdown blocks unless necessary. User Request: " + query;
-            const API_KEY = "AIzaSyCZKBFL33LSwa2br30MnBvxUhQaPZmG65c";
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`, {
+            const res = await fetch('https://text.pollinations.ai/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: queryData }]
-                    }]
-                })
+                body: JSON.stringify({ messages: [{ role: 'user', content: queryData }] })
             });
-            
+
             if(!res.ok) throw new Error('API Error');
-            const data = await res.json();
-            const replyText = data.candidates[0].content.parts[0].text;
+            const replyText = await res.text();
             
             // Format basic code blocks if the AI returns them
             let formattedReply = replyText.replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:8px;font-size:12px;overflow-x:auto;">$1</pre>');

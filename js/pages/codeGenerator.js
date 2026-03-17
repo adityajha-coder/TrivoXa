@@ -97,21 +97,15 @@ const CodeGeneratorPage = {
         const promptQuery = `You are an expert coder. Write ONLY the code for a ${prompt} component using ${this.currentFramework}. Do NOT include markdown blocks like \`\`\`html or \`\`\`javascript, and do NOT include any explanations. Output pure, valid code.`;
         
         try {
-            const API_KEY = "AIzaSyCZKBFL33LSwa2br30MnBvxUhQaPZmG65c";
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`, {
+            const response = await fetch('https://text.pollinations.ai/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: promptQuery }]
-                    }]
-                })
+                body: JSON.stringify({ messages: [{ role: 'user', content: promptQuery }] })
             });
 
             if(!response.ok) throw new Error('Generation failed');
             
-            const data = await response.json();
-            let code = data.candidates[0].content.parts[0].text;
+            let code = await response.text();
             
             // basic cleanup in case AI ignores instructions
             code = code.replace(/^```[a-zA-Z]*\n?/gm, '').replace(/\n?```$/gm, '');

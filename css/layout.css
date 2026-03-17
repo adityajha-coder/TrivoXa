@@ -227,6 +227,7 @@
     .topnav-links { display: none; }
     .menu-toggle { display: flex; }
     #page-content { padding: 20px 16px; }
+    .hide-mobile { display: none !important; }
 }
 
 @media (max-width: 768px) {
