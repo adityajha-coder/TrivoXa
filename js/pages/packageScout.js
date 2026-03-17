@@ -70,11 +70,7 @@ const PackageScoutPage = {
                         </div>
                         <p class="pkg-desc">${Helpers.escapeHtml(pkg.description || 'No description available.')}</p>
                         ${warnings.length > 0 ? `<div style="display:flex;gap:6px;flex-wrap:wrap;">${warnings.map(w => `<span class="tag tag-warning"><i class="fa-solid fa-triangle-exclamation"></i> ${w}</span>`).join('')}</div>` : ''}
-                        <div class="pkg-meta">
-                            <span><i class="fa-solid fa-fire"></i> ${popularity}% popular</span>
-                            <span><i class="fa-solid fa-star"></i> ${overall}% overall</span>
-                            ${pkg.date ? `<span><i class="fa-solid fa-clock"></i> ${Helpers.timeAgo(pkg.date)}</span>` : ''}
-                        </div>
+
                         ${pkg.links?.npm ? `<a href="${pkg.links.npm}" target="_blank" rel="noopener" class="api-link mt-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> npm</a>` : ''}
                     </div>`;
             }).join('');
