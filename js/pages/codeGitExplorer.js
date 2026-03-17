@@ -12,6 +12,40 @@ const CodeGitExplorerPage = {
         Navbar.renderTopbar('Code & Git Explorer');
         const content = document.getElementById('page-content');
         content.innerHTML = `
+            <style>
+                @media (max-width: 768px) {
+                    .explorer-layout-grid {
+                        grid-template-columns: 1fr !important;
+                    }
+                    .explorer-layout-grid > div:first-child {
+                        height: 350px;
+                        max-height: 350px;
+                    }
+                }
+                .file-tree-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 4px 0;
+                    font-size: 0.82rem;
+                    color: var(--text-secondary);
+                    cursor: pointer;
+                    transition: color 0.15s;
+                    position: relative;
+                }
+                .file-tree-item:hover {
+                    color: var(--text);
+                }
+                .file-tree-item::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: -4px;
+                    bottom: 0;
+                    width: 1px;
+                    background: rgba(255, 255, 255, 0.05);
+                }
+            </style>
             <div class="page-enter">
                 <div class="page-header">
                     <h1>GitHub <span class="text-gradient">Explorer</span></h1>
@@ -51,7 +85,7 @@ const CodeGitExplorerPage = {
                     </div>
                 </div>
                 <div id="explorer-structure-view" style="display:none;">
-                    <div class="grid-2" style="grid-template-columns: 280px 1fr;">
+                    <div class="grid-2 explorer-layout-grid" style="grid-template-columns: 280px 1fr;">
                         <div class="glass-card-static" style="padding:0; max-height: 500px; display: flex; flex-direction: column;">
                             <div class="pane-header">
                                 <span><i class="fa-solid fa-folder-tree" style="color:var(--primary-light);margin-right:5px;"></i> Files</span>
@@ -64,7 +98,7 @@ const CodeGitExplorerPage = {
                                 <span><i class="fa-solid fa-diagram-project" style="color:var(--primary-light);margin-right:5px;"></i> 3D Map</span>
                                 <button class="btn btn-ghost btn-sm" id="structure-reset"><i class="fa-solid fa-rotate"></i></button>
                             </div>
-                            <div class="three-canvas-wrap" id="structure-3d" style="min-height:440px;"></div>
+                            <div class="three-canvas-wrap" id="structure-3d" style="min-height:350px;height:100%;"></div>
                         </div>
                     </div>
                     <div class="mt-lg">
@@ -354,8 +388,15 @@ const CodeGitExplorerPage = {
             const sorted = Object.entries(obj).sort((a, b) => { const aD = typeof a[1] === 'object' && !a[1].type; const bD = typeof b[1] === 'object' && !b[1].type; if (aD !== bD) return aD ? -1 : 1; return a[0].localeCompare(b[0]); });
             sorted.forEach(([name, val]) => {
                 const indent = depth * 14;
-                if (val.type === 'file') { const fi = Helpers.getFileIcon(name); html += `<div class="file-tree-item" style="padding-left:${10+indent}px;"><i class="${fi.icon}" style="color:${fi.color}"></i><span>${name}</span></div>`; }
-                else { html += `<div class="file-tree-item" style="padding-left:${10+indent}px;"><i class="fa-solid fa-folder" style="color:var(--primary-light)"></i><span style="font-weight:500;">${name}</span></div>`; html += renderLevel(val, depth + 1); }
+                const baseStyles = `padding-left:${10 + indent}px;`;
+                if (val.type === 'file') { 
+                    const fi = Helpers.getFileIcon(name); 
+                    html += `<div class="file-tree-item" style="${baseStyles}"><i class="${fi.icon}" style="color:${fi.color}"></i><span>${name}</span></div>`; 
+                }
+                else { 
+                    html += `<div class="file-tree-item" style="${baseStyles}"><i class="fa-solid fa-folder" style="color:var(--primary-light)"></i><span style="font-weight:500;">${name}</span></div>`; 
+                    html += renderLevel(val, depth + 1); 
+                }
             });
             return html;
         };
@@ -429,8 +470,13 @@ const CodeGitExplorerPage = {
                 .nodeColor(node => node.color)
                 .nodeRelSize(3)
                 .nodeVal('val')
+                .dagMode('td')
+                .dagLevelDistance(35)
                 .linkColor(() => 'rgba(255,255,255,0.15)')
                 .linkWidth(0.5)
+                // Add minor collision so nodes at same dag level don't completely overlap
+                .d3Force('collision', d3.forceCollide(node => Math.cbrt(node.val) * 2 + 1))
+                .d3Force('charge', d3.forceManyBody().strength(-15))
                 .onNodeClick(node => {
                     // Focus camera on node
                     const distance = 40;
