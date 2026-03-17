@@ -70,14 +70,6 @@ const PackageScoutPage = {
                         </div>
                         <p class="pkg-desc">${Helpers.escapeHtml(pkg.description || 'No description available.')}</p>
                         ${warnings.length > 0 ? `<div style="display:flex;gap:6px;flex-wrap:wrap;">${warnings.map(w => `<span class="tag tag-warning"><i class="fa-solid fa-triangle-exclamation"></i> ${w}</span>`).join('')}</div>` : ''}
-                        <div>
-                            <div class="flex-between mb-sm"><span class="text-xs text-muted">Quality</span><span class="text-xs" style="color:${qualityColor}">${quality}%</span></div>
-                            <div class="pkg-score"><div class="pkg-score-fill" style="width:${quality}%; background:${qualityColor};"></div></div>
-                        </div>
-                        <div>
-                            <div class="flex-between mb-sm"><span class="text-xs text-muted">Maintenance</span><span class="text-xs" style="color:${maintColor}">${maintenance}%</span></div>
-                            <div class="pkg-score"><div class="pkg-score-fill" style="width:${maintenance}%; background:${maintColor};"></div></div>
-                        </div>
                         <div class="pkg-meta">
                             <span><i class="fa-solid fa-fire"></i> ${popularity}% popular</span>
                             <span><i class="fa-solid fa-star"></i> ${overall}% overall</span>
