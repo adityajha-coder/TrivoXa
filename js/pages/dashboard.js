@@ -143,78 +143,99 @@ const DashboardPage = {
                     letter-spacing: -1px;
                 .card-pink .metric-header i { color: #ec4899; }
 
-                /* Tools Grid */
+                /* Developer Toolkit Grid */
                 .tools-section-title {
-                    font-size: 1.1rem;
-                    font-weight: 600;
-                    margin-bottom: 16px;
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                    margin-bottom: 20px;
                     color: var(--text);
                     display: flex;
                     align-items: center;
-                    gap: 8px;
+                    gap: 10px;
+                    letter-spacing: -0.3px;
                 }
                 .tools-grid {
                     display: grid;
-                    grid-template-columns: repeat(3, 1fr);
+                    grid-template-columns: repeat(2, 1fr);
                     gap: 16px;
-                    margin-bottom: 32px;
+                    margin-bottom: 40px;
                 }
                 .tool-card {
-                    background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-                    backdrop-filter: blur(5px);
+                    background: linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%);
+                    backdrop-filter: blur(10px);
                     border: 1px solid var(--border-light);
-                    border-radius: 12px;
+                    border-radius: 16px;
                     padding: 20px;
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     cursor: pointer;
                     display: flex;
-                    flex-direction: column;
-                    height: 100%;
+                    align-items: center;
+                    gap: 16px;
+                    position: relative;
+                    overflow: hidden;
                 }
                 .tool-card:hover {
-                    border-color: rgba(255,255,255,0.2);
-                    background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
-                    transform: translateY(-3px);
-                    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-                }
-                .tc-header {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    margin-bottom: 12px;
+                    border-color: rgba(255,255,255,0.15);
+                    background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
                 }
                 .tc-icon-wrap {
-                    width: 36px;
-                    height: 36px;
-                    border-radius: 8px;
+                    width: 52px;
+                    height: 52px;
+                    min-width: 52px;
+                    border-radius: 14px;
                     background: rgba(255,255,255,0.05);
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 1rem;
+                    font-size: 1.3rem;
                     color: var(--text);
-                    transition: all 0.2s;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
-                .tool-card:hover .tc-icon-wrap {
-                    color: var(--primary-light);
-                    background: rgba(212,168,67,0.1);
-                }
+                .tool-card:hover .tc-icon-wrap { transform: scale(1.08) rotate(-5deg); }
+                
+                .tc-icon-wrap.highlight-yellow { color: #eab308; background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.2); }
+                .tc-icon-wrap.highlight-blue { color: #3b82f6; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); }
+                .tc-icon-wrap.highlight-green { color: #22c55e; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); }
+                .tc-icon-wrap.highlight-cyan { color: #06b6d4; background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); }
+                .tc-icon-wrap.highlight-purple { color: #a855f7; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2); }
+                .tc-icon-wrap.highlight-pink { color: #ec4899; background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.2); }
+
+                .tc-content { flex-grow: 1; }
                 .tc-title {
-                    font-size: 1rem;
-                    font-weight: 600;
+                    font-size: 1.05rem;
+                    font-weight: 700;
+                    color: var(--text);
+                    margin-bottom: 4px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+                .tc-arrow {
+                    font-size: 0.85rem;
+                    color: var(--text-muted);
+                    opacity: 0;
+                    transform: translateX(-10px);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                .tool-card:hover .tc-arrow {
+                    opacity: 1;
+                    transform: translateX(0);
                     color: var(--text);
                 }
                 .tc-desc {
-                    font-size: 0.85rem;
+                    font-size: 0.88rem;
                     color: var(--text-secondary);
-                    line-height: 1.5;
+                    line-height: 1.4;
+                    padding-right: 10px;
                 }
 
                 @media (max-width: 1024px) {
                     .quick-actions-bento { grid-template-columns: 1fr; }
                     .bento-side-col { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
                     .metrics-row { grid-template-columns: repeat(2, 1fr); }
-                    .tools-grid { grid-template-columns: repeat(2, 1fr); }
+                    .tools-grid { grid-template-columns: 1fr; }
                 }
                 @media (max-width: 600px) {
                     .dash-header { text-align: center; margin-bottom: 24px; }
@@ -234,16 +255,12 @@ const DashboardPage = {
                     .metric-value { font-size: 1.6rem; }
                     
                     .tools-section-title { justify-content: center; margin-top: 10px; }
-                    .tools-grid { grid-template-columns: 1fr; gap: 12px; }
-                    .tool-card { padding: 16px; flex-direction: row; align-items: center; gap: 16px; }
-                    .tc-header { margin-bottom: 0; min-width: max-content; }
-                    .tc-title { display: none; }
-                    .tc-desc { font-size: 0.9rem; text-align: left; }
-                }
-                @media (max-width: 480px) {
-                    .tool-card { flex-direction: column; align-items: flex-start; text-align: left; gap: 8px; }
-                    .tc-header { min-width: unset; margin-bottom: 4px; }
-                    .tc-title { display: block; }
+                    .tools-grid { gap: 12px; }
+                    .tool-card { padding: 16px; flex-direction: row; align-items: center; gap: 14px; }
+                    .tc-icon-wrap { width: 42px; height: 42px; min-width: 42px; font-size: 1rem; }
+                    .tc-title { font-size: 1rem; }
+                    .tc-desc { font-size: 0.85rem; }
+                    .tc-arrow { display: none; }
                 }
             </style>
             <div class="page-enter">
@@ -308,51 +325,51 @@ const DashboardPage = {
                 <h3 class="tools-section-title"><i class="fa-solid fa-layer-group" style="color:var(--text-muted)"></i> Developer Toolkit</h3>
                 <div class="tools-grid">
                     <div class="tool-card" data-page="workspace">
-                        <div class="tc-header">
-                            <div class="tc-icon-wrap"><i class="fa-solid fa-laptop-code"></i></div>
-                            <div class="tc-title">My Workspace</div>
+                        <div class="tc-icon-wrap highlight-yellow"><i class="fa-solid fa-laptop-code"></i></div>
+                        <div class="tc-content">
+                            <div class="tc-title">My Workspace <i class="fa-solid fa-arrow-right tc-arrow"></i></div>
+                            <div class="tc-desc">Local IndexedDB environment to securely save code snippets and instantly test implementations.</div>
                         </div>
-                        <div class="tc-desc">Local IndexedDB environment to securely save code snippets and instantly test implementations.</div>
                     </div>
                     
                     <div class="tool-card" data-page="package-scout">
-                        <div class="tc-header">
-                            <div class="tc-icon-wrap"><i class="fa-solid fa-box-open"></i></div>
-                            <div class="tc-title">Package Scout</div>
+                        <div class="tc-icon-wrap highlight-blue"><i class="fa-solid fa-box-open"></i></div>
+                        <div class="tc-content">
+                            <div class="tc-title">Package Scout <i class="fa-solid fa-arrow-right tc-arrow"></i></div>
+                            <div class="tc-desc">Deep NPM insights, version tracking, dependency analysis, and ecosystem analytics.</div>
                         </div>
-                        <div class="tc-desc">Deep NPM insights, version tracking, dependency analysis, and ecosystem analytics.</div>
                     </div>
 
                     <div class="tool-card" data-page="commands">
-                        <div class="tc-header">
-                            <div class="tc-icon-wrap"><i class="fa-solid fa-terminal"></i></div>
-                            <div class="tc-title">Command Reference</div>
+                        <div class="tc-icon-wrap highlight-green"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="tc-content">
+                            <div class="tc-title">Command Reference <i class="fa-solid fa-arrow-right tc-arrow"></i></div>
+                            <div class="tc-desc">Master Git, npm, terminal paths, and Docker workflows with interactive steps.</div>
                         </div>
-                        <div class="tc-desc">Master Git, npm, terminal paths, and Docker workflows with interactive steps.</div>
                     </div>
                     
                     <div class="tool-card" data-page="free-apis">
-                        <div class="tc-header">
-                            <div class="tc-icon-wrap"><i class="fa-solid fa-cloud"></i></div>
-                            <div class="tc-title">Free APIs Base</div>
+                        <div class="tc-icon-wrap highlight-cyan"><i class="fa-solid fa-cloud"></i></div>
+                        <div class="tc-content">
+                            <div class="tc-title">Free APIs Base <i class="fa-solid fa-arrow-right tc-arrow"></i></div>
+                            <div class="tc-desc">A highly categorized database of free-to-use, reliable public endpoints.</div>
                         </div>
-                        <div class="tc-desc">A highly categorized database of free-to-use, reliable public endpoints.</div>
                     </div>
 
                     <div class="tool-card" data-page="tools-vault">
-                        <div class="tc-header">
-                            <div class="tc-icon-wrap"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                            <div class="tc-title">Tools Vault</div>
+                        <div class="tc-icon-wrap highlight-purple"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                        <div class="tc-content">
+                            <div class="tc-title">Tools Vault <i class="fa-solid fa-arrow-right tc-arrow"></i></div>
+                            <div class="tc-desc">Exclusive library directory for UI frameworks, CSS toolkits, and dev utilities.</div>
                         </div>
-                        <div class="tc-desc">Exclusive library directory for UI frameworks, CSS toolkits, and dev utilities.</div>
                     </div>
 
                     <div class="tool-card" data-page="scaffolder">
-                        <div class="tc-header">
-                            <div class="tc-icon-wrap"><i class="fa-solid fa-folder-tree"></i></div>
-                            <div class="tc-title">Project Scaffolder</div>
+                        <div class="tc-icon-wrap highlight-pink"><i class="fa-solid fa-folder-tree"></i></div>
+                        <div class="tc-content">
+                            <div class="tc-title">Project Scaffolder <i class="fa-solid fa-arrow-right tc-arrow"></i></div>
+                            <div class="tc-desc">Browse directory structures and configurations for Next, Django, Vue, and React.</div>
                         </div>
-                        <div class="tc-desc">Browse directory structures and configurations for Next, Django, Vue, and React.</div>
                     </div>
                 </div>
 
