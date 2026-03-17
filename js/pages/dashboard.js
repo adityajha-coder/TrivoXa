@@ -141,21 +141,7 @@ const DashboardPage = {
                     color: var(--text);
                     line-height: 1;
                     letter-spacing: -1px;
-                }
-                .metric-trend {
-                    font-size: 0.8rem;
-                    font-weight: 700;
-                    padding: 4px 10px;
-                    border-radius: 20px;
-                    background: rgba(255,255,255,0.05);
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                }
-                .card-success .metric-trend { color: var(--success); background: rgba(62,207,110,0.15); }
-                .card-info .metric-trend { color: #06b6d4; background: rgba(6,182,212,0.15); }
-                .card-purple .metric-trend { color: #b450dc; background: rgba(180,80,220,0.15); }
-                .card-pink .metric-trend { color: #ec4899; background: rgba(236,72,153,0.15); }
+                .card-pink .metric-header i { color: #ec4899; }
 
                 /* Tools Grid */
                 .tools-section-title {
@@ -293,7 +279,6 @@ const DashboardPage = {
                         <div class="metric-header"><i class="fa-solid fa-terminal"></i> CLI Refs</div>
                         <div class="metric-body">
                             <div class="metric-value" data-count="133">0</div>
-                            <div class="metric-trend"><i class="fa-solid fa-arrow-trend-up"></i> +12%</div>
                         </div>
                         <i class="fa-solid fa-terminal metric-bg-icon"></i>
                     </div>
@@ -301,7 +286,6 @@ const DashboardPage = {
                         <div class="metric-header"><i class="fa-solid fa-cloud"></i> APIs</div>
                         <div class="metric-body">
                             <div class="metric-value" data-count="55">0</div>
-                            <div class="metric-trend"><i class="fa-solid fa-bolt"></i> Live</div>
                         </div>
                         <i class="fa-solid fa-cloud metric-bg-icon"></i>
                     </div>
@@ -309,7 +293,6 @@ const DashboardPage = {
                         <div class="metric-header"><i class="fa-solid fa-screwdriver-wrench"></i> Tools</div>
                         <div class="metric-body">
                             <div class="metric-value" data-count="80">0</div>
-                            <div class="metric-trend"><i class="fa-solid fa-plus"></i> New</div>
                         </div>
                         <i class="fa-solid fa-screwdriver-wrench metric-bg-icon"></i>
                     </div>
@@ -317,7 +300,6 @@ const DashboardPage = {
                         <div class="metric-header"><i class="fa-solid fa-folder-tree"></i> Boilerplates</div>
                         <div class="metric-body">
                             <div class="metric-value" data-count="4">0</div>
-                            <div class="metric-trend"><i class="fa-solid fa-check"></i> Sync</div>
                         </div>
                         <i class="fa-solid fa-folder-tree metric-bg-icon"></i>
                     </div>
