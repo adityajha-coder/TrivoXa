@@ -23,7 +23,8 @@ const GlobalSearch = {
         this.results = document.getElementById('global-search-results');
 
         document.addEventListener('keydown', (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            // Check for ctrl+k OR cmd+k
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
                 this.toggleModal();
             }
@@ -67,7 +68,12 @@ const GlobalSearch = {
         
         let dynamicData = [];
         if(typeof ToolsVaultPage !== 'undefined' && ToolsVaultPage.tools) {
-            ToolsVaultPage.tools.forEach(t => dynamicData.push({ title: t.name, type: 'Tool - ' + t.category, link: 'tools-vault', icon: t.icon, desc: t.desc }));
+            ToolsVaultPage.tools.forEach(cat => {
+                // If it has a generic items array
+                if (cat.items) {
+                    cat.items.forEach(t => dynamicData.push({ title: t.name, type: 'Tool - ' + cat.cat, link: 'tools-vault', icon: 'fa-solid fa-cookie', desc: t.desc }));
+                }
+            });
         }
 
         const allData = [...this.searchData, ...dynamicData];

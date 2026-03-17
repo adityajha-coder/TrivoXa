@@ -74,6 +74,26 @@ const DashboardPage = {
                     justify-content: center;
                     font-size: 1.5rem;
                 }
+                @media (max-width: 768px) {
+                    .dashboard-hero {
+                        flex-direction: column;
+                        text-align: center;
+                        padding: 30px 20px;
+                    }
+                    .hero-text h1 {
+                        font-size: 2.2rem;
+                    }
+                    .hero-text p {
+                        font-size: 1rem;
+                    }
+                    .hero-actions {
+                        justify-content: center;
+                        flex-wrap: wrap;
+                    }
+                    .dashboard-hero .fa-code {
+                        display: none;
+                    }
+                }
             </style>
             <div class="page-enter">
                 <div class="dashboard-hero mb-lg" style="position:relative;">
