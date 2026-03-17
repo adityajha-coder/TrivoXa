@@ -1,5 +1,56 @@
 const WorkspacePage = {
-    snippets: JSON.parse(localStorage.getItem('vertex_snippets') || '[]'),
+    snippets: [],
+    db: null,
+    
+    initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open('VertexDB', 1);
+            request.onerror = e => reject(e);
+            request.onsuccess = e => {
+                this.db = e.target.result;
+                resolve();
+            };
+            request.onupgradeneeded = e => {
+                const db = e.target.result;
+                if(!db.objectStoreNames.contains('snippets')) {
+                    db.createObjectStore('snippets', { keyPath: 'id' });
+                }
+            };
+        });
+    },
+
+    async loadSnippets() {
+        if (!this.db) await this.initDB();
+        return new Promise(resolve => {
+            const transaction = this.db.transaction(['snippets'], 'readonly');
+            const store = transaction.objectStore('snippets');
+            const request = store.getAll();
+            request.onsuccess = e => {
+                this.snippets = e.target.result || [];
+                resolve();
+            };
+        });
+    },
+
+    async saveToIndexedDB(snippet) {
+        if (!this.db) await this.initDB();
+        return new Promise(resolve => {
+            const transaction = this.db.transaction(['snippets'], 'readwrite');
+            const store = transaction.objectStore('snippets');
+            store.put(snippet);
+            transaction.oncomplete = () => resolve();
+        });
+    },
+
+    async deleteFromIndexedDB(id) {
+        if (!this.db) await this.initDB();
+        return new Promise(resolve => {
+            const transaction = this.db.transaction(['snippets'], 'readwrite');
+            const store = transaction.objectStore('snippets');
+            store.delete(id);
+            transaction.oncomplete = () => resolve();
+        });
+    },
 
     render() {
         Navbar.renderTopbar('My Workspace');
@@ -28,7 +79,11 @@ const WorkspacePage = {
             </div>
         `;
         
-        this.renderSnippets();
+        this.initDB().then(() => {
+            this.loadSnippets().then(() => {
+                this.renderSnippets();
+            });
+        });
         this.bindEvents();
     },
 
@@ -44,7 +99,7 @@ const WorkspacePage = {
                     <div style="font-weight:600;">${Helpers.escapeHtml(s.title)}</div>
                     <div class="flex-gap">
                         <button class="btn btn-ghost btn-xs copy-snip-btn" data-idx="${idx}"><i class="fa-solid fa-copy"></i></button>
-                        <button class="btn btn-ghost btn-xs del-snip-btn" data-idx="${idx}" style="color:var(--error);"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn btn-ghost btn-xs del-snip-btn" data-id="${s.id}" data-idx="${idx}" style="color:var(--error);"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
                 <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
@@ -54,9 +109,10 @@ const WorkspacePage = {
         `).join('');
     },
 
-    saveSnippet(title, code) {
-        this.snippets.push({ title, code });
-        localStorage.setItem('vertex_snippets', JSON.stringify(this.snippets));
+    async saveSnippet(title, code) {
+        const newSnip = { id: Date.now().toString(), title, code };
+        this.snippets.push(newSnip);
+        await this.saveToIndexedDB(newSnip);
         if (document.getElementById('snippets-grid')) {
             this.renderSnippets();
         }
@@ -76,16 +132,20 @@ const WorkspacePage = {
             Toast.show('Snippet saved!', 'success');
         });
 
-        document.getElementById('page-content').addEventListener('click', (e) => {
+        document.getElementById('page-content').addEventListener('click', async (e) => {
             if(e.target.closest('.copy-snip-btn')) {
                 const idx = e.target.closest('.copy-snip-btn').dataset.idx;
                 Helpers.copyToClipboard(this.snippets[idx].code);
                 Toast.show('Snippet copied!', 'success');
             }
             if(e.target.closest('.del-snip-btn')) {
-                const idx = e.target.closest('.del-snip-btn').dataset.idx;
+                const btn = e.target.closest('.del-snip-btn');
+                const id = btn.dataset.id;
+                const idx = btn.dataset.idx;
+                
                 this.snippets.splice(idx, 1);
-                localStorage.setItem('vertex_snippets', JSON.stringify(this.snippets));
+                await this.deleteFromIndexedDB(id);
+                
                 this.renderSnippets();
                 Toast.show('Snippet deleted', 'success');
             }

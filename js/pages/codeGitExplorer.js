@@ -20,11 +20,14 @@ const CodeGitExplorerPage = {
                 <div class="tabs mb-md" id="explorer-type-tabs" style="display:inline-flex;">
                     <button class="tab-item active" data-type="repo"><i class="fa-solid fa-book-bookmark"></i> Repository</button>
                     <button class="tab-item" data-type="user"><i class="fa-solid fa-user"></i> Username</button>
+                    <button class="tab-item" data-type="local"><i class="fa-solid fa-folder-open"></i> Local Folder</button>
                 </div>
                 <div class="flex-gap mb-lg flex-wrap">
-                    <div class="input-group" style="flex:1; min-width: 280px;">
+                    <div class="input-group" style="flex:1; min-width: 280px;" id="explorer-input-wrapper">
                         <i class="input-icon fa-brands fa-github"></i>
                         <input class="input-field has-icon" id="explorer-input" type="text" placeholder="e.g. facebook/react or https://github.com/vuejs/core" />
+                        <input type="file" id="local-folder-input" webkitdirectory directory multiple style="display:none;" />
+                        <label for="local-folder-input" id="local-upload-btn" class="btn btn-secondary" style="display:none; width:100%; justify-content:center;">Browse Folder to Visualize API / Dependencies</label>
                     </div>
                     <button class="btn btn-primary" id="explorer-btn"><i class="fa-solid fa-search"></i> Explore</button>
                 </div>
@@ -129,10 +132,30 @@ const CodeGitExplorerPage = {
             tab.classList.add('active');
             this.searchType = tab.dataset.type;
             const input = document.getElementById('explorer-input');
-            if (this.searchType === 'user') {
-                input.placeholder = "e.g. torvalds or vuejs";
+            const localBtn = document.getElementById('local-upload-btn');
+            const exploreBtn = document.getElementById('explorer-btn');
+            
+            if (this.searchType === 'local') {
+                input.style.display = 'none';
+                localBtn.style.display = 'flex';
+                exploreBtn.style.display = 'none';
+                document.querySelector('.input-icon.fa-github').style.display = 'none';
             } else {
-                input.placeholder = "e.g. facebook/react or https://github.com/vuejs/core";
+                input.style.display = 'block';
+                localBtn.style.display = 'none';
+                exploreBtn.style.display = 'block';
+                document.querySelector('.input-icon.fa-github').style.display = 'block';
+                if (this.searchType === 'user') {
+                    input.placeholder = "e.g. torvalds or vuejs";
+                } else {
+                    input.placeholder = "e.g. facebook/react or https://github.com/vuejs/core";
+                }
+            }
+        });
+
+        document.getElementById('local-folder-input').addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                this.loadLocalFolder(e.target.files);
             }
         });
     },
@@ -206,6 +229,42 @@ const CodeGitExplorerPage = {
             this.renderRepos(repos);
             this.renderEvents(events);
         } catch (err) { Toast.show(err.message, 'error'); }
+    },
+
+    async loadLocalFolder(fileList) {
+        if (!fileList || fileList.length === 0) return;
+        Toast.show('Parsing local directory...', 'info');
+        
+        const filesArray = [];
+        for (let i = 0; i < fileList.length; i++) {
+             const f = fileList[i];
+             // webkitRelativePath contains the full path including root folder
+             if (!f.webkitRelativePath.includes('.git/') && !f.webkitRelativePath.includes('node_modules/')) {
+                 filesArray.push({
+                     path: f.webkitRelativePath,
+                     size: f.size,
+                     type: 'blob',
+                     fileObj: f // Store local file ref to read contents later if needed
+                 });
+             }
+        }
+        
+        this.repoData = { tree: filesArray };
+        
+        document.getElementById('explorer-empty').style.display = 'none';
+        document.getElementById('explorer-user-view').style.display = 'none';
+        document.getElementById('explorer-git-view').style.display = 'none';
+        
+        document.getElementById('explorer-info').style.display = 'block';
+        document.getElementById('explorer-repo-name').textContent = 'Local Directory';
+        document.getElementById('explorer-lang').textContent = Object.keys(filesArray).length + ' Files';
+        document.getElementById('explorer-stars').innerHTML = '';
+        document.getElementById('explorer-forks').innerHTML = '';
+        
+        document.getElementById('explorer-tabs-area').style.display = 'none'; // Only shows structure for local
+        
+        this.activeView = 'structure';
+        this.showStructure();
     },
 
     renderProfile(user) {
@@ -318,51 +377,80 @@ const CodeGitExplorerPage = {
     init3DStructure(files) {
         this.cleanup();
         const container = document.getElementById('structure-3d');
-        const w = container.clientWidth, h = container.clientHeight;
-        this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x000000);
-        this.camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 500);
-        this.camera.position.set(0, 14, 28);
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.renderer.setSize(w, h);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container.innerHTML = '';
-        container.appendChild(this.renderer.domElement);
-        this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.enableDamping = true;
-        this.scene.add(new THREE.AmbientLight(0x201810, 0.5));
-        const pl = new THREE.PointLight(0xd4a843, 1.5, 80);
-        pl.position.set(8, 15, 10);
-        this.scene.add(pl);
-        const topDirs = {};
-        files.forEach(f => { const top = f.path.split('/')[0]; if (!topDirs[top]) topDirs[top] = []; topDirs[top].push(f); });
-        const dirs = Object.keys(topDirs);
-        const colors = [0xd4a843, 0x3ecf6e, 0x06b6d4, 0xf0a030, 0xe84545, 0xc9952a, 0xec4899, 0x14b8a6];
-        const center = new THREE.Mesh(new THREE.OctahedronGeometry(1, 1), new THREE.MeshPhongMaterial({ color: 0xd4a843, emissive: 0xd4a843, emissiveIntensity: 0.25, flatShading: true }));
-        this.scene.add(center);
-        this.nodes = [center];
-        dirs.forEach((dir, i) => {
-            const angle = (i / dirs.length) * Math.PI * 2;
-            const r = 9 + Math.random() * 3;
-            const x = Math.cos(angle) * r, z = Math.sin(angle) * r, y = (Math.random() - 0.5) * 3;
-            const color = colors[i % colors.length];
-            const node = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), new THREE.MeshPhongMaterial({ color, emissive: color, emissiveIntensity: 0.12, flatShading: true }));
-            node.position.set(x, y, z);
-            this.scene.add(node);
-            this.nodes.push(node);
-            const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(x, y, z)]);
-            this.scene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.2 })));
-            const fc = Math.min(topDirs[dir].length, 12);
-            for (let j = 0; j < fc; j++) {
-                const fa = Math.random() * Math.PI * 2, fd = 1.8 + Math.random() * 2.5;
-                const fn = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), new THREE.MeshPhongMaterial({ color, emissive: color, emissiveIntensity: 0.08 }));
-                fn.position.set(x + Math.cos(fa) * fd, y + (Math.random() - 0.5) * 1.5, z + Math.sin(fa) * fd);
-                this.scene.add(fn);
-            }
+        const w = container.clientWidth, h = container.clientHeight;
+
+        const nodes = [];
+        const links = [];
+        const nodeMap = new Map();
+
+        // Single Root Node
+        const rootId = 'root';
+        nodes.push({ id: rootId, name: 'Project Root', type: 'folder', val: 10, color: '#d4a843' });
+        nodeMap.set(rootId, true);
+
+        files.forEach(f => {
+            const parts = f.path.split('/');
+            let parentPath = rootId;
+
+            parts.forEach((part, i) => {
+                const currentPath = i === 0 ? part : parts.slice(0, i + 1).join('/');
+                const isFile = i === parts.length - 1;
+                
+                if (!nodeMap.has(currentPath)) {
+                    let color = '#ccc';
+                    let val = 3;
+                    if (isFile) {
+                        const ext = part.split('.').pop().toLowerCase();
+                        color = Helpers.getLanguageColor(ext) || '#666';
+                        val = 2 + Math.min(f.size / 5000, 8); // Size scale
+                    } else {
+                        color = '#4ade80'; // folder color
+                        val = 5;
+                    }
+
+                    nodes.push({ id: currentPath, name: part, type: isFile ? 'file' : 'folder', val, color });
+                    nodeMap.set(currentPath, true);
+                    links.push({ source: parentPath, target: currentPath });
+                }
+                parentPath = currentPath;
+            });
         });
-        document.getElementById('structure-reset').onclick = () => { this.camera.position.set(0, 14, 28); this.controls.target.set(0, 0, 0); };
-        window.addEventListener('resize', () => { const nw = container.clientWidth, nh = container.clientHeight; this.camera.aspect = nw / nh; this.camera.updateProjectionMatrix(); this.renderer.setSize(nw, nh); });
-        this.animate();
+
+        const graphData = { nodes, links };
+        
+        setTimeout(() => {
+            this.forceGraph = ForceGraph3D()(container)
+                .width(w)
+                .height(h)
+                .backgroundColor('#000000')
+                .graphData(graphData)
+                .nodeLabel('name')
+                .nodeColor(node => node.color)
+                .nodeRelSize(3)
+                .nodeVal('val')
+                .linkColor(() => 'rgba(255,255,255,0.15)')
+                .linkWidth(0.5)
+                .onNodeClick(node => {
+                    // Focus camera on node
+                    const distance = 40;
+                    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+                    this.forceGraph.cameraPosition(
+                        { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, 
+                        node, 
+                        3000
+                    );
+                });
+
+            document.getElementById('structure-reset').onclick = () => {
+                this.forceGraph.cameraPosition({ x: 0, y: 0, z: 250 }, { x:0, y:0, z:0 }, 1000);
+            };
+
+            window.addEventListener('resize', () => { 
+                const nw = container.clientWidth, nh = container.clientHeight; 
+                this.forceGraph.width(nw).height(nh);
+            });
+        }, 100);
     },
 
     prepareGitView() {
@@ -483,6 +571,11 @@ const CodeGitExplorerPage = {
         if (this.renderer) this.renderer.dispose();
         if (this.gitAnimId) cancelAnimationFrame(this.gitAnimId);
         if (this.gitRenderer) this.gitRenderer.dispose();
+        if (this.forceGraph) {
+            // Free the canvas and WebGL
+            document.getElementById('structure-3d').innerHTML = '';
+            this.forceGraph = null;
+        }
         this.scene = null;
         this.gitScene = null;
         this.nodes = [];
