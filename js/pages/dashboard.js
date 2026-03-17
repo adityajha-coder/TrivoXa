@@ -31,7 +31,8 @@ const DashboardPage = {
                     margin-bottom: 32px;
                 }
                 .bento-main {
-                    background: linear-gradient(135deg, rgba(212,168,67,0.08) 0%, rgba(0,0,0,0.2) 100%);
+                    background: linear-gradient(135deg, rgba(212,168,67,0.1) 0%, rgba(212,168,67,0.01) 100%);
+                    backdrop-filter: blur(10px);
                     border: 1px solid rgba(212,168,67,0.2);
                     border-radius: 16px;
                     padding: 32px;
@@ -41,12 +42,12 @@ const DashboardPage = {
                     position: relative;
                     overflow: hidden;
                     cursor: pointer;
-                    transition: all 0.2s ease;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
-                .bento-main:hover { border-color: rgba(212,168,67,0.35); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+                .bento-main:hover { border-color: rgba(212,168,67,0.4); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
                 .bento-main h2 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 700; color: var(--text); }
                 .bento-main p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; max-width: 80%; margin-bottom: 24px; }
-                .bento-main-bg { position: absolute; right: 20px; bottom: -10px; font-size: 10rem; color: var(--primary-light); opacity: 0.05; transform: rotate(-10deg); pointer-events: none; transition: transform 0.3s ease; }
+                .bento-main-bg { position: absolute; right: 20px; bottom: -10px; font-size: 10rem; color: var(--primary-light); opacity: 0.05; transform: rotate(-10deg); pointer-events: none; transition: transform 0.4s ease; }
                 .bento-main:hover .bento-main-bg { transform: rotate(-15deg) scale(1.05); opacity: 0.08; }
 
                 .bento-side-col {
@@ -55,7 +56,8 @@ const DashboardPage = {
                     gap: 16px;
                 }
                 .bento-side-card {
-                    background: rgba(255,255,255,0.02);
+                    background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+                    backdrop-filter: blur(10px);
                     border: 1px solid var(--border-light);
                     border-radius: 16px;
                     padding: 24px;
@@ -63,9 +65,9 @@ const DashboardPage = {
                     flex-direction: column;
                     justify-content: center;
                     cursor: pointer;
-                    transition: all 0.2s ease;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
-                .bento-side-card:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+                .bento-side-card:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
                 .bento-side-card h3 { font-size: 1.15rem; margin-bottom: 6px; font-weight: 600; display:flex; align-items:center; gap:8px;}
                 .bento-side-card p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; }
 
@@ -77,15 +79,16 @@ const DashboardPage = {
                     margin-bottom: 32px;
                 }
                 .metric-card {
-                    background: transparent;
+                    background: linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%);
+                    backdrop-filter: blur(5px);
                     border: 1px solid var(--border-light);
                     border-radius: 12px;
                     padding: 20px;
                     display: flex;
                     flex-direction: column;
-                    transition: border-color 0.2s;
+                    transition: all 0.3s ease;
                 }
-                .metric-card:hover { border-color: rgba(255,255,255,0.15); }
+                .metric-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
                 .metric-header {
                     display: flex;
                     align-items: center;
@@ -121,19 +124,22 @@ const DashboardPage = {
                     margin-bottom: 32px;
                 }
                 .tool-card {
-                    background: rgba(0,0,0,0.1);
+                    background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+                    backdrop-filter: blur(5px);
                     border: 1px solid var(--border-light);
                     border-radius: 12px;
                     padding: 20px;
-                    transition: all 0.2s ease;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     cursor: pointer;
                     display: flex;
                     flex-direction: column;
                     height: 100%;
                 }
                 .tool-card:hover {
-                    border-color: rgba(255,255,255,0.15);
-                    background: rgba(255,255,255,0.03);
+                    border-color: rgba(255,255,255,0.2);
+                    background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+                    transform: translateY(-3px);
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
                 }
                 .tc-header {
                     display: flex;
@@ -170,18 +176,38 @@ const DashboardPage = {
 
                 @media (max-width: 1024px) {
                     .quick-actions-bento { grid-template-columns: 1fr; }
-                    .bento-side-col { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr; }
+                    .bento-side-col { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
                     .metrics-row { grid-template-columns: repeat(2, 1fr); }
                     .tools-grid { grid-template-columns: repeat(2, 1fr); }
                 }
                 @media (max-width: 600px) {
+                    .dash-header { text-align: center; margin-bottom: 24px; }
                     .dash-title { font-size: 1.8rem; }
-                    .bento-main p { max-width: 100%; }
+                    .dash-subtitle { font-size: 0.95rem; }
+                    
+                    .bento-main { padding: 24px; text-align: center; align-items: center; }
+                    .bento-main p { max-width: 100%; text-align: center; }
+                    .bento-main .btn { width: 100%; justify-content: center; }
+                    
                     .bento-side-col { grid-template-columns: 1fr; }
+                    .bento-side-card { padding: 20px; text-align: center; align-items: center; }
+                    
                     .metrics-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-                    .metric-card { padding: 16px; }
+                    .metric-card { padding: 16px; align-items: center; text-align: center; }
+                    .metric-header { justify-content: center; }
                     .metric-value { font-size: 1.6rem; }
+                    
+                    .tools-section-title { justify-content: center; margin-top: 10px; }
                     .tools-grid { grid-template-columns: 1fr; gap: 12px; }
+                    .tool-card { padding: 16px; flex-direction: row; align-items: center; gap: 16px; }
+                    .tc-header { margin-bottom: 0; min-width: max-content; }
+                    .tc-title { display: none; }
+                    .tc-desc { font-size: 0.9rem; text-align: left; }
+                }
+                @media (max-width: 480px) {
+                    .tool-card { flex-direction: column; align-items: flex-start; text-align: left; gap: 8px; }
+                    .tc-header { min-width: unset; margin-bottom: 4px; }
+                    .tc-title { display: block; }
                 }
             </style>
             <div class="page-enter">
