@@ -92,7 +92,7 @@ const CodeGeneratorPage = {
             Toast.show('Saved to My Workspace!', 'success');
         });
 
-        document.getElementById('run-container-btn').addEventListener('click', () => {
+        document.getElementById('run-container-btn').addEventListener('click', async () => {
             const code = document.getElementById('code-output').textContent;
             if(!code) return Toast.show('No code to run', 'error');
 
@@ -113,24 +113,48 @@ const CodeGeneratorPage = {
                 };
             } else if (fw === 'vue') {
                 project.template = 'vue-cli';
-                project.files = {
-                    'src/App.vue': code
-                };
+                project.files = { 'src/App.vue': code };
             } else if (fw === 'html') {
                 project.template = 'html';
-                project.files = {
-                    'index.html': code
-                };
+                project.files = { 'index.html': code };
             } else if (fw === 'python') {
                 return Toast.show('WebContainers Python runtime coming soon. Try React/Vue/HTML.', 'info');
             }
 
-            if (window.StackBlitzSDK) {
-                Toast.show('Booting up Live WebContainer...', 'success');
-                window.StackBlitzSDK.openProject(project, { openFile: Object.keys(project.files)[0] });
-            } else {
-                Toast.show('WebContainer SDK not loaded.', 'error');
+            // Dynamically load StackBlitz SDK if not present
+            if (!window.StackBlitzSDK) {
+                Toast.show('Loading WebContainer runtime...', 'info', 2000);
+                await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
             }
+
+            // Ensure the embed container exists
+            let embedWrap = document.getElementById('stackblitz-embed-wrap');
+            if (!embedWrap) {
+                embedWrap = document.createElement('div');
+                embedWrap.id = 'stackblitz-embed-wrap';
+                embedWrap.style.cssText = 'margin-top:20px;';
+                embedWrap.innerHTML = `
+                    <div class="glass-card-static" style="padding:0; overflow:hidden;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+                                <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Live Preview</span>
+                            </div>
+                            <button class="btn btn-ghost btn-xs" id="close-embed-btn"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div id="stackblitz-embed" style="height:450px;"></div>
+                    </div>`;
+                document.getElementById('generator-output-area').appendChild(embedWrap);
+                document.getElementById('close-embed-btn').addEventListener('click', () => { embedWrap.style.display = 'none'; });
+            }
+            embedWrap.style.display = 'block';
+
+            Toast.show('Booting Live WebContainer...', 'success');
+            window.StackBlitzSDK.embedProject(
+                document.getElementById('stackblitz-embed'),
+                project,
+                { openFile: Object.keys(project.files)[0], height: 450, forceEmbedLayout: true }
+            );
         });
     },
 

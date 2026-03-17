@@ -7,6 +7,18 @@ const CodeGitExplorerPage = {
     nodes: [],
     activeView: 'structure',
     searchType: 'repo',
+    _libsLoaded: false,
+
+    async _loadDeps() {
+        if (this._libsLoaded) return;
+        Toast.show('Loading 3D engine...', 'info', 2000);
+        await Helpers.loadScripts([
+            'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+            'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js',
+            'https://unpkg.com/3d-force-graph'
+        ]);
+        this._libsLoaded = true;
+    },
 
     render() {
         Navbar.renderTopbar('Code & Git Explorer');
@@ -371,12 +383,13 @@ const CodeGitExplorerPage = {
             </div>`;
     },
 
-    showStructure() {
+    async showStructure() {
         document.getElementById('explorer-structure-view').style.display = 'block';
         const files = this.repoData.tree.filter(f => f.type === 'blob');
         document.getElementById('file-count-label').textContent = `${files.length} files`;
         this.renderTree(files);
         this.renderBreakdown(files);
+        await this._loadDeps();
         setTimeout(() => this.init3DStructure(files), 80);
     },
 
@@ -443,10 +456,10 @@ const CodeGitExplorerPage = {
                     let val = 3;
                     if (isFile) {
                         const ext = part.split('.').pop().toLowerCase();
-                        color = Helpers.getLanguageColor(ext) || '#666';
-                        val = 2 + Math.min(f.size / 5000, 8); // Size scale
+                        color = Helpers.getExtColor(ext);
+                        val = 2 + Math.min(f.size / 5000, 8);
                     } else {
-                        color = '#4ade80'; // folder color
+                        color = '#4ade80';
                         val = 5;
                     }
 
@@ -536,8 +549,9 @@ const CodeGitExplorerPage = {
                 </div>
             </div>`).join('');
 
-        document.getElementById('explorer-tabs').addEventListener('click', e => {
+        document.getElementById('explorer-tabs').addEventListener('click', async e => {
             if (e.target.closest('[data-view="git"]') && !this.gitScene) {
+                await this._loadDeps();
                 setTimeout(() => this.init3DGit(), 80);
             }
         });

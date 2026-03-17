@@ -122,6 +122,58 @@ const Helpers = {
     randomColor() {
         const hue = Math.floor(Math.random() * 360);
         return `hsl(${hue}, 70%, 60%)`;
+    },
+
+    _scriptCache: {},
+    loadScript(src) {
+        if (this._scriptCache[src]) return this._scriptCache[src];
+        this._scriptCache[src] = new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = src;
+            s.onload = resolve;
+            s.onerror = () => reject(new Error(`Failed to load: ${src}`));
+            document.head.appendChild(s);
+        });
+        return this._scriptCache[src];
+    },
+
+    async loadScripts(urls) {
+        for (const url of urls) {
+            await this.loadScript(url);
+        }
+    },
+
+    getExtColor(ext) {
+        const map = {
+            js: '#f7df1e', mjs: '#f7df1e', cjs: '#f7df1e',
+            ts: '#3178c6', tsx: '#61dafb', jsx: '#61dafb',
+            py: '#3776ab', ipynb: '#3776ab',
+            html: '#e34f26', htm: '#e34f26',
+            css: '#1572b6', scss: '#c6538c', sass: '#c6538c', less: '#1d365d',
+            json: '#f59e0b', yaml: '#cb171e', yml: '#cb171e', toml: '#9c4121',
+            md: '#64748b', mdx: '#fcb32c', txt: '#94a3b8',
+            go: '#00add8',
+            rs: '#dea584',
+            java: '#ed8b00', kt: '#7f52ff', scala: '#dc322f',
+            rb: '#cc342d', erb: '#cc342d',
+            php: '#777bb4',
+            swift: '#f05138',
+            dart: '#0175c2',
+            c: '#555555', h: '#555555', cpp: '#00599c', hpp: '#00599c',
+            cs: '#239120',
+            vue: '#42b883', svelte: '#ff3e00',
+            sh: '#89e051', bash: '#89e051', zsh: '#89e051',
+            sql: '#e38c00',
+            r: '#276dc3',
+            lua: '#000080',
+            ex: '#6e4a7e', exs: '#6e4a7e',
+            dockerfile: '#2496ed',
+            lock: '#64748b', gitignore: '#f05032',
+            svg: '#ffb13b', png: '#22c55e', jpg: '#22c55e', gif: '#a855f7', webp: '#22c55e',
+            xml: '#f16529', graphql: '#e535ab', proto: '#4285f4',
+            tf: '#844fba', hcl: '#844fba'
+        };
+        return map[ext?.toLowerCase()] || '#6b7280';
     }
 };
 
