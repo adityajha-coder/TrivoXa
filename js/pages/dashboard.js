@@ -74,25 +74,37 @@ const DashboardPage = {
                     justify-content: center;
                     font-size: 1.5rem;
                 }
-                @media (max-width: 768px) {
+                    .dashboard-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+                    .dashboard-features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+                    .dash-highlight-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+                }
+                @media (max-width: 900px) {
+                    .dashboard-stats-grid { grid-template-columns: repeat(2, 1fr); }
+                    .dashboard-features-grid { grid-template-columns: repeat(2, 1fr); }
+                    .dash-highlight-grid { grid-template-columns: 1fr; }
+                }
+                @media (max-width: 600px) {
                     .dashboard-hero {
                         flex-direction: column;
                         text-align: center;
                         padding: 30px 20px;
                     }
-                    .hero-text h1 {
-                        font-size: 2.2rem;
-                    }
-                    .hero-text p {
-                        font-size: 1rem;
-                    }
-                    .hero-actions {
-                        justify-content: center;
-                        flex-wrap: wrap;
-                    }
-                    .dashboard-hero .fa-code {
-                        display: none;
-                    }
+                    .hero-text h1 { font-size: 2.2rem; }
+                    .hero-text p { font-size: 0.95rem; }
+                    .hero-actions { justify-content: center; flex-wrap: wrap; }
+                    .dashboard-hero .fa-code { display: none; }
+                    
+                    /* Tighter layout for mobile screens to avoid bloat */
+                    .dashboard-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+                    .stat-card { padding: 16px; border-radius: 12px; }
+                    .stat-value { font-size: 1.8rem; margin: 8px 0 2px 0; }
+                    .stat-icon { font-size: 1.2rem; }
+                    
+                    .dashboard-features-grid { grid-template-columns: 1fr; gap: 12px; }
+                    .dash-grid-box { padding: 16px; flex-direction: row; align-items: center; gap: 16px; border-radius: 12px; }
+                    .dash-grid-icon { width: 40px; height: 40px; font-size: 1.2rem; flex-shrink: 0; }
+                    .dash-grid-content { flex: 1; text-align: left; }
+                    .dash-grid-box h3 { font-size: 1rem; margin-bottom: 2px; }
                 }
             </style>
             <div class="page-enter">
@@ -105,15 +117,15 @@ const DashboardPage = {
                             <button class="btn btn-secondary btn-lg" data-page="commands"><i class="fa-solid fa-terminal"></i> Commands Ref</button>
                         </div>
                     </div>
-                    <div class="hide-mobile" style="position:relative; z-index:1; opacity: 0.8; right: 20px;">
-                        <i class="fa-solid fa-code" style="font-size: 8rem; color: var(--primary-light); filter: drop-shadow(0 0 40px rgba(212,168,67,0.4)); transform: rotate(-15deg);"></i>
+                    <div class="hide-mobile" style="position:absolute; z-index:0; right: 40px; top: 50%; transform: translateY(-50%); opacity: 0.2;">
+                        <i class="fa-solid fa-code" style="font-size: 12rem; color: var(--primary-light);"></i>
                     </div>
                 </div>
 
                 <div class="flex-between mb-md">
                     <h2 style="font-size:1.4rem;font-weight:700;"><i class="fa-solid fa-chart-pie" style="color:var(--primary-light);margin-right:8px;"></i>System Metrics</h2>
                 </div>
-                <div class="grid-4 mb-lg">
+                <div class="dashboard-stats-grid mb-lg">
                     <div class="glass-card stat-card">
                         <div class="stat-icon icon-primary"><i class="fa-solid fa-toolbox"></i></div>
                         <div class="stat-value" data-count="10">0</div>
@@ -144,7 +156,7 @@ const DashboardPage = {
                     </div>
                 </div>
 
-                <div class="grid-2 mb-lg">
+                <div class="dash-highlight-grid mb-lg">
                     <div class="glass-card dash-highlight-card" data-page="ask-ai" style="cursor:pointer;">
                         <div class="dash-highlight-icon" style="background:rgba(212,168,67,0.06);"><i class="fa-solid fa-robot" style="color:var(--primary-light);font-size:1.3rem;"></i></div>
                         <h3>Ask AI Assistant</h3>
@@ -171,41 +183,55 @@ const DashboardPage = {
                 <div class="flex-between mb-md">
                     <h2 style="font-size:1.4rem;font-weight:700;"><i class="fa-solid fa-rocket" style="color:var(--primary-light);margin-right:8px;"></i>All Features</h2>
                 </div>
-                <div class="grid-3 mb-lg">
+                <div class="dashboard-features-grid mb-lg">
                     <div class="dash-grid-box" data-page="code-generator">
                         <div class="dash-grid-icon" style="background:rgba(212,168,67,0.1); color:var(--primary-light);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                        <h3 style="font-size:1.1rem; font-weight:600;">Code Generator</h3>
-                        <p class="text-sm text-secondary">Instantly generate boilerplate framework components with AI.</p>
+                        <div class="dash-grid-content">
+                            <h3 style="font-size:1.05rem; font-weight:600;">Code Generator</h3>
+                            <p class="text-sm text-secondary">Instantly generate boilerplate framework components with AI.</p>
+                        </div>
                     </div>
                     <div class="dash-grid-box" data-page="workspace">
                         <div class="dash-grid-icon" style="background:rgba(62,207,110,0.1); color:var(--success);"><i class="fa-solid fa-laptop-code"></i></div>
-                        <h3 style="font-size:1.1rem; font-weight:600;">My Workspace</h3>
-                        <p class="text-sm text-secondary">Local database to save snippets and copy-paste generated code.</p>
+                        <div class="dash-grid-content">
+                            <h3 style="font-size:1.05rem; font-weight:600;">My Workspace</h3>
+                            <p class="text-sm text-secondary">Local database to save snippets and copy-paste generated code.</p>
+                        </div>
                     </div>
                     <div class="dash-grid-box" data-page="tools-vault">
                         <div class="dash-grid-icon" style="background:rgba(180,80,220,0.1); color:#b450dc;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                        <h3 style="font-size:1.1rem; font-weight:600;">Tools Vault</h3>
-                        <p class="text-sm text-secondary">80+ curated libraries, design tools, and web links.</p>
+                        <div class="dash-grid-content">
+                            <h3 style="font-size:1.05rem; font-weight:600;">Tools Vault</h3>
+                            <p class="text-sm text-secondary">80+ curated libraries, design tools, and web links.</p>
+                        </div>
                     </div>
                     <div class="dash-grid-box" data-page="code-git-explorer">
                         <div class="dash-grid-icon" style="background:rgba(100,100,100,0.1); color:#e8e4dc;"><i class="fa-brands fa-github"></i></div>
-                        <h3 style="font-size:1.1rem; font-weight:600;">GitHub Explorer</h3>
-                        <p class="text-sm text-secondary">Search profiles and view interactive 3D repository globes.</p>
+                        <div class="dash-grid-content">
+                            <h3 style="font-size:1.05rem; font-weight:600;">GitHub Explorer</h3>
+                            <p class="text-sm text-secondary">Search profiles and view interactive 3D repository globes.</p>
+                        </div>
                     </div>
                     <div class="dash-grid-box" data-page="package-scout">
                         <div class="dash-grid-icon" style="background:rgba(203,56,55,0.1); color:#cb3837;"><i class="fa-solid fa-box-open"></i></div>
-                        <h3 style="font-size:1.1rem; font-weight:600;">Package Scout</h3>
-                        <p class="text-sm text-secondary">Search npm for package insights and weekly downloads.</p>
+                        <div class="dash-grid-content">
+                            <h3 style="font-size:1.05rem; font-weight:600;">Package Scout</h3>
+                            <p class="text-sm text-secondary">Search npm for package insights and weekly downloads.</p>
+                        </div>
                     </div>
                     <div class="dash-grid-box" data-page="free-apis">
                         <div class="dash-grid-icon" style="background:rgba(6,182,212,0.1); color:#06b6d4;"><i class="fa-solid fa-cloud"></i></div>
-                        <h3 style="font-size:1.1rem; font-weight:600;">Free APIs Base</h3>
-                        <p class="text-sm text-secondary">A categorized database of 60+ free public endpoints.</p>
+                        <div class="dash-grid-content">
+                            <h3 style="font-size:1.05rem; font-weight:600;">Free APIs Base</h3>
+                            <p class="text-sm text-secondary">A categorized database of 60+ free public endpoints.</p>
+                        </div>
                     </div>
                     <div class="dash-grid-box" data-page="scaffolder">
                         <div class="dash-grid-icon" style="background:rgba(236,72,153,0.1); color:#ec4899;"><i class="fa-solid fa-folder-tree"></i></div>
-                        <h3 style="font-size:1.1rem; font-weight:600;">Project Scaffolder</h3>
-                        <p class="text-sm text-secondary">View folder tree standards for Next, Django, Vue, and React.</p>
+                        <div class="dash-grid-content">
+                            <h3 style="font-size:1.05rem; font-weight:600;">Project Scaffolder</h3>
+                            <p class="text-sm text-secondary">View folder tree standards for Next, Django, Vue, and React.</p>
+                        </div>
                     </div>
                 </div>
 
