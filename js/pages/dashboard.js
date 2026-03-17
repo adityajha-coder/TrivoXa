@@ -80,32 +80,82 @@ const DashboardPage = {
                 }
                 .metric-card {
                     background: linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%);
-                    backdrop-filter: blur(5px);
+                    backdrop-filter: blur(8px);
                     border: 1px solid var(--border-light);
-                    border-radius: 12px;
-                    padding: 20px;
+                    border-radius: 16px;
+                    padding: 24px;
                     display: flex;
                     flex-direction: column;
-                    transition: all 0.3s ease;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    position: relative;
+                    overflow: hidden;
                 }
-                .metric-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+                .metric-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+                
+                .metric-card.card-success:hover { border-color: rgba(62,207,110,0.4); background: linear-gradient(145deg, rgba(62,207,110,0.08) 0%, rgba(0,0,0,0) 100%); }
+                .metric-card.card-info:hover { border-color: rgba(6,182,212,0.4); background: linear-gradient(145deg, rgba(6,182,212,0.08) 0%, rgba(0,0,0,0) 100%); }
+                .metric-card.card-purple:hover { border-color: rgba(180,80,220,0.4); background: linear-gradient(145deg, rgba(180,80,220,0.08) 0%, rgba(0,0,0,0) 100%); }
+                .metric-card.card-pink:hover { border-color: rgba(236,72,153,0.4); background: linear-gradient(145deg, rgba(236,72,153,0.08) 0%, rgba(0,0,0,0) 100%); }
+
+                .metric-card.card-success .metric-header i { color: var(--success); }
+                .metric-card.card-info .metric-header i { color: #06b6d4; }
+                .metric-card.card-purple .metric-header i { color: #b450dc; }
+                .metric-card.card-pink .metric-header i { color: #ec4899; }
+
+                .metric-bg-icon {
+                    position: absolute;
+                    right: -10px;
+                    bottom: -15px;
+                    font-size: 5rem;
+                    opacity: 0.03;
+                    transition: all 0.4s ease;
+                    z-index: 0;
+                }
+                .metric-card.card-success .metric-bg-icon { color: var(--success); }
+                .metric-card.card-info .metric-bg-icon { color: #06b6d4; }
+                .metric-card.card-purple .metric-bg-icon { color: #b450dc; }
+                .metric-card.card-pink .metric-bg-icon { color: #ec4899; }
+                .metric-card:hover .metric-bg-icon { transform: scale(1.15) rotate(-10deg); opacity: 0.08; }
+
                 .metric-header {
                     display: flex;
                     align-items: center;
                     gap: 8px;
                     color: var(--text-muted);
-                    font-size: 0.82rem;
-                    font-weight: 500;
-                    margin-bottom: 12px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    margin-bottom: 20px;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
+                    z-index: 1;
+                }
+                .metric-body {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-end;
+                    z-index: 1;
                 }
                 .metric-value {
-                    font-size: 2rem;
-                    font-weight: 700;
+                    font-size: 2.4rem;
+                    font-weight: 800;
                     color: var(--text);
                     line-height: 1;
+                    letter-spacing: -1px;
                 }
+                .metric-trend {
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    padding: 4px 10px;
+                    border-radius: 20px;
+                    background: rgba(255,255,255,0.05);
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+                .card-success .metric-trend { color: var(--success); background: rgba(62,207,110,0.15); }
+                .card-info .metric-trend { color: #06b6d4; background: rgba(6,182,212,0.15); }
+                .card-purple .metric-trend { color: #b450dc; background: rgba(180,80,220,0.15); }
+                .card-pink .metric-trend { color: #ec4899; background: rgba(236,72,153,0.15); }
 
                 /* Tools Grid */
                 .tools-section-title {
@@ -239,21 +289,37 @@ const DashboardPage = {
                 </div>
 
                 <div class="metrics-row">
-                    <div class="metric-card">
-                        <div class="metric-header"><i class="fa-solid fa-terminal" style="color:var(--success)"></i> CLI Refs</div>
-                        <div class="metric-value" data-count="133">0</div>
+                    <div class="metric-card card-success">
+                        <div class="metric-header"><i class="fa-solid fa-terminal"></i> CLI Refs</div>
+                        <div class="metric-body">
+                            <div class="metric-value" data-count="133">0</div>
+                            <div class="metric-trend"><i class="fa-solid fa-arrow-trend-up"></i> +12%</div>
+                        </div>
+                        <i class="fa-solid fa-terminal metric-bg-icon"></i>
                     </div>
-                    <div class="metric-card">
-                        <div class="metric-header"><i class="fa-solid fa-cloud" style="color:#06b6d4"></i> APIs</div>
-                        <div class="metric-value" data-count="55">0</div>
+                    <div class="metric-card card-info">
+                        <div class="metric-header"><i class="fa-solid fa-cloud"></i> APIs</div>
+                        <div class="metric-body">
+                            <div class="metric-value" data-count="55">0</div>
+                            <div class="metric-trend"><i class="fa-solid fa-bolt"></i> Live</div>
+                        </div>
+                        <i class="fa-solid fa-cloud metric-bg-icon"></i>
                     </div>
-                    <div class="metric-card">
-                        <div class="metric-header"><i class="fa-solid fa-screwdriver-wrench" style="color:#b450dc"></i> Tools</div>
-                        <div class="metric-value" data-count="80">0</div>
+                    <div class="metric-card card-purple">
+                        <div class="metric-header"><i class="fa-solid fa-screwdriver-wrench"></i> Tools</div>
+                        <div class="metric-body">
+                            <div class="metric-value" data-count="80">0</div>
+                            <div class="metric-trend"><i class="fa-solid fa-plus"></i> New</div>
+                        </div>
+                        <i class="fa-solid fa-screwdriver-wrench metric-bg-icon"></i>
                     </div>
-                    <div class="metric-card">
-                        <div class="metric-header"><i class="fa-solid fa-folder-tree" style="color:#ec4899"></i> Boilerplates</div>
-                        <div class="metric-value" data-count="4">0</div>
+                    <div class="metric-card card-pink">
+                        <div class="metric-header"><i class="fa-solid fa-folder-tree"></i> Boilerplates</div>
+                        <div class="metric-body">
+                            <div class="metric-value" data-count="4">0</div>
+                            <div class="metric-trend"><i class="fa-solid fa-check"></i> Sync</div>
+                        </div>
+                        <i class="fa-solid fa-folder-tree metric-bg-icon"></i>
                     </div>
                 </div>
 
