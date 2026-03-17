@@ -212,12 +212,12 @@ const DashboardPage = {
                 .tool-card:hover .highlight-purple::before { background: #a855f7; opacity: 0.2; }
                 .tool-card:hover .highlight-pink::before { background: #ec4899; opacity: 0.2; }
 
-                .tc-icon-wrap.highlight-yellow { color: #fde047; background: linear-gradient(135deg, rgba(234,179,8,0.2), rgba(234,179,8,0.05)); border: 1px solid rgba(234,179,8,0.2); }
-                .tc-icon-wrap.highlight-blue { color: #60a5fa; background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(59,130,246,0.05)); border: 1px solid rgba(59,130,246,0.2); }
-                .tc-icon-wrap.highlight-green { color: #4ade80; background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.05)); border: 1px solid rgba(34,197,94,0.2); }
-                .tc-icon-wrap.highlight-cyan { color: #22d3ee; background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(6,182,212,0.05)); border: 1px solid rgba(6,182,212,0.2); }
-                .tc-icon-wrap.highlight-purple { color: #c084fc; background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.05)); border: 1px solid rgba(168,85,247,0.2); }
-                .tc-icon-wrap.highlight-pink { color: #f472b6; background: linear-gradient(135deg, rgba(236,72,153,0.2), rgba(236,72,153,0.05)); border: 1px solid rgba(236,72,153,0.2); }
+                .tc-icon-wrap.highlight-yellow { color: #facc15; background: linear-gradient(135deg, rgba(234,179,8,0.25), rgba(234,179,8,0.08)); border: 1px solid rgba(234,179,8,0.3); }
+                .tc-icon-wrap.highlight-blue { color: #60a5fa; background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(59,130,246,0.08)); border: 1px solid rgba(59,130,246,0.3); }
+                .tc-icon-wrap.highlight-green { color: #4ade80; background: linear-gradient(135deg, rgba(34,197,94,0.25), rgba(34,197,94,0.08)); border: 1px solid rgba(34,197,94,0.3); }
+                .tc-icon-wrap.highlight-cyan { color: #22d3ee; background: linear-gradient(135deg, rgba(6,182,212,0.25), rgba(6,182,212,0.08)); border: 1px solid rgba(6,182,212,0.3); }
+                .tc-icon-wrap.highlight-purple { color: #c084fc; background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(168,85,247,0.08)); border: 1px solid rgba(168,85,247,0.3); }
+                .tc-icon-wrap.highlight-pink { color: #f472b6; background: linear-gradient(135deg, rgba(236,72,153,0.25), rgba(236,72,153,0.08)); border: 1px solid rgba(236,72,153,0.3); }
 
                 .tc-content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
                 .tc-title {
