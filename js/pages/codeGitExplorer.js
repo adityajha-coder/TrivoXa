@@ -496,82 +496,68 @@ const CodeGitExplorerPage = {
     },
 
     init3DGit() {
-        if (this.gitForceGraph) return;
-        this.cleanup();
+        if (this.gitScene) return;
         const { branches, commits } = this.repoData;
-        
         const container = document.getElementById('git-3d');
-        container.innerHTML = '';
         const w = container.clientWidth, h = container.clientHeight;
+        this.gitScene = new THREE.Scene();
+        this.gitScene.background = new THREE.Color(0x000000);
+        this.gitCamera = new THREE.PerspectiveCamera(50, w / h, 0.1, 500);
+        this.gitCamera.position.set(5, 10, 30);
+        this.gitRenderer = new THREE.WebGLRenderer({ antialias: true });
+        this.gitRenderer.setSize(w, h);
+        this.gitRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.innerHTML = '';
+        container.appendChild(this.gitRenderer.domElement);
+        this.gitControls = new THREE.OrbitControls(this.gitCamera, this.gitRenderer.domElement);
+        this.gitControls.enableDamping = true;
+        this.gitScene.add(new THREE.AmbientLight(0x201810, 0.4));
+        const pl = new THREE.PointLight(0xd4a843, 1.5, 80);
+        pl.position.set(5, 18, 12);
+        this.gitScene.add(pl);
+        const pl2 = new THREE.PointLight(0x3ecf6e, 0.6, 50);
+        pl2.position.set(-12, -4, 8);
+        this.gitScene.add(pl2);
 
-        const nodes = [];
-        const links = [];
-
-        // Main branch commits
+        const branchColors = [0x3ecf6e, 0xd4a843, 0xc9952a, 0xe8c547, 0xf0a030, 0xe84545];
+        this.gitNodes = [];
         commits.forEach((c, i) => {
-            nodes.push({ 
-                id: c.sha, 
-                name: c.commit.message.split('\n')[0], 
-                val: i === 0 ? 6 : 4, 
-                color: i === 0 ? '#3ecf6e' : '#d4a843' 
-            });
-            if (i < commits.length - 1) {
-                // Link older commit pointing to newer
-                links.push({ source: commits[i+1].sha, target: c.sha });
+            const x = -i * 2.6;
+            const color = branchColors[0];
+            const geo = i === 0 ? new THREE.SphereGeometry(0.55, 20, 20) : new THREE.SphereGeometry(0.38, 16, 16);
+            const node = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({ color, emissive: color, emissiveIntensity: i === 0 ? 0.35 : 0.12 }));
+            node.position.set(x, 0, 0);
+            this.gitScene.add(node);
+            this.gitNodes.push(node);
+            if (i > 0) { const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-(i-1)*2.6, 0, 0), new THREE.Vector3(x, 0, 0)]); this.gitScene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.4 }))); }
+        });
+        branches.slice(1, 5).forEach((b, bi) => {
+            const color = branchColors[(bi + 1) % branchColors.length];
+            const y = (bi + 1) * 4;
+            const si = Math.floor(Math.random() * Math.min(6, commits.length - 2)) + 1;
+            const sx = -si * 2.6;
+            const len = Math.floor(Math.random() * 4) + 2;
+            const fp = [new THREE.Vector3(sx, 0, 0), new THREE.Vector3(sx - 1, y * 0.5, 0), new THREE.Vector3(sx - 1.4, y, 0)];
+            this.gitScene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(fp), new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.3 })));
+            for (let j = 0; j < len; j++) {
+                const x = sx - 1.4 - j * 2.6;
+                const nd = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), new THREE.MeshPhongMaterial({ color, emissive: color, emissiveIntensity: 0.1 }));
+                nd.position.set(x, y, 0);
+                this.gitScene.add(nd);
+                this.gitNodes.push(nd);
+                if (j > 0) { const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(sx-1.4-(j-1)*2.6, y, 0), new THREE.Vector3(x, y, 0)]); this.gitScene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.35 }))); }
             }
         });
+        document.getElementById('git-reset').onclick = () => { this.gitCamera.position.set(5, 10, 30); this.gitControls.target.set(0, 0, 0); };
+        this.animateGit();
+    },
 
-        // Add some dynamic branches visualizing side paths
-        const branchColors = ['#06b6d4', '#ec4899', '#f0a030', '#e84545'];
-        const branchCount = Math.min(3, branches.length - 1);
-        
-        for (let b = 0; b < branchCount; b++) {
-            let startIdx = 2 + Math.floor(Math.random() * Math.min(10, commits.length - 3));
-            if (startIdx >= commits.length) continue;
-            let parentSha = commits[startIdx].sha;
-            let prevNode = parentSha;
-            let len = 2 + Math.floor(Math.random() * 3);
-            
-            for (let j = 0; j < len; j++) {
-                let id = 'branch-' + b + '-commit-' + j;
-                nodes.push({ id, name: `Feature ${branches[b + 1]?.name || 'work'} - commit ${j}`, val: 3, color: branchColors[b] });
-                links.push({ source: prevNode, target: id });
-                prevNode = id;
-            }
-        }
-
-        setTimeout(() => {
-            this.gitForceGraph = ForceGraph3D()(container)
-                .width(w)
-                .height(h)
-                .backgroundColor('#000000')
-                .graphData({ nodes, links })
-                .nodeLabel('name')
-                .nodeColor('color')
-                .nodeRelSize(3)
-                .linkColor(() => 'rgba(255,255,255,0.25)')
-                .linkWidth(0.8)
-                .linkDirectionalArrowLength(3.5)
-                .linkDirectionalArrowRelPos(1)
-                .onNodeClick(node => {
-                    const distance = 40;
-                    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
-                    this.gitForceGraph.cameraPosition(
-                        { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, 
-                        node, 
-                        2000
-                    );
-                });
-
-            document.getElementById('git-reset').onclick = () => {
-                this.gitForceGraph.cameraPosition({ x: 0, y: 0, z: 200 }, { x:0, y:0, z:0 }, 1000);
-            };
-
-            window.addEventListener('resize', () => { 
-                const nw = container.clientWidth, nh = container.clientHeight; 
-                this.gitForceGraph.width(nw).height(nh);
-            });
-        }, 100);
+    animateGit() {
+        this.gitAnimId = requestAnimationFrame(() => this.animateGit());
+        this.gitControls.update();
+        const t = Date.now() * 0.001;
+        this.gitNodes.forEach((n, i) => { n.position.y += Math.sin(t + i * 0.3) * 0.0015; });
+        this.gitRenderer.render(this.gitScene, this.gitCamera);
     },
 
     animate() {
@@ -585,18 +571,18 @@ const CodeGitExplorerPage = {
     cleanup() {
         if (this.animationId) cancelAnimationFrame(this.animationId);
         if (this.renderer) this.renderer.dispose();
+        if (this.gitAnimId) cancelAnimationFrame(this.gitAnimId);
+        if (this.gitRenderer) this.gitRenderer.dispose();
         
         if (this.forceGraph) {
+            // Free the canvas and WebGL
             document.getElementById('structure-3d').innerHTML = '';
             this.forceGraph = null;
         }
         
-        if (this.gitForceGraph) {
-            document.getElementById('git-3d').innerHTML = '';
-            this.gitForceGraph = null;
-        }
-        
         this.scene = null;
+        this.gitScene = null;
         this.nodes = [];
+        this.gitNodes = [];
     }
 };
