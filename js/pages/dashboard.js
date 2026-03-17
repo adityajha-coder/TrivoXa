@@ -71,19 +71,7 @@ const DashboardPage = {
                     border-radius: 12px;
                     display: flex;
                     align-items: center;
-                    justify-content: center;
-                    font-size: 1.5rem;
-                }
-                    .dashboard-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-                    .dashboard-features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-                    .dash-highlight-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-                }
-                @media (max-width: 900px) {
-                    .dashboard-stats-grid { grid-template-columns: repeat(2, 1fr); }
-                    .dashboard-features-grid { grid-template-columns: repeat(2, 1fr); }
-                    .dash-highlight-grid { grid-template-columns: 1fr; }
-                }
-                @media (max-width: 600px) {
+                @media (max-width: 768px) {
                     .dashboard-hero {
                         flex-direction: column;
                         text-align: center;
@@ -93,18 +81,92 @@ const DashboardPage = {
                     .hero-text p { font-size: 0.95rem; }
                     .hero-actions { justify-content: center; flex-wrap: wrap; }
                     .dashboard-hero .fa-code { display: none; }
-                    
-                    /* Tighter layout for mobile screens to avoid bloat */
-                    .dashboard-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-                    .stat-card { padding: 16px; border-radius: 12px; }
-                    .stat-value { font-size: 1.8rem; margin: 8px 0 2px 0; }
-                    .stat-icon { font-size: 1.2rem; }
-                    
-                    .dashboard-features-grid { grid-template-columns: 1fr; gap: 12px; }
-                    .dash-grid-box { padding: 16px; flex-direction: row; align-items: center; gap: 16px; border-radius: 12px; }
-                    .dash-grid-icon { width: 40px; height: 40px; font-size: 1.2rem; flex-shrink: 0; }
-                    .dash-grid-content { flex: 1; text-align: left; }
-                    .dash-grid-box h3 { font-size: 1rem; margin-bottom: 2px; }
+                }
+
+                /* Unified Feature Grid */
+                .unified-features-grid { 
+                    display: grid; 
+                    grid-template-columns: repeat(3, 1fr); 
+                    gap: 20px; 
+                }
+                @media (max-width: 1024px) {
+                    .unified-features-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+                }
+                @media (max-width: 600px) {
+                    .unified-features-grid { grid-template-columns: 1fr; gap: 14px; }
+                }
+
+                .feature-card {
+                    padding: 24px;
+                    border-radius: 16px;
+                    border: 1px solid rgba(255,255,255,0.05);
+                    background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.2) 100%);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    cursor: pointer;
+                    display: flex;
+                    flex-direction: column;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .feature-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+                    border-color: rgba(212,168,67,0.3);
+                    background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(212,168,67,0.05) 100%);
+                }
+                .fc-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    margin-bottom: 20px;
+                }
+                .fc-icon {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.5rem;
+                }
+                .fc-metric {
+                    text-align: right;
+                }
+                .fc-metric-val {
+                    font-size: 1.8rem;
+                    font-weight: 800;
+                    line-height: 1;
+                    color: var(--text);
+                }
+                .fc-metric-label {
+                    font-size: 0.75rem;
+                    color: var(--text-muted);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-top: 4px;
+                }
+                .fc-body h3 {
+                    font-size: 1.15rem;
+                    font-weight: 700;
+                    margin-bottom: 6px;
+                    color: var(--text);
+                }
+                .fc-body p {
+                    font-size: 0.9rem;
+                    color: var(--text-secondary);
+                    line-height: 1.5;
+                }
+                .fc-bg-icon {
+                    position: absolute;
+                    right: -20px;
+                    bottom: -20px;
+                    font-size: 8rem;
+                    opacity: 0.03;
+                    transition: all 0.3s;
+                }
+                .feature-card:hover .fc-bg-icon {
+                    transform: scale(1.1) rotate(-10deg);
+                    opacity: 0.06;
                 }
             </style>
             <div class="page-enter">
@@ -123,115 +185,152 @@ const DashboardPage = {
                 </div>
 
                 <div class="flex-between mb-md">
-                    <h2 style="font-size:1.4rem;font-weight:700;"><i class="fa-solid fa-chart-pie" style="color:var(--primary-light);margin-right:8px;"></i>System Metrics</h2>
+                    <h2 style="font-size:1.4rem;font-weight:700;"><i class="fa-solid fa-rocket" style="color:var(--primary-light);margin-right:8px;"></i>Toolkit & Features</h2>
                 </div>
-                <div class="dashboard-stats-grid mb-lg">
-                    <div class="glass-card stat-card">
-                        <div class="stat-icon icon-primary"><i class="fa-solid fa-toolbox"></i></div>
-                        <div class="stat-value" data-count="10">0</div>
-                        <div class="stat-label">Core Tools</div>
-                        <div class="dash-mini-chart">${this.miniChart()}</div>
-                        <div style="position:absolute; top:-20px; right:-20px; font-size:6rem; opacity:0.03;"><i class="fa-solid fa-toolbox"></i></div>
+                
+                <div class="unified-features-grid mb-lg">
+                    <!-- Ask AI -->
+                    <div class="feature-card" data-page="ask-ai">
+                        <div class="fc-header">
+                            <div class="fc-icon" style="background:rgba(212,168,67,0.1); color:var(--primary-light);"><i class="fa-solid fa-robot"></i></div>
+                            <div class="fc-metric">
+                                <div class="fc-metric-val" data-count="6">0</div>
+                                <div class="fc-metric-label">Learning Paths</div>
+                            </div>
+                        </div>
+                        <div class="fc-body">
+                            <h3>Ask AI Assistant</h3>
+                            <p>Get personalized tool recommendations, tailored tech stacks, and intelligent framework suggestions.</p>
+                        </div>
+                        <i class="fa-solid fa-robot fc-bg-icon"></i>
                     </div>
-                    <div class="glass-card stat-card">
-                        <div class="stat-icon icon-accent"><i class="fa-solid fa-plug"></i></div>
-                        <div class="stat-value" data-count="55">0</div>
-                        <div class="stat-label">Free APIs</div>
-                        <div class="dash-mini-chart">${this.miniChart()}</div>
-                        <div style="position:absolute; top:-20px; right:-20px; font-size:6rem; opacity:0.03;"><i class="fa-solid fa-plug"></i></div>
-                    </div>
-                    <div class="glass-card stat-card">
-                        <div class="stat-icon icon-success"><i class="fa-solid fa-terminal"></i></div>
-                        <div class="stat-value" data-count="133">0</div>
-                        <div class="stat-label">Total Commands</div>
-                        <div class="dash-mini-chart">${this.miniChart()}</div>
-                        <div style="position:absolute; top:-20px; right:-20px; font-size:6rem; opacity:0.03;"><i class="fa-solid fa-terminal"></i></div>
-                    </div>
-                    <div class="glass-card stat-card">
-                        <div class="stat-icon icon-warning"><i class="fa-solid fa-compass"></i></div>
-                        <div class="stat-value" data-count="6">0</div>
-                        <div class="stat-label">Learning Paths</div>
-                        <div class="dash-mini-chart">${this.miniChart()}</div>
-                        <div style="position:absolute; top:-20px; right:-20px; font-size:6rem; opacity:0.03;"><i class="fa-solid fa-compass"></i></div>
-                    </div>
-                </div>
 
-                <div class="dash-highlight-grid mb-lg">
-                    <div class="glass-card dash-highlight-card" data-page="ask-ai" style="cursor:pointer;">
-                        <div class="dash-highlight-icon" style="background:rgba(212,168,67,0.06);"><i class="fa-solid fa-robot" style="color:var(--primary-light);font-size:1.3rem;"></i></div>
-                        <h3>Ask AI Assistant</h3>
-                        <p>Tell AI what you want to build and get personalized tool recommendations, tech stacks, and framework suggestions.</p>
-                        <div class="flex-gap text-xs text-muted" style="margin-top:10px;">
-                            <span><i class="fa-solid fa-message"></i> 11 Project Types</span>
-                            <span><i class="fa-solid fa-compass"></i> 6 Learning Paths</span>
+                    <!-- Commands -->
+                    <div class="feature-card" data-page="commands">
+                        <div class="fc-header">
+                            <div class="fc-icon" style="background:rgba(62,207,110,0.1); color:var(--success);"><i class="fa-solid fa-terminal"></i></div>
+                            <div class="fc-metric">
+                                <div class="fc-metric-val" data-count="133">0</div>
+                                <div class="fc-metric-label">Total Commands</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="glass-card dash-highlight-card" data-page="commands" style="cursor:pointer;">
-                        <div class="dash-highlight-icon" style="background:rgba(62,207,110,0.06);"><i class="fa-solid fa-terminal" style="color:var(--success);font-size:1.3rem;"></i></div>
-                        <h3>Command Reference</h3>
-                        <p>Master Git, npm, and terminal commands with step-by-step workflow visualizations and quick search.</p>
-                        <div class="flex-gap text-xs text-muted" style="margin-top:10px;">
-                            <span><i class="fa-brands fa-git-alt"></i> 41 Git</span>
-                            <span><i class="fa-brands fa-npm"></i> 30 npm</span>
-                            <span><i class="fa-solid fa-terminal"></i> 40 Term</span>
-                            <span><i class="fa-brands fa-docker"></i> 10 Docker</span>
-                            <span><i class="fa-solid fa-network-wired"></i> 12 HTTP</span>
+                        <div class="fc-body">
+                            <h3>Command Reference</h3>
+                            <p>Master Git, npm, terminal APIs, and Docker with interactive step-by-step workflow visualizers.</p>
                         </div>
+                        <i class="fa-solid fa-terminal fc-bg-icon"></i>
                     </div>
-                </div>
 
-                <div class="flex-between mb-md">
-                    <h2 style="font-size:1.4rem;font-weight:700;"><i class="fa-solid fa-rocket" style="color:var(--primary-light);margin-right:8px;"></i>All Features</h2>
-                </div>
-                <div class="dashboard-features-grid mb-lg">
-                    <div class="dash-grid-box" data-page="code-generator">
-                        <div class="dash-grid-icon" style="background:rgba(212,168,67,0.1); color:var(--primary-light);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                        <div class="dash-grid-content">
-                            <h3 style="font-size:1.05rem; font-weight:600;">Code Generator</h3>
-                            <p class="text-sm text-secondary">Instantly generate boilerplate framework components with AI.</p>
+                    <!-- Tools Vault -->
+                    <div class="feature-card" data-page="tools-vault">
+                        <div class="fc-header">
+                            <div class="fc-icon" style="background:rgba(180,80,220,0.1); color:#b450dc;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                            <div class="fc-metric">
+                                <div class="fc-metric-val" data-count="10">0</div>
+                                <div class="fc-metric-label">Core Tools</div>
+                            </div>
                         </div>
+                        <div class="fc-body">
+                            <h3>Tools Vault</h3>
+                            <p>An exclusively curated repository of 80+ essential libraries, design tools, and utilities.</p>
+                        </div>
+                        <i class="fa-solid fa-screwdriver-wrench fc-bg-icon"></i>
                     </div>
-                    <div class="dash-grid-box" data-page="workspace">
-                        <div class="dash-grid-icon" style="background:rgba(62,207,110,0.1); color:var(--success);"><i class="fa-solid fa-laptop-code"></i></div>
-                        <div class="dash-grid-content">
-                            <h3 style="font-size:1.05rem; font-weight:600;">My Workspace</h3>
-                            <p class="text-sm text-secondary">Local database to save snippets and copy-paste generated code.</p>
+
+                    <!-- Free APIs -->
+                    <div class="feature-card" data-page="free-apis">
+                        <div class="fc-header">
+                            <div class="fc-icon" style="background:rgba(6,182,212,0.1); color:#06b6d4;"><i class="fa-solid fa-cloud"></i></div>
+                            <div class="fc-metric">
+                                <div class="fc-metric-val" data-count="55">0</div>
+                                <div class="fc-metric-label">Free APIs</div>
+                            </div>
                         </div>
+                        <div class="fc-body">
+                            <h3>Free APIs Base</h3>
+                            <p>A heavily categorized database of functional, free-to-use public endpoints for any project.</p>
+                        </div>
+                        <i class="fa-solid fa-cloud fc-bg-icon"></i>
                     </div>
-                    <div class="dash-grid-box" data-page="tools-vault">
-                        <div class="dash-grid-icon" style="background:rgba(180,80,220,0.1); color:#b450dc;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                        <div class="dash-grid-content">
-                            <h3 style="font-size:1.05rem; font-weight:600;">Tools Vault</h3>
-                            <p class="text-sm text-secondary">80+ curated libraries, design tools, and web links.</p>
+
+                    <!-- Code Gen -->
+                    <div class="feature-card" data-page="code-generator">
+                        <div class="fc-header">
+                            <div class="fc-icon" style="background:rgba(236,72,153,0.1); color:#ec4899;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                            <div class="fc-metric">
+                                <div class="fc-metric-val">AI</div>
+                                <div class="fc-metric-label">Powered</div>
+                            </div>
                         </div>
+                        <div class="fc-body">
+                            <h3>Code Generator</h3>
+                            <p>Instantly scaffold modular React, Vue, HTML, and Python components natively generated by AI.</p>
+                        </div>
+                        <i class="fa-solid fa-wand-magic-sparkles fc-bg-icon"></i>
                     </div>
-                    <div class="dash-grid-box" data-page="code-git-explorer">
-                        <div class="dash-grid-icon" style="background:rgba(100,100,100,0.1); color:#e8e4dc;"><i class="fa-brands fa-github"></i></div>
-                        <div class="dash-grid-content">
-                            <h3 style="font-size:1.05rem; font-weight:600;">GitHub Explorer</h3>
-                            <p class="text-sm text-secondary">Search profiles and view interactive 3D repository globes.</p>
+
+                    <!-- GitHub Expl -->
+                    <div class="feature-card" data-page="code-git-explorer">
+                        <div class="fc-header">
+                            <div class="fc-icon" style="background:rgba(100,100,100,0.1); color:#e8e4dc;"><i class="fa-brands fa-github"></i></div>
+                            <div class="fc-metric">
+                                <div class="fc-metric-val">3D</div>
+                                <div class="fc-metric-label">Interactive</div>
+                            </div>
                         </div>
+                        <div class="fc-body">
+                            <h3>GitHub Explorer</h3>
+                            <p>Search profiles and view interactive 3D repository globes with real-time dependency mappings.</p>
+                        </div>
+                        <i class="fa-brands fa-github fc-bg-icon"></i>
                     </div>
-                    <div class="dash-grid-box" data-page="package-scout">
-                        <div class="dash-grid-icon" style="background:rgba(203,56,55,0.1); color:#cb3837;"><i class="fa-solid fa-box-open"></i></div>
-                        <div class="dash-grid-content">
-                            <h3 style="font-size:1.05rem; font-weight:600;">Package Scout</h3>
-                            <p class="text-sm text-secondary">Search npm for package insights and weekly downloads.</p>
+
+                    <!-- Package Scout -->
+                    <div class="feature-card" data-page="package-scout">
+                        <div class="fc-header">
+                            <div class="fc-icon" style="background:rgba(203,56,55,0.1); color:#cb3837;"><i class="fa-solid fa-box-open"></i></div>
+                            <div class="fc-metric">
+                                <div class="fc-metric-val">npm</div>
+                                <div class="fc-metric-label">Registry</div>
+                            </div>
                         </div>
+                        <div class="fc-body">
+                            <h3>Package Scout</h3>
+                            <p>Search NPM deeply for crucial package insights, sizes, bundle impacts, and weekly downloads.</p>
+                        </div>
+                        <i class="fa-solid fa-box-open fc-bg-icon"></i>
                     </div>
-                    <div class="dash-grid-box" data-page="free-apis">
-                        <div class="dash-grid-icon" style="background:rgba(6,182,212,0.1); color:#06b6d4;"><i class="fa-solid fa-cloud"></i></div>
-                        <div class="dash-grid-content">
-                            <h3 style="font-size:1.05rem; font-weight:600;">Free APIs Base</h3>
-                            <p class="text-sm text-secondary">A categorized database of 60+ free public endpoints.</p>
+
+                    <!-- Workspace -->
+                    <div class="feature-card" data-page="workspace">
+                        <div class="fc-header">
+                            <div class="fc-icon" style="background:rgba(212,168,67,0.1); color:var(--primary-light);"><i class="fa-solid fa-laptop-code"></i></div>
+                            <div class="fc-metric">
+                                <div class="fc-metric-val">IDE</div>
+                                <div class="fc-metric-label">Local DB</div>
+                            </div>
                         </div>
+                        <div class="fc-body">
+                            <h3>My Workspace</h3>
+                            <p>Secured local database integrated to save snippets and test copy-pasted generated code directly.</p>
+                        </div>
+                        <i class="fa-solid fa-laptop-code fc-bg-icon"></i>
                     </div>
-                    <div class="dash-grid-box" data-page="scaffolder">
-                        <div class="dash-grid-icon" style="background:rgba(236,72,153,0.1); color:#ec4899;"><i class="fa-solid fa-folder-tree"></i></div>
-                        <div class="dash-grid-content">
-                            <h3 style="font-size:1.05rem; font-weight:600;">Project Scaffolder</h3>
-                            <p class="text-sm text-secondary">View folder tree standards for Next, Django, Vue, and React.</p>
+
+                    <!-- Scaffolder -->
+                    <div class="feature-card" data-page="scaffolder">
+                        <div class="fc-header">
+                            <div class="fc-icon" style="background:rgba(62,207,110,0.1); color:var(--success);"><i class="fa-solid fa-folder-tree"></i></div>
+                            <div class="fc-metric">
+                                <div class="fc-metric-val" data-count="4">0</div>
+                                <div class="fc-metric-label">Frameworks</div>
+                            </div>
                         </div>
+                        <div class="fc-body">
+                            <h3>Project Scaffolder</h3>
+                            <p>View folder tree structural standards for Node, Django, Vue, and React environments seamlessly.</p>
+                        </div>
+                        <i class="fa-solid fa-folder-tree fc-bg-icon"></i>
                     </div>
                 </div>
 
@@ -249,11 +348,18 @@ const DashboardPage = {
     },
 
     animateCounters() {
-        document.querySelectorAll('.stat-value[data-count]').forEach(el => {
+        document.querySelectorAll('.fc-metric-val[data-count]').forEach(el => {
             const target = parseInt(el.dataset.count);
             let current = 0;
             const step = Math.max(1, Math.ceil(target / 25));
-            const interval = setInterval(() => { current += step; if (current >= target) { current = target; clearInterval(interval); } el.textContent = current; }, 40);
+            const interval = setInterval(() => { 
+                current += step; 
+                if (current >= target) { 
+                    current = target; 
+                    clearInterval(interval); 
+                } 
+                el.textContent = current; 
+            }, 40);
         });
     },
 
