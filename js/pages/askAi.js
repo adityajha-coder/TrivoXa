@@ -90,9 +90,14 @@ const AskAiPage = {
                             <div class="msg-bubble">Hi! Tell me what you want to build, and I'll recommend the best tools, APIs, and frameworks. Try: <em>"I want to make a weather app"</em></div>
                         </div>
                     </div>
-                    <div class="ai-bot-input-area">
-                        <input class="input-field" id="ai-bot-input" type="text" placeholder='Try "I want to build a todo app..."' />
-                        <button class="btn btn-primary" id="ai-bot-send"><i class="fa-solid fa-paper-plane"></i></button>
+                    <div class="ai-bot-input-area" style="flex-direction: column; align-items: flex-end; gap: 8px;">
+                        <textarea class="input-field" id="ai-bot-input" placeholder='Try "I want to build a todo app..." or paste a block of confusing code...' style="width: 100%; min-height: 50px; resize: vertical; padding-right: 12px; font-family: inherit; line-height: 1.5;"></textarea>
+                        <div class="flex-between" style="width: 100%;">
+                            <button class="btn btn-ghost btn-sm" id="ai-bot-explain" style="color:var(--primary-light);">
+                                <i class="fa-solid fa-graduation-cap"></i> Explain this to me like a beginner
+                            </button>
+                            <button class="btn btn-primary" id="ai-bot-send" style="min-width: 45px;"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
                     </div>
                     <div class="ai-bot-suggestions">
                         <button class="ai-suggest-chip" data-q="I want to build a weather app">🌤 Weather App</button>
@@ -138,9 +143,20 @@ const AskAiPage = {
     bindChat() {
         const input = document.getElementById('ai-bot-input');
         const send = document.getElementById('ai-bot-send');
+        const explain = document.getElementById('ai-bot-explain');
+        
         const handleSend = () => { const q = input.value.trim(); if (!q) return; this.addMsg(q, 'user'); input.value = ''; setTimeout(() => this.genReply(q), 400); };
+        const handleExplain = () => { const code = input.value.trim(); if (!code) return; const q = "Explain this code to me like a beginner: \n\n" + code; this.addMsg("Explain this code to me like a beginner: \n" + code, 'user'); input.value = ''; setTimeout(() => this.genReply(q), 400); };
+        
         send.addEventListener('click', handleSend);
-        input.addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
+        explain.addEventListener('click', handleExplain);
+        
+        input.addEventListener('keydown', e => { 
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend(); 
+            }
+        });
         document.querySelectorAll('.ai-suggest-chip').forEach(chip => {
             chip.addEventListener('click', () => { const q = chip.dataset.q; this.addMsg(q, 'user'); setTimeout(() => this.genReply(q), 400); });
         });
@@ -156,19 +172,47 @@ const AskAiPage = {
         msgs.scrollTop = msgs.scrollHeight;
     },
 
-    genReply(query) {
+    async genReply(query) {
+        document.getElementById('ai-bot-send').disabled = true;
+        document.getElementById('ai-bot-send').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        
         const q = query.toLowerCase();
         let match = null;
         for (const [key, data] of Object.entries(this.recommendations)) { if (q.includes(key)) { match = data; break; } }
-        if (!match) {
-            if (q.includes('app') || q.includes('build') || q.includes('make') || q.includes('create')) {
-                match = { reply: 'Here\'s a great stack to start with:', tools: [{ name: 'React or Next.js', why: 'Modern component-based UI' }, { name: 'Node.js + Express', why: 'Flexible backend server' }, { name: 'Supabase or Firebase', why: 'Database, auth, hosting' }, { name: 'Vercel or Netlify', why: 'One-click deployment' }] };
-            } else { this.addMsg('Try asking something like "I want to build a weather app" or "I want to make a chat application" — I\'ll recommend the best tools!', 'bot'); return; }
+        
+        if (match) {
+            // Quick static reply if it matches a predefined project perfectly
+            let html = `<strong>${match.reply}</strong><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">`;
+            match.tools.forEach((t, i) => { html += `<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid var(--border);"><span style="color:var(--primary-light);font-weight:700;min-width:18px;">${i+1}.</span><div><span style="font-weight:600;font-size:0.84rem;">${t.name}</span><p style="font-size:0.76rem;color:var(--text-muted);margin-top:2px;">${t.why}</p></div></div>`; });
+            html += '</div>';
+            this.addMsg(html, 'bot');
+            document.getElementById('ai-bot-send').disabled = false;
+            document.getElementById('ai-bot-send').innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+            return;
         }
-        let html = `<strong>${match.reply}</strong><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">`;
-        match.tools.forEach((t, i) => { html += `<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid var(--border);"><span style="color:var(--primary-light);font-weight:700;min-width:18px;">${i+1}.</span><div><span style="font-weight:600;font-size:0.84rem;">${t.name}</span><p style="font-size:0.76rem;color:var(--text-muted);margin-top:2px;">${t.why}</p></div></div>`; });
-        html += '</div>';
-        this.addMsg(html, 'bot');
+
+        // Live API fallback for generic questions or code explanation
+        try {
+            const queryData = "You are Vertex AI, an expert programming assistant. Keep answers brief, under 4 sentences. If they paste code and ask to explain it to a beginner, break it down simply. Write your response in unformatted plaintext without markdown blocks unless necessary. User Request: " + query;
+            const res = await fetch('https://text.pollinations.ai/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: [{ role: 'user', content: queryData }] })
+            });
+            
+            if(!res.ok) throw new Error('API Error');
+            const replyText = await res.text();
+            
+            // Format basic code blocks if the AI returns them
+            let formattedReply = replyText.replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:8px;font-size:12px;overflow-x:auto;">$1</pre>');
+            
+            this.addMsg(formattedReply.trim(), 'bot');
+        } catch(e) {
+            this.addMsg('Sorry, I experienced a network error reaching the Vertex AI core. Please try again.', 'bot');
+        } finally {
+            document.getElementById('ai-bot-send').disabled = false;
+            document.getElementById('ai-bot-send').innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+        }
     },
 
     bindRoles() {

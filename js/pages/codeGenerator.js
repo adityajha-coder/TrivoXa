@@ -43,9 +43,14 @@ const CodeGeneratorPage = {
                             <div class="flex-gap">
                                 <span class="tag tag-primary" id="output-fw-tag"></span>
                             </div>
-                            <button class="btn btn-secondary btn-sm" id="copy-code-btn">
-                                <i class="fa-solid fa-copy"></i> Copy Code
-                            </button>
+                            <div class="flex-gap">
+                                <button class="btn btn-secondary btn-sm" id="copy-code-btn">
+                                    <i class="fa-solid fa-copy"></i> Copy Code
+                                </button>
+                                <button class="btn btn-primary btn-sm" id="save-workspace-btn">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Save to Workspace
+                                </button>
+                            </div>
                         </div>
                         <div class="generator-output" style="background:rgba(0,0,0,0.5); padding:16px; border-radius:var(--radius); border:1px solid var(--border); max-height:500px; overflow-y:auto; overflow-x:auto;">
                             <pre id="code-output" style="margin:0; font-family:var(--font-mono); font-size:13px; color:#e2e8f0;"></pre>
@@ -75,16 +80,29 @@ const CodeGeneratorPage = {
             Helpers.copyToClipboard(document.getElementById('code-output').textContent);
             Toast.show('Code copied to clipboard!', 'success');
         });
+
+        document.getElementById('save-workspace-btn').addEventListener('click', () => {
+            const code = document.getElementById('code-output').textContent;
+            if(!code) return Toast.show('No code to save', 'error');
+            const fw = this.currentFramework;
+            WorkspacePage.saveSnippet(`AI Generated ${fw.toUpperCase()}`, code);
+            Toast.show('Saved to My Workspace!', 'success');
+        });
     },
 
     async generateAICode(prompt) {
         document.getElementById('generator-output-area').style.display = 'none';
         document.getElementById('loading-overlay').style.display = 'block';
 
-        const sysPrompt = `You are an expert coder. Write ONLY the code for a ${prompt} component using ${this.currentFramework}. Do NOT include markdown blocks like \`\`\`html or \`\`\`javascript, and do NOT include any explanations. Output pure, valid code.`;
+        const promptQuery = `You are an expert coder. Write ONLY the code for a ${prompt} component using ${this.currentFramework}. Do NOT include markdown blocks like \`\`\`html or \`\`\`javascript, and do NOT include any explanations. Output pure, valid code.`;
         
         try {
-            const response = await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(sysPrompt)}`);
+            const response = await fetch('https://text.pollinations.ai/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: [{ role: 'user', content: promptQuery }] })
+            });
+
             if(!response.ok) throw new Error('Generation failed');
             
             let code = await response.text();

@@ -76,6 +76,26 @@ const ToolsVaultPage = {
             { name: 'Apollo', desc: 'The supergraph platform', url: 'https://www.apollographql.com' },
             { name: 'Axios', desc: 'Promise based HTTP client for the browser and node.js', url: 'https://axios-http.com' },
             { name: 'Socket.io', desc: 'Bidirectional and low-latency communication for every platform', url: 'https://socket.io' }
+        ]},
+        { cat: 'Frontend Utilities', items: [
+            { name: 'Heroicons', desc: 'Beautiful hand-crafted SVG icons', url: 'https://heroicons.com' },
+            { name: 'Font Awesome', desc: 'The web\'s most popular icon set and toolkit', url: 'https://fontawesome.com' },
+            { name: 'Animista', desc: 'On-demand CSS animations library', url: 'https://animista.net' }
+        ]},
+        { cat: 'Backend & Cryptography', items: [
+            { name: 'Bcrypt Generator', desc: 'Generate and test bcrypted strings', url: 'https://bcrypt-generator.com' },
+            { name: 'JWT.io', desc: 'Decode, verify and generate JWT', url: 'https://jwt.io' },
+            { name: 'UUID Generator', desc: 'Online UUID/GUID generator', url: 'https://www.uuidgenerator.net' }
+        ]},
+        { cat: 'Text Manipulation', items: [
+            { name: 'Regex101', desc: 'Regular expression tester and debugger', url: 'https://regex101.com' },
+            { name: 'JSON Formatter', desc: 'Format, validate and beautify JSON', url: 'https://jsonformatter.org' },
+            { name: 'Diffchecker', desc: 'Compare text to find the difference', url: 'https://www.diffchecker.com' }
+        ]},
+        { cat: 'Colors & Design', items: [
+            { name: 'Coolors', desc: 'The super fast color palettes generator', url: 'https://coolors.co' },
+            { name: 'Color Hunt', desc: 'Color palettes for designers and artists', url: 'https://colorhunt.co' },
+            { name: 'CSS Gradient', desc: 'Free css gradient generator tool', url: 'https://cssgradient.io' }
         ]}
     ],
     boilerplates: [

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'devnexus-v1';
+const CACHE_NAME = 'vertex';
 const STATIC_ASSETS = [
     '/index.html',
     '/css/base.css',

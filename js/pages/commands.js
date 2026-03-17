@@ -122,6 +122,34 @@ const CommandsPage = {
         { cmd: 'source / .', desc: 'Execute commands from a file in current shell.', example: 'source ~/.bashrc', cat: 'System', step: 6 }
     ],
 
+    dockerCommands: [
+        { cmd: 'docker pull', desc: 'Pull an image or a repository from a registry.', example: 'docker pull ubuntu', cat: 'Images', step: 1 },
+        { cmd: 'docker build', desc: 'Build an image from a Dockerfile.', example: 'docker build -t myapp .', cat: 'Images', step: 2 },
+        { cmd: 'docker run', desc: 'Run a command in a new container.', example: 'docker run -d -p 80:80 myapp', cat: 'Containers', step: 3 },
+        { cmd: 'docker ps', desc: 'List running containers.', example: 'docker ps -a', cat: 'Containers', step: 4 },
+        { cmd: 'docker stop', desc: 'Stop one or more running containers.', example: 'docker stop <container_id>', cat: 'Containers', step: 4 },
+        { cmd: 'docker rm', desc: 'Remove one or more containers.', example: 'docker rm <container_id>', cat: 'Cleanup', step: 5 },
+        { cmd: 'docker rmi', desc: 'Remove one or more images.', example: 'docker rmi <image_id>', cat: 'Cleanup', step: 5 },
+        { cmd: 'docker exec', desc: 'Run a command in a running container.', example: 'docker exec -it <container> /bin/bash', cat: 'Containers', step: 4 },
+        { cmd: 'docker logs', desc: 'Fetch the logs of a container.', example: 'docker logs -f <container>', cat: 'Inspect', step: 6 },
+        { cmd: 'docker compose up', desc: 'Create and start containers defined in compose file.', example: 'docker compose up -d', cat: 'Compose', step: 7 }
+    ],
+
+    httpCommands: [
+        { cmd: '200 OK', desc: 'The request succeeded.', example: 'Standard success response.', cat: 'Success (2xx)', step: 1 },
+        { cmd: '201 Created', desc: 'The request succeeded, and a new resource was created.', example: 'Typically response to POST requests.', cat: 'Success (2xx)', step: 1 },
+        { cmd: '204 No Content', desc: 'No content to send for this request.', example: 'Common for successful DELETE requests.', cat: 'Success (2xx)', step: 1 },
+        { cmd: '301 Moved Permanently', desc: 'The URL of the requested resource has been changed permanently.', example: 'URL redirection.', cat: 'Redirection (3xx)', step: 2 },
+        { cmd: '304 Not Modified', desc: 'Client can use cached version.', example: 'Used for caching.', cat: 'Redirection (3xx)', step: 2 },
+        { cmd: '400 Bad Request', desc: 'Server cannot understand the request due to invalid syntax.', example: 'Malformed request syntax.', cat: 'Client Error (4xx)', step: 3 },
+        { cmd: '401 Unauthorized', desc: 'Authentication is required and has failed or not provided.', example: 'Missing or bad API token.', cat: 'Client Error (4xx)', step: 3 },
+        { cmd: '403 Forbidden', desc: 'Client does not have access rights to the content.', example: 'Authenticated but unauthorized for resource.', cat: 'Client Error (4xx)', step: 3 },
+        { cmd: '404 Not Found', desc: 'Server cannot find the requested resource.', example: 'Invalid URL endpoint.', cat: 'Client Error (4xx)', step: 3 },
+        { cmd: '500 Internal Server Error', desc: 'The server has encountered a situation it doesn\'t know how to handle.', example: 'Unhandled backend exception.', cat: 'Server Error (5xx)', step: 4 },
+        { cmd: '502 Bad Gateway', desc: 'Server got an invalid response while working as a gateway.', example: 'Proxy connection issue.', cat: 'Server Error (5xx)', step: 4 },
+        { cmd: '503 Service Unavailable', desc: 'Server is not ready to handle the request.', example: 'Server is down or overloaded.', cat: 'Server Error (5xx)', step: 4 }
+    ],
+
     flowSteps: {
         git: [
             { id:1, label:'Setup', icon:'fa-solid fa-gear', color:'var(--primary)' },
@@ -156,6 +184,21 @@ const CommandsPage = {
             { id:8, label:'Network', icon:'fa-solid fa-wifi', color:'var(--error)' },
             { id:9, label:'Archive', icon:'fa-solid fa-box-archive', color:'var(--primary-light)' },
             { id:10, label:'Shortcuts', icon:'fa-solid fa-keyboard', color:'#3ecf6e' }
+        ],
+        docker: [
+            { id:1, label:'Pull', icon:'fa-solid fa-cloud-arrow-down', color:'var(--primary)' },
+            { id:2, label:'Build', icon:'fa-solid fa-hammer', color:'var(--accent)' },
+            { id:3, label:'Run', icon:'fa-solid fa-play', color:'var(--success)' },
+            { id:4, label:'Manage', icon:'fa-solid fa-list-check', color:'#06b6d4' },
+            { id:5, label:'Cleanup', icon:'fa-solid fa-trash-can', color:'var(--error)' },
+            { id:6, label:'Inspect', icon:'fa-solid fa-magnifying-glass', color:'#8b5cf6' },
+            { id:7, label:'Compose', icon:'fa-solid fa-layer-group', color:'#ec4899' }
+        ],
+        http: [
+            { id:1, label:'2xx Success', icon:'fa-solid fa-check-circle', color:'var(--success)' },
+            { id:2, label:'3xx Redirect', icon:'fa-solid fa-arrow-right-arrow-left', color:'#06b6d4' },
+            { id:3, label:'4xx Client Err', icon:'fa-solid fa-triangle-exclamation', color:'var(--warning)' },
+            { id:4, label:'5xx Server Err', icon:'fa-solid fa-server', color:'var(--error)' }
         ]
     },
 
@@ -188,6 +231,18 @@ const CommandsPage = {
                             <div><h3 style="font-size:0.92rem;font-weight:600;">Terminal</h3><p class="text-xs text-muted">40 commands</p></div>
                         </div>
                     </div>
+                    <div class="glass-card cmd-type-card" data-cmd="docker" style="cursor:pointer;">
+                        <div class="flex-gap">
+                            <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(36,150,237,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-docker" style="font-size:1rem;color:#2496ed;"></i></div>
+                            <div><h3 style="font-size:0.92rem;font-weight:600;">Docker</h3><p class="text-xs text-muted">10 commands</p></div>
+                        </div>
+                    </div>
+                    <div class="glass-card cmd-type-card" data-cmd="http" style="cursor:pointer;">
+                        <div class="flex-gap">
+                            <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(139,92,246,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-network-wired" style="font-size:1rem;color:#8b5cf6;"></i></div>
+                            <div><h3 style="font-size:0.92rem;font-weight:600;">HTTP Status</h3><p class="text-xs text-muted">12 codes</p></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="glass-card-static mb-lg" style="padding:20px;">
@@ -214,7 +269,11 @@ const CommandsPage = {
     },
 
     getActiveCommands() {
-        return this.activeTab === 'git' ? this.gitCommands : this.activeTab === 'npm' ? this.npmCommands : this.terminalCommands;
+        return this.activeTab === 'git' ? this.gitCommands : 
+               this.activeTab === 'npm' ? this.npmCommands : 
+               this.activeTab === 'docker' ? this.dockerCommands : 
+               this.activeTab === 'http' ? this.httpCommands : 
+               this.terminalCommands;
     },
 
     bindEvents() {
@@ -224,7 +283,7 @@ const CommandsPage = {
                 card.classList.add('active');
                 this.activeTab = card.dataset.cmd;
                 this.activeCat = 'All';
-                const titles = { git: 'Git Workflow — Step by Step', npm: 'npm Workflow — Step by Step', terminal: 'Terminal Workflow — Step by Step' };
+                const titles = { git: 'Git Workflow — Step by Step', npm: 'npm Workflow — Step by Step', terminal: 'Terminal Workflow — Step by Step', docker: 'Docker Workflow — Step by Step', http: 'HTTP Status Codes — Flow' };
                 document.getElementById('flow-title').innerHTML = `<i class="fa-solid fa-route" style="color:var(--primary-light);margin-right:6px;"></i>${titles[this.activeTab]}`;
                 document.getElementById('cmd-search').value = '';
                 document.getElementById('cmd-search').placeholder = `Search ${this.activeTab} commands...`;

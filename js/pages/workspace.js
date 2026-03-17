@@ -54,6 +54,14 @@ const WorkspacePage = {
         `).join('');
     },
 
+    saveSnippet(title, code) {
+        this.snippets.push({ title, code });
+        localStorage.setItem('vertex_snippets', JSON.stringify(this.snippets));
+        if (document.getElementById('snippets-grid')) {
+            this.renderSnippets();
+        }
+    },
+
     bindEvents() {
 
         document.getElementById('save-snip-btn').addEventListener('click', () => {
@@ -61,11 +69,10 @@ const WorkspacePage = {
             const code = document.getElementById('snip-code').value.trim();
             if(!title || !code) return Toast.show('Please fill both fields', 'error');
             
-            this.snippets.push({ title, code });
-            localStorage.setItem('vertex_snippets', JSON.stringify(this.snippets));
+            this.saveSnippet(title, code);
+            
             document.getElementById('snip-title').value = '';
             document.getElementById('snip-code').value = '';
-            this.renderSnippets();
             Toast.show('Snippet saved!', 'success');
         });
 
