@@ -161,74 +161,90 @@ const DashboardPage = {
                     margin-bottom: 40px;
                 }
                 .tool-card {
-                    background: linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%);
-                    backdrop-filter: blur(10px);
-                    border: 1px solid var(--border-light);
+                    background: rgba(255, 255, 255, 0.015);
+                    border: 1px solid rgba(255, 255, 255, 0.04);
                     border-radius: 16px;
-                    padding: 20px;
+                    padding: 18px 22px;
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     cursor: pointer;
                     display: flex;
                     align-items: center;
-                    gap: 16px;
+                    gap: 18px;
                     position: relative;
                     overflow: hidden;
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
                 }
                 .tool-card:hover {
-                    border-color: rgba(255,255,255,0.15);
-                    background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+                    background: rgba(255, 255, 255, 0.035);
+                    border-color: rgba(255, 255, 255, 0.12);
                     transform: translateY(-2px);
-                    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+                    box-shadow: 0 12px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
                 }
                 .tc-icon-wrap {
-                    width: 52px;
-                    height: 52px;
-                    min-width: 52px;
-                    border-radius: 14px;
-                    background: rgba(255,255,255,0.05);
+                    width: 48px;
+                    height: 48px;
+                    min-width: 48px;
+                    border-radius: 12px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 1.3rem;
-                    color: var(--text);
-                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    font-size: 1.25rem;
+                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    position: relative;
+                    z-index: 1;
                 }
-                .tool-card:hover .tc-icon-wrap { transform: scale(1.08) rotate(-5deg); }
+                .tc-icon-wrap::before {
+                    content: '';
+                    position: absolute;
+                    inset: -15px;
+                    border-radius: 50%;
+                    filter: blur(15px);
+                    opacity: 0;
+                    transition: opacity 0.4s ease;
+                    z-index: -1;
+                }
+                .tool-card:hover .tc-icon-wrap { transform: translateY(-2px) scale(1.05); }
                 
-                .tc-icon-wrap.highlight-yellow { color: #eab308; background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.2); }
-                .tc-icon-wrap.highlight-blue { color: #3b82f6; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); }
-                .tc-icon-wrap.highlight-green { color: #22c55e; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); }
-                .tc-icon-wrap.highlight-cyan { color: #06b6d4; background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); }
-                .tc-icon-wrap.highlight-purple { color: #a855f7; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2); }
-                .tc-icon-wrap.highlight-pink { color: #ec4899; background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.2); }
+                .tool-card:hover .highlight-yellow::before { background: #eab308; opacity: 0.2; }
+                .tool-card:hover .highlight-blue::before { background: #3b82f6; opacity: 0.2; }
+                .tool-card:hover .highlight-green::before { background: #22c55e; opacity: 0.2; }
+                .tool-card:hover .highlight-cyan::before { background: #06b6d4; opacity: 0.2; }
+                .tool-card:hover .highlight-purple::before { background: #a855f7; opacity: 0.2; }
+                .tool-card:hover .highlight-pink::before { background: #ec4899; opacity: 0.2; }
 
-                .tc-content { flex-grow: 1; }
+                .tc-icon-wrap.highlight-yellow { color: #fde047; background: linear-gradient(135deg, rgba(234,179,8,0.2), rgba(234,179,8,0.05)); border: 1px solid rgba(234,179,8,0.2); }
+                .tc-icon-wrap.highlight-blue { color: #60a5fa; background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(59,130,246,0.05)); border: 1px solid rgba(59,130,246,0.2); }
+                .tc-icon-wrap.highlight-green { color: #4ade80; background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.05)); border: 1px solid rgba(34,197,94,0.2); }
+                .tc-icon-wrap.highlight-cyan { color: #22d3ee; background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(6,182,212,0.05)); border: 1px solid rgba(6,182,212,0.2); }
+                .tc-icon-wrap.highlight-purple { color: #c084fc; background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.05)); border: 1px solid rgba(168,85,247,0.2); }
+                .tc-icon-wrap.highlight-pink { color: #f472b6; background: linear-gradient(135deg, rgba(236,72,153,0.2), rgba(236,72,153,0.05)); border: 1px solid rgba(236,72,153,0.2); }
+
+                .tc-content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
                 .tc-title {
-                    font-size: 1.05rem;
-                    font-weight: 700;
-                    color: var(--text);
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    color: rgba(255,255,255,0.95);
                     margin-bottom: 4px;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
+                    letter-spacing: -0.2px;
                 }
                 .tc-arrow {
-                    font-size: 0.85rem;
-                    color: var(--text-muted);
-                    opacity: 0;
-                    transform: translateX(-10px);
+                    font-size: 0.95rem;
+                    color: rgba(255,255,255,0.15);
+                    transform: translateX(-4px);
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
                 .tool-card:hover .tc-arrow {
-                    opacity: 1;
-                    transform: translateX(0);
-                    color: var(--text);
+                    color: rgba(255,255,255,0.9);
+                    transform: translateX(2px);
                 }
                 .tc-desc {
-                    font-size: 0.88rem;
-                    color: var(--text-secondary);
-                    line-height: 1.4;
-                    padding-right: 10px;
+                    font-size: 0.9rem;
+                    color: rgba(255,255,255,0.5);
+                    line-height: 1.5;
+                    padding-right: 15px;
                 }
 
                 @media (max-width: 1024px) {
