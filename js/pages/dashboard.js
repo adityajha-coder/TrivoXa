@@ -392,11 +392,11 @@ const DashboardPage = {
                         </div>
                     </div>
 
-                    <div class="tool-card" data-page="ai-architect">
-                        <div class="tc-icon-wrap highlight-pink"><i class="fa-solid fa-code-merge"></i></div>
+                    <div class="tool-card" data-page="ask-ai">
+                        <div class="tc-icon-wrap highlight-pink"><i class="fa-solid fa-robot"></i></div>
                         <div class="tc-content">
-                            <div class="tc-title">AI Architect <i class="fa-solid fa-arrow-right tc-arrow"></i></div>
-                            <div class="tc-desc">Design custom application architectures, generated file trees, and instant setup commands using AI.</div>
+                            <div class="tc-title">AI Hub <i class="fa-solid fa-arrow-right tc-arrow"></i></div>
+                            <div class="tc-desc">Chat with AI, design project architectures, explore tech stacks, and debug code — all in one place.</div>
                         </div>
                     </div>
                 </div>

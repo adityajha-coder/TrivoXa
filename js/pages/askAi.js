@@ -64,92 +64,208 @@ const AskAiPage = {
         'social': { reply: 'Social apps cover many concepts!', tools: [{ name: 'Next.js', why: 'SSR for fast page loads' }, { name: 'Supabase', why: 'Auth, real-time DB, file storage' }, { name: 'Socket.io', why: 'Live notifications' }, { name: 'Cloudinary', why: 'Image/video uploads' }] }
     },
 
+    currentProjectState: null,
+
     render() {
         Navbar.renderTopbar('Ask AI');
         const content = document.getElementById('page-content');
         content.innerHTML = `
             <div class="page-enter">
                 <div class="page-header">
-                    <h1>Ask <span class="text-gradient">AI</span></h1>
-                    <p>Get personalized tool recommendations or explore curated tech stacks by project type.</p>
+                    <h1>AI <span class="text-gradient">Hub</span></h1>
+                    <p>Chat with AI, design project architectures, and explore curated tech stacks — all in one place.</p>
                 </div>
 
-                <div class="glass-card-static ai-chat-section mb-lg">
-                    <div class="ai-chat-header">
-                        <div class="flex-gap">
-                            <div class="ai-bot-avatar"><i class="fa-solid fa-robot"></i></div>
+                <!-- Unified Tabs -->
+                <div class="tabs mb-lg" id="ai-hub-tabs">
+                    <button class="tab-item active" data-tab="chat"><i class="fa-solid fa-comments" style="margin-right:6px;"></i>AI Chat</button>
+                    <button class="tab-item" data-tab="architect"><i class="fa-solid fa-code-merge" style="margin-right:6px;"></i>AI Architect</button>
+                    <button class="tab-item" data-tab="stacks"><i class="fa-solid fa-compass" style="margin-right:6px;"></i>Tech Stacks</button>
+                </div>
+
+                <!-- ===== TAB 1: AI CHAT ===== -->
+                <div id="ai-tab-chat">
+                    <div class="glass-card-static ai-chat-section mb-lg">
+                        <div class="ai-chat-header">
+                            <div class="flex-gap">
+                                <div class="ai-bot-avatar"><i class="fa-solid fa-robot"></i></div>
+                                <div>
+                                    <h3 style="font-size:0.95rem;font-weight:600;">Vertex AI Assistant</h3>
+                                    <span class="text-xs text-muted">Ask anything — code help, tool recommendations, or explanations</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-ghost btn-xs" id="ai-clear-chat" title="Clear chat"><i class="fa-solid fa-broom"></i></button>
+                        </div>
+                        <div class="ai-bot-messages" id="ai-bot-messages" style="min-height:200px;max-height:500px;">
+                            <div class="ai-msg bot-msg">
+                                <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                                <div class="msg-bubble">Hi! I'm your Vertex AI assistant. I can:<br>
+                                    <strong>1.</strong> Recommend tools for any project idea<br>
+                                    <strong>2.</strong> Explain code like you're a beginner<br>
+                                    <strong>3.</strong> Debug errors and suggest fixes<br>
+                                    <strong>4.</strong> Answer any programming question<br><br>
+                                    Try asking something or click a quick action below! 👇
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ai-bot-input-area" style="flex-direction: column; align-items: flex-end; gap: 8px;">
+                            <textarea class="input-field" id="ai-bot-input" placeholder='Ask anything... "How do I deploy to Vercel?", "Explain this code...", "I want to build a..."' style="width: 100%; min-height: 60px; resize: vertical; padding-right: 12px; font-family: inherit; line-height: 1.5;"></textarea>
+                            <div class="flex-between" style="width: 100%;">
+                                <div class="flex-gap">
+                                    <button class="btn btn-ghost btn-sm" id="ai-bot-explain" style="color:var(--primary-light);">
+                                        <i class="fa-solid fa-graduation-cap"></i> Explain Code
+                                    </button>
+                                    <button class="btn btn-ghost btn-sm" id="ai-bot-debug" style="color:var(--error);">
+                                        <i class="fa-solid fa-bug"></i> Debug Error
+                                    </button>
+                                </div>
+                                <button class="btn btn-primary" id="ai-bot-send" style="min-width: 45px;"><i class="fa-solid fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                        <div class="ai-bot-suggestions">
+                            <button class="ai-suggest-chip" data-q="I want to build a weather app">🌤 Weather App</button>
+                            <button class="ai-suggest-chip" data-q="I want to build a portfolio website">💼 Portfolio</button>
+                            <button class="ai-suggest-chip" data-q="I want to build a chat application">💬 Chat App</button>
+                            <button class="ai-suggest-chip" data-q="I want to build an e-commerce store">🛒 E-commerce</button>
+                            <button class="ai-suggest-chip" data-q="What is the difference between REST and GraphQL?">🔗 REST vs GraphQL</button>
+                            <button class="ai-suggest-chip" data-q="How do I use Git branches?">🌿 Git Branching</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== TAB 2: AI ARCHITECT ===== -->
+                <div id="ai-tab-architect" style="display:none;">
+                    <div class="glass-card mb-lg">
+                        <div class="flex-gap mb-sm" style="align-items:center;">
+                            <div class="ai-bot-avatar" style="width:36px;height:36px;font-size:0.9rem;"><i class="fa-solid fa-folder-tree"></i></div>
                             <div>
-                                <h3 style="font-size:0.95rem;font-weight:600;">Vertex AI Assistant</h3>
-                                <span class="text-xs text-muted">Tell me what you want to build</span>
+                                <h3 style="font-size:0.95rem;font-weight:600;">AI Architecture Builder</h3>
+                                <span class="text-xs text-muted">Describe your project and get a full folder structure + setup script</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; margin-top:16px;">
+                            <span style="flex:1; min-width:280px;">
+                                <input type="text" id="ai-arch-prompt" class="input-field" placeholder="e.g. A realtime chat app with Next.js, Tailwind, and a Node.js Socket.io backend..." style="width:100%;">
+                            </span>
+                            <button class="btn btn-primary" id="ai-arch-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Design Architecture</button>
+                        </div>
+                    </div>
+
+                    <div class="grid-2" id="ai-arch-results" style="display:none; gap: 20px;">
+                        <div class="glass-card flex-col">
+                            <div class="flex-between mb-md">
+                                <h3><i class="fa-solid fa-diagram-project" style="color:var(--primary-light); margin-right:8px;"></i> Generated Architecture</h3>
+                            </div>
+                            <div id="ai-arch-tree" style="background:rgba(0,0,0,0.4); padding:16px; border-radius:var(--radius); border:1px solid var(--border); overflow-y:auto; flex:1; min-height:300px;"></div>
+                        </div>
+                        
+                        <div class="flex-col" style="gap:20px;">
+                            <div class="glass-card">
+                                <h3 class="mb-sm"><i class="fa-solid fa-terminal" style="color:var(--success); margin-right:8px;"></i> Setup Script</h3>
+                                <p class="text-xs text-muted mb-md">Run this single terminal command to scaffold the entire project.</p>
+                                <div style="position:relative;">
+                                    <div style="background:#0a0a0f; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
+                                        <pre id="ai-arch-cmd" style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text); white-space:pre-wrap;"></pre>
+                                    </div>
+                                    <button class="btn btn-ghost btn-xs" id="ai-copy-cmd" style="position:absolute; top:8px; right:8px;"><i class="fa-solid fa-copy"></i></button>
+                                </div>
+                            </div>
+                            <div class="glass-card">
+                                <h3 class="mb-sm"><i class="fa-solid fa-laptop-code" style="color:#06b6d4; margin-right:8px;"></i> Live Sandbox</h3>
+                                <p class="text-xs text-muted">Boot this architecture into a live WebContainer environment.</p>
+                                <button class="btn btn-primary w-100 mt-md" id="ai-boot-btn"><i class="fa-solid fa-play"></i> Boot Sandbox</button>
                             </div>
                         </div>
                     </div>
-                    <div class="ai-bot-messages" id="ai-bot-messages" style="min-height:160px;max-height:400px;">
-                        <div class="ai-msg bot-msg">
-                            <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
-                            <div class="msg-bubble">Hi! Tell me what you want to build, and I'll recommend the best tools, APIs, and frameworks. Try: <em>"I want to make a weather app"</em></div>
+                    
+                    <div id="arch-stackblitz-wrap" style="display:none; margin-top:30px;">
+                        <div class="glass-card-static" style="padding:0; overflow:hidden;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block; box-shadow: 0 0 10px #22c55e;"></span>
+                                    <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Live Architecture Sandbox</span>
+                                </div>
+                                <button class="btn btn-ghost btn-xs" id="arch-close-embed"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <div id="arch-stackblitz-embed" style="height:550px;"></div>
                         </div>
-                    </div>
-                    <div class="ai-bot-input-area" style="flex-direction: column; align-items: flex-end; gap: 8px;">
-                        <textarea class="input-field" id="ai-bot-input" placeholder='Try "I want to build a todo app..." or paste a block of confusing code...' style="width: 100%; min-height: 50px; resize: vertical; padding-right: 12px; font-family: inherit; line-height: 1.5;"></textarea>
-                        <div class="flex-between" style="width: 100%;">
-                            <button class="btn btn-ghost btn-sm" id="ai-bot-explain" style="color:var(--primary-light);">
-                                <i class="fa-solid fa-graduation-cap"></i> Explain this to me like a beginner
-                            </button>
-                            <button class="btn btn-primary" id="ai-bot-send" style="min-width: 45px;"><i class="fa-solid fa-paper-plane"></i></button>
-                        </div>
-                    </div>
-                    <div class="ai-bot-suggestions">
-                        <button class="ai-suggest-chip" data-q="I want to build a weather app">🌤 Weather App</button>
-                        <button class="ai-suggest-chip" data-q="I want to build a portfolio website">💼 Portfolio</button>
-                        <button class="ai-suggest-chip" data-q="I want to build a chat application">💬 Chat App</button>
-                        <button class="ai-suggest-chip" data-q="I want to build an e-commerce store">🛒 E-commerce</button>
-                        <button class="ai-suggest-chip" data-q="I want to build a blog">📝 Blog</button>
-                        <button class="ai-suggest-chip" data-q="I want to build a mobile app">📱 Mobile App</button>
-                        <button class="ai-suggest-chip" data-q="I want to build a game">🎮 Game</button>
                     </div>
                 </div>
 
-                <div class="flex-between mb-md">
-                    <h2 style="font-size:1.05rem;font-weight:600;"><i class="fa-solid fa-compass" style="color:var(--primary-light);margin-right:6px;"></i>What do you want to build?</h2>
-                </div>
-                <div class="role-cards-grid mb-lg" id="role-cards">
-                    ${Object.entries(this.roleData).map(([key, data]) => {
-                        const icons = { web:'fa-solid fa-globe', mobile:'fa-solid fa-mobile-screen', ai:'fa-solid fa-brain', backend:'fa-solid fa-server', devops:'fa-solid fa-cloud', game:'fa-solid fa-gamepad' };
-                        const colors = { web:'rgba(212,168,67,0.08)', mobile:'rgba(62,207,110,0.06)', ai:'rgba(139,92,246,0.06)', backend:'rgba(240,160,48,0.06)', devops:'rgba(6,182,212,0.06)', game:'rgba(236,72,153,0.06)' };
-                        const iconColors = { web:'var(--primary-light)', mobile:'var(--success)', ai:'#8b5cf6', backend:'var(--warning)', devops:'#06b6d4', game:'#ec4899' };
-                        return `<div class="role-card" data-role="${key}">
-                            <div class="role-icon" style="background:${colors[key]};"><i class="${icons[key]}" style="color:${iconColors[key]};"></i></div>
-                            <div class="role-info"><h3>${data.title}</h3><p>${data.stack.slice(0,3).map(s=>s.name).join(', ')}</p></div>
-                            <i class="fa-solid fa-chevron-right role-arrow"></i>
-                        </div>`;
-                    }).join('')}
-                </div>
-
-                <div class="glass-card-static mb-lg" id="role-detail" style="display:none;padding:24px;">
+                <!-- ===== TAB 3: TECH STACKS ===== -->
+                <div id="ai-tab-stacks" style="display:none;">
                     <div class="flex-between mb-md">
-                        <h3 id="role-detail-title" style="font-size:1rem;font-weight:600;"></h3>
-                        <button class="btn btn-ghost btn-sm" id="role-close"><i class="fa-solid fa-xmark"></i></button>
+                        <h2 style="font-size:1.05rem;font-weight:600;"><i class="fa-solid fa-compass" style="color:var(--primary-light);margin-right:6px;"></i>What do you want to build?</h2>
                     </div>
-                    <p id="role-detail-desc" class="text-sm text-secondary mb-lg" style="line-height:1.6;"></p>
-                    <div id="role-detail-stack"></div>
-                </div>
-            </div>`;
+                    <div class="role-cards-grid mb-lg" id="role-cards">
+                        ${Object.entries(this.roleData).map(([key, data]) => {
+                            const icons = { web:'fa-solid fa-globe', mobile:'fa-solid fa-mobile-screen', ai:'fa-solid fa-brain', backend:'fa-solid fa-server', devops:'fa-solid fa-cloud', game:'fa-solid fa-gamepad' };
+                            const colors = { web:'rgba(212,168,67,0.08)', mobile:'rgba(62,207,110,0.06)', ai:'rgba(139,92,246,0.06)', backend:'rgba(240,160,48,0.06)', devops:'rgba(6,182,212,0.06)', game:'rgba(236,72,153,0.06)' };
+                            const iconColors = { web:'var(--primary-light)', mobile:'var(--success)', ai:'#8b5cf6', backend:'var(--warning)', devops:'#06b6d4', game:'#ec4899' };
+                            return `<div class="role-card" data-role="${key}">
+                                <div class="role-icon" style="background:${colors[key]};"><i class="${icons[key]}" style="color:${iconColors[key]};"></i></div>
+                                <div class="role-info"><h3>${data.title}</h3><p>${data.stack.slice(0,3).map(s=>s.name).join(', ')}</p></div>
+                                <i class="fa-solid fa-chevron-right role-arrow"></i>
+                            </div>`;
+                        }).join('')}
+                    </div>
 
+                    <div class="glass-card-static mb-lg" id="role-detail" style="display:none;padding:24px;">
+                        <div class="flex-between mb-md">
+                            <h3 id="role-detail-title" style="font-size:1rem;font-weight:600;"></h3>
+                            <button class="btn btn-ghost btn-sm" id="role-close"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <p id="role-detail-desc" class="text-sm text-secondary mb-lg" style="line-height:1.6;"></p>
+                        <div id="role-detail-stack"></div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .folder-tree { list-style: none; padding-left: 20px; font-family: var(--font-mono); font-size: 13px; line-height: 1.8; position: relative; }
+                .folder-tree::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 1px; background: rgba(255,255,255,0.1); }
+                .folder-tree li { position: relative; padding-left: 15px; }
+                .folder-tree li::before { content: ""; position: absolute; top: 12px; left: -20px; width: 30px; height: 1px; background: rgba(255,255,255,0.1); }
+                .folder-tree .dir-label { font-weight: 600; color: var(--primary-light); display:flex; align-items:center; gap:6px; cursor:pointer; }
+                .folder-tree .file-label { color: var(--text-secondary); display:flex; align-items:center; gap:6px; }
+                .folder-tree i { font-size: 11px; opacity: 0.8; }
+            </style>
+        `;
+
+        this.bindTabs();
         this.bindChat();
+        this.bindArchitect();
         this.bindRoles();
     },
 
+    // =================== TAB SWITCHING ===================
+    bindTabs() {
+        document.getElementById('ai-hub-tabs').addEventListener('click', e => {
+            const tab = e.target.closest('.tab-item');
+            if (!tab) return;
+            document.querySelectorAll('#ai-hub-tabs .tab-item').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const target = tab.dataset.tab;
+            document.getElementById('ai-tab-chat').style.display = target === 'chat' ? 'block' : 'none';
+            document.getElementById('ai-tab-architect').style.display = target === 'architect' ? 'block' : 'none';
+            document.getElementById('ai-tab-stacks').style.display = target === 'stacks' ? 'block' : 'none';
+        });
+    },
+
+    // =================== AI CHAT ===================
     bindChat() {
         const input = document.getElementById('ai-bot-input');
         const send = document.getElementById('ai-bot-send');
         const explain = document.getElementById('ai-bot-explain');
+        const debug = document.getElementById('ai-bot-debug');
         
         const handleSend = () => { const q = input.value.trim(); if (!q) return; this.addMsg(q, 'user'); input.value = ''; setTimeout(() => this.genReply(q), 400); };
-        const handleExplain = () => { const code = input.value.trim(); if (!code) return; const q = "Explain this code to me like a beginner: \n\n" + code; this.addMsg("Explain this code to me like a beginner: \n" + code, 'user'); input.value = ''; setTimeout(() => this.genReply(q), 400); };
+        const handleExplain = () => { const code = input.value.trim(); if (!code) return Toast.show('Paste code first, then click Explain', 'warning'); const q = "Explain this code to me like I'm a beginner:\n\n" + code; this.addMsg("Explain this code to me like a beginner:\n" + code, 'user'); input.value = ''; setTimeout(() => this.genReply(q), 400); };
+        const handleDebug = () => { const code = input.value.trim(); if (!code) return Toast.show('Paste the error or code first', 'warning'); const q = "Debug this error or code. Tell me what's wrong and how to fix it:\n\n" + code; this.addMsg("Debug this:\n" + code, 'user'); input.value = ''; setTimeout(() => this.genReply(q), 400); };
         
         send.addEventListener('click', handleSend);
         explain.addEventListener('click', handleExplain);
+        debug.addEventListener('click', handleDebug);
         
         input.addEventListener('keydown', e => { 
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -159,6 +275,12 @@ const AskAiPage = {
         });
         document.querySelectorAll('.ai-suggest-chip').forEach(chip => {
             chip.addEventListener('click', () => { const q = chip.dataset.q; this.addMsg(q, 'user'); setTimeout(() => this.genReply(q), 400); });
+        });
+
+        document.getElementById('ai-clear-chat').addEventListener('click', () => {
+            const msgs = document.getElementById('ai-bot-messages');
+            msgs.innerHTML = `<div class="ai-msg bot-msg"><div class="msg-avatar"><i class="fa-solid fa-robot"></i></div><div class="msg-bubble">Chat cleared. How can I help you?</div></div>`;
+            Toast.show('Chat cleared', 'success');
         });
     },
 
@@ -181,7 +303,6 @@ const AskAiPage = {
         for (const [key, data] of Object.entries(this.recommendations)) { if (q.includes(key)) { match = data; break; } }
         
         if (match) {
-            // Quick static reply if it matches a predefined project perfectly
             let html = `<strong>${match.reply}</strong><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">`;
             match.tools.forEach((t, i) => { html += `<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid var(--border);"><span style="color:var(--primary-light);font-weight:700;min-width:18px;">${i+1}.</span><div><span style="font-weight:600;font-size:0.84rem;">${t.name}</span><p style="font-size:0.76rem;color:var(--text-muted);margin-top:2px;">${t.why}</p></div></div>`; });
             html += '</div>';
@@ -191,9 +312,8 @@ const AskAiPage = {
             return;
         }
 
-        // Live API fallback for generic questions or code explanation
         try {
-            const queryData = "You are Vertex AI, an expert programming assistant. Keep answers brief, under 4 sentences. If they paste code and ask to explain it to a beginner, break it down simply. Write your response in unformatted plaintext without markdown blocks unless necessary. User Request: " + query;
+            const queryData = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough. User Request: " + query;
             
             let replyText = '';
             try {
@@ -209,14 +329,12 @@ const AskAiPage = {
                 if (!res.ok) throw new Error('POST failed');
                 replyText = await res.text();
             } catch(postErr) {
-                // Fallback to GET endpoint
                 const encoded = encodeURIComponent(queryData);
                 const res = await fetch(`https://text.pollinations.ai/${encoded}`, { method: 'GET' });
                 if (!res.ok) throw new Error('GET also failed');
                 replyText = await res.text();
             }
             
-            // Format basic code blocks if the AI returns them
             let formattedReply = replyText.replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:8px;font-size:12px;overflow-x:auto;">$1</pre>');
             
             this.addMsg(formattedReply.trim(), 'bot');
@@ -228,6 +346,146 @@ const AskAiPage = {
         }
     },
 
+    // =================== AI ARCHITECT ===================
+    bindArchitect() {
+        document.getElementById('ai-arch-btn').addEventListener('click', () => this.generateArchitecture());
+        document.getElementById('ai-arch-prompt').addEventListener('keydown', e => {
+            if(e.key === 'Enter') this.generateArchitecture();
+        });
+        document.getElementById('ai-copy-cmd').addEventListener('click', () => {
+            const cmd = document.getElementById('ai-arch-cmd').textContent;
+            Helpers.copyToClipboard(cmd);
+            Toast.show('Command copied!', 'success');
+        });
+        document.getElementById('ai-boot-btn').addEventListener('click', () => this.bootSandbox());
+        document.getElementById('arch-close-embed').addEventListener('click', () => {
+            document.getElementById('arch-stackblitz-wrap').style.display = 'none';
+        });
+    },
+
+    async generateArchitecture() {
+        const prompt = document.getElementById('ai-arch-prompt').value.trim();
+        if(!prompt) return Toast.show('Please describe your project first.', 'warning');
+        
+        const btn = document.getElementById('ai-arch-btn');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Designing...';
+        btn.disabled = true;
+
+        try {
+            const sysPrompt = `You are an expert Software Architect. Return ONLY raw, valid JSON representing the folder structure and setup command for the user's requested project.
+JSON format expected:
+{
+  "setupCommand": "string (a single 1-line bash script using mkdir -p and touch to build the folder structure globally)",
+  "tree": {
+     "folderName": {
+        "subFolder": {
+           "file.txt": "content or simply '...'"
+        },
+        "file.js": "content..."
+     }
+  },
+  "flatFiles": {
+    "package.json": "{ \\"name\\": \\"app\\" }",
+    "index.js": "console.log('hi')"
+  }
+}
+If they ask for a Web framework like Next.js, React, or Node, inject some boilerplate into flatFiles object so it can be booted in a basic StackBlitz WebContainer. Use 'flatFiles' keys formatted exactly block relative paths (e.g. 'src/index.js' or 'package.json').`;
+
+            const abortController = new AbortController();
+            const timeout = setTimeout(() => abortController.abort(), 20000);
+
+            let res;
+            try {
+                res = await fetch('https://text.pollinations.ai/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: 'system', content: sysPrompt },
+                            { role: 'user', content: prompt }
+                        ],
+                        jsonMode: true
+                    }),
+                    signal: abortController.signal
+                });
+            } catch(e) { /* fallback below */ }
+            clearTimeout(timeout);
+
+            if(!res || !res.ok) {
+                res = await fetch('https://text.pollinations.ai/' + encodeURIComponent(sysPrompt + "\nUser request: " + prompt));
+            }
+
+            let text = await res.text();
+            text = text.replace(/^```(json)?/m, '').replace(/```$/m, '').trim();
+            const data = JSON.parse(text);
+
+            this.currentProjectState = data;
+            
+            const renderTree = (node) => {
+                if(typeof node !== 'object' || node === null) return '';
+                let html = '<ul class="folder-tree">';
+                for(let key in node) {
+                    if(typeof node[key] === 'object') {
+                        html += `<li><div class="dir-label"><i class="fa-solid fa-folder"></i> ${Helpers.escapeHtml(key)}/</div>${renderTree(node[key])}</li>`;
+                    } else {
+                        html += `<li><div class="file-label"><i class="fa-regular fa-file-code"></i> ${Helpers.escapeHtml(key)}</div></li>`;
+                    }
+                }
+                html += '</ul>';
+                return html;
+            };
+
+            document.getElementById('ai-arch-tree').innerHTML = renderTree(data.tree || { "root": data.flatFiles });
+            document.getElementById('ai-arch-cmd').textContent = data.setupCommand || "echo 'No command provided'";
+            document.getElementById('ai-arch-results').style.display = 'grid';
+            Toast.show('Architecture built successfully!', 'success');
+
+        } catch (err) {
+            console.error(err);
+            Toast.show('AI failed to build architecture. Please try again.', 'error');
+        } finally {
+            btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Design Architecture';
+            btn.disabled = false;
+        }
+    },
+
+    async bootSandbox() {
+        if(!this.currentProjectState?.flatFiles) {
+            return Toast.show('No runnable files detected. Only standard Web/Node structures can be booted.', 'error');
+        }
+
+        const btn = document.getElementById('ai-boot-btn');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Booting...';
+        btn.disabled = true;
+
+        if (!window.StackBlitzSDK) {
+            Toast.show('Loading WebContainer runtime...', 'info', 2000);
+            await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
+        }
+
+        const project = {
+            title: 'AI Generated Architecture',
+            description: 'Booted from Vertex Developer Toolkit',
+            template: 'node',
+            files: this.currentProjectState.flatFiles || {}
+        };
+
+        const embedWrap = document.getElementById('arch-stackblitz-wrap');
+        embedWrap.style.display = 'block';
+        embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        Toast.show('Deploying to Sandbox...', 'success');
+        window.StackBlitzSDK.embedProject(
+            document.getElementById('arch-stackblitz-embed'),
+            project,
+            { openFile: Object.keys(project.files)[0], height: 550, forceEmbedLayout: true }
+        );
+        
+        btn.innerHTML = '<i class="fa-solid fa-play"></i> Boot Sandbox';
+        btn.disabled = false;
+    },
+
+    // =================== TECH STACKS ===================
     bindRoles() {
         document.querySelectorAll('.role-card').forEach(card => {
             card.addEventListener('click', () => {

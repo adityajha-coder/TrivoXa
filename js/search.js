@@ -6,14 +6,13 @@ const GlobalSearch = {
 
     searchData: [
         { title: 'Dashboard', type: 'Page', link: 'dashboard', icon: 'fa-solid fa-house' },
-        { title: 'Ask AI', type: 'Page', link: 'ask-ai', icon: 'fa-solid fa-robot' },
+        { title: 'AI Hub (Ask AI / Architect)', type: 'Page', link: 'ask-ai', icon: 'fa-solid fa-robot' },
         { title: 'Code Generator', type: 'Page', link: 'code-generator', icon: 'fa-solid fa-wand-magic-sparkles' },
         { title: 'My Workspace', type: 'Page', link: 'workspace', icon: 'fa-solid fa-laptop-code' },
         { title: 'Tools Vault', type: 'Page', link: 'tools-vault', icon: 'fa-solid fa-screwdriver-wrench' },
         { title: 'GitHub Explorer', type: 'Page', link: 'code-git-explorer', icon: 'fa-brands fa-github' },
         { title: 'Package Scout', type: 'Page', link: 'package-scout', icon: 'fa-solid fa-box-open' },
         { title: 'Free APIs', type: 'Page', link: 'free-apis', icon: 'fa-solid fa-plug' },
-        { title: 'AI Architect', type: 'Page', link: 'ai-architect', icon: 'fa-solid fa-code-merge' },
         { title: 'Commands Reference', type: 'Page', link: 'commands', icon: 'fa-solid fa-terminal' }
     ],
 
