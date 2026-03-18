@@ -72,31 +72,35 @@ const WorkspacePage = {
                             <h3 class="mb-0">Add New Snippet</h3>
                         </div>
                         <input type="text" id="snip-title" class="input-field mb-sm" placeholder="Snippet Title" style="width:100%; border-radius: var(--radius-sm);">
-                        <select id="snip-lang-select" class="input-field mb-sm" style="width:100%; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(0,0,0,0.2); color: var(--text);">
-                            <optgroup label="Runnable Web / Node Languages">
-                                <option value="html" selected>HTML / CSS</option>
-                                <option value="javascript">JavaScript (Node.js)</option>
-                                <option value="typescript">TypeScript</option>
-                                <option value="react">React (JSX)</option>
-                                <option value="vue">Vue</option>
-                                <option value="angular">Angular</option>
-                                <option value="svelte">Svelte</option>
-                            </optgroup>
-                            <optgroup label="Other Compiled / Scripting Languages">
-                                <option value="python">Python</option>
-                                <option value="java">Java</option>
-                                <option value="cpp">C++</option>
-                                <option value="c">C</option>
-                                <option value="csharp">C#</option>
-                                <option value="go">Go</option>
-                                <option value="rust">Rust</option>
-                                <option value="ruby">Ruby</option>
-                                <option value="php">PHP</option>
-                                <option value="bash">Bash / Shell</option>
-                                <option value="sql">SQL</option>
-                                <option value="text">Plain Text</option>
-                            </optgroup>
-                        </select>
+                        <div class="mb-sm" style="position: relative;">
+                            <i class="fa-solid fa-code" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
+                            <i class="fa-solid fa-chevron-down" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem; pointer-events: none; z-index: 1;"></i>
+                            <select id="snip-lang-select" class="input-field" style="width:100%; padding-left: 38px; padding-right: 40px; appearance: none; -webkit-appearance: none; background: rgba(0,0,0,0.2) !important; cursor: pointer; font-weight: 500;">
+                                <optgroup label="Runnable Web / Node Languages">
+                                    <option value="html" selected>HTML / CSS</option>
+                                    <option value="javascript">JavaScript (Node.js)</option>
+                                    <option value="typescript">TypeScript</option>
+                                    <option value="react">React (JSX)</option>
+                                    <option value="vue">Vue</option>
+                                    <option value="angular">Angular</option>
+                                    <option value="svelte">Svelte</option>
+                                </optgroup>
+                                <optgroup label="Other Compiled / Scripting Languages">
+                                    <option value="python">Python</option>
+                                    <option value="java">Java</option>
+                                    <option value="cpp">C++</option>
+                                    <option value="c">C</option>
+                                    <option value="csharp">C#</option>
+                                    <option value="go">Go</option>
+                                    <option value="rust">Rust</option>
+                                    <option value="ruby">Ruby</option>
+                                    <option value="php">PHP</option>
+                                    <option value="bash">Bash / Shell</option>
+                                    <option value="sql">SQL</option>
+                                    <option value="text">Plain Text</option>
+                                </optgroup>
+                            </select>
+                        </div>
                         <textarea id="snip-code" class="input-field mb-sm" placeholder="Paste your code here..." style="width:100%; min-height:100px; resize:vertical; font-family:var(--font-mono); border-radius: var(--radius-sm);"></textarea>
                         <button id="save-snip-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save Snippet</button>
                     </div>
@@ -132,7 +136,7 @@ const WorkspacePage = {
                         <button class="btn btn-ghost btn-xs del-snip-btn" data-id="${s.id}" data-idx="${idx}" style="color:var(--error);"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
-                ${s.lang ? `<span class="tag tag-primary mb-sm" style="display:inline-block;">${s.lang.toUpperCase()}</span>` : ''}
+                ${s.lang ? `<span class="tag mb-sm" style="display:inline-block; font-weight:600; background: ${Helpers.getExtColor(s.lang)}20; color: ${Helpers.getExtColor(s.lang)}; border: 1px solid ${Helpers.getExtColor(s.lang)}40;">${s.lang.toUpperCase()}</span>` : ''}
                 <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
                     <pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">${Helpers.escapeHtml(s.code)}</pre>
                 </div>
