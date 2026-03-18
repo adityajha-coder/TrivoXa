@@ -145,7 +145,6 @@ const ToolsVaultPage = {
                                             <a href="${tool.url}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:var(--text); flex:1; display:flex; align-items:center; gap:8px;">
                                                 ${tool.name} <i class="fa-solid fa-arrow-up-right-from-square text-muted text-xs"></i>
                                             </a>
-                                            <button class="btn btn-ghost btn-xs save-tool-btn" data-name="${tool.name}" data-url="${tool.url}" title="Star and Save URL" style="position:relative; z-index:2; margin-left:12px; padding:4px;"><i class="fa-regular fa-star" style="color:#eab308;"></i></button>
                                         </div>
                                         <div class="text-sm text-secondary line-clamp-2">${tool.desc}</div>
                                     </div>
@@ -224,20 +223,6 @@ const ToolsVaultPage = {
                 }
             }
 
-            const saveToolBtn = e.target.closest('.save-tool-btn');
-            if(saveToolBtn) {
-                const icon = saveToolBtn.querySelector('i');
-                if(icon.classList.contains('fa-regular')) {
-                    icon.classList.replace('fa-regular', 'fa-solid');
-                    const name = saveToolBtn.dataset.name;
-                    const url = saveToolBtn.dataset.url;
-                    const snippet = `// Saved Bookmark: ${name}\n// ${url}\n\n// You can write notes about this tool here.`;
-                    WorkspacePage.saveSnippet(`Bookmark: ${name}`, snippet, 'text');
-                    Toast.show(`Saved ${name} bookmark to Workspace!`, 'success');
-                } else {
-                    Toast.show('Already saved!', 'info');
-                }
-            }
         });
     }
 };
