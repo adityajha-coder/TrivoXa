@@ -75,7 +75,7 @@ const WorkspacePage = {
                         <div class="mb-sm" style="position: relative;">
                             <i class="fa-solid fa-code" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
                             <i class="fa-solid fa-chevron-down" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem; pointer-events: none; z-index: 1;"></i>
-                            <select id="snip-lang-select" class="input-field" style="width:100%; padding-left: 38px; padding-right: 40px; appearance: none; -webkit-appearance: none; background: rgba(0,0,0,0.2) !important; cursor: pointer; font-weight: 500;">
+                            <select id="snip-lang-select" class="input-field" style="width:100%; padding-left: 38px; padding-right: 40px; appearance: none; -webkit-appearance: none; background: #000000 !important; cursor: pointer; font-weight: 500;">
                                 <optgroup label="Runnable Web / Node Languages">
                                     <option value="html" selected>HTML / CSS</option>
                                     <option value="javascript">JavaScript (Node.js)</option>
