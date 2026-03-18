@@ -72,12 +72,31 @@ const WorkspacePage = {
                             <h3 class="mb-0">Add New Snippet</h3>
                         </div>
                         <input type="text" id="snip-title" class="input-field mb-sm" placeholder="Snippet Title" style="width:100%; border-radius: var(--radius-sm);">
-                        <div class="tabs mb-sm" id="snip-lang-tabs" style="display:inline-flex;">
-                            <button class="tab-item active" data-lang="html">HTML</button>
-                            <button class="tab-item" data-lang="react">React</button>
-                            <button class="tab-item" data-lang="vue">Vue</button>
-                            <button class="tab-item" data-lang="javascript">JS</button>
-                        </div>
+                        <select id="snip-lang-select" class="input-field mb-sm" style="width:100%; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(0,0,0,0.2); color: var(--text);">
+                            <optgroup label="Runnable Web / Node Languages">
+                                <option value="html" selected>HTML / CSS</option>
+                                <option value="javascript">JavaScript (Node.js)</option>
+                                <option value="typescript">TypeScript</option>
+                                <option value="react">React (JSX)</option>
+                                <option value="vue">Vue</option>
+                                <option value="angular">Angular</option>
+                                <option value="svelte">Svelte</option>
+                            </optgroup>
+                            <optgroup label="Other Compiled / Scripting Languages">
+                                <option value="python">Python</option>
+                                <option value="java">Java</option>
+                                <option value="cpp">C++</option>
+                                <option value="c">C</option>
+                                <option value="csharp">C#</option>
+                                <option value="go">Go</option>
+                                <option value="rust">Rust</option>
+                                <option value="ruby">Ruby</option>
+                                <option value="php">PHP</option>
+                                <option value="bash">Bash / Shell</option>
+                                <option value="sql">SQL</option>
+                                <option value="text">Plain Text</option>
+                            </optgroup>
+                        </select>
                         <textarea id="snip-code" class="input-field mb-sm" placeholder="Paste your code here..." style="width:100%; min-height:100px; resize:vertical; font-family:var(--font-mono); border-radius: var(--radius-sm);"></textarea>
                         <button id="save-snip-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save Snippet</button>
                     </div>
@@ -156,6 +175,17 @@ const WorkspacePage = {
         } else if (lang === 'html') {
             project.template = 'html';
             project.files = { 'index.html': snippet.code };
+        } else if (lang === 'typescript') {
+            project.template = 'typescript';
+            project.files = { 'index.ts': snippet.code };
+        } else if (lang === 'javascript') {
+            project.template = 'node';
+            project.files = { 'index.js': snippet.code };
+        } else if (lang === 'angular') {
+            project.template = 'angular-cli';
+            project.files = { 'src/app/app.component.ts': snippet.code };
+        } else {
+            return Toast.show(`Running ${lang.toUpperCase()} in the browser is not supported natively yet. Use Web/Node languages instead.`, 'error');
         }
 
         if (!window.StackBlitzSDK) {
@@ -205,8 +235,7 @@ const WorkspacePage = {
         document.getElementById('save-snip-btn').addEventListener('click', () => {
             const title = document.getElementById('snip-title').value.trim();
             const code = document.getElementById('snip-code').value.trim();
-            const langTab = document.querySelector('#snip-lang-tabs .tab-item.active');
-            const lang = langTab ? langTab.dataset.lang : 'html';
+            const lang = document.getElementById('snip-lang-select').value || 'text';
             if(!title || !code) return Toast.show('Please fill both fields', 'error');
             
             this.saveSnippet(title, code, lang);
