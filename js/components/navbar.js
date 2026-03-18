@@ -9,7 +9,7 @@ const Navbar = {
         { id: 'free-apis', icon: 'fa-solid fa-plug', label: 'APIs' },
         { id: 'package-scout', icon: 'fa-solid fa-box-open', label: 'Packages' },
         { id: 'code-git-explorer', icon: 'fa-brands fa-github', label: 'Explorer' },
-        { id: 'scaffolder', icon: 'fa-solid fa-folder-tree', label: 'Scaffolder' }
+        { id: 'ai-architect', icon: 'fa-solid fa-code-merge', label: 'AI Architect' }
     ],
 
     render() {

@@ -9,7 +9,7 @@ const Router = {
         'code-git-explorer': () => CodeGitExplorerPage.render(),
         'package-scout': () => PackageScoutPage.render(),
         'free-apis': () => FreeApisPage.render(),
-        'scaffolder': () => ScaffolderPage.render()
+        'ai-architect': () => AiArchitectPage.render()
     },
 
     _currentPage: null,

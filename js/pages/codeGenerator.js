@@ -55,12 +55,31 @@ const CodeGeneratorPage = {
                                 </button>
                             </div>
                         </div>
-                        <div class="generator-output" style="background:rgba(0,0,0,0.5); padding:16px; border-radius:var(--radius); border:1px solid var(--border); max-height:500px; overflow-y:auto; overflow-x:auto;">
-                            <pre id="code-output" style="margin:0; font-family:var(--font-mono); font-size:13px; color:#e2e8f0;"></pre>
+                        <div class="generator-output" style="background:rgba(0,0,0,0.5); padding:16px; border-radius:var(--radius); border:1px solid var(--border); overflow:hidden;">
+                            <div id="monaco-code-output" style="height:500px; width:100%;"></div>
                         </div>
                     </div>
                 </div>
             </div>`;
+            
+        Helpers.initMonaco().then(monaco => {
+            const container = document.getElementById('monaco-code-output');
+            if(container) {
+                this.editor = monaco.editor.create(container, {
+                    value: '// AI Generated code will appear here...',
+                    language: 'javascript',
+                    theme: 'vs-dark',
+                    minimap: { enabled: false },
+                    readOnly: true,
+                    automaticLayout: true,
+                    fontSize: 14,
+                    fontFamily: 'JetBrains Mono',
+                    scrollBeyondLastLine: false,
+                    roundedSelection: true
+                });
+            }
+        });
+
         this.bindEvents();
     },
 
@@ -80,12 +99,14 @@ const CodeGeneratorPage = {
         });
 
         document.getElementById('copy-code-btn').addEventListener('click', () => {
-            Helpers.copyToClipboard(document.getElementById('code-output').textContent);
+            const code = this.editor ? this.editor.getValue() : '';
+            if(!code) return Toast.show('No code to copy', 'error');
+            Helpers.copyToClipboard(code);
             Toast.show('Code copied to clipboard!', 'success');
         });
 
         document.getElementById('save-workspace-btn').addEventListener('click', () => {
-            const code = document.getElementById('code-output').textContent;
+            const code = this.editor ? this.editor.getValue() : '';
             if(!code) return Toast.show('No code to save', 'error');
             const fw = this.currentFramework;
             WorkspacePage.saveSnippet(`AI Generated ${fw.toUpperCase()}`, code);
@@ -93,7 +114,7 @@ const CodeGeneratorPage = {
         });
 
         document.getElementById('run-container-btn').addEventListener('click', async () => {
-            const code = document.getElementById('code-output').textContent;
+            const code = this.editor ? this.editor.getValue() : '';
             if(!code) return Toast.show('No code to run', 'error');
 
             const fw = this.currentFramework;
@@ -194,22 +215,16 @@ const CodeGeneratorPage = {
             document.getElementById('generator-output-area').style.display = 'block';
             document.getElementById('output-fw-tag').textContent = this.currentFramework.toUpperCase();
             
-            const el = document.getElementById('code-output');
-            el.textContent = '';
-            this.typeCode(el, code, 0);
+            if (this.editor) {
+                this.editor.setValue('');
+                let lang = this.currentFramework;
+                if(lang === 'vue' || lang === 'react') lang = 'html';
+                window.monaco.editor.setModelLanguage(this.editor.getModel(), lang);
+                this.editor.setValue(code);
+            }
         } catch(e) {
             document.getElementById('loading-overlay').style.display = 'none';
             Toast.show('Failed to generate code. The AI service may be temporarily down. Try again.', 'error');
-        }
-    },
-
-    typeCode(element, code, index) {
-        if (index < code.length) {
-            const chunk = Math.max(1, Math.floor(code.length / 50));
-            element.textContent = code.substring(0, index + chunk);
-            requestAnimationFrame(() => this.typeCode(element, code, index + chunk));
-        } else {
-            element.textContent = code;
         }
     }
 };

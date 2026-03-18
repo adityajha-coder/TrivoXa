@@ -140,13 +140,15 @@ const ToolsVaultPage = {
                             </h2>
                             <div class="grid-3">
                                 ${section.items.map(tool => `
-                                    <a href="${tool.url}" target="_blank" rel="noopener noreferrer" class="glass-card tool-link-card" style="text-decoration:none; display:flex; flex-direction:column; transition:all 0.2s;">
+                                    <div class="glass-card tool-link-card" style="display:flex; flex-direction:column; transition:all 0.2s; position:relative;">
                                         <div style="font-weight:600; font-size:1.05rem; color:var(--text); margin-bottom:6px; display:flex; align-items:center; justify-content:space-between;">
-                                            ${tool.name}
-                                            <i class="fa-solid fa-arrow-up-right-from-square text-muted text-xs"></i>
+                                            <a href="${tool.url}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:var(--text); flex:1; display:flex; align-items:center; gap:8px;">
+                                                ${tool.name} <i class="fa-solid fa-arrow-up-right-from-square text-muted text-xs"></i>
+                                            </a>
+                                            <button class="btn btn-ghost btn-xs save-tool-btn" data-name="${tool.name}" data-url="${tool.url}" title="Star and Save URL" style="position:relative; z-index:2; margin-left:12px; padding:4px;"><i class="fa-regular fa-star" style="color:#eab308;"></i></button>
                                         </div>
                                         <div class="text-sm text-secondary line-clamp-2">${tool.desc}</div>
-                                    </a>
+                                    </div>
                                 `).join('')}
                             </div>
                         </div>
@@ -159,7 +161,10 @@ const ToolsVaultPage = {
                             <div class="glass-card">
                                 <div class="flex-between mb-sm">
                                     <div style="font-weight:600;">${b.title}</div>
-                                    <button class="btn btn-secondary btn-xs tv-copy-bp" data-idx="${idx}"><i class="fa-solid fa-copy"></i> Copy</button>
+                                    <div class="flex-gap">
+                                        <button class="btn btn-secondary btn-xs tv-save-bp" data-idx="${idx}"><i class="fa-solid fa-cloud-arrow-up"></i> Save to Workspace</button>
+                                        <button class="btn btn-secondary btn-xs tv-copy-bp" data-idx="${idx}"><i class="fa-solid fa-copy"></i> Copy</button>
+                                    </div>
                                 </div>
                                 <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
                                     <pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--primary-light);">${Helpers.escapeHtml(b.code)}</pre>
@@ -200,11 +205,37 @@ const ToolsVaultPage = {
         });
 
         document.getElementById('page-content').addEventListener('click', e => {
-            if(e.target.closest('.tv-copy-bp')) {
-                const idx = e.target.closest('.tv-copy-bp').dataset.idx;
+            const copyBtn = e.target.closest('.tv-copy-bp');
+            if(copyBtn) {
+                const idx = copyBtn.dataset.idx;
                 if(this.boilerplates[idx]) {
                     Helpers.copyToClipboard(this.boilerplates[idx].code);
                     Toast.show('Boilerplate copied!', 'success');
+                }
+            }
+
+            const saveBpBtn = e.target.closest('.tv-save-bp');
+            if(saveBpBtn) {
+                const idx = saveBpBtn.dataset.idx;
+                const bp = this.boilerplates[idx];
+                if(bp) {
+                    WorkspacePage.saveSnippet(`Boilerplate: ${bp.title}`, bp.code, 'javascript');
+                    Toast.show('Boilerplate saved to Workspace!', 'success');
+                }
+            }
+
+            const saveToolBtn = e.target.closest('.save-tool-btn');
+            if(saveToolBtn) {
+                const icon = saveToolBtn.querySelector('i');
+                if(icon.classList.contains('fa-regular')) {
+                    icon.classList.replace('fa-regular', 'fa-solid');
+                    const name = saveToolBtn.dataset.name;
+                    const url = saveToolBtn.dataset.url;
+                    const snippet = `// Saved Bookmark: ${name}\n// ${url}\n\n// You can write notes about this tool here.`;
+                    WorkspacePage.saveSnippet(`Bookmark: ${name}`, snippet, 'text');
+                    Toast.show(`Saved ${name} bookmark to Workspace!`, 'success');
+                } else {
+                    Toast.show('Already saved!', 'info');
                 }
             }
         });

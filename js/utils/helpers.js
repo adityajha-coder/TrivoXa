@@ -143,6 +143,17 @@ const Helpers = {
         }
     },
 
+    _monacoPromise: null,
+    async initMonaco() {
+        if(this._monacoPromise) return this._monacoPromise;
+        this._monacoPromise = new Promise((resolve) => {
+            if (window.monaco) return resolve(window.monaco);
+            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.46.0/min/vs' }});
+            require(['vs/editor/editor.main'], () => resolve(window.monaco));
+        });
+        return this._monacoPromise;
+    },
+
     getExtColor(ext) {
         const map = {
             js: '#f7df1e', mjs: '#f7df1e', cjs: '#f7df1e',

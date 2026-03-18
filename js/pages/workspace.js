@@ -101,7 +101,7 @@ const WorkspacePage = {
                                 </optgroup>
                             </select>
                         </div>
-                        <textarea id="snip-code" class="input-field mb-sm" placeholder="Paste your code here..." style="width:100%; min-height:100px; resize:vertical; font-family:var(--font-mono); border-radius: var(--radius-sm);"></textarea>
+                        <div id="monaco-editor-container" style="width:100%; height:300px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 12px; overflow:hidden;"></div>
                         <button id="save-snip-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save Snippet</button>
                     </div>
                     
@@ -116,6 +116,32 @@ const WorkspacePage = {
                 this.renderSnippets();
             });
         });
+        
+        // Initialize Monaco Editor
+        Helpers.initMonaco().then(monaco => {
+            const container = document.getElementById('monaco-editor-container');
+            if(container) {
+                this.editor = monaco.editor.create(container, {
+                    value: '// Paste your code or type here...',
+                    language: document.getElementById('snip-lang-select').value || 'html',
+                    theme: 'vs-dark',
+                    minimap: { enabled: false },
+                    automaticLayout: true,
+                    fontSize: 14,
+                    fontFamily: 'JetBrains Mono',
+                    scrollBeyondLastLine: false,
+                    roundedSelection: true
+                });
+
+                document.getElementById('snip-lang-select').addEventListener('change', (e) => {
+                    let lang = e.target.value;
+                    if (lang === 'vue' || lang === 'svelte') lang = 'html';
+                    if (lang === 'bash') lang = 'shell';
+                    monaco.editor.setModelLanguage(this.editor.getModel(), lang);
+                });
+            }
+        });
+
         this.bindEvents();
     },
 
@@ -131,6 +157,7 @@ const WorkspacePage = {
                 <div class="flex-between mb-sm">
                     <div style="font-weight:600;">${Helpers.escapeHtml(s.title)}</div>
                     <div class="flex-gap">
+                        <button class="btn btn-ghost btn-xs edit-snip-btn" data-idx="${idx}" title="Edit snippet" style="color:var(--primary-light);"><i class="fa-solid fa-pen-to-square"></i></button>
                         <button class="btn btn-ghost btn-xs run-snip-btn" data-idx="${idx}" title="Run in live environment" style="color:var(--success);"><i class="fa-solid fa-play"></i></button>
                         <button class="btn btn-ghost btn-xs copy-snip-btn" data-idx="${idx}"><i class="fa-solid fa-copy"></i></button>
                         <button class="btn btn-ghost btn-xs del-snip-btn" data-id="${s.id}" data-idx="${idx}" style="color:var(--error);"><i class="fa-solid fa-trash"></i></button>
@@ -238,14 +265,14 @@ const WorkspacePage = {
 
         document.getElementById('save-snip-btn').addEventListener('click', () => {
             const title = document.getElementById('snip-title').value.trim();
-            const code = document.getElementById('snip-code').value.trim();
+            const code = this.editor ? this.editor.getValue().trim() : '';
             const lang = document.getElementById('snip-lang-select').value || 'text';
-            if(!title || !code) return Toast.show('Please fill both fields', 'error');
+            if(!title || !code) return Toast.show('Please fill out the title and code', 'error');
             
             this.saveSnippet(title, code, lang);
             
             document.getElementById('snip-title').value = '';
-            document.getElementById('snip-code').value = '';
+            if(this.editor) this.editor.setValue('');
             Toast.show('Snippet saved!', 'success');
         });
 
@@ -269,6 +296,32 @@ const WorkspacePage = {
                 
                 this.renderSnippets();
                 Toast.show('Snippet deleted', 'success');
+            }
+            if(e.target.closest('.edit-snip-btn')) {
+                const idx = parseInt(e.target.closest('.edit-snip-btn').dataset.idx);
+                const snippet = this.snippets[idx];
+                if(!snippet) return;
+
+                // Load the snippet back into the editor
+                document.getElementById('snip-title').value = snippet.title;
+                const langSelect = document.getElementById('snip-lang-select');
+                if(langSelect) langSelect.value = snippet.lang || 'text';
+                if(this.editor) {
+                    this.editor.setValue(snippet.code);
+                    let lang = snippet.lang || 'text';
+                    if (lang === 'vue' || lang === 'svelte') lang = 'html';
+                    if (lang === 'bash') lang = 'shell';
+                    window.monaco?.editor.setModelLanguage(this.editor.getModel(), lang);
+                }
+
+                // Remove old snippet
+                this.snippets.splice(idx, 1);
+                await this.deleteFromIndexedDB(snippet.id);
+                this.renderSnippets();
+
+                // Scroll to editor
+                document.getElementById('monaco-editor-container')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                Toast.show('Editing snippet — make changes and save again.', 'info');
             }
         });
     }

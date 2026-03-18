@@ -7,6 +7,11 @@
     <meta name="theme-color" content="#d4a843">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta property="og:title" content="Vertex - The All-in-One Toolkit for New Developers">
+    <meta property="og:description" content="Vertex is the ultimate developer toolkit. Master Git, generate code using AI, explore packages, save snippets, and run interactive code environments instantly in the browser.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1200&h=630">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
     <title>Vertex — Developer Toolkit</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -45,9 +50,10 @@
         </div>
     </div>
 
+    <!-- Heavy libs (Three.js, 3d-force-graph, StackBlitz SDK, Monaco Editor) are loaded on-demand by pages that need them -->
 
-    <!-- Heavy libs (Three.js, 3d-force-graph, StackBlitz SDK) are loaded on-demand by pages that need them -->
-
+    <!-- Monaco AMD Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.46.0/min/vs/loader.min.js"></script>
 
     <script src="js/utils/helpers.js?v=6"></script>
     <script src="js/utils/api.js?v=6"></script>
@@ -62,7 +68,7 @@
     <script src="js/pages/codeGitExplorer.js?v=7"></script>
     <script src="js/pages/freeApis.js?v=7"></script>
     <script src="js/pages/packageScout.js?v=7"></script>
-    <script src="js/pages/scaffolder.js?v=7"></script>
+    <script src="js/pages/aiArchitect.js?v=7"></script>
     <script src="js/router.js?v=7"></script>
     <script src="js/search.js?v=1"></script>
     <script src="js/app.js?v=6"></script>

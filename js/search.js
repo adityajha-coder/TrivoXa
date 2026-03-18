@@ -13,7 +13,7 @@ const GlobalSearch = {
         { title: 'GitHub Explorer', type: 'Page', link: 'code-git-explorer', icon: 'fa-brands fa-github' },
         { title: 'Package Scout', type: 'Page', link: 'package-scout', icon: 'fa-solid fa-box-open' },
         { title: 'Free APIs', type: 'Page', link: 'free-apis', icon: 'fa-solid fa-plug' },
-        { title: 'Project Scaffolder', type: 'Page', link: 'scaffolder', icon: 'fa-solid fa-folder-tree' },
+        { title: 'AI Architect', type: 'Page', link: 'ai-architect', icon: 'fa-solid fa-code-merge' },
         { title: 'Commands Reference', type: 'Page', link: 'commands', icon: 'fa-solid fa-terminal' }
     ],
 

@@ -342,11 +342,11 @@ const DashboardPage = {
                         <i class="fa-solid fa-screwdriver-wrench metric-bg-icon"></i>
                     </div>
                     <div class="metric-card card-pink">
-                        <div class="metric-header"><i class="fa-solid fa-folder-tree"></i> Boilerplates</div>
+                        <div class="metric-header"><i class="fa-solid fa-code-merge"></i> AI Architect</div>
                         <div class="metric-body">
-                            <div class="metric-value" data-count="4">0</div>
+                            <div class="metric-value" data-count="1">0</div>
                         </div>
-                        <i class="fa-solid fa-folder-tree metric-bg-icon"></i>
+                        <i class="fa-solid fa-code-merge metric-bg-icon"></i>
                     </div>
                 </div>
 
@@ -392,11 +392,11 @@ const DashboardPage = {
                         </div>
                     </div>
 
-                    <div class="tool-card" data-page="scaffolder">
-                        <div class="tc-icon-wrap highlight-pink"><i class="fa-solid fa-folder-tree"></i></div>
+                    <div class="tool-card" data-page="ai-architect">
+                        <div class="tc-icon-wrap highlight-pink"><i class="fa-solid fa-code-merge"></i></div>
                         <div class="tc-content">
-                            <div class="tc-title">Project Scaffolder <i class="fa-solid fa-arrow-right tc-arrow"></i></div>
-                            <div class="tc-desc">Browse directory structures and configurations for Next, Django, Vue, and React.</div>
+                            <div class="tc-title">AI Architect <i class="fa-solid fa-arrow-right tc-arrow"></i></div>
+                            <div class="tc-desc">Design custom application architectures, generated file trees, and instant setup commands using AI.</div>
                         </div>
                     </div>
                 </div>
