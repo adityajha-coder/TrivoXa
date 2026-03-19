@@ -66,6 +66,7 @@ const AskAiPage = {
 
     currentProjectState: null,
     currentFramework: 'html',
+    currentAiModel: localStorage.getItem('vertex_ai_model') || 'openai',
     
     archSuggestions: [
         "Scalable Node.js Microservices", "React native chat app", 
@@ -83,17 +84,29 @@ const AskAiPage = {
 
         content.innerHTML = `
             <div class="page-enter">
-                <div class="page-header">
-                    <h1>AI <span class="text-gradient">Hub</span></h1>
-                    <p>Chat with AI, design project architectures, and explore curated tech stacks — all in one place.</p>
+                <div class="page-header flex-between" style="align-items:flex-start; flex-wrap:wrap; gap:16px;">
+                    <div>
+                        <h1>AI <span class="text-gradient">Hub</span></h1>
+                        <p>Chat with AI, design project architectures, analyze code, and explore curated tech stacks.</p>
+                    </div>
+                    <div class="form-group" style="min-width: 160px;">
+                        <label class="text-xs text-muted mb-xs" style="display:block;">AI Model</label>
+                        <select id="ai-model-select" class="input-field" style="padding: 8px 12px; font-size: 0.85rem; height:auto; background: #000; color: #fff; appearance: none; -webkit-appearance: none; cursor: pointer;">
+                            <option value="openai" ${this.currentAiModel === 'openai' ? 'selected' : ''}>OpenAI (Default)</option>
+                            <option value="mistral" ${this.currentAiModel === 'mistral' ? 'selected' : ''}>Mistral AI</option>
+                            <option value="claude" ${this.currentAiModel === 'claude' ? 'selected' : ''}>Claude</option>
+                            <option value="llama" ${this.currentAiModel === 'llama' ? 'selected' : ''}>Llama 3</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- Unified Tabs -->
                 <div class="tabs mb-lg" id="ai-hub-tabs">
                     <button class="tab-item active" data-tab="chat"><i class="fa-solid fa-comments" style="margin-right:6px;"></i>AI Chat</button>
-                    <button class="tab-item" data-tab="architect"><i class="fa-solid fa-code-merge" style="margin-right:6px;"></i>AI Architect</button>
-                    <button class="tab-item" data-tab="codegen"><i class="fa-solid fa-laptop-code" style="margin-right:6px;"></i>Code Generator</button>
-                    <button class="tab-item" data-tab="stacks"><i class="fa-solid fa-compass" style="margin-right:6px;"></i>Tech Stacks</button>
+                    <button class="tab-item" data-tab="architect"><i class="fa-solid fa-code-merge" style="margin-right:6px;"></i>Architect</button>
+                    <button class="tab-item" data-tab="codegen"><i class="fa-solid fa-laptop-code" style="margin-right:6px;"></i>Generator</button>
+                    <button class="tab-item" data-tab="analyzer"><i class="fa-solid fa-microscope" style="margin-right:6px;"></i>Analyzer</button>
+                    <button class="tab-item" data-tab="stacks"><i class="fa-solid fa-compass" style="margin-right:6px;"></i>Stacks</button>
                 </div>
 
                 <!-- ===== TAB 1: AI CHAT ===== -->
@@ -268,7 +281,52 @@ const AskAiPage = {
                     </div>
                 </div>
 
-                <!-- ===== TAB 4: TECH STACKS ===== -->
+                <!-- ===== TAB 5: CODE ANALYZER ===== -->
+                <div id="ai-tab-analyzer" style="display:none;">
+                    <div class="glass-card mb-lg" id="drop-zone" style="border: 2px dashed var(--border); text-align: center; padding: 60px 20px; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fa-solid fa-file-code" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 20px; opacity: 0.8;"></i>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 10px; font-weight:600;">Drag & Drop Code File Here</h3>
+                        <p class="text-muted text-sm" style="max-width:300px; margin:0 auto;">Supports .js, .py, .cpp, .java, .html, .css, .txt, .md (Max 100KB). The AI will instantly analyze code health, bugs, and Big-O efficiency.</p>
+                        <button class="btn btn-secondary mt-md" id="browse-file-btn">Browse File</button>
+                        <input type="file" id="file-upload" style="display: none;" accept=".js,.jsx,.ts,.tsx,.py,.cpp,.c,.h,.java,.html,.css,.json,.md,.txt">
+                    </div>
+
+                    <div id="analyzer-loading" style="display:none; text-align:center; padding:40px 0;">
+                        <div class="spinner" style="margin: 0 auto 16px; width:40px; height:40px; border:4px solid rgba(212,168,67,0.1); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
+                        <p class="text-muted" id="analyzer-status">Scanning structural logic...</p>
+                    </div>
+
+                    <div id="analyzer-results" style="display:none; flex-direction: column; gap: 16px;">
+                        <div class="flex-between">
+                            <h3 style="font-size:1.1rem;"><i class="fa-solid fa-chart-line" style="color:var(--primary-light);margin-right:8px;"></i>Analysis Report: <span id="analyze-filename" class="text-muted text-sm"></span></h3>
+                            <button class="btn btn-ghost btn-sm" id="analyze-another-btn"><i class="fa-solid fa-rotate-left"></i> Analyze Another</button>
+                        </div>
+                        <div class="grid-3" id="analyzer-metrics">
+                            <div class="glass-card-static" style="text-align:center; padding:16px;">
+                                <h4 class="text-muted text-xs text-uppercase mb-sm"><i class="fa-solid fa-code-branch mb-xs"></i><br>Big-O Complexity</h4>
+                                <div id="metric-complexity" style="font-size:1.4rem; font-weight:700; color:var(--text); font-family:var(--font-mono);">--</div>
+                            </div>
+                            <div class="glass-card-static" style="text-align:center; padding:16px;">
+                                <h4 class="text-muted text-xs text-uppercase mb-sm"><i class="fa-solid fa-shield-halved mb-xs"></i><br>Security Vulnerabilities</h4>
+                                <div id="metric-security" style="font-size:1.4rem; font-weight:700; color:var(--text);">--</div>
+                            </div>
+                            <div class="glass-card-static" style="text-align:center; padding:16px;">
+                                <h4 class="text-muted text-xs text-uppercase mb-sm"><i class="fa-solid fa-heart-pulse mb-xs"></i><br>Overall Health Score</h4>
+                                <div id="metric-score" style="font-size:1.4rem; font-weight:700; color:var(--text);">--</div>
+                            </div>
+                        </div>
+                        <div class="glass-card-static mt-sm">
+                            <h4 class="mb-sm text-sm" style="color:var(--primary-light);"><i class="fa-solid fa-magnifying-glass"></i> Deep Review</h4>
+                            <div id="analyzer-review" class="text-sm text-secondary" style="line-height: 1.7; white-space: pre-wrap;"></div>
+                        </div>
+                        <div class="glass-card-static">
+                            <h4 class="mb-sm text-sm" style="color:var(--success);"><i class="fa-solid fa-lightbulb"></i> Suggested Improvements</h4>
+                            <div id="analyzer-suggestions" class="text-sm text-secondary" style="line-height: 1.7; white-space: pre-wrap;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== TAB 6: TECH STACKS ===== -->
                 <div id="ai-tab-stacks" style="display:none;">
                     <div class="flex-between mb-md">
                         <h2 style="font-size:1.05rem;font-weight:600;"><i class="fa-solid fa-compass" style="color:var(--primary-light);margin-right:6px;"></i>What do you want to build?</h2>
@@ -308,10 +366,12 @@ const AskAiPage = {
             </style>
         `;
 
+        this.bindModelSelect();
         this.bindTabs();
         this.bindChat();
         this.bindArchitect();
         this.bindCodeGen();
+        this.bindAnalyzer();
         this.bindRoles();
 
         Helpers.initMonaco().then(monaco => {
@@ -334,6 +394,17 @@ const AskAiPage = {
     },
 
     // =================== TAB SWITCHING ===================
+    bindModelSelect() {
+        const sel = document.getElementById('ai-model-select');
+        if(sel) {
+            sel.addEventListener('change', (e) => {
+                this.currentAiModel = e.target.value;
+                localStorage.setItem('vertex_ai_model', this.currentAiModel);
+                Toast.show('AI Model switched to ' + this.currentAiModel, 'info');
+            });
+        }
+    },
+
     bindTabs() {
         document.getElementById('ai-hub-tabs').addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
@@ -344,6 +415,7 @@ const AskAiPage = {
             document.getElementById('ai-tab-chat').style.display = target === 'chat' ? 'block' : 'none';
             document.getElementById('ai-tab-architect').style.display = target === 'architect' ? 'block' : 'none';
             document.getElementById('ai-tab-codegen').style.display = target === 'codegen' ? 'block' : 'none';
+            document.getElementById('ai-tab-analyzer').style.display = target === 'analyzer' ? 'block' : 'none';
             document.getElementById('ai-tab-stacks').style.display = target === 'stacks' ? 'block' : 'none';
         });
     },
@@ -418,7 +490,7 @@ const AskAiPage = {
                 const res = await fetch('https://text.pollinations.ai/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: [{ role: 'user', content: queryData }], model: 'openai' }),
+                    body: JSON.stringify({ messages: [{ role: 'user', content: queryData }], model: this.currentAiModel }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
@@ -426,7 +498,7 @@ const AskAiPage = {
                 replyText = await res.text();
             } catch(postErr) {
                 const encoded = encodeURIComponent(queryData);
-                const res = await fetch(`https://text.pollinations.ai/${encoded}`, { method: 'GET' });
+                const res = await fetch(`https://text.pollinations.ai/${encoded}?model=${this.currentAiModel}`, { method: 'GET' });
                 if (!res.ok) throw new Error('GET also failed');
                 replyText = await res.text();
             }
@@ -510,7 +582,8 @@ If they ask for a Web framework like Next.js, React, or Node, inject some boiler
                             { role: 'system', content: sysPrompt },
                             { role: 'user', content: prompt }
                         ],
-                        jsonMode: true
+                        jsonMode: true,
+                        model: this.currentAiModel
                     }),
                     signal: abortController.signal
                 });
@@ -518,7 +591,7 @@ If they ask for a Web framework like Next.js, React, or Node, inject some boiler
             clearTimeout(timeout);
 
             if(!res || !res.ok) {
-                res = await fetch('https://text.pollinations.ai/' + encodeURIComponent(sysPrompt + "\nUser request: " + prompt));
+                res = await fetch('https://text.pollinations.ai/' + encodeURIComponent(sysPrompt + "\nUser request: " + prompt) + `?model=${this.currentAiModel}`);
             }
 
             let text = await res.text();
@@ -725,7 +798,7 @@ If they ask for a Web framework like Next.js, React, or Node, inject some boiler
                 const response = await fetch('https://text.pollinations.ai/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: [{ role: 'user', content: systemPrompt }], model: 'openai' }),
+                    body: JSON.stringify({ messages: [{ role: 'user', content: systemPrompt }], model: this.currentAiModel }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
@@ -733,7 +806,7 @@ If they ask for a Web framework like Next.js, React, or Node, inject some boiler
                 code = await response.text();
             } catch(postErr) {
                 const encoded = encodeURIComponent(systemPrompt);
-                const response = await fetch(`https://text.pollinations.ai/${encoded}`, { method: 'GET' });
+                const response = await fetch(`https://text.pollinations.ai/${encoded}?model=${this.currentAiModel}`, { method: 'GET' });
                 if (!response.ok) throw new Error('GET also failed');
                 code = await response.text();
             }
@@ -755,6 +828,160 @@ If they ask for a Web framework like Next.js, React, or Node, inject some boiler
         } catch(e) {
             document.getElementById('loading-overlay').style.display = 'none';
             Toast.show('Failed to generate code. Please try again.', 'error');
+        }
+    },
+
+    // =================== CODE ANALYZER ===================
+    bindAnalyzer() {
+        const dropZone = document.getElementById('drop-zone');
+        const fileUpload = document.getElementById('file-upload');
+        const browseBtn = document.getElementById('browse-file-btn');
+        const analyzeAnother = document.getElementById('analyze-another-btn');
+
+        if(!dropZone || !fileUpload) return;
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        // Highlight drop zone
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.style.borderColor = 'var(--primary)';
+                dropZone.style.background = 'rgba(212,168,67,0.05)';
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.style.borderColor = 'var(--border)';
+                dropZone.style.background = 'transparent';
+            });
+        });
+
+        // Handle drop
+        dropZone.addEventListener('drop', e => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if(files && files.length > 0) this.handleCodeFile(files[0]);
+        });
+
+        // Handle click browse
+        browseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileUpload.click();
+        });
+        dropZone.addEventListener('click', (e) => {
+            if(e.target !== browseBtn) fileUpload.click();
+        });
+
+        fileUpload.addEventListener('change', () => {
+            if(fileUpload.files.length > 0) {
+                this.handleCodeFile(fileUpload.files[0]);
+            }
+        });
+
+        if(analyzeAnother) {
+            analyzeAnother.addEventListener('click', () => {
+                document.getElementById('analyzer-results').style.display = 'none';
+                document.getElementById('drop-zone').style.display = 'block';
+                fileUpload.value = '';
+            });
+        }
+    },
+
+    handleCodeFile(file) {
+        if(file.size > 100000) return Toast.show('File is too large (max 100KB).', 'error');
+        
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const code = e.target.result;
+            if(!code.trim()) return Toast.show('File is empty.', 'error');
+            this.analyzeCode(file.name, code);
+        };
+        reader.readAsText(file);
+    },
+
+    async analyzeCode(filename, codeContent) {
+        document.getElementById('drop-zone').style.display = 'none';
+        document.getElementById('analyzer-loading').style.display = 'block';
+
+        const sysPrompt = `Act as an expert static code analyzer. Evaluate the source code file and return ONLY a valid JSON object matching exactly this structure, nothing else:
+{
+  "complexity": "e.g. O(N), O(N^2), or 'Low', 'High'",
+  "security": "e.g. '0 Vulns', '1 Issue'",
+  "healthScore": "e.g. '92/100'",
+  "review": "A detailed 2-3 sentence technical review of the code's health and maintainability.",
+  "suggestions": "2-3 bullet points on how to improve the code."
+}`;
+
+        try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 20000);
+            
+            let res;
+            try {
+                res = await fetch('https://text.pollinations.ai/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: 'system', content: sysPrompt },
+                            { role: 'user', content: `Filename: ${filename}\n\n${codeContent.substring(0, 3000)}` }
+                        ],
+                        jsonMode: true,
+                        model: this.currentAiModel
+                    }),
+                    signal: controller.signal
+                });
+            } catch(e){}
+            clearTimeout(timeout);
+
+            if(!res || !res.ok) {
+                const query = sysPrompt + "\n\nFilename: " + filename + "\n" + codeContent.substring(0, 500);
+                res = await fetch('https://text.pollinations.ai/' + encodeURIComponent(query) + `?model=${this.currentAiModel}`);
+            }
+
+            let text = await res.text();
+            
+            const startIdx = text.indexOf('{');
+            const endIdx = text.lastIndexOf('}');
+            if (startIdx !== -1 && endIdx !== -1) {
+                text = text.substring(startIdx, endIdx + 1);
+            }
+            
+            const result = JSON.parse(text);
+
+            document.getElementById('analyzer-loading').style.display = 'none';
+            document.getElementById('analyzer-results').style.display = 'flex';
+            
+            document.getElementById('analyze-filename').textContent = filename;
+            document.getElementById('metric-complexity').textContent = result.complexity || '--';
+            document.getElementById('metric-security').textContent = result.security || '--';
+            document.getElementById('metric-score').textContent = result.healthScore || '--';
+            
+            let scoreVal = parseInt(result.healthScore);
+            const scoreEl = document.getElementById('metric-score');
+            if(!isNaN(scoreVal)) {
+                if(scoreVal >= 85) scoreEl.style.color = 'var(--success)';
+                else if(scoreVal >= 60) scoreEl.style.color = 'var(--warning)';
+                else scoreEl.style.color = 'var(--error)';
+            } else {
+                scoreEl.style.color = 'var(--text)';
+            }
+
+            document.getElementById('analyzer-review').textContent = result.review || 'No review generated.';
+            document.getElementById('analyzer-suggestions').innerHTML = (result.suggestions || '').replace(/\n/g, '<br>');
+
+        } catch (error) {
+            document.getElementById('analyzer-loading').style.display = 'none';
+            document.getElementById('drop-zone').style.display = 'block';
+            Toast.show('Failed to analyze code. The model might have timed out.', 'error');
+            console.error(error);
         }
     }
 };

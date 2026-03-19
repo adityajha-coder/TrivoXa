@@ -3,16 +3,31 @@ const API = {
     NPM_SEARCH: 'https://registry.npmjs.org/-/v1/search',
     NPM_PACKAGE: 'https://registry.npmjs.org',
 
-    async fetchGitHub(endpoint) {
-        const res = await fetch(`${this.GITHUB_BASE}${endpoint}`, {
-            headers: { 'Accept': 'application/vnd.github.v3+json' }
-        });
+    async fetchGitHub(endpoint, customMethod = 'GET', body = null) {
+        const headers = { 'Accept': 'application/vnd.github.v3+json' };
+        const token = localStorage.getItem('vertex_gh_token');
+        if (token) {
+            headers['Authorization'] = `token ${token}`;
+        }
+
+        const options = { method: customMethod, headers };
+        if (body) {
+            headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(body);
+        }
+
+        const res = await fetch(`${this.GITHUB_BASE}${endpoint}`, options);
+        
         if (!res.ok) {
-            if (res.status === 403) throw new Error('GitHub API rate limit exceeded. Try again later.');
-            if (res.status === 404) throw new Error('Repository not found. Check the URL and try again.');
+            if (res.status === 401) throw new Error('GitHub PAT is invalid. Please disconnect and reconnect via the Navbar.');
+            if (res.status === 403) throw new Error('GitHub API rate limit exceeded. Connect your GitHub account via the top right icon to bypass restrictions.');
+            if (res.status === 404) throw new Error('Resource not found. Ensure repository exists or check permissions.');
             throw new Error(`GitHub API error: ${res.status}`);
         }
-        return res.json();
+        
+        // GitHub API can return empty responses for some POSTs
+        const text = await res.text();
+        return text ? JSON.parse(text) : {};
     },
 
     async getRepoInfo(owner, repo) {
