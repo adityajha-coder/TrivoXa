@@ -1,11 +1,9 @@
 {
-  "name": "vertex",
+  "name": "vertex-developer-toolkit",
   "version": "1.0.0",
-  "description": "Vertex — All-in-one developer toolkit",
+  "description": "The unified developer toolkit for development",
   "scripts": {
-    "start": "npx -y serve . -l 3000",
-    "dev": "npx -y serve . -l 3000"
-  },
-  "keywords": ["developer", "toolkit", "git", "visualization"],
-  "license": "MIT"
+    "dev": "npx -y serve . -l 8080",
+    "start": "npx -y serve . -l 8080"
+  }
 }

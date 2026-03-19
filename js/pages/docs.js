@@ -116,13 +116,32 @@ Return ONLY a valid JSON array and absolutely nothing else. Do not use markdown 
             }
 
             let text = await res.text();
-            const startIdx = text.indexOf('[');
-            const endIdx = text.lastIndexOf(']');
-            if(startIdx !== -1 && endIdx !== -1) {
-                text = text.slice(startIdx, endIdx + 1);
+            text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+            let parsed;
+            try {
+                parsed = JSON.parse(text);
+            } catch(e) {
+                const startIdx = text.indexOf('[');
+                const endIdx = text.lastIndexOf(']');
+                if(startIdx !== -1 && endIdx !== -1) {
+                    parsed = JSON.parse(text.substring(startIdx, endIdx + 1));
+                } else {
+                    throw e;
+                }
             }
 
-            const docs = JSON.parse(text);
+            let docs = [];
+            if (Array.isArray(parsed)) {
+                docs = parsed;
+            } else if (parsed && typeof parsed === 'object') {
+                const arrayVal = Object.values(parsed).find(v => Array.isArray(v));
+                if (arrayVal) {
+                    docs = arrayVal;
+                } else {
+                    docs = [parsed];
+                }
+            }
 
             document.getElementById('docs-loading').style.display = 'none';
             document.getElementById('docs-results-area').style.display = 'block';

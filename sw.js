@@ -1,6 +1,7 @@
 const CACHE_NAME = 'vertex';
 const STATIC_ASSETS = [
     '/index.html',
+    '/favicon.svg',
     '/css/base.css',
     '/css/layout.css',
     '/css/components.css',
@@ -11,12 +12,17 @@ const STATIC_ASSETS = [
     '/js/components/navbar.js',
     '/js/components/loader.js',
     '/js/pages/dashboard.js',
-    '/js/pages/codeGenerator.js',
+    '/js/pages/askAi.js',
+    '/js/pages/docs.js',
     '/js/pages/codeGitExplorer.js',
     '/js/pages/freeApis.js',
     '/js/pages/packageScout.js',
-    '/js/pages/githubHub.js',
+    '/js/pages/commands.js',
+    '/js/pages/workspace.js',
+    '/js/pages/toolsVault.js',
+    '/js/pages/aiArchitect.js',
     '/js/router.js',
+    '/js/search.js',
     '/js/app.js',
     '/manifest.json'
 ];
