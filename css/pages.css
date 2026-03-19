@@ -402,3 +402,50 @@
     color: var(--success);
     background: rgba(62,207,110,0.1);
 }
+
+/* ===== AI Hub Responsive ===== */
+@media (max-width: 768px) {
+    /* Tabs: horizontal scroll on mobile */
+    #ai-hub-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    #ai-hub-tabs::-webkit-scrollbar { display: none; }
+    #ai-hub-tabs .tab-item { white-space: nowrap; font-size: 0.74rem; padding: 6px 10px; }
+
+    /* Chat section */
+    .ai-chat-header { padding: 12px 14px; }
+    .ai-chat-section .ai-bot-messages { padding: 12px 14px; max-height: 400px; }
+    .ai-chat-section .ai-bot-input-area { padding: 10px 14px; }
+    .ai-chat-section .ai-bot-suggestions { padding: 0 14px 12px; }
+    .ai-bot-input-area .flex-between { flex-direction: column; gap: 8px; align-items: stretch; }
+    .ai-bot-input-area .flex-gap { justify-content: center; }
+
+    /* Architect: grid to single column */
+    #ai-arch-results { grid-template-columns: 1fr !important; }
+    #ai-arch-results .glass-card { min-height: unset; }
+
+    /* Code Generator: buttons wrap */
+    #generator-output-area .flex-between { flex-direction: column; gap: 8px; align-items: stretch; }
+    #generator-output-area .flex-gap { flex-wrap: wrap; justify-content: center; }
+    #monaco-code-output { height: 350px !important; }
+
+    /* Framework tabs */
+    #framework-tabs { display: flex !important; flex-wrap: wrap; gap: 6px; }
+    #framework-tabs .tab-item { flex: 1; min-width: 70px; text-align: center; }
+
+    /* Suggestion chips */
+    .ai-bot-suggestions { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .ai-bot-suggestions::-webkit-scrollbar { display: none; }
+}
+
+@media (max-width: 480px) {
+    #ai-hub-tabs .tab-item span { display: none; }
+    #ai-hub-tabs .tab-item i { margin-right: 0 !important; }
+    .ai-msg { max-width: 95%; }
+    .ai-msg .msg-bubble { font-size: 0.78rem; padding: 8px 12px; }
+    #monaco-code-output { height: 280px !important; }
+    .role-cards-grid { grid-template-columns: 1fr !important; }
+}
+
