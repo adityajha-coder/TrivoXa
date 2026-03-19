@@ -27,6 +27,10 @@
     <link rel="stylesheet" href="css/animations.css?v=4">
 </head>
 <body>
+    <script>
+        window.addEventListener('error', e => fetch('http://localhost:4444', { method: 'POST', body: e.filename + ':' + e.lineno + ' - ' + e.message }));
+        window.addEventListener('unhandledrejection', e => fetch('http://localhost:4444', { method: 'POST', body: 'Promise ' + (e.reason && e.reason.stack ? e.reason.stack : e.reason) }));
+    </script>
     <div id="app">
         <header id="topnav"></header>
         <main id="main-content">
@@ -51,6 +55,10 @@
     </div>
 
     <!-- Heavy libs (Three.js, 3d-force-graph, StackBlitz SDK, Monaco Editor) are loaded on-demand by pages that need them -->
+    <!-- Pre-load 3D components before Monaco to prevent UMD AMD module conflicts (RequireJS takeover) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://unpkg.com/3d-force-graph"></script>
 
     <!-- Monaco AMD Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.46.0/min/vs/loader.min.js"></script>

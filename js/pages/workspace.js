@@ -110,9 +110,8 @@ const WorkspacePage = {
                         <button id="save-snip-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save Snippet</button>
                     </div>
                     
-                    <div class="flex-between mt-lg">
-                        <h3>Saved Snippets</h3>
-                        <button class="btn btn-secondary btn-sm" id="sync-gists-btn"><i class="fa-brands fa-github"></i> Sync to Gists</button>
+                    <div class="flex-between mt-lg mb-sm">
+                        <h3 style="margin-bottom:0;">Saved Snippets</h3>
                     </div>
                     <div class="grid-2 mt-sm" id="snippets-grid"></div>
                 </div>
@@ -320,8 +319,6 @@ const WorkspacePage = {
             );
         });
 
-        document.getElementById('sync-gists-btn')?.addEventListener('click', () => this.syncToGists());
-
         document.getElementById('snip-lang-tabs')?.addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
             if (!tab) return;
@@ -390,52 +387,5 @@ const WorkspacePage = {
                 Toast.show('Editing snippet — make changes and save again.', 'info');
             }
         });
-    },
-
-    async syncToGists() {
-        if (!this.snippets.length) return Toast.show('No snippets left to sync!', 'warning');
-        if (!localStorage.getItem('vertex_gh_token')) return Toast.show('Please connect GitHub via the top right icon first.', 'error');
-
-        const btn = document.getElementById('sync-gists-btn');
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
-        btn.disabled = true;
-
-        try {
-            const files = {};
-            this.snippets.forEach((s, i) => {
-                let ext = '.txt';
-                if(s.lang === 'html' || s.lang === 'vue' || s.lang === 'svelte') ext = '.html';
-                else if(s.lang === 'javascript' || s.lang === 'node' || s.lang === 'react') ext = '.js';
-                else if(s.lang === 'typescript' || s.lang === 'angular') ext = '.ts';
-                else if(s.lang === 'python') ext = '.py';
-                else if(s.lang === 'css') ext = '.css';
-                else if(s.lang === 'java') ext = '.java';
-                else if(s.lang === 'cpp') ext = '.cpp';
-                else if(s.lang === 'c') ext = '.c';
-                else if(s.lang === 'csharp') ext = '.cs';
-                else if(s.lang === 'go') ext = '.go';
-                else if(s.lang === 'rust') ext = '.rs';
-                else if(s.lang === 'ruby') ext = '.rb';
-                else if(s.lang === 'php') ext = '.php';
-                else if(s.lang === 'sql') ext = '.sql';
-                else if(s.lang === 'bash' || s.lang === 'shell') ext = '.sh';
-
-                const safeName = s.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ext;
-                files[`${i+1}_${safeName}`] = { content: s.code };
-            });
-
-            const res = await API.fetchGitHub('/gists', 'POST', {
-                description: 'Vertex Toolkit - Workspace Snippets Backup',
-                public: false,
-                files: files
-            });
-
-            Toast.show('Successfully synced to private GitHub Gist!', 'success');
-        } catch (e) {
-            Toast.show(e.message || 'Failed to sync Gists. Check token validity.', 'error');
-        } finally {
-            btn.innerHTML = '<i class="fa-brands fa-github"></i> Sync to Gists';
-            btn.disabled = false;
-        }
     }
 };

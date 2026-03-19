@@ -5,11 +5,6 @@ const API = {
 
     async fetchGitHub(endpoint, customMethod = 'GET', body = null) {
         const headers = { 'Accept': 'application/vnd.github.v3+json' };
-        const token = localStorage.getItem('vertex_gh_token');
-        if (token) {
-            headers['Authorization'] = `token ${token}`;
-        }
-
         const options = { method: customMethod, headers };
         if (body) {
             headers['Content-Type'] = 'application/json';

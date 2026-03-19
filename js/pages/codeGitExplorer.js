@@ -13,10 +13,7 @@ const CodeGitExplorerPage = {
         if (this._libsLoaded) return;
         Toast.show('Loading 3D engine...', 'info', 2000);
         await Helpers.loadScripts([
-            'https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
-            'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js',
-            'https://unpkg.com/3d-force-graph'
+            'https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js'
         ]);
         this._libsLoaded = true;
     },
@@ -433,7 +430,7 @@ const CodeGitExplorerPage = {
         this.cleanup();
         const container = document.getElementById('structure-3d');
         container.innerHTML = '';
-        const w = container.clientWidth, h = container.clientHeight;
+        const w = container.clientWidth || 800, h = container.clientHeight || 500;
 
         const nodes = [];
         const links = [];
@@ -475,7 +472,8 @@ const CodeGitExplorerPage = {
         const graphData = { nodes, links };
         
         setTimeout(() => {
-            this.forceGraph = ForceGraph3D()(container)
+            try {
+                this.forceGraph = ForceGraph3D()(container)
                 .width(w)
                 .height(h)
                 .backgroundColor('#000000')
@@ -489,10 +487,6 @@ const CodeGitExplorerPage = {
                 .linkDirectionalParticles(2)
                 .linkDirectionalParticleWidth(1.5)
                 .linkDirectionalParticleSpeed(d => 0.005 + Math.random() * 0.005)
-                // Remove dagMode to allow natural force-directed clusters (like fireworks/dandelions)
-                .d3Force('charge', d3.forceManyBody().strength(-30))
-                .d3Force('link', d3.forceLink().distance(25))
-                .d3Force('collision', d3.forceCollide(node => Math.cbrt(node.val) * 2 + 2))
                 .onNodeClick(node => {
                     // Focus camera on node
                     const distance = 40;
@@ -512,6 +506,9 @@ const CodeGitExplorerPage = {
                 const nw = container.clientWidth, nh = container.clientHeight; 
                 this.forceGraph.width(nw).height(nh);
             });
+            } catch (err) {
+                fetch('http://localhost:4444', { method: 'POST', body: '3D Graph Error: ' + (err.stack || err) });
+            }
         }, 100);
     },
 
@@ -562,7 +559,7 @@ const CodeGitExplorerPage = {
         if (this.gitScene) return;
         const { branches, commits } = this.repoData;
         const container = document.getElementById('git-3d');
-        const w = container.clientWidth, h = container.clientHeight;
+        const w = container.clientWidth || 800, h = container.clientHeight || 400;
         this.gitScene = new THREE.Scene();
         this.gitScene.background = new THREE.Color(0x000000);
         this.gitCamera = new THREE.PerspectiveCamera(50, w / h, 0.1, 500);
@@ -638,8 +635,12 @@ const CodeGitExplorerPage = {
         if (this.gitRenderer) this.gitRenderer.dispose();
         
         if (this.forceGraph) {
-            // Free the canvas and WebGL
-            document.getElementById('structure-3d').innerHTML = '';
+            try { this.forceGraph._destructor(); } catch(e) {}
+            const oldContainer = document.getElementById('structure-3d');
+            if (oldContainer) {
+                const newContainer = oldContainer.cloneNode(false);
+                oldContainer.parentNode.replaceChild(newContainer, oldContainer);
+            }
             this.forceGraph = null;
         }
         

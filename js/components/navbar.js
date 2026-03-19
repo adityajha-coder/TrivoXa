@@ -27,7 +27,6 @@ const Navbar = {
                 <nav class="topnav-links">${linksHtml}</nav>
             </div>
             <div class="topnav-right">
-                <button class="topnav-btn" id="btn-github-connect" title="Connect GitHub (Bypass API limits & Sync Gists)"><i class="fa-brands fa-github"></i></button>
                 <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
                 <button class="topnav-btn" id="btn-fullscreen" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
             </div>`;
@@ -53,36 +52,6 @@ const Navbar = {
 
         document.querySelector('.topnav-brand').addEventListener('click', () => Router.navigate('dashboard'));
 
-        const checkGitTokenBtn = () => {
-            const btn = document.getElementById('btn-github-connect');
-            if (localStorage.getItem('vertex_gh_token')) {
-                btn.style.color = 'var(--success)';
-                btn.title = "GitHub Connected! (Click to disconnect)";
-            } else {
-                btn.style.color = 'var(--text-muted)';
-                btn.title = "Connect GitHub PAT (Bypass API limits)";
-            }
-        };
-        checkGitTokenBtn();
-
-        document.getElementById('btn-github-connect').addEventListener('click', () => {
-            if (localStorage.getItem('vertex_gh_token')) {
-                if (confirm('Disconnect GitHub account?')) {
-                    localStorage.removeItem('vertex_gh_token');
-                    Toast.show('GitHub Disconnected', 'info');
-                    checkGitTokenBtn();
-                }
-            } else {
-                const token = prompt('Enter a GitHub Personal Access Token (PAT) to bypass API limits and enable Gist syncing. We only save this locally in your browser:');
-                if (token && token.trim().startsWith('ghp_')) {
-                    localStorage.setItem('vertex_gh_token', token.trim());
-                    Toast.show('GitHub Connected Successfully!', 'success');
-                    checkGitTokenBtn();
-                } else if (token) {
-                    Toast.show('Invalid token format. Must start with ghp_', 'error');
-                }
-            }
-        });
 
         document.getElementById('menu-toggle').addEventListener('click', () => {
             mobileMenu.classList.toggle('open');
