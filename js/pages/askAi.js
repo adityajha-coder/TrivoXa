@@ -65,10 +65,22 @@ const AskAiPage = {
     },
 
     currentProjectState: null,
+    currentFramework: 'html',
+    
+    archSuggestions: [
+        "Scalable Node.js Microservices", "React native chat app", 
+        "Python E-commerce with Django", "Vue 3 SSR blog", 
+        "Next.js Portfolio", "Express REST API template",
+        "Fullstack SvelteKit store"
+    ],
 
     render() {
         Navbar.renderTopbar('Ask AI');
         const content = document.getElementById('page-content');
+        
+        const archSuggestHtml = this.archSuggestions.sort(() => 0.5 - Math.random()).slice(0, 4)
+            .map(s => `<button class="ai-suggest-chip" data-q="${s}">${s}</button>`).join('');
+
         content.innerHTML = `
             <div class="page-enter">
                 <div class="page-header">
@@ -80,6 +92,7 @@ const AskAiPage = {
                 <div class="tabs mb-lg" id="ai-hub-tabs">
                     <button class="tab-item active" data-tab="chat"><i class="fa-solid fa-comments" style="margin-right:6px;"></i>AI Chat</button>
                     <button class="tab-item" data-tab="architect"><i class="fa-solid fa-code-merge" style="margin-right:6px;"></i>AI Architect</button>
+                    <button class="tab-item" data-tab="codegen"><i class="fa-solid fa-laptop-code" style="margin-right:6px;"></i>Code Generator</button>
                     <button class="tab-item" data-tab="stacks"><i class="fa-solid fa-compass" style="margin-right:6px;"></i>Tech Stacks</button>
                 </div>
 
@@ -149,6 +162,9 @@ const AskAiPage = {
                             </span>
                             <button class="btn btn-primary" id="ai-arch-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Design Architecture</button>
                         </div>
+                        <div class="ai-bot-suggestions mt-md" id="ai-arch-suggestions" style="justify-content:flex-start;">
+                            ${archSuggestHtml}
+                        </div>
                     </div>
 
                     <div class="grid-2" id="ai-arch-results" style="display:none; gap: 20px;">
@@ -192,7 +208,67 @@ const AskAiPage = {
                     </div>
                 </div>
 
-                <!-- ===== TAB 3: TECH STACKS ===== -->
+                <!-- ===== TAB 3: CODE GENERATOR ===== -->
+                <div id="ai-tab-codegen" style="display:none;">
+                    <div class="glass-card mb-lg">
+                        <div class="flex-gap mb-sm" style="align-items:center;">
+                            <div class="ai-bot-avatar" style="width:36px;height:36px;font-size:0.9rem;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                            <div>
+                                <h3 style="font-size:0.95rem;font-weight:600;">AI Code Generator</h3>
+                                <span class="text-xs text-muted">Generate production-ready code blocks and run them live</span>
+                            </div>
+                        </div>
+                        <div class="form-group mb-md mt-md">
+                            <label class="text-sm text-secondary mb-sm" style="font-weight: 600; display:block;">Framework</label>
+                            <div class="tabs" id="framework-tabs" style="display:inline-flex;">
+                                <button class="tab-item active" data-fw="html">HTML/CSS</button>
+                                <button class="tab-item" data-fw="react">React</button>
+                                <button class="tab-item" data-fw="vue">Vue</button>
+                                <button class="tab-item" data-fw="python">Python</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-md">
+                            <label class="text-sm text-secondary mb-sm" style="font-weight: 600; display:block;">Component Description</label>
+                            <textarea id="ai-code-prompt" class="input-field" placeholder="e.g. A modern login form with email, password, and social login buttons, using glassmorphism styling." style="min-height: 100px; width:100%; resize:vertical; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:var(--text); padding:12px; border-radius:var(--radius);"></textarea>
+                        </div>
+                        
+                        <button id="generate-ai-code-btn" class="btn btn-primary" style="width: 100%;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Code
+                        </button>
+                    </div>
+
+                    <div id="loading-overlay" style="display:none; text-align:center; padding:40px 0;">
+                        <div class="spinner" style="margin: 0 auto 16px; width:40px; height:40px; border:4px solid rgba(212,168,67,0.1); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
+                        <p class="text-muted">AI is crafting your code...</p>
+                    </div>
+
+                    <div id="generator-output-area" style="display: none;">
+                        <div class="glass-card-static">
+                            <div class="flex-between mb-md">
+                                <div class="flex-gap">
+                                    <span class="tag tag-primary" id="output-fw-tag"></span>
+                                </div>
+                                <div class="flex-gap">
+                                    <button class="btn btn-secondary btn-sm" id="run-container-btn" style="background:var(--accent); color:#fff; border-color:var(--accent);">
+                                        <i class="fa-solid fa-play"></i> Run Output
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" id="copy-code-btn">
+                                        <i class="fa-solid fa-copy"></i> Copy Code
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" id="save-workspace-btn">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i> Save to Workspace
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="generator-output" style="background:rgba(0,0,0,0.5); padding:16px; border-radius:var(--radius); border:1px solid var(--border); overflow:hidden;">
+                                <div id="monaco-code-output" style="height:500px; width:100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== TAB 4: TECH STACKS ===== -->
                 <div id="ai-tab-stacks" style="display:none;">
                     <div class="flex-between mb-md">
                         <h2 style="font-size:1.05rem;font-weight:600;"><i class="fa-solid fa-compass" style="color:var(--primary-light);margin-right:6px;"></i>What do you want to build?</h2>
@@ -235,7 +311,26 @@ const AskAiPage = {
         this.bindTabs();
         this.bindChat();
         this.bindArchitect();
+        this.bindCodeGen();
         this.bindRoles();
+
+        Helpers.initMonaco().then(monaco => {
+            const container = document.getElementById('monaco-code-output');
+            if(container) {
+                this.editor = monaco.editor.create(container, {
+                    value: '// AI Generated code will appear here...',
+                    language: 'javascript',
+                    theme: 'vs-dark',
+                    minimap: { enabled: false },
+                    readOnly: true,
+                    automaticLayout: true,
+                    fontSize: 14,
+                    fontFamily: 'JetBrains Mono',
+                    scrollBeyondLastLine: false,
+                    roundedSelection: true
+                });
+            }
+        });
     },
 
     // =================== TAB SWITCHING ===================
@@ -248,6 +343,7 @@ const AskAiPage = {
             const target = tab.dataset.tab;
             document.getElementById('ai-tab-chat').style.display = target === 'chat' ? 'block' : 'none';
             document.getElementById('ai-tab-architect').style.display = target === 'architect' ? 'block' : 'none';
+            document.getElementById('ai-tab-codegen').style.display = target === 'codegen' ? 'block' : 'none';
             document.getElementById('ai-tab-stacks').style.display = target === 'stacks' ? 'block' : 'none';
         });
     },
@@ -361,6 +457,16 @@ const AskAiPage = {
         document.getElementById('arch-close-embed').addEventListener('click', () => {
             document.getElementById('arch-stackblitz-wrap').style.display = 'none';
         });
+
+        const suggestionsArea = document.getElementById('ai-arch-suggestions');
+        if(suggestionsArea) {
+            suggestionsArea.addEventListener('click', (e) => {
+                if(e.target.classList.contains('ai-suggest-chip')) {
+                    document.getElementById('ai-arch-prompt').value = e.target.dataset.q;
+                    this.generateArchitecture();
+                }
+            });
+        }
     },
 
     async generateArchitecture() {
@@ -416,7 +522,14 @@ If they ask for a Web framework like Next.js, React, or Node, inject some boiler
             }
 
             let text = await res.text();
-            text = text.replace(/^```(json)?/m, '').replace(/```$/m, '').trim();
+            
+            // Fix JSON extraction
+            const startIdx = text.indexOf('{');
+            const endIdx = text.lastIndexOf('}');
+            if (startIdx !== -1 && endIdx !== -1) {
+                text = text.slice(startIdx, endIdx + 1);
+            }
+            
             const data = JSON.parse(text);
 
             this.currentProjectState = data;
@@ -501,5 +614,147 @@ If they ask for a Web framework like Next.js, React, or Node, inject some boiler
             });
         });
         document.getElementById('role-close').addEventListener('click', () => { document.getElementById('role-detail').style.display = 'none'; document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active')); });
+    },
+
+    // =================== CODE GENERATOR ===================
+    bindCodeGen() {
+        document.getElementById('framework-tabs').addEventListener('click', (e) => {
+            const tab = e.target.closest('.tab-item');
+            if (!tab) return;
+            document.querySelectorAll('#framework-tabs .tab-item').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            this.currentFramework = tab.dataset.fw;
+        });
+
+        document.getElementById('generate-ai-code-btn').addEventListener('click', () => {
+            const prompt = document.getElementById('ai-code-prompt').value.trim();
+            if(!prompt) return Toast.show('Please enter a description first', 'error');
+            this.generateAICode(prompt);
+        });
+
+        document.getElementById('copy-code-btn').addEventListener('click', () => {
+            const code = this.editor ? this.editor.getValue() : '';
+            if(!code) return Toast.show('No code to copy', 'error');
+            Helpers.copyToClipboard(code);
+            Toast.show('Code copied to clipboard!', 'success');
+        });
+
+        document.getElementById('save-workspace-btn').addEventListener('click', () => {
+            const code = this.editor ? this.editor.getValue() : '';
+            if(!code) return Toast.show('No code to save', 'error');
+            const fw = this.currentFramework;
+            WorkspacePage.saveSnippet(`AI Generated ${fw.toUpperCase()}`, code, fw);
+            Toast.show('Saved to My Workspace!', 'success');
+        });
+
+        document.getElementById('run-container-btn').addEventListener('click', async () => {
+            const code = this.editor ? this.editor.getValue() : '';
+            if(!code) return Toast.show('No code to run', 'error');
+
+            const fw = this.currentFramework;
+            let project = {
+                title: 'Vertex AI Output',
+                description: 'Generated by Vertex Developer Toolkit',
+                template: 'javascript',
+                files: { 'index.js': code }
+            };
+
+            if (fw === 'react') {
+                project.template = 'create-react-app';
+                project.files = {
+                    'src/App.js': code,
+                    'src/index.js': 'import React from "react";\nimport ReactDOM from "react-dom";\nimport App from "./App";\nReactDOM.render(<App />, document.getElementById("root"));',
+                    'public/index.html': '<div id="root"></div>'
+                };
+            } else if (fw === 'vue') {
+                project.template = 'vue-cli';
+                project.files = { 'src/App.vue': code };
+            } else if (fw === 'html') {
+                project.template = 'html';
+                project.files = { 'index.html': code };
+            } else if (fw === 'python') {
+                return Toast.show('WebContainers Python runtime coming soon. Try React/Vue/HTML.', 'info');
+            }
+
+            if (!window.StackBlitzSDK) {
+                Toast.show('Loading WebContainer runtime...', 'info', 2000);
+                await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
+            }
+
+            let embedWrap = document.getElementById('stackblitz-embed-wrap');
+            if (!embedWrap) {
+                embedWrap = document.createElement('div');
+                embedWrap.id = 'stackblitz-embed-wrap';
+                embedWrap.style.cssText = 'margin-top:20px;';
+                embedWrap.innerHTML = `
+                    <div class="glass-card-static" style="padding:0; overflow:hidden;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+                                <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Live Preview</span>
+                            </div>
+                            <button class="btn btn-ghost btn-xs" id="close-embed-btn"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div id="stackblitz-embed" style="height:450px;"></div>
+                    </div>`;
+                document.getElementById('generator-output-area').appendChild(embedWrap);
+                document.getElementById('close-embed-btn').addEventListener('click', () => { embedWrap.style.display = 'none'; });
+            }
+            embedWrap.style.display = 'block';
+
+            Toast.show('Booting Live WebContainer...', 'success');
+            window.StackBlitzSDK.embedProject(
+                document.getElementById('stackblitz-embed'),
+                project,
+                { openFile: Object.keys(project.files)[0], height: 450, forceEmbedLayout: true }
+            );
+        });
+    },
+
+    async generateAICode(prompt) {
+        document.getElementById('generator-output-area').style.display = 'none';
+        document.getElementById('loading-overlay').style.display = 'block';
+
+        const systemPrompt = `You are an expert coder. Write ONLY the code for a ${prompt} component using ${this.currentFramework}. Do NOT include markdown blocks like \`\`\`html or \`\`\`javascript, and do NOT include any explanations. Output pure, valid code.`;
+        
+        try {
+            let code = '';
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 30000);
+                const response = await fetch('https://text.pollinations.ai/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: [{ role: 'user', content: systemPrompt }], model: 'openai' }),
+                    signal: controller.signal
+                });
+                clearTimeout(timeout);
+                if (!response.ok) throw new Error('POST failed');
+                code = await response.text();
+            } catch(postErr) {
+                const encoded = encodeURIComponent(systemPrompt);
+                const response = await fetch(`https://text.pollinations.ai/${encoded}`, { method: 'GET' });
+                if (!response.ok) throw new Error('GET also failed');
+                code = await response.text();
+            }
+            
+            // Cleanup markdown
+            code = code.replace(/^```[a-zA-Z]*\n?/gm, '').replace(/\n?```$/gm, '').trim();
+
+            document.getElementById('loading-overlay').style.display = 'none';
+            document.getElementById('generator-output-area').style.display = 'block';
+            document.getElementById('output-fw-tag').textContent = this.currentFramework.toUpperCase();
+            
+            if (this.editor) {
+                this.editor.setValue('');
+                let lang = this.currentFramework;
+                if(lang === 'vue' || lang === 'react') lang = 'html';
+                window.monaco?.editor.setModelLanguage(this.editor.getModel(), lang);
+                this.editor.setValue(code);
+            }
+        } catch(e) {
+            document.getElementById('loading-overlay').style.display = 'none';
+            Toast.show('Failed to generate code. Please try again.', 'error');
+        }
     }
 };

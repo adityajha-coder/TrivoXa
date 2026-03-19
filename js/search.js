@@ -7,8 +7,8 @@ const GlobalSearch = {
     searchData: [
         { title: 'Dashboard', type: 'Page', link: 'dashboard', icon: 'fa-solid fa-house' },
         { title: 'AI Hub (Ask AI / Architect)', type: 'Page', link: 'ask-ai', icon: 'fa-solid fa-robot' },
-        { title: 'Code Generator', type: 'Page', link: 'code-generator', icon: 'fa-solid fa-wand-magic-sparkles' },
         { title: 'My Workspace', type: 'Page', link: 'workspace', icon: 'fa-solid fa-laptop-code' },
+        { title: 'Developer Docs', type: 'Page', link: 'docs', icon: 'fa-solid fa-book-open-reader' },
         { title: 'Tools Vault', type: 'Page', link: 'tools-vault', icon: 'fa-solid fa-screwdriver-wrench' },
         { title: 'GitHub Explorer', type: 'Page', link: 'code-git-explorer', icon: 'fa-brands fa-github' },
         { title: 'Package Scout', type: 'Page', link: 'package-scout', icon: 'fa-solid fa-box-open' },

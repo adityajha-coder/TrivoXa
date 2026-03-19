@@ -80,8 +80,8 @@ const DashboardPage = {
             </style>
             <div class="page-enter">
                 <div class="dash-header">
-                    <h1 class="dash-title">${greeting}, <span class="text-gradient">Developer</span></h1>
-                    <p class="dash-sub">Your developer workspace is ready.</p>
+                    <h1 class="dash-title">Ship Code <span class="text-gradient">Faster.</span> Build <span class="text-gradient">Smarter.</span></h1>
+                    <p class="dash-sub" style="font-size:1.05rem;">The unified developer toolkit for developement</p>
                 </div>
 
                 <div class="dash-hero">
@@ -92,7 +92,7 @@ const DashboardPage = {
                         <i class="fa-solid fa-robot hero-bg"></i>
                     </div>
                     <div class="hero-side">
-                        <div class="hero-card" data-page="code-generator">
+                        <div class="hero-card" data-page="ask-ai">
                             <h3><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--primary-light);"></i> Code Generator</h3>
                             <p>Generate framework components with AI and run them live.</p>
                         </div>
@@ -135,6 +135,11 @@ const DashboardPage = {
                         <div class="tcard-info"><div class="tcard-name">GitHub Explorer</div><div class="tcard-desc">3D repo visualizations</div></div>
                         <i class="fa-solid fa-chevron-right tcard-arrow"></i>
                     </div>
+                    <div class="tcard" data-page="docs">
+                        <div class="tcard-icon" style="background:rgba(234,88,12,0.12);border:1px solid rgba(234,88,12,0.2);"><i class="fa-solid fa-book-open-reader" style="background-image:linear-gradient(135deg,#fdba74,#ea580c);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i></div>
+                        <div class="tcard-info"><div class="tcard-name">Developer Docs</div><div class="tcard-desc">Instantly search MDN API Docs</div></div>
+                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+                    </div>
                 </div>
             </div>`;
 
@@ -145,6 +150,14 @@ const DashboardPage = {
         content.querySelectorAll('[data-page]').forEach(el => {
             el.addEventListener('click', () => Router.navigate(el.dataset.page));
         });
+
+        // Onboarding Check
+        if(!localStorage.getItem('vdt_first_time')) {
+            setTimeout(() => {
+                Toast.show('Welcome to Vertex! Your all-in-one developer hub. Explore the AI tools below or use Ctrl+K to search.', 'info', 6000);
+                localStorage.setItem('vdt_first_time', 'true');
+            }, 1000);
+        }
     }
 };
 

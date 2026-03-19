@@ -13,6 +13,7 @@ const CodeGitExplorerPage = {
         if (this._libsLoaded) return;
         Toast.show('Loading 3D engine...', 'info', 2000);
         await Helpers.loadScripts([
+            'https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js',
             'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
             'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js',
             'https://unpkg.com/3d-force-graph'
