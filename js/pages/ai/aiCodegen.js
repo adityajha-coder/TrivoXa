@@ -44,13 +44,20 @@ const AiCodegenMixin = {
             if (fw === 'react') {
                 project.template = 'create-react-app';
                 project.files = {
-                    'src/App.js': code,
-                    'src/index.js': 'import React from "react";\nimport ReactDOM from "react-dom";\nimport App from "./App";\nReactDOM.render(<App />, document.getElementById("root"));',
-                    'public/index.html': '<div id="root"></div>'
+                    'src/App.js': `import React from 'react';\nimport './style.css';\n\n${code}`,
+                    'src/index.js': 'import React from "react";\nimport { createRoot } from "react-dom/client";\nimport App from "./App";\nconst root = createRoot(document.getElementById("root"));\nroot.render(<App />);',
+                    'public/index.html': '<div id="root"></div>',
+                    'src/style.css': 'body { font-family: sans-serif; padding: 20px; }'
                 };
             } else if (fw === 'vue') {
-                project.template = 'vue-cli';
-                project.files = { 'src/App.vue': code };
+                project.template = 'node';
+                project.files = { 
+                    'package.json': '{"name":"vue-preview","scripts":{"start":"vite"},"dependencies":{"vue":"^3.2.0"},"devDependencies":{"vite":"^4.0.0","@vitejs/plugin-vue":"^4.0.0"}}',
+                    'index.html': '<div id="app"></div><script type="module" src="/main.js"><\/script>',
+                    'main.js': 'import { createApp } from "vue";\nimport App from "./App.vue";\ncreateApp(App).mount("#app");',
+                    'App.vue': code,
+                    'vite.config.js': 'import { defineConfig } from "vite";\nimport vue from "@vitejs/plugin-vue";\nexport default defineConfig({plugins:[vue()]});'
+                };
             } else if (fw === 'html') {
                 project.template = 'html';
                 project.files = { 'index.html': code };
@@ -59,36 +66,38 @@ const AiCodegenMixin = {
             }
 
             if (!window.StackBlitzSDK) {
-                Toast.show('Loading WebContainer runtime...', 'info', 2000);
+                Toast.show('Loading WebContainer...', 'info', 2000);
                 await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
             }
 
             let embedWrap = document.getElementById('stackblitz-embed-wrap');
-            if (!embedWrap) {
-                embedWrap = document.createElement('div');
-                embedWrap.id = 'stackblitz-embed-wrap';
-                embedWrap.style.cssText = 'margin-top:20px;';
-                embedWrap.innerHTML = `
-                    <div class="glass-card-static" style="padding:0; overflow:hidden;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
-                            <div style="display:flex;align-items:center;gap:8px;">
-                                <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
-                                <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Live Preview</span>
-                            </div>
-                            <button class="btn btn-ghost btn-xs" id="close-embed-btn"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                        <div id="stackblitz-embed" style="height:450px;"></div>
-                    </div>`;
-                document.getElementById('generator-output-area').appendChild(embedWrap);
-                document.getElementById('close-embed-btn').addEventListener('click', () => { embedWrap.style.display = 'none'; });
+            if (embedWrap) {
+                embedWrap.remove();
             }
+
+            embedWrap = document.createElement('div');
+            embedWrap.id = 'stackblitz-embed-wrap';
+            embedWrap.style.cssText = 'margin-top:20px;';
+            embedWrap.innerHTML = `
+                <div class="glass-card-static" style="padding:0; overflow:hidden;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+                            <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Live Workspace</span>
+                        </div>
+                        <button class="btn btn-ghost btn-xs" id="close-embed-btn"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div id="stackblitz-embed" style="height:450px;"></div>
+                </div>`;
+            document.getElementById('generator-output-area').appendChild(embedWrap);
+            document.getElementById('close-embed-btn').addEventListener('click', () => { embedWrap.style.display = 'none'; });
             embedWrap.style.display = 'block';
 
-            Toast.show('Booting Live WebContainer...', 'success');
+            Toast.show('Booting Live Server...', 'success');
             window.StackBlitzSDK.embedProject(
                 document.getElementById('stackblitz-embed'),
                 project,
-                { openFile: Object.keys(project.files)[0], height: 450, forceEmbedLayout: true }
+                { openFile: Object.keys(project.files).find(f => f.includes('App') || f.includes('index')), height: 450, forceEmbedLayout: true }
             );
         });
     },
@@ -102,30 +111,19 @@ const AiCodegenMixin = {
         try {
             let response, code = '';
             try {
+                const encoded = encodeURIComponent(systemPrompt);
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 30000);
-                response = await fetch('https://text.pollinations.ai/openai', {
-                    method: 'POST',
-                    credentials: 'omit',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({ model: this.currentAiModel, messages: [{ role: 'user', content: systemPrompt }] }),
+                response = await fetch(`https://text.pollinations.ai/${encoded}?model=${this.currentAiModel || 'claude'}`, { 
+                    method: 'GET',
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
-                if (!response.ok) throw new Error('POST failed');
+                if (!response.ok) throw new Error('GET failed');
                 
-                const responseText = await response.text();
-                try {
-                    const json = JSON.parse(responseText);
-                    code = json.choices?.[0]?.message?.content || responseText;
-                } catch(e) {
-                    code = responseText;
-                }
-            } catch(postErr) {
-                const encoded = encodeURIComponent(systemPrompt);
-                const response = await fetch(`https://text.pollinations.ai/${encoded}?model=${this.currentAiModel}`, { method: 'GET' });
-                if (!response.ok) throw new Error('GET also failed');
                 code = await response.text();
+            } catch(postErr) {
+                code = '// Code generation failed or API is busy. Please try again.';
             }
             
             code = code.replace(/^```[a-zA-Z]*\n?/gm, '').replace(/\n?```$/gm, '').trim();

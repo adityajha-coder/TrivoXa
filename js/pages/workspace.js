@@ -219,7 +219,7 @@ const WorkspacePage = {
                         </div>
                         <button class="btn btn-ghost btn-xs" id="ws-close-embed"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-                    <iframe id="ws-sandbox-iframe" style="width:100%;height:450px;border:none;background:#fff;"></iframe>
+                    <iframe id="ws-sandbox-iframe" sandbox="allow-scripts allow-modals" style="width:100%;height:450px;border:none;background:#fff;"></iframe>
                 </div>`;
             document.getElementById('ws-tab-snippets').appendChild(embedWrap);
             document.getElementById('ws-close-embed').addEventListener('click', () => { embedWrap.style.display = 'none'; });
