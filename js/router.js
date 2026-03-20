@@ -8,8 +8,7 @@ const Router = {
         'docs': () => DocsPage.render(),
         'code-git-explorer': () => CodeGitExplorerPage.render(),
         'package-scout': () => PackageScoutPage.render(),
-        'free-apis': () => FreeApisPage.render(),
-        'ai-architect': () => AiArchitectPage.render()
+        'free-apis': () => FreeApisPage.render()
     },
 
     _currentPage: null,

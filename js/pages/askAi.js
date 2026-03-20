@@ -198,26 +198,10 @@ const AskAiPage = {
                                     <button class="btn btn-ghost btn-xs" id="ai-copy-cmd" style="position:absolute; top:8px; right:8px;"><i class="fa-solid fa-copy"></i></button>
                                 </div>
                             </div>
-                            <div class="glass-card">
-                                <h3 class="mb-sm"><i class="fa-solid fa-laptop-code" style="color:#06b6d4; margin-right:8px;"></i> Live Sandbox</h3>
-                                <p class="text-xs text-muted">Boot this architecture into a live WebContainer environment.</p>
-                                <button class="btn btn-primary w-100 mt-md" id="ai-boot-btn"><i class="fa-solid fa-play"></i> Boot Sandbox</button>
-                            </div>
                         </div>
                     </div>
                     
-                    <div id="arch-stackblitz-wrap" style="display:none; margin-top:30px;">
-                        <div class="glass-card-static" style="padding:0; overflow:hidden;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block; box-shadow: 0 0 10px #22c55e;"></span>
-                                    <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Live Architecture Sandbox</span>
-                                </div>
-                                <button class="btn btn-ghost btn-xs" id="arch-close-embed"><i class="fa-solid fa-xmark"></i></button>
-                            </div>
-                            <div id="arch-stackblitz-embed" style="height:550px;"></div>
-                        </div>
-                    </div>
+
                 </div>
 
                 <!-- ===== TAB 3: CODE GENERATOR ===== -->

@@ -256,25 +256,6 @@ const CodeGitExplorerPage = {
         } catch (err) { Toast.show(err.message, 'error'); }
         finally { btn.innerHTML = '<i class="fa-solid fa-search"></i> Explore'; btn.disabled = false; }
     },
-    
-    async loadUser(username) {
-        try {
-            const [user, repos, events] = await Promise.all([API.getUserInfo(username), API.getUserRepos(username, 'updated', 12), API.getUserEvents(username, 20)]);
-            document.getElementById('explorer-empty').style.display = 'none';
-            document.getElementById('explorer-tabs-area').style.display = 'none';
-            document.getElementById('explorer-info').style.display = 'none';
-            document.getElementById('explorer-structure-view').style.display = 'none';
-            document.getElementById('explorer-git-view').style.display = 'none';
-            
-            this.cleanup();
-            document.getElementById('explorer-user-view').style.display = 'block';
-            
-            this.renderProfile(user);
-            this.renderRepos(repos);
-            this.renderEvents(events);
-        } catch (err) { Toast.show(err.message, 'error'); }
-    },
-
     async loadLocalFolder(fileList) {
         if (!fileList || fileList.length === 0) return;
         Toast.show('Parsing local directory...', 'info');
@@ -282,13 +263,12 @@ const CodeGitExplorerPage = {
         const filesArray = [];
         for (let i = 0; i < fileList.length; i++) {
              const f = fileList[i];
-             // webkitRelativePath contains the full path including root folder
              if (!f.webkitRelativePath.includes('.git/') && !f.webkitRelativePath.includes('node_modules/')) {
                  filesArray.push({
                      path: f.webkitRelativePath,
                      size: f.size,
                      type: 'blob',
-                     fileObj: f // Store local file ref to read contents later if needed
+                     fileObj: f
                  });
              }
         }
@@ -305,320 +285,12 @@ const CodeGitExplorerPage = {
         document.getElementById('explorer-stars').innerHTML = '';
         document.getElementById('explorer-forks').innerHTML = '';
         
-        document.getElementById('explorer-tabs-area').style.display = 'none'; // Only shows structure for local
+        document.getElementById('explorer-tabs-area').style.display = 'none';
         
         this.activeView = 'structure';
         this.showStructure();
     },
 
-    renderProfile(user) {
-        document.getElementById('gh-profile-area').innerHTML = `
-            <div class="glass-card github-profile-card">
-                <img src="${user.avatar_url}" alt="${user.login}" />
-                <div class="profile-info">
-                    <h2>${user.name || user.login}</h2>
-                    <p>${user.bio || 'No bio available'}</p>
-                    <div class="profile-stats">
-                        <span><strong>${user.public_repos}</strong> repos</span>
-                        <span><strong>${Helpers.formatNumber(user.followers)}</strong> followers</span>
-                        <span><strong>${user.following}</strong> following</span>
-                    </div>
-                    <div class="flex-gap mt-sm flex-wrap text-sm">
-                        ${user.location ? `<span class="text-xs text-muted"><i class="fa-solid fa-location-dot"></i> ${user.location}</span>` : ''}
-                        ${user.blog ? `<a href="${user.blog.startsWith('http') ? user.blog : 'https://' + user.blog}" target="_blank" class="text-xs api-link"><i class="fa-solid fa-link"></i> Website</a>` : ''}
-                        <span class="text-xs text-muted"><i class="fa-solid fa-calendar"></i> Joined ${new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
-                    </div>
-                </div>
-            </div>`;
-    },
-
-    renderRepos(repos) {
-        const langCount = {};
-        repos.forEach(r => { if (r.language) langCount[r.language] = (langCount[r.language] || 0) + 1; });
-        const topLangs = Object.entries(langCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
-        document.getElementById('gh-repos-area').innerHTML = `
-            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-book" style="color:var(--primary-light);margin-right:6px;"></i>Recent Repositories</h3>
-            <div class="grid-2 mb-lg">
-                ${repos.slice(0, 6).map(r => `
-                    <div class="glass-card" style="padding:16px;">
-                        <div class="flex-between mb-sm">
-                            <a href="${r.html_url}" target="_blank" rel="noopener" class="api-link" style="font-weight:600;">${r.name}</a>
-                            ${r.private ? '<span class="tag tag-warning">Private</span>' : '<span class="tag tag-success">Public</span>'}
-                        </div>
-                        <p class="text-sm text-secondary" style="line-height:1.5;">${Helpers.escapeHtml(Helpers.truncate(r.description || 'No description', 80))}</p>
-                        <div class="flex-gap text-xs text-muted mt-sm">
-                            ${r.language ? `<span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${Helpers.getLanguageColor(r.language)};margin-right:3px;"></span>${r.language}</span>` : ''}
-                            <span><i class="fa-solid fa-star"></i> ${r.stargazers_count}</span>
-                            <span>${Helpers.timeAgo(r.updated_at)}</span>
-                        </div>
-                    </div>`).join('')}
-            </div>
-            ${topLangs.length ? `
-            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-chart-pie" style="color:var(--primary-light);margin-right:6px;"></i>Languages</h3>
-            <div class="glass-card-static" style="padding:18px;">
-                <div style="display:flex;flex-direction:column;gap:10px;">
-                    ${topLangs.map(([lang, count]) => { const pct = Math.round((count / repos.length) * 100); return `<div><div class="flex-between mb-sm"><div class="flex-gap"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${Helpers.getLanguageColor(lang)};"></span><span class="text-sm">${lang}</span></div><span class="text-xs text-muted">${pct}%</span></div><div class="pkg-score"><div class="pkg-score-fill" style="width:${pct}%;background:${Helpers.getLanguageColor(lang)};"></div></div></div>`; }).join('')}
-                </div>
-            </div>` : ''}`;
-    },
-
-    renderEvents(events) {
-        const eventTypes = {
-            PushEvent: { icon: 'fa-solid fa-arrow-up', label: 'pushed to', color: 'var(--success)' },
-            CreateEvent: { icon: 'fa-solid fa-plus', label: 'created', color: 'var(--primary-light)' },
-            DeleteEvent: { icon: 'fa-solid fa-trash', label: 'deleted', color: 'var(--error)' },
-            IssuesEvent: { icon: 'fa-solid fa-circle-dot', label: 'issue', color: 'var(--warning)' },
-            PullRequestEvent: { icon: 'fa-solid fa-code-pull-request', label: 'PR', color: 'var(--accent)' },
-            WatchEvent: { icon: 'fa-solid fa-star', label: 'starred', color: 'var(--primary-light)' },
-            ForkEvent: { icon: 'fa-solid fa-code-fork', label: 'forked', color: 'var(--secondary)' },
-            IssueCommentEvent: { icon: 'fa-solid fa-comment', label: 'commented on', color: 'var(--text-secondary)' },
-            ReleaseEvent: { icon: 'fa-solid fa-tag', label: 'released', color: 'var(--success)' }
-        };
-        document.getElementById('gh-events-area').innerHTML = `
-            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-bolt" style="color:var(--primary-light);margin-right:6px;"></i>Recent Activity</h3>
-            <div class="glass-card-static" style="padding:6px 18px;">
-                ${events.slice(0, 12).map(e => { const info = eventTypes[e.type] || { icon: 'fa-solid fa-circle', label: e.type, color: 'var(--text-muted)' }; return `<div class="activity-item"><div style="width:32px;height:32px;border-radius:50%;background:var(--glass);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="${info.icon}" style="font-size:0.75rem;color:${info.color}"></i></div><div class="activity-info"><h4>${info.label} <span style="color:var(--primary-light)">${e.repo.name.split('/')[1]}</span></h4><p>${e.repo.name}</p><span class="activity-time">${Helpers.timeAgo(e.created_at)}</span></div></div>`; }).join('')}
-            </div>`;
-    },
-
-    async showStructure() {
-        document.getElementById('explorer-structure-view').style.display = 'block';
-        const files = this.repoData.tree.filter(f => f.type === 'blob');
-        document.getElementById('file-count-label').textContent = `${files.length} files`;
-        this.renderTree(files);
-        this.renderBreakdown(files);
-        await this._loadDeps();
-        setTimeout(() => this.init3DStructure(files), 80);
-    },
-
-    renderTree(files) {
-        const structure = {};
-        files.forEach(f => { const parts = f.path.split('/'); let cur = structure; parts.forEach((p, i) => { if (i === parts.length - 1) cur[p] = { type: 'file', size: f.size }; else { if (!cur[p]) cur[p] = {}; cur = cur[p]; } }); });
-        const renderLevel = (obj, depth = 0) => {
-            let html = '';
-            const sorted = Object.entries(obj).sort((a, b) => { const aD = typeof a[1] === 'object' && !a[1].type; const bD = typeof b[1] === 'object' && !b[1].type; if (aD !== bD) return aD ? -1 : 1; return a[0].localeCompare(b[0]); });
-            sorted.forEach(([name, val]) => {
-                const indent = depth * 14;
-                const baseStyles = `padding-left:${10 + indent}px;`;
-                if (val.type === 'file') { 
-                    const fi = Helpers.getFileIcon(name); 
-                    html += `<div class="file-tree-item" style="${baseStyles}"><i class="${fi.icon}" style="color:${fi.color}"></i><span>${name}</span></div>`; 
-                }
-                else { 
-                    html += `<div class="file-tree-item" style="${baseStyles}"><i class="fa-solid fa-folder" style="color:var(--primary-light)"></i><span style="font-weight:500;">${name}</span></div>`; 
-                    html += renderLevel(val, depth + 1); 
-                }
-            });
-            return html;
-        };
-        document.getElementById('file-tree').innerHTML = renderLevel(structure);
-    },
-
-    renderBreakdown(files) {
-        const extCount = {};
-        files.forEach(f => { const ext = f.path.split('.').pop().toLowerCase(); extCount[ext] = (extCount[ext] || 0) + 1; });
-        const sorted = Object.entries(extCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
-        const total = files.length;
-        document.getElementById('file-breakdown').innerHTML = sorted.map(([ext, count]) => {
-            const pct = Math.round((count / total) * 100);
-            const fi = Helpers.getFileIcon(`f.${ext}`);
-            return `<div class="glass-card" style="padding:14px;"><div class="flex-gap mb-sm"><i class="${fi.icon}" style="color:${fi.color}"></i><span style="font-weight:600;font-size:0.82rem;">.${ext}</span></div><div class="flex-between text-xs text-muted mb-sm"><span>${count}</span><span>${pct}%</span></div><div class="pkg-score"><div class="pkg-score-fill" style="width:${pct}%;background:${fi.color};"></div></div></div>`;
-        }).join('');
-    },
-
-    init3DStructure(files) {
-        this.cleanup();
-        const container = document.getElementById('structure-3d');
-        container.innerHTML = '';
-        const w = container.clientWidth || 800, h = container.clientHeight || 500;
-
-        const nodes = [];
-        const links = [];
-        const nodeMap = new Map();
-
-        // Single Root Node
-        const rootId = 'root';
-        nodes.push({ id: rootId, name: 'Project Root', type: 'folder', val: 10, color: '#d4a843' });
-        nodeMap.set(rootId, true);
-
-        files.forEach(f => {
-            const parts = f.path.split('/');
-            let parentPath = rootId;
-
-            parts.forEach((part, i) => {
-                const currentPath = i === 0 ? part : parts.slice(0, i + 1).join('/');
-                const isFile = i === parts.length - 1;
-                
-                if (!nodeMap.has(currentPath)) {
-                    let color = '#ccc';
-                    let val = 3;
-                    if (isFile) {
-                        const ext = part.split('.').pop().toLowerCase();
-                        color = Helpers.getExtColor(ext);
-                        val = 2 + Math.min(f.size / 5000, 8);
-                    } else {
-                        color = '#4ade80';
-                        val = 5;
-                    }
-
-                    nodes.push({ id: currentPath, name: part, type: isFile ? 'file' : 'folder', val, color });
-                    nodeMap.set(currentPath, true);
-                    links.push({ source: parentPath, target: currentPath });
-                }
-                parentPath = currentPath;
-            });
-        });
-
-        const graphData = { nodes, links };
-        
-        setTimeout(() => {
-            try {
-                this.forceGraph = ForceGraph3D()(container)
-                .width(w)
-                .height(h)
-                .backgroundColor('#000000')
-                .graphData(graphData)
-                .nodeLabel('name')
-                .nodeColor(node => node.color)
-                .nodeRelSize(3)
-                .nodeVal('val')
-                .linkColor(() => 'rgba(255,255,255,0.15)')
-                .linkWidth(0.5)
-                .linkDirectionalParticles(2)
-                .linkDirectionalParticleWidth(1.5)
-                .linkDirectionalParticleSpeed(d => 0.005 + Math.random() * 0.005)
-                .onNodeClick(node => {
-                    // Focus camera on node
-                    const distance = 40;
-                    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
-                    this.forceGraph.cameraPosition(
-                        { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, 
-                        node, 
-                        3000
-                    );
-                });
-
-            document.getElementById('structure-reset').onclick = () => {
-                this.forceGraph.cameraPosition({ x: 0, y: 0, z: 250 }, { x:0, y:0, z:0 }, 1000);
-            };
-
-            window.addEventListener('resize', () => { 
-                const nw = container.clientWidth, nh = container.clientHeight; 
-                this.forceGraph.width(nw).height(nh);
-            });
-            } catch (err) {
-                fetch('http://localhost:4444', { method: 'POST', body: '3D Graph Error: ' + (err.stack || err) });
-            }
-        }, 100);
-    },
-
-    prepareGitView() {
-        const { repo, branches, commits } = this.repoData;
-        const tagHtml = branches.slice(0, 8).map(b => { const cls = b.name === 'main' || b.name === 'master' ? 'branch-main' : b.name.includes('fix') ? 'branch-hotfix' : 'branch-feature'; return `<span class="branch-label ${cls}"><i class="fa-solid fa-code-branch"></i> ${b.name}</span>`; }).join('');
-        document.getElementById('branch-tags').innerHTML = tagHtml;
-
-        const contributors = {};
-        commits.forEach(c => { const n = c.commit.author.name; contributors[n] = (contributors[n] || 0) + 1; });
-        const topContribs = Object.entries(contributors).sort((a, b) => b[1] - a[1]).slice(0, 5);
-        const dayMap = {};
-        commits.forEach(c => { const d = new Date(c.commit.author.date).toLocaleDateString('en-US', { weekday: 'short' }); dayMap[d] = (dayMap[d] || 0) + 1; });
-
-        document.getElementById('git-insights').innerHTML = `
-            <div style="display:flex;flex-direction:column;gap:16px;">
-                <div class="grid-2 gap-sm">
-                    <div style="padding:10px;background:rgba(212,168,67,0.03);border-radius:var(--radius);border:1px solid var(--border);"><div class="text-xs text-muted mb-sm">Stars</div><div style="font-size:1rem;font-weight:700;color:var(--primary-light);">${Helpers.formatNumber(repo.stargazers_count)}</div></div>
-                    <div style="padding:10px;background:rgba(212,168,67,0.03);border-radius:var(--radius);border:1px solid var(--border);"><div class="text-xs text-muted mb-sm">Forks</div><div style="font-size:1rem;font-weight:700;color:var(--primary-light);">${Helpers.formatNumber(repo.forks_count)}</div></div>
-                    <div style="padding:10px;background:rgba(212,168,67,0.03);border-radius:var(--radius);border:1px solid var(--border);"><div class="text-xs text-muted mb-sm">Branches</div><div style="font-size:1rem;font-weight:700;color:var(--success);">${branches.length}</div></div>
-                    <div style="padding:10px;background:rgba(212,168,67,0.03);border-radius:var(--radius);border:1px solid var(--border);"><div class="text-xs text-muted mb-sm">Issues</div><div style="font-size:1rem;font-weight:700;color:var(--warning);">${Helpers.formatNumber(repo.open_issues_count)}</div></div>
-                </div>
-                <div><span class="text-sm" style="font-weight:600;">Top Contributors</span><div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">${topContribs.map(([name, count]) => `<div class="flex-between"><span class="text-sm">${Helpers.escapeHtml(name)}</span><div class="flex-gap gap-sm"><div style="width:50px;height:3px;background:rgba(212,168,67,0.05);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${(count/topContribs[0][1])*100}%;background:var(--primary);border-radius:3px;"></div></div><span class="text-xs text-muted">${count}</span></div></div>`).join('')}</div></div>
-                <div><span class="text-sm" style="font-weight:600;">Commit Frequency</span><div style="margin-top:10px;display:flex;align-items:flex-end;gap:5px;height:44px;">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => { const count = dayMap[d] || 0; const max = Math.max(...Object.values(dayMap), 1); const pct = Math.max(6, (count / max) * 100); return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:100%;height:${pct}%;background:linear-gradient(180deg,var(--primary),var(--primary-dark));border-radius:2px 2px 0 0;min-height:2px;"></div><span class="text-xs text-muted">${d.charAt(0)}</span></div>`; }).join('')}</div></div>
-            </div>`;
-
-        document.getElementById('commit-count').textContent = `${commits.length} loaded`;
-        document.getElementById('commits-list').innerHTML = commits.slice(0, 18).map((c, i) => `
-            <div class="commit-detail-card" style="animation:slideUp 0.3s ease ${i * 0.02}s both;">
-                <div class="flex-between">
-                    <div class="flex-gap" style="flex:1;min-width:0;">
-                        <img src="${c.author?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${c.commit.author.name}`}" alt="" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--border-light);flex-shrink:0;" />
-                        <div style="min-width:0;"><div style="font-size:0.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${Helpers.escapeHtml(c.commit.message.split('\n')[0])}</div><div class="flex-gap gap-sm" style="margin-top:2px;"><span class="text-xs text-muted">${Helpers.escapeHtml(c.commit.author.name)}</span><span class="text-xs text-muted">&middot; ${Helpers.timeAgo(c.commit.author.date)}</span></div></div>
-                    </div>
-                    <span class="commit-hash">${c.sha.substring(0, 7)}</span>
-                </div>
-            </div>`).join('');
-
-        document.getElementById('explorer-tabs').addEventListener('click', async e => {
-            if (e.target.closest('[data-view="git"]') && !this.gitScene) {
-                await this._loadDeps();
-                setTimeout(() => this.init3DGit(), 80);
-            }
-        });
-    },
-
-    init3DGit() {
-        if (this.gitScene) return;
-        const { branches, commits } = this.repoData;
-        const container = document.getElementById('git-3d');
-        const w = container.clientWidth || 800, h = container.clientHeight || 400;
-        this.gitScene = new THREE.Scene();
-        this.gitScene.background = new THREE.Color(0x000000);
-        this.gitCamera = new THREE.PerspectiveCamera(50, w / h, 0.1, 500);
-        this.gitCamera.position.set(5, 10, 30);
-        this.gitRenderer = new THREE.WebGLRenderer({ antialias: true });
-        this.gitRenderer.setSize(w, h);
-        this.gitRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.innerHTML = '';
-        container.appendChild(this.gitRenderer.domElement);
-        this.gitControls = new THREE.OrbitControls(this.gitCamera, this.gitRenderer.domElement);
-        this.gitControls.enableDamping = true;
-        this.gitScene.add(new THREE.AmbientLight(0x201810, 0.4));
-        const pl = new THREE.PointLight(0xd4a843, 1.5, 80);
-        pl.position.set(5, 18, 12);
-        this.gitScene.add(pl);
-        const pl2 = new THREE.PointLight(0x3ecf6e, 0.6, 50);
-        pl2.position.set(-12, -4, 8);
-        this.gitScene.add(pl2);
-
-        const branchColors = [0x3ecf6e, 0xd4a843, 0xc9952a, 0xe8c547, 0xf0a030, 0xe84545];
-        this.gitNodes = [];
-        commits.forEach((c, i) => {
-            const x = -i * 2.6;
-            const color = branchColors[0];
-            const geo = i === 0 ? new THREE.SphereGeometry(0.55, 20, 20) : new THREE.SphereGeometry(0.38, 16, 16);
-            const node = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({ color, emissive: color, emissiveIntensity: i === 0 ? 0.35 : 0.12 }));
-            node.position.set(x, 0, 0);
-            this.gitScene.add(node);
-            this.gitNodes.push(node);
-            if (i > 0) { const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-(i-1)*2.6, 0, 0), new THREE.Vector3(x, 0, 0)]); this.gitScene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.4 }))); }
-        });
-        branches.slice(1, 5).forEach((b, bi) => {
-            const color = branchColors[(bi + 1) % branchColors.length];
-            const y = (bi + 1) * 4;
-            const si = Math.floor(Math.random() * Math.min(6, commits.length - 2)) + 1;
-            const sx = -si * 2.6;
-            const len = Math.floor(Math.random() * 4) + 2;
-            const fp = [new THREE.Vector3(sx, 0, 0), new THREE.Vector3(sx - 1, y * 0.5, 0), new THREE.Vector3(sx - 1.4, y, 0)];
-            this.gitScene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(fp), new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.3 })));
-            for (let j = 0; j < len; j++) {
-                const x = sx - 1.4 - j * 2.6;
-                const nd = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), new THREE.MeshPhongMaterial({ color, emissive: color, emissiveIntensity: 0.1 }));
-                nd.position.set(x, y, 0);
-                this.gitScene.add(nd);
-                this.gitNodes.push(nd);
-                if (j > 0) { const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(sx-1.4-(j-1)*2.6, y, 0), new THREE.Vector3(x, y, 0)]); this.gitScene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.35 }))); }
-            }
-        });
-        document.getElementById('git-reset').onclick = () => { this.gitCamera.position.set(5, 10, 30); this.gitControls.target.set(0, 0, 0); };
-        this.animateGit();
-    },
-
-    animateGit() {
-        this.gitAnimId = requestAnimationFrame(() => this.animateGit());
-        this.gitControls.update();
-        const t = Date.now() * 0.001;
-        this.gitNodes.forEach((n, i) => { n.position.y += Math.sin(t + i * 0.3) * 0.0015; });
-        this.gitRenderer.render(this.gitScene, this.gitCamera);
-    },
 
     animate() {
         this.animationId = requestAnimationFrame(() => this.animate());
@@ -650,3 +322,5 @@ const CodeGitExplorerPage = {
         this.gitNodes = [];
     }
 };
+
+Object.assign(CodeGitExplorerPage, GithubUserMixin, GithubStructureMixin, GithubGitMixin);

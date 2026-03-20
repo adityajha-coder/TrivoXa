@@ -9,10 +9,7 @@ const AiArchitectMixin = {
             Helpers.copyToClipboard(cmd);
             Toast.show('Command copied!', 'success');
         });
-        document.getElementById('ai-boot-btn').addEventListener('click', () => this.bootSandbox());
-        document.getElementById('arch-close-embed').addEventListener('click', () => {
-            document.getElementById('arch-stackblitz-wrap').style.display = 'none';
-        });
+
 
         const suggestionsArea = document.getElementById('ai-arch-suggestions');
         if(suggestionsArea) {
@@ -183,39 +180,5 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
         return { setupCommand, tree, flatFiles };
     },
 
-    async bootSandbox() {
-        if(!this.currentProjectState?.flatFiles) {
-            return Toast.show('No runnable files detected. Only standard Web/Node structures can be booted.', 'error');
-        }
 
-        const btn = document.getElementById('ai-boot-btn');
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Booting...';
-        btn.disabled = true;
-
-        if (!window.StackBlitzSDK) {
-            Toast.show('Loading WebContainer runtime...', 'info', 2000);
-            await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
-        }
-
-        const project = {
-            title: 'AI Generated Architecture',
-            description: 'Booted from Vertex Developer Toolkit',
-            template: 'node',
-            files: this.currentProjectState.flatFiles || {}
-        };
-
-        const embedWrap = document.getElementById('arch-stackblitz-wrap');
-        embedWrap.style.display = 'block';
-        embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-        Toast.show('Deploying to Sandbox...', 'success');
-        window.StackBlitzSDK.embedProject(
-            document.getElementById('arch-stackblitz-embed'),
-            project,
-            { openFile: Object.keys(project.files)[0], height: 550, forceEmbedLayout: true }
-        );
-        
-        btn.innerHTML = '<i class="fa-solid fa-play"></i> Boot Sandbox';
-        btn.disabled = false;
-    }
 };

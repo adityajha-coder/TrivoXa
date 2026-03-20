@@ -66,11 +66,6 @@ const WorkspacePage = {
                     <p>Save your personal code snippets, run them live, and access common project boilerplates.</p>
                 </div>
                 
-                <div class="tabs mb-lg" id="workspace-tabs">
-                    <button class="tab-item active" data-tab="snippets"><i class="fa-solid fa-code" style="margin-right:6px;"></i>Code Snippets</button>
-                    <button class="tab-item" data-tab="terminal"><i class="fa-solid fa-terminal" style="margin-right:6px;"></i>Local Terminal</button>
-                </div>
-
                 <div id="ws-tab-snippets">
                     <div class="glass-card mb-lg">
                         <div class="flex-between mb-sm">
@@ -115,24 +110,6 @@ const WorkspacePage = {
                     </div>
                     <div class="grid-2 mt-sm" id="snippets-grid"></div>
                 </div>
-
-                <div id="ws-tab-terminal" style="display:none;">
-                    <div class="glass-card-static" style="padding:0; overflow:hidden; border:1px solid var(--border);">
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.6);border-bottom:1px solid var(--border);">
-                            <div style="display:flex;align-items:center;gap:8px;">
-                                <i class="fa-solid fa-terminal" style="color:var(--primary-light);"></i>
-                                <span style="font-size:0.88rem;font-weight:600;color:var(--text);">WebContainer Terminal</span>
-                            </div>
-                            <span class="tag" style="background:rgba(62,207,110,0.1);color:var(--success);border:none;">Online</span>
-                        </div>
-                        <div id="raw-terminal-embed" style="height:600px;background:#000;">
-                            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;">
-                                <i class="fa-brands fa-node-js" style="font-size:3rem;color:var(--success);opacity:0.8;"></i>
-                                <p class="text-secondary text-sm">Offline terminal emulator preparing...</p>
-                                <button class="btn btn-primary mt-sm" id="boot-terminal-btn"><i class="fa-solid fa-power-off"></i> Boot Terminal Instance</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         `;
@@ -212,48 +189,26 @@ const WorkspacePage = {
         if (!snippet) return Toast.show('Snippet not found', 'error');
 
         const lang = snippet.lang || 'html';
-        let project = {
-            title: snippet.title || 'Workspace Snippet',
-            description: 'Run from Vertex Workspace',
-            template: 'javascript',
-            files: { 'index.js': snippet.code }
-        };
+        let htmlContent = '';
 
-        if (lang === 'react') {
-            project.template = 'create-react-app';
-            project.files = {
-                'src/App.js': snippet.code,
-                'src/index.js': 'import React from "react";\nimport ReactDOM from "react-dom";\nimport App from "./App";\nReactDOM.render(<App />, document.getElementById("root"));',
-                'public/index.html': '<div id="root"></div>'
-            };
-        } else if (lang === 'vue') {
-            project.template = 'vue-cli';
-            project.files = { 'src/App.vue': snippet.code };
-        } else if (lang === 'html') {
-            project.template = 'html';
-            project.files = { 'index.html': snippet.code };
-        } else if (lang === 'typescript') {
-            project.template = 'typescript';
-            project.files = { 'index.ts': snippet.code };
-        } else if (lang === 'javascript') {
-            project.template = 'node';
-            project.files = { 'index.js': snippet.code };
-        } else if (lang === 'angular') {
-            project.template = 'angular-cli';
-            project.files = { 'src/app/app.component.ts': snippet.code };
+        if (lang === 'html' || lang === 'vue' || lang === 'svelte') {
+            htmlContent = snippet.code;
+        } else if (lang === 'javascript' || lang === 'typescript') {
+            htmlContent = `<!DOCTYPE html><html><body><script>${snippet.code}<\/script></body></html>`;
+        } else if (lang === 'react') {
+            htmlContent = `<!DOCTYPE html><html><head>
+                <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin><\/script>
+                <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin><\/script>
+                <script src="https://unpkg.com/@babel/standalone/babel.min.js"><\/script>
+            </head><body><div id="root"></div><script type="text/babel">${snippet.code}<\/script></body></html>`;
         } else {
-            return Toast.show(`Running ${lang.toUpperCase()} in the browser is not supported natively yet. Use Web/Node languages instead.`, 'error');
+            return Toast.show(`Running ${lang.toUpperCase()} inside the browser sandbox is not supported yet.`, 'error');
         }
 
-        if (!window.StackBlitzSDK) {
-            Toast.show('Loading WebContainer runtime...', 'info', 2000);
-            await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
-        }
-
-        let embedWrap = document.getElementById('ws-stackblitz-wrap');
+        let embedWrap = document.getElementById('ws-iframe-wrap');
         if (!embedWrap) {
             embedWrap = document.createElement('div');
-            embedWrap.id = 'ws-stackblitz-wrap';
+            embedWrap.id = 'ws-iframe-wrap';
             embedWrap.style.cssText = 'margin-top:20px;';
             embedWrap.innerHTML = `
                 <div class="glass-card-static" style="padding:0; overflow:hidden;">
@@ -264,60 +219,23 @@ const WorkspacePage = {
                         </div>
                         <button class="btn btn-ghost btn-xs" id="ws-close-embed"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-                    <div id="ws-stackblitz-embed" style="height:450px;"></div>
+                    <iframe id="ws-sandbox-iframe" style="width:100%;height:450px;border:none;background:#fff;"></iframe>
                 </div>`;
-            document.getElementById('snippets-view').appendChild(embedWrap);
+            document.getElementById('ws-tab-snippets').appendChild(embedWrap);
             document.getElementById('ws-close-embed').addEventListener('click', () => { embedWrap.style.display = 'none'; });
         }
+        
         embedWrap.style.display = 'block';
         document.getElementById('ws-embed-title').textContent = `Live Preview — ${snippet.title}`;
         embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-        Toast.show('Booting Live WebContainer...', 'success');
-        window.StackBlitzSDK.embedProject(
-            document.getElementById('ws-stackblitz-embed'),
-            project,
-            { openFile: Object.keys(project.files)[0], height: 450, forceEmbedLayout: true }
-        );
+        const iframe = document.getElementById('ws-sandbox-iframe');
+        iframe.srcdoc = htmlContent;
+        Toast.show('Running snippet...', 'success');
     },
 
     bindEvents() {
-        document.getElementById('workspace-tabs')?.addEventListener('click', e => {
-            const tab = e.target.closest('.tab-item');
-            if (!tab) return;
-            document.querySelectorAll('#workspace-tabs .tab-item').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            
-            const target = tab.dataset.tab;
-            if(target === 'snippets') {
-                document.getElementById('ws-tab-snippets').style.display = 'block';
-                document.getElementById('ws-tab-terminal').style.display = 'none';
-            } else {
-                document.getElementById('ws-tab-snippets').style.display = 'none';
-                document.getElementById('ws-tab-terminal').style.display = 'block';
-            }
-        });
 
-        document.getElementById('boot-terminal-btn')?.addEventListener('click', async () => {
-            if (!window.StackBlitzSDK) {
-                Toast.show('Loading WebContainer...', 'info', 2000);
-                await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
-            }
-            document.getElementById('raw-terminal-embed').innerHTML = '';
-            window.StackBlitzSDK.embedProject(
-                document.getElementById('raw-terminal-embed'),
-                {
-                    title: 'Vertex Terminal',
-                    description: 'Raw local WebContainer Terminal',
-                    template: 'node',
-                    files: {
-                        'index.js': "console.log('Terminal Booted! You can now use npm, node, git, etc.');\nsetInterval(() => {}, 1000);",
-                        'package.json': '{"name":"vertex-terminal","scripts":{"start":"node index.js"}}'
-                    }
-                },
-                { height: 600, view: 'editor', forceEmbedLayout: true, hideNavigation: true, hideExplorer: true }
-            );
-        });
 
         document.getElementById('snip-lang-tabs')?.addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
