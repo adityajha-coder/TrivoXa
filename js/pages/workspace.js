@@ -188,50 +188,173 @@ const WorkspacePage = {
         const snippet = this.snippets[idx];
         if (!snippet) return Toast.show('Snippet not found', 'error');
 
-        const lang = snippet.lang || 'html';
-        let htmlContent = '';
+        const lang = snippet.lang || 'text';
+        if (lang === 'text') return Toast.show('Cannot run plain text', 'error');
+        if (lang === 'sql') return Toast.show('SQL runner coming soon.', 'info');
 
-        if (lang === 'html' || lang === 'vue' || lang === 'svelte') {
-            htmlContent = snippet.code;
-        } else if (lang === 'javascript' || lang === 'typescript') {
-            htmlContent = `<!DOCTYPE html><html><body><script>${snippet.code}<\/script></body></html>`;
-        } else if (lang === 'react') {
-            htmlContent = `<!DOCTYPE html><html><head>
-                <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin><\/script>
-                <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin><\/script>
-                <script src="https://unpkg.com/@babel/standalone/babel.min.js"><\/script>
-            </head><body><div id="root"></div><script type="text/babel">${snippet.code}<\/script></body></html>`;
-        } else {
-            return Toast.show(`Running ${lang.toUpperCase()} inside the browser sandbox is not supported yet.`, 'error');
-        }
+        const webLangs = ['html', 'vue', 'react', 'angular', 'svelte', 'typescript'];
+        
+        // Remove existing embed wraps if any
+        ['ws-stackblitz-wrap', 'ws-piston-wrap', 'ws-iframe-wrap'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        });
 
-        let embedWrap = document.getElementById('ws-iframe-wrap');
-        if (!embedWrap) {
-            embedWrap = document.createElement('div');
-            embedWrap.id = 'ws-iframe-wrap';
+        // ==========================
+        //  WEB ENVIRONMENT RUNNER (StackBlitz)
+        // ==========================
+        if (webLangs.includes(lang)) {
+            let project = {
+                title: snippet.title || 'Workspace Snippet',
+                description: 'Run from Vertex Workspace',
+                template: 'javascript',
+                files: { 'index.js': snippet.code }
+            };
+
+            if (lang === 'react') {
+                project.template = 'create-react-app';
+                project.files = {
+                    'src/App.js': `import React from 'react';\nimport './style.css';\n\n${snippet.code}`,
+                    'src/index.js': 'import React from "react";\nimport { createRoot } from "react-dom/client";\nimport App from "./App";\nconst root = createRoot(document.getElementById("root"));\nroot.render(<App />);',
+                    'public/index.html': '<div id="root"></div>',
+                    'src/style.css': 'body { font-family: sans-serif; padding: 20px; }'
+                };
+            } else if (lang === 'vue') {
+                project.template = 'node';
+                project.files = { 
+                    'package.json': '{"name":"vue-preview","scripts":{"start":"vite"},"dependencies":{"vue":"^3.2.0"},"devDependencies":{"vite":"^4.0.0","@vitejs/plugin-vue":"^4.0.0"}}',
+                    'index.html': '<div id="app"></div><script type="module" src="/main.js"><\/script>',
+                    'main.js': 'import { createApp } from "vue";\nimport App from "./App.vue";\ncreateApp(App).mount("#app");',
+                    'App.vue': snippet.code,
+                    'vite.config.js': 'import { defineConfig } from "vite";\nimport vue from "@vitejs/plugin-vue";\nexport default defineConfig({plugins:[vue()]});'
+                };
+            } else if (lang === 'html') {
+                project.template = 'html';
+                project.files = { 'index.html': snippet.code };
+            } else if (lang === 'angular') {
+                project.template = 'angular-cli';
+                project.files = { 'src/app/app.component.ts': snippet.code };
+            } else if (lang === 'svelte') {
+                project.template = 'node';
+                project.files = {
+                    'package.json': '{"scripts":{"dev":"vite"},"devDependencies":{"vite":"^4.0.0","@sveltejs/vite-plugin-svelte":"^2.0.0","svelte":"^3.54.0"}}',
+                    'vite.config.js': 'import { defineConfig } from "vite";\nimport { svelte } from "@sveltejs/vite-plugin-svelte";\nexport default defineConfig({plugins:[svelte()]});',
+                    'index.html': '<div id="app"></div><script type="module" src="/main.js"><\/script>',
+                    'main.js': 'import App from "./App.svelte";\nnew App({target: document.getElementById("app")});',
+                    'App.svelte': snippet.code
+                };
+            } else if (lang === 'typescript') {
+                project.template = 'typescript';
+                project.files = { 'index.ts': snippet.code };
+            }
+
+            if (!window.StackBlitzSDK) {
+                Toast.show('Loading WebContainer...', 'info', 2000);
+                await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
+            }
+
+            const embedWrap = document.createElement('div');
+            embedWrap.id = 'ws-stackblitz-wrap';
             embedWrap.style.cssText = 'margin-top:20px;';
             embedWrap.innerHTML = `
                 <div class="glass-card-static" style="padding:0; overflow:hidden;">
                     <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
                         <div style="display:flex;align-items:center;gap:8px;">
                             <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
-                            <span style="font-size:0.88rem;font-weight:600;color:var(--text);" id="ws-embed-title">Live Preview</span>
+                            <span style="font-size:0.88rem;font-weight:600;color:var(--text);" id="ws-embed-title">Live Preview — ${snippet.title}</span>
                         </div>
                         <button class="btn btn-ghost btn-xs" id="ws-close-embed"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-                    <iframe id="ws-sandbox-iframe" sandbox="allow-scripts allow-modals" style="width:100%;height:450px;border:none;background:#fff;"></iframe>
+                    <div id="ws-stackblitz-embed" style="height:450px;"></div>
                 </div>`;
             document.getElementById('ws-tab-snippets').appendChild(embedWrap);
             document.getElementById('ws-close-embed').addEventListener('click', () => { embedWrap.style.display = 'none'; });
+            
+            embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            Toast.show('Booting Live Server...', 'success');
+            
+            const openFile = Object.keys(project.files).find(f => f.includes('App') || f.includes('index') || f.includes('main'));
+            window.StackBlitzSDK.embedProject(
+                document.getElementById('ws-stackblitz-embed'),
+                project,
+                { openFile: openFile, height: 450, forceEmbedLayout: true }
+            );
+            return;
         }
-        
-        embedWrap.style.display = 'block';
-        document.getElementById('ws-embed-title').textContent = `Live Preview — ${snippet.title}`;
+
+        // ==========================
+        //  REMOTE EXECUTION RUNNER (Judge0 API)
+        // ==========================
+        const embedWrap = document.createElement('div');
+        embedWrap.id = 'ws-piston-wrap'; // keeping the ID same for css/logic simplicity
+        embedWrap.style.cssText = 'margin-top:20px;';
+        embedWrap.innerHTML = `
+            <div class="glass-card-static" style="padding:0; overflow:hidden;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);background:#1a1b26;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <i class="fa-solid fa-terminal" style="color:#7aa2f7;"></i>
+                        <span style="font-size:0.88rem;font-weight:600;color:#c0caf5;">Terminal Output — ${snippet.title}</span>
+                    </div>
+                    <button class="btn btn-ghost btn-xs" id="ws-close-piston"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div style="background:#1a1b26; padding:16px; height:350px; overflow-y:auto; font-family:'JetBrains Mono', monospace; font-size:13px; color:#a9b1d6;" id="ws-piston-output">
+                    <span style="color:#bb9af7;">> Execution started for ${lang} via Judge0...</span><br/>
+                </div>
+            </div>`;
+        document.getElementById('ws-tab-snippets').appendChild(embedWrap);
+        document.getElementById('ws-close-piston').addEventListener('click', () => { embedWrap.style.display = 'none'; });
         embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-        const iframe = document.getElementById('ws-sandbox-iframe');
-        iframe.srcdoc = htmlContent;
-        Toast.show('Running snippet...', 'success');
+        try {
+            // Judge0 CE Language IDs map
+            const judge0Map = {
+                'python': 71,
+                'java': 62,
+                'cpp': 54,
+                'c': 50,
+                'csharp': 51,
+                'go': 60,
+                'rust': 73,
+                'ruby': 72,
+                'php': 68,
+                'bash': 46,
+                'javascript': 63
+            };
+            const langId = judge0Map[lang] || 71;
+
+            const response = await fetch('https://ce.judge0.com/submissions?wait=true', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    language_id: langId,
+                    source_code: snippet.code
+                })
+            });
+
+            const data = await response.json();
+            const outDiv = document.getElementById('ws-piston-output');
+            
+            if (data.compile_output) {
+                outDiv.innerHTML += `<br/><span style="color:#e0af68;">[Compilation Output]</span><br/>${Helpers.escapeHtml(data.compile_output).replace(/\\n/g, '<br/>')}`;
+            }
+
+            if (data.stdout) {
+                outDiv.innerHTML += `<br/><span style="color:#9ece6a;">[Output]</span><br/>${Helpers.escapeHtml(data.stdout).replace(/\\n/g, '<br/>').replace(/\\r/g, '')}`;
+            } 
+            if (data.stderr) {
+                outDiv.innerHTML += `<br/><span style="color:#f7768e;">[Error]</span><br/>${Helpers.escapeHtml(data.stderr).replace(/\\n/g, '<br/>')}`;
+            }
+            if (data.status && data.status.description) {
+                outDiv.innerHTML += `<br/><span style="color:#7dcfff;">[Status: ${data.status.description}]</span>`;
+            }
+            
+            if (!data.stdout && !data.stderr && !data.compile_output) {
+                outDiv.innerHTML += `<br/><span style="color:#7dcfff;">[Program finished with no output]</span>`;
+            }
+        } catch(err) {
+            document.getElementById('ws-piston-output').innerHTML += `<br/><span style="color:#f7768e;">[Execution Failed] ${err.message}</span>`;
+            Toast.show('Failed to execute code.', 'error');
+        }
     },
 
     bindEvents() {
