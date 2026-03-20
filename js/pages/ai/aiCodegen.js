@@ -100,19 +100,27 @@ const AiCodegenMixin = {
         const systemPrompt = `You are an expert coder. Write ONLY the code for a ${prompt} component using ${this.currentFramework}. Do NOT include markdown blocks like \`\`\`html or \`\`\`javascript, and do NOT include any explanations. Output pure, valid code.`;
         
         try {
-            let code = '';
+            let response, code = '';
             try {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 30000);
-                const response = await fetch('https://text.pollinations.ai/', {
+                response = await fetch('https://text.pollinations.ai/openai', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: [{ role: 'user', content: systemPrompt }], model: this.currentAiModel }),
+                    credentials: 'omit',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ model: this.currentAiModel, messages: [{ role: 'user', content: systemPrompt }] }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
                 if (!response.ok) throw new Error('POST failed');
-                code = await response.text();
+                
+                const responseText = await response.text();
+                try {
+                    const json = JSON.parse(responseText);
+                    code = json.choices?.[0]?.message?.content || responseText;
+                } catch(e) {
+                    code = responseText;
+                }
             } catch(postErr) {
                 const encoded = encodeURIComponent(systemPrompt);
                 const response = await fetch(`https://text.pollinations.ai/${encoded}?model=${this.currentAiModel}`, { method: 'GET' });

@@ -42,30 +42,36 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
             const abortController = new AbortController();
             const timeout = setTimeout(() => abortController.abort(), 25000);
 
-            let res;
+            let res, text = '';
             try {
-                res = await fetch('https://text.pollinations.ai/', {
+                res = await fetch('https://text.pollinations.ai/openai', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'omit',
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({
+                        model: this.currentAiModel,
                         messages: [
                             { role: 'system', content: sysPrompt },
                             { role: 'user', content: 'Project: ' + prompt + '. Return ONLY JSON, no markdown.' }
-                        ],
-                        jsonMode: true,
-                        model: this.currentAiModel
+                        ]
                     }),
                     signal: abortController.signal
                 });
-            } catch(e) { /* fallback below */ }
-            clearTimeout(timeout);
-
-            if(!res || !res.ok) {
+                clearTimeout(timeout);
+                if (!res.ok) throw new Error('API error');
+                const responseText = await res.text();
+                try {
+                    const json = JSON.parse(responseText);
+                    text = json.choices?.[0]?.message?.content || responseText;
+                } catch(e) {
+                    text = responseText;
+                }
+            } catch(e) {
+                clearTimeout(timeout);
                 const fallbackPrompt = sysPrompt + '\nProject: ' + prompt + '. Return ONLY JSON.';
                 res = await fetch('https://text.pollinations.ai/' + encodeURIComponent(fallbackPrompt) + `?model=${this.currentAiModel}`);
+                text = await res.text();
             }
-
-            let text = await res.text();
             
             text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
             

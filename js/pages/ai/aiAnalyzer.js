@@ -86,30 +86,37 @@ const AiAnalyzerMixin = {
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 20000);
             
-            let res;
+            let res, text = '';
             try {
-                res = await fetch('https://text.pollinations.ai/', {
+                res = await fetch('https://text.pollinations.ai/openai', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'omit',
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({
+                        model: this.currentAiModel,
                         messages: [
                             { role: 'system', content: sysPrompt },
                             { role: 'user', content: `Filename: ${filename}\n\n${codeContent.substring(0, 3000)}` }
-                        ],
-                        jsonMode: true,
-                        model: this.currentAiModel
+                        ]
                     }),
                     signal: controller.signal
                 });
-            } catch(e){}
-            clearTimeout(timeout);
-
-            if(!res || !res.ok) {
+                clearTimeout(timeout);
+                if (!res.ok) throw new Error('API error');
+                
+                const responseText = await res.text();
+                try {
+                    const json = JSON.parse(responseText);
+                    text = json.choices?.[0]?.message?.content || responseText;
+                } catch(e) {
+                    text = responseText;
+                }
+            } catch(e){
+                clearTimeout(timeout);
                 const query = sysPrompt + "\n\nFilename: " + filename + "\n" + codeContent.substring(0, 500);
                 res = await fetch('https://text.pollinations.ai/' + encodeURIComponent(query) + `?model=${this.currentAiModel}`);
+                text = await res.text();
             }
-
-            let text = await res.text();
             
             const startIdx = text.indexOf('{');
             const endIdx = text.lastIndexOf('}');

@@ -61,19 +61,26 @@ const AiChatMixin = {
         try {
             const queryData = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough. User Request: " + query;
             
-            let replyText = '';
+            let res, replyText = '';
             try {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 30000);
-                const res = await fetch('https://text.pollinations.ai/', {
+                res = await fetch('https://text.pollinations.ai/openai', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: [{ role: 'user', content: queryData }], model: this.currentAiModel }),
+                    credentials: 'omit',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ model: this.currentAiModel, messages: [{ role: 'user', content: queryData }] }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
                 if (!res.ok) throw new Error('POST failed');
-                replyText = await res.text();
+                const responseText = await res.text();
+                try {
+                    const json = JSON.parse(responseText);
+                    replyText = json.choices?.[0]?.message?.content || responseText;
+                } catch(e) {
+                    replyText = responseText;
+                }
             } catch(postErr) {
                 const encoded = encodeURIComponent(queryData);
                 const res = await fetch(`https://text.pollinations.ai/${encoded}?model=${this.currentAiModel}`, { method: 'GET' });
