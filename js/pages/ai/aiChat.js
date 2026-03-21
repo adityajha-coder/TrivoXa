@@ -62,22 +62,30 @@ const AiChatMixin = {
             let replyText = '';
             try {
                 const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 30000);
-                const res = await fetch(`https://text.pollinations.ai/`, { 
+                const timeout = setTimeout(() => controller.abort(), 45000);
+                
+                let sysPrompt = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough.";
+                let airforceModel = await this.getAirforceModel();
+                
+                const res = await fetch(`https://api.airforce/v1/chat/completions`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: this.currentAiModel || 'claude',
+                        model: airforceModel,
                         messages: [
-                            { role: 'system', content: "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough." },
+                            { role: 'system', content: sysPrompt },
                             { role: 'user', content: query }
                         ]
                     }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
-                if (!res.ok) throw new Error('POST failed');
-                replyText = await res.text();
+                if (!res.ok) throw new Error('API failed');
+                const data = await res.json();
+                replyText = data.choices[0]?.message?.content || "No response generated.";
+                if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
+                    replyText = AskAiPage.cleanAiResponse(replyText);
+                }
             } catch(e) {
                 return this.addMsg('Sorry, the AI service is temporarily unavailable. Please try again in a moment.', 'bot');
             }

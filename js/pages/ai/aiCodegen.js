@@ -112,17 +112,30 @@ const AiCodegenMixin = {
         try {
             let response, code = '';
             try {
-                const encoded = encodeURIComponent(systemPrompt);
+                let airforceModel = await this.getAirforceModel();
+
                 const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 30000);
-                response = await fetch(`https://text.pollinations.ai/${encoded}?model=${this.currentAiModel || 'claude'}`, { 
-                    method: 'GET',
+                const timeout = setTimeout(() => controller.abort(), 45000);
+                response = await fetch(`https://api.airforce/v1/chat/completions`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: airforceModel,
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: prompt }
+                        ]
+                    }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
-                if (!response.ok) throw new Error('GET failed');
+                if (!response.ok) throw new Error('API failed');
                 
-                code = await response.text();
+                const data = await response.json();
+                code = data.choices[0]?.message?.content || '// Code generation failed. Please try again.';
+                if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
+                    code = AskAiPage.cleanAiResponse(code);
+                }
             } catch(postErr) {
                 code = '// Code generation failed or API is busy. Please try again.';
             }

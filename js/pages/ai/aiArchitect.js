@@ -37,20 +37,32 @@ JSON schema:
 Rules: setupCommand is a single bash line. tree is nested folders/files. flatFiles has relative path keys with file content values for StackBlitz. Respond with ONLY the JSON object.`;
 
             const abortController = new AbortController();
-            const timeout = setTimeout(() => abortController.abort(), 25000);
+            const timeout = setTimeout(() => abortController.abort(), 45000);
 
             let text = '';
             try {
-                const combinedPrompt = sysPrompt + '\nProject: ' + prompt + '. Return ONLY JSON.';
-                const encodedPrompt = encodeURIComponent(combinedPrompt);
-                const res = await fetch(`https://text.pollinations.ai/${encodedPrompt}?model=${this.currentAiModel}`, {
-                    method: 'GET',
+                let airforceModel = await this.getAirforceModel();
+
+                const res = await fetch(`https://api.airforce/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: airforceModel,
+                        messages: [
+                            { role: 'system', content: sysPrompt },
+                            { role: 'user', content: 'Project: ' + prompt + '. Return ONLY JSON.' }
+                        ]
+                    }),
                     signal: abortController.signal
                 });
                 clearTimeout(timeout);
                 if (!res.ok) throw new Error('API error');
                 
-                text = await res.text();
+                const data = await res.json();
+                text = data.choices[0]?.message?.content || "";
+                if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
+                    text = AskAiPage.cleanAiResponse(text);
+                }
             } catch(e) {
                 clearTimeout(timeout);
                 throw e;

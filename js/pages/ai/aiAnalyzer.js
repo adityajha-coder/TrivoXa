@@ -84,20 +84,32 @@ const AiAnalyzerMixin = {
 
         try {
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 20000);
+            const timeout = setTimeout(() => controller.abort(), 45000);
             
             let text = '';
             try {
-                const combinedPrompt = sysPrompt + "\n\nFilename: " + filename + "\n" + codeContent.substring(0, 1500) + "\n\nReturn EXACTLY the JSON schema requested.";
-                const encodedPrompt = encodeURIComponent(combinedPrompt);
-                const res = await fetch(`https://text.pollinations.ai/${encodedPrompt}?model=${this.currentAiModel}`, {
-                    method: 'GET',
+                let airforceModel = await this.getAirforceModel();
+
+                const res = await fetch(`https://api.airforce/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: airforceModel,
+                        messages: [
+                            { role: 'system', content: sysPrompt },
+                            { role: 'user', content: "Filename: " + filename + "\n" + codeContent.substring(0, 1500) }
+                        ]
+                    }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
                 if (!res.ok) throw new Error('API error');
                 
-                text = await res.text();
+                const data = await res.json();
+                text = data.choices[0]?.message?.content || "";
+                if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
+                    text = AskAiPage.cleanAiResponse(text);
+                }
             } catch(e) {
                 clearTimeout(timeout);
                 throw e;

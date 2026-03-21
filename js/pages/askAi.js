@@ -66,7 +66,7 @@ const AskAiPage = {
 
     currentProjectState: null,
     currentFramework: 'html',
-    currentAiModel: localStorage.getItem('vertex_ai_model') || 'openai',
+    currentAiModel: localStorage.getItem('vertex_ai_model') || 'claude',
     
     archSuggestions: [
         "Scalable Node.js Microservices", "React native chat app", 
@@ -74,6 +74,57 @@ const AskAiPage = {
         "Next.js Portfolio", "Express REST API template",
         "Fullstack SvelteKit store"
     ],
+     async getAirforceModel(fallbackModelStr = null) {
+        try {
+            const res = await fetch('https://api.airforce/v1/models', {cache: "force-cache"});
+            if(res.ok) {
+                const data = await res.json();
+                // Strictly filter for models that are $0 cost OR have ':free' in ID
+                const freeModels = data.data.filter(m => 
+                    (m.pricepermilliontokens === 0 || m.id.toLowerCase().includes(':free')) && 
+                    m.supports_chat === true
+                );
+                
+                let activeModel = fallbackModelStr || this.currentAiModel;
+                let target = activeModel === 'claude' ? 'claude' : (
+                             activeModel === 'llama' ? 'llama' : (
+                             activeModel === 'mistral' ? 'mistral' : 'gpt'
+                             ));
+                
+                // 1. Try to find the target model among FREE models
+                let match = freeModels.find(m => m.id.toLowerCase().includes(target));
+                if(match) return match.id;
+                
+                // 2. Fallback to larger free models first
+                match = freeModels.find(m => m.id.toLowerCase().includes('translategemma'));
+                if(match) return match.id;
+
+                match = freeModels.find(m => m.id.toLowerCase().includes('gpt') || m.id.toLowerCase().includes('claude') || m.id.toLowerCase().includes('gemma'));
+                if(match) return match.id;
+                
+                // 3. Last resort: Return the first available free chat model
+                if(freeModels.length > 0) return freeModels[0].id;
+            }
+        } catch(e) {}
+        // Hardcoded safety fallback known to be free
+        return 'translategemma-27b';
+    },
+
+    cleanAiResponse(text) {
+        if (!text) return "";
+        // Remove common Airforce ads and system messages
+        const ads = [
+            /Need proxies cheaper than the market\?[\s\S]*https:\/\/op\.wtf/img,
+            /This model requires [\s\S]* to enable it\./img,
+            /discord\.gg\/airforce/img,
+            /This model is only available for pay-as-you-go users/img
+        ];
+        let cleaned = text;
+        ads.forEach(ad => {
+            cleaned = cleaned.replace(ad, '');
+        });
+        return cleaned.trim();
+    },
 
     render() {
         Navbar.renderTopbar('Ask AI');
@@ -92,9 +143,9 @@ const AskAiPage = {
                     <div class="form-group" style="min-width: 160px;">
                         <label class="text-xs text-muted mb-xs" style="display:block;">AI Model</label>
                         <select id="ai-model-select" class="input-field" style="padding: 8px 12px; font-size: 0.85rem; height:auto; background: #000; color: #fff; appearance: none; -webkit-appearance: none; cursor: pointer;">
-                            <option value="openai" ${this.currentAiModel === 'openai' ? 'selected' : ''}>OpenAI (Default)</option>
+                            <option value="claude" ${this.currentAiModel === 'claude' ? 'selected' : ''}>Claude (Default)</option>
+                            <option value="openai" ${this.currentAiModel === 'openai' ? 'selected' : ''}>OpenAI</option>
                             <option value="mistral" ${this.currentAiModel === 'mistral' ? 'selected' : ''}>Mistral AI</option>
-                            <option value="claude" ${this.currentAiModel === 'claude' ? 'selected' : ''}>Claude</option>
                             <option value="llama" ${this.currentAiModel === 'llama' ? 'selected' : ''}>Llama 3</option>
                         </select>
                     </div>

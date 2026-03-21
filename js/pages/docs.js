@@ -143,15 +143,17 @@ Return ONLY the raw JSON array. Nothing else.`;
 
         try {
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 30000);
+            const timeout = setTimeout(() => controller.abort(), 45000);
             
             let text = '';
             try {
-                const res = await fetch(`https://text.pollinations.ai/`, { 
+                let airforceModel = await (typeof AskAiPage !== 'undefined' && AskAiPage.getAirforceModel ? AskAiPage.getAirforceModel(aiModel) : 'gpt-4o-mini');
+
+                const res = await fetch(`https://api.airforce/v1/chat/completions`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: aiModel,
+                        model: airforceModel,
                         messages: [
                             { role: 'system', content: systemPrompt },
                             { role: 'user', content: 'Generate comprehensive documentation for: ' + query + '. Return ONLY a JSON array of 3 documentation cards.' }
@@ -162,7 +164,11 @@ Return ONLY the raw JSON array. Nothing else.`;
                 clearTimeout(timeout);
                 if (!res.ok) throw new Error('API returned ' + res.status);
                 
-                text = await res.text();
+                const data = await res.json();
+                text = data.choices[0]?.message?.content || "";
+                if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
+                    text = AskAiPage.cleanAiResponse(text);
+                }
             } catch(e) {
                 clearTimeout(timeout);
                 throw e;
