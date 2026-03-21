@@ -39,35 +39,21 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
             const abortController = new AbortController();
             const timeout = setTimeout(() => abortController.abort(), 25000);
 
-            let res, text = '';
+            let text = '';
             try {
-                res = await fetch('https://text.pollinations.ai/openai', {
-                    method: 'POST',
-                    credentials: 'omit',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({
-                        model: this.currentAiModel,
-                        messages: [
-                            { role: 'system', content: sysPrompt },
-                            { role: 'user', content: 'Project: ' + prompt + '. Return ONLY JSON, no markdown.' }
-                        ]
-                    }),
+                const combinedPrompt = sysPrompt + '\nProject: ' + prompt + '. Return ONLY JSON.';
+                const encodedPrompt = encodeURIComponent(combinedPrompt);
+                const res = await fetch(`https://text.pollinations.ai/${encodedPrompt}?model=${this.currentAiModel}`, {
+                    method: 'GET',
                     signal: abortController.signal
                 });
                 clearTimeout(timeout);
                 if (!res.ok) throw new Error('API error');
-                const responseText = await res.text();
-                try {
-                    const json = JSON.parse(responseText);
-                    text = json.choices?.[0]?.message?.content || responseText;
-                } catch(e) {
-                    text = responseText;
-                }
+                
+                text = await res.text();
             } catch(e) {
                 clearTimeout(timeout);
-                const fallbackPrompt = sysPrompt + '\nProject: ' + prompt + '. Return ONLY JSON.';
-                res = await fetch('https://text.pollinations.ai/' + encodeURIComponent(fallbackPrompt) + `?model=${this.currentAiModel}`);
-                text = await res.text();
+                throw e;
             }
             
             text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();

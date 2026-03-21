@@ -30,8 +30,9 @@ const AiCodegenMixin = {
         });
 
         document.getElementById('run-container-btn').addEventListener('click', async () => {
-            const code = this.editor ? this.editor.getValue() : '';
-            if(!code) return Toast.show('No code to run', 'error');
+            const outputDiv = document.getElementById('ai-code-output');
+            const code = outputDiv ? outputDiv.textContent : '';
+            if(!code.trim() || code.includes('Pollinations') || code.includes('// Code generation failed')) return Toast.show('No valid code to run', 'warning');
 
             const fw = this.currentFramework;
             let project = {

@@ -145,12 +145,11 @@ Return ONLY the raw JSON array. Nothing else.`;
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 30000);
             
-            let res, text = '';
+            let text = '';
             try {
-                res = await fetch('https://text.pollinations.ai/openai', {
+                const res = await fetch(`https://text.pollinations.ai/`, { 
                     method: 'POST',
-                    credentials: 'omit',
-                    headers: { 'Content-Type': 'text/plain' },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         model: aiModel,
                         messages: [
@@ -163,17 +162,10 @@ Return ONLY the raw JSON array. Nothing else.`;
                 clearTimeout(timeout);
                 if (!res.ok) throw new Error('API returned ' + res.status);
                 
-                const responseText = await res.text();
-                try {
-                    const json = JSON.parse(responseText);
-                    text = json.choices?.[0]?.message?.content || responseText;
-                } catch(e) {
-                    text = responseText;
-                }
+                text = await res.text();
             } catch(e) {
                 clearTimeout(timeout);
-                const fallbackRes = await fetch('https://text.pollinations.ai/' + encodeURIComponent(systemPrompt + '\n\nTopic: ' + query + '. Return ONLY JSON array.') + `?model=${aiModel}`);
-                text = await fallbackRes.text();
+                throw e;
             }
             text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
 

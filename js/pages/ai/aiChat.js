@@ -59,40 +59,32 @@ const AiChatMixin = {
         }
 
         try {
-            const queryData = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough. User Request: " + query;
-            
-            let res, replyText = '';
+            let replyText = '';
             try {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 30000);
-                res = await fetch('https://text.pollinations.ai/openai', {
+                const res = await fetch(`https://text.pollinations.ai/`, { 
                     method: 'POST',
-                    credentials: 'omit',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({ model: this.currentAiModel, messages: [{ role: 'user', content: queryData }] }),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: this.currentAiModel || 'claude',
+                        messages: [
+                            { role: 'system', content: "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough." },
+                            { role: 'user', content: query }
+                        ]
+                    }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
                 if (!res.ok) throw new Error('POST failed');
-                const responseText = await res.text();
-                try {
-                    const json = JSON.parse(responseText);
-                    replyText = json.choices?.[0]?.message?.content || responseText;
-                } catch(e) {
-                    replyText = responseText;
-                }
-            } catch(postErr) {
-                const encoded = encodeURIComponent(queryData);
-                const res = await fetch(`https://text.pollinations.ai/${encoded}?model=${this.currentAiModel}`, { method: 'GET' });
-                if (!res.ok) throw new Error('GET also failed');
                 replyText = await res.text();
+            } catch(e) {
+                return this.addMsg('Sorry, the AI service is temporarily unavailable. Please try again in a moment.', 'bot');
             }
             
             let formattedReply = replyText.replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:8px;font-size:12px;overflow-x:auto;">$1</pre>');
             
             this.addMsg(formattedReply.trim(), 'bot');
-        } catch(e) {
-            this.addMsg('Sorry, the AI service is temporarily unavailable. Please try again in a moment.', 'bot');
         } finally {
             document.getElementById('ai-bot-send').disabled = false;
             document.getElementById('ai-bot-send').innerHTML = '<i class="fa-solid fa-paper-plane"></i>';

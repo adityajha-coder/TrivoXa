@@ -86,36 +86,21 @@ const AiAnalyzerMixin = {
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 20000);
             
-            let res, text = '';
+            let text = '';
             try {
-                res = await fetch('https://text.pollinations.ai/openai', {
-                    method: 'POST',
-                    credentials: 'omit',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({
-                        model: this.currentAiModel,
-                        messages: [
-                            { role: 'system', content: sysPrompt },
-                            { role: 'user', content: `Filename: ${filename}\n\n${codeContent.substring(0, 3000)}` }
-                        ]
-                    }),
+                const combinedPrompt = sysPrompt + "\n\nFilename: " + filename + "\n" + codeContent.substring(0, 1500) + "\n\nReturn EXACTLY the JSON schema requested.";
+                const encodedPrompt = encodeURIComponent(combinedPrompt);
+                const res = await fetch(`https://text.pollinations.ai/${encodedPrompt}?model=${this.currentAiModel}`, {
+                    method: 'GET',
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
                 if (!res.ok) throw new Error('API error');
                 
-                const responseText = await res.text();
-                try {
-                    const json = JSON.parse(responseText);
-                    text = json.choices?.[0]?.message?.content || responseText;
-                } catch(e) {
-                    text = responseText;
-                }
-            } catch(e){
-                clearTimeout(timeout);
-                const query = sysPrompt + "\n\nFilename: " + filename + "\n" + codeContent.substring(0, 500);
-                res = await fetch('https://text.pollinations.ai/' + encodeURIComponent(query) + `?model=${this.currentAiModel}`);
                 text = await res.text();
+            } catch(e) {
+                clearTimeout(timeout);
+                throw e;
             }
             
             const startIdx = text.indexOf('{');
