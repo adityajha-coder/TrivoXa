@@ -66,8 +66,8 @@ const AskAiPage = {
 
     currentProjectState: null,
     currentFramework: 'html',
-    currentAiModel: localStorage.getItem('vertex_ai_model') || 'claude',
-    apiKey: localStorage.getItem('vertex_api_key') || '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',
+    currentAiModel: localStorage.getItem('vertex_ai_model') || 'mixtral',
+    apiKey: localStorage.getItem('vertex_groq_key') || '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',
     
     archSuggestions: [
         "Scalable Node.js Microservices", "React native chat app", 
@@ -76,15 +76,18 @@ const AskAiPage = {
         "Fullstack SvelteKit store"
     ],
      async getAirforceModel(fallbackModelStr = null) {
-        // Use OpenAI API with user-provided API key
-        const activeModel = fallbackModelStr || this.currentAiModel;
+        // Use Groq API models
+        const activeModel = fallbackModelStr || this.currentAiModel || 'mixtral';
         const modelMap = {
-            'claude': 'gpt-4o',
-            'openai': 'gpt-4o-mini',
-            'mistral': 'gpt-3.5-turbo',
-            'llama': 'gpt-4'
+            'mixtral': 'llama-3.1-8b-instant',
+            'llama': 'llama-3.1-8b-instant',
+            'gemma': 'llama-3.1-8b-instant',
+            'claude': 'llama-3.1-8b-instant',
+            'openai': 'llama-3.1-8b-instant',
+            'mistral': 'llama-3.1-8b-instant',
+            'llama': 'llama2-70b-4096'
         };
-        return modelMap[activeModel] || 'gpt-4o';
+        return modelMap[activeModel] || 'llama-3.1-8b-instant';
     },
 
     cleanAiResponse(text) {
@@ -129,17 +132,16 @@ const AskAiPage = {
                     </div>
                     <div style="display:flex; gap:12px; flex-wrap:wrap;">
                         <div class="form-group" style="min-width: 160px;">
-                            <label class="text-xs text-muted mb-xs" style="display:block;">AI Model</label>
+                            <label class="text-xs text-muted mb-xs" style="display:block;">Groq Model</label>
                             <select id="ai-model-select" class="input-field" style="padding: 8px 12px; font-size: 0.85rem; height:auto; background: #000; color: #fff; appearance: none; -webkit-appearance: none; cursor: pointer;">
-                                <option value="claude" ${this.currentAiModel === 'claude' ? 'selected' : ''}>GPT-4o (Default)</option>
-                                <option value="openai" ${this.currentAiModel === 'openai' ? 'selected' : ''}>GPT-4o Mini</option>
-                                <option value="mistral" ${this.currentAiModel === 'mistral' ? 'selected' : ''}>GPT-3.5 Turbo</option>
-                                <option value="llama" ${this.currentAiModel === 'llama' ? 'selected' : ''}>GPT-4</option>
+                                <option value="mixtral" selected>Mixtral 8x7B (Recommended)</option>
+                                <option value="llama2">Llama 2 70B</option>
+                                <option value="gemma">Gemma 7B</option>
                             </select>
                         </div>
                         <div class="form-group" style="min-width: 200px;">
-                            <label class="text-xs text-muted mb-xs" style="display:block;">OpenAI API Key</label>
-                            <input type="password" id="ai-api-key" class="input-field" placeholder="sk-..." value="${this.apiKey}" style="padding: 8px 12px; font-size: 0.85rem; height:auto;">
+                            <label class="text-xs text-muted mb-xs" style="display:block;">Groq API Key</label>
+                            <input type="password" id="ai-api-key" class="input-field" placeholder="gsk_..." value="${localStorage.getItem('vertex_groq_key') || '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'}" style="padding: 8px 12px; font-size: 0.85rem; height:auto;">
                         </div>
                     </div>
                 </div>
@@ -427,13 +429,14 @@ const AskAiPage = {
             sel.addEventListener('change', (e) => {
                 this.currentAiModel = e.target.value;
                 localStorage.setItem('vertex_ai_model', this.currentAiModel);
-                Toast.show('AI Model switched to ' + this.currentAiModel, 'info');
+                Toast.show('Groq Model switched to ' + e.target.options[e.target.selectedIndex].text, 'info');
             });
         }
         if(keyInput) {
             keyInput.addEventListener('input', (e) => {
-                this.apiKey = e.target.value;
-                localStorage.setItem('vertex_api_key', this.apiKey);
+                localStorage.setItem('vertex_groq_key', e.target.value);
+                API.setGroqApiKey(e.target.value);
+                Toast.show('Groq API Key updated', 'success');
             });
         }
     },

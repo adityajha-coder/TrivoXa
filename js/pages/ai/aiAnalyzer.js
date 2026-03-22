@@ -66,28 +66,19 @@ const AiAnalyzerMixin = {
             
             let text = '';
             try {
-                const res = await fetch('https://text.pollinations.ai/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: [
-                            { role: 'system', content: sysPrompt },
-                            { role: 'user', content: "Filename: " + filename + "\n" + codeContent.substring(0, 1500) }
-                        ],
-                        model: 'openai',
-                        seed: Math.floor(Math.random() * 100000)
-                    }),
-                    signal: controller.signal
-                });
+                const res = await API.callGroqChat([
+                    { role: 'system', content: sysPrompt },
+                    { role: 'user', content: "Filename: " + filename + "\n" + codeContent.substring(0, 1500) }
+                ], 'llama-3.1-8b-instant', 0.7);
                 clearTimeout(timeout);
-                if (!res.ok) throw new Error('API error');
                 
-                text = await res.text();
+                text = res.choices[0]?.message?.content || '';
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     text = AskAiPage.cleanAiResponse(text);
                 }
             } catch(e) {
                 clearTimeout(timeout);
+                console.error('[Code Analyzer Error]', e.message);
                 throw e;
             }
             

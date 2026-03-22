@@ -66,28 +66,35 @@ const AiChatMixin = {
                 
                 let sysPrompt = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough.";
                 
-                const res = await fetch('https://text.pollinations.ai/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: [
-                            { role: 'system', content: sysPrompt },
-                            { role: 'user', content: query }
-                        ],
-                        model: 'openai',
-                        seed: Math.floor(Math.random() * 100000)
-                    }),
-                    signal: controller.signal
-                });
+                const res = await API.callGroqChat([
+                    { role: 'system', content: sysPrompt },
+                    { role: 'user', content: query }
+                ], 'llama-3.1-8b-instant', 0.7);
+
                 clearTimeout(timeout);
-                if (!res.ok) throw new Error('API failed with status ' + res.status);
-                replyText = await res.text();
+                replyText = res.choices[0]?.message?.content || "No response generated";
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     replyText = AskAiPage.cleanAiResponse(replyText);
                 }
             } catch(e) {
                 console.error('AI Chat error:', e);
-                this.addMsg('Sorry, the AI service is temporarily unavailable. Please try again in a moment.', 'bot');
+                const errorMsg = e.message || 'API service error. Check console for details.';
+                let displayMsg = errorMsg;
+                
+                // Make error messages user-friendly
+                if (errorMsg.includes('CORS')) {
+                    displayMsg = '❌ CORS Error: Cannot reach Groq API from browser. Use a backend proxy.';
+                } else if (errorMsg.includes('Invalid Groq API key')) {
+                    displayMsg = '❌ ' + errorMsg;
+                } else if (errorMsg.includes('401')) {
+                    displayMsg = '❌ Unauthorized: API key is invalid or expired. Update it in settings.';
+                } else if (errorMsg.includes('429')) {
+                    displayMsg = '❌ Rate limited: Too many requests. Wait a moment and try again.';
+                } else if (errorMsg.includes('Network error')) {
+                    displayMsg = '❌ Network error. Check your internet connection.';
+                }
+                
+                this.addMsg(displayMsg, 'bot');
                 document.getElementById('ai-bot-send').disabled = false;
                 document.getElementById('ai-bot-send').innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
                 return;
