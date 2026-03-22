@@ -3,7 +3,9 @@ const API = {
     NPM_SEARCH: 'https://registry.npmjs.org/-/v1/search',
     NPM_PACKAGE: 'https://registry.npmjs.org',
     GROQ_BASE: 'https://api.groq.com/openai/v1',
-    GROQ_PROXY: 'http://localhost:3001/api/groq', // Local proxy server
+    GROQ_PROXY: window.location.host.includes('localhost') || window.location.host.includes('127.0.0.1') 
+        ? 'http://localhost:3001/api/groq' 
+        : '/api/groq', // Auto-switch to Vercel/Production proxy
     GROQ_API_KEY: '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',
     USE_PROXY: true, // Set to false to call Groq directly (requires proper CORS setup)
 
