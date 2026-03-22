@@ -2,6 +2,121 @@ const API = {
     GITHUB_BASE: 'https://api.github.com',
     NPM_SEARCH: 'https://registry.npmjs.org/-/v1/search',
     NPM_PACKAGE: 'https://registry.npmjs.org',
+    GROQ_BASE: 'https://api.groq.com/openai/v1',
+    GROQ_PROXY: 'http://localhost:3001/api/groq', // Local proxy server
+    GROQ_API_KEY: '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',
+    USE_PROXY: true, // Set to false to call Groq directly (requires proper CORS setup)
+
+    getGroqApiKey() {
+        return localStorage.getItem('vertex_groq_key') || this.GROQ_API_KEY;
+    },
+
+    setGroqApiKey(key) {
+        localStorage.setItem('vertex_groq_key', key);
+    },
+
+    async fetchGroq(endpoint, body, model = 'llama-3.1-8b-instant') {
+        const apiKey = this.getGroqApiKey();
+        
+        // Validate API key format
+        if (!apiKey || !apiKey.startsWith('gsk_')) {
+            throw new Error('Invalid Groq API key. Key should start with "gsk_". Check your API key in settings.');
+        }
+
+        // Use proxy if available, otherwise use direct connection
+        if (this.USE_PROXY) {
+            return this.fetchGroqViaProxy(endpoint, body);
+        } else {
+            return this.fetchGroqDirect(endpoint, body, apiKey);
+        }
+    },
+
+    async fetchGroqViaProxy(endpoint, body) {
+        const url = `${this.GROQ_PROXY}${endpoint}`;
+        
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                let errorMsg = `Proxy error: ${res.status} ${res.statusText}`;
+                
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    errorMsg = errorJson.error || errorJson.message || errorMsg;
+                } catch {
+                    errorMsg += ` - ${errorText}`;
+                }
+                
+                console.error('Groq Proxy Error:', { status: res.status, error: errorText });
+                throw new Error(errorMsg);
+            }
+
+            return res.json();
+        } catch (err) {
+            if (err instanceof TypeError) {
+                console.error('Proxy Connection Error:', err);
+                throw new Error('Cannot reach Groq Proxy server on localhost:3001. Make sure it\'s running: node groq-proxy.js');
+            }
+            throw err;
+        }
+    },
+
+    async fetchGroqDirect(endpoint, body, apiKey) {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        };
+
+        try {
+            const res = await fetch(`${this.GROQ_BASE}${endpoint}`, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(body)
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                let errorMsg = `Groq API error: ${res.status} ${res.statusText}`;
+                
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    errorMsg += ` - ${errorJson.error?.message || errorText}`;
+                } catch {
+                    errorMsg += ` - ${errorText}`;
+                }
+                
+                console.error('Groq API Error:', { status: res.status, error: errorText });
+                throw new Error(errorMsg);
+            }
+
+            return res.json();
+        } catch (err) {
+            if (err instanceof TypeError) {
+                console.error('Network/CORS Error:', err);
+                throw new Error('Network error. This might be a CORS issue. Try running the Groq Proxy: node groq-proxy.js');
+            }
+            throw err;
+        }
+    },
+
+    async callGroqChat(messages, model = 'llama-3.1-8b-instant', temperature = 0.7) {
+        try {
+            return await this.fetchGroq('/chat', {
+                model: model,
+                messages: messages,
+                temperature: temperature,
+                max_tokens: 2048
+            });
+        } catch (error) {
+            console.error('[Groq Chat Error]', error.message);
+            throw error;
+        }
+    },
 
     async fetchGitHub(endpoint, customMethod = 'GET', body = null) {
         const headers = { 'Accept': 'application/vnd.github.v3+json' };

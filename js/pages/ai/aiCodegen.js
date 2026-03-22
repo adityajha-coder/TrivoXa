@@ -113,28 +113,19 @@ const AiCodegenMixin = {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 60000);
                 
-                const res = await fetch('https://text.pollinations.ai/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: [
-                            { role: 'system', content: systemPrompt },
-                            { role: 'user', content: prompt }
-                        ],
-                        model: 'openai',
-                        seed: Math.floor(Math.random() * 100000)
-                    }),
-                    signal: controller.signal
-                });
+                const res = await API.callGroqChat([
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: prompt }
+                ], 'llama-3.1-8b-instant', 0.7);
                 clearTimeout(timeout);
-                if (!res.ok) throw new Error('API failed');
                 
-                code = await res.text();
+                code = res.choices[0]?.message?.content || '';
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     code = AskAiPage.cleanAiResponse(code);
                 }
             } catch(postErr) {
-                code = '// Code generation failed or API is busy. Please try again.';
+                console.error('[Code Generator Error]', postErr.message);
+                code = '// Error: ' + postErr.message + '\n// Please check console and ensure Groq Proxy is running.';
             }
             
             code = code.replace(/^```[a-zA-Z]*\n?/gm, '').replace(/\n?```$/gm, '').trim();

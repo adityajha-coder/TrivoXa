@@ -40,28 +40,19 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
 
             let text = '';
             try {
-                const res = await fetch('https://text.pollinations.ai/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: [
-                            { role: 'system', content: sysPrompt },
-                            { role: 'user', content: 'Project: ' + prompt + '. Return ONLY JSON.' }
-                        ],
-                        model: 'openai',
-                        seed: Math.floor(Math.random() * 100000)
-                    }),
-                    signal: abortController.signal
-                });
+                const res = await API.callGroqChat([
+                    { role: 'system', content: sysPrompt },
+                    { role: 'user', content: 'Project: ' + prompt + '. Return ONLY JSON.' }
+                ], 'llama-3.1-8b-instant', 0.7);
                 clearTimeout(timeout);
-                if (!res.ok) throw new Error('API error');
                 
-                text = await res.text();
+                text = res.choices[0]?.message?.content || '';
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     text = AskAiPage.cleanAiResponse(text);
                 }
             } catch(e) {
                 clearTimeout(timeout);
+                console.error('[Architecture Builder Error]', e.message);
                 throw e;
             }
             

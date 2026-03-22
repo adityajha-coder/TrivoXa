@@ -147,34 +147,21 @@ Return ONLY the raw JSON array. Nothing else.`;
             
             let text = '';
             try {
-                let airforceModel = await (typeof AskAiPage !== 'undefined' && AskAiPage.getAirforceModel ? AskAiPage.getAirforceModel(aiModel) : 'gpt-4o-mini');
+                const res = await API.callGroqChat([
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: 'Generate comprehensive documentation for: ' + query + '. Return ONLY a JSON array of 3 documentation cards.' }
+                ], 'llama-3.1-8b-instant', 0.7);
 
-                const headers = { 'Content-Type': 'application/json' };
-                if (this.apiKey) {
-                    headers['Authorization'] = `Bearer ${this.apiKey}`;
-                }
-                const res = await fetch(`https://api.openai.com/v1/chat/completions`, {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify({
-                        model: airforceModel,
-                        messages: [
-                            { role: 'system', content: systemPrompt },
-                            { role: 'user', content: 'Generate comprehensive documentation for: ' + query + '. Return ONLY a JSON array of 3 documentation cards.' }
-                        ]
-                    }),
-                    signal: controller.signal
-                });
                 clearTimeout(timeout);
-                if (!res.ok) throw new Error('API returned ' + res.status);
                 
-                const data = await res.json();
+                const data = res;
                 text = data.choices[0]?.message?.content || "";
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     text = AskAiPage.cleanAiResponse(text);
                 }
             } catch(e) {
                 clearTimeout(timeout);
+                console.error('[Docs Search Error]', e.message);
                 throw e;
             }
             text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
