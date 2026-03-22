@@ -37,7 +37,7 @@ echo Testing Groq API Key...
 echo.
 
 REM Run the test script
-node test-groq-api.js
+node devtools\test-groq-api.js
 
 if %errorlevel% neq 0 (
     echo.

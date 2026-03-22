@@ -1,30 +1,38 @@
-const CACHE_NAME = 'vertex';
+const CACHE_NAME = 'vertex-v1';
 const STATIC_ASSETS = [
+    '/',
     '/index.html',
     '/favicon.svg',
-    '/css/base.css',
-    '/css/layout.css',
-    '/css/components.css',
-    '/css/pages.css',
-    '/css/animations.css',
-    '/js/utils/helpers.js',
-    '/js/utils/api.js',
-    '/js/components/navbar.js',
-    '/js/components/loader.js',
-    '/js/pages/dashboard.js',
-    '/js/pages/askAi.js',
-    '/js/pages/docs.js',
-    '/js/pages/codeGitExplorer.js',
-    '/js/pages/freeApis.js',
-    '/js/pages/packageScout.js',
-    '/js/pages/commands.js',
-    '/js/pages/workspace.js',
-    '/js/pages/toolsVault.js',
-    '/js/pages/aiArchitect.js',
-    '/js/router.js',
-    '/js/search.js',
-    '/js/app.js',
-    '/manifest.json'
+    '/manifest.json',
+    '/css/base.css?v=4',
+    '/css/layout.css?v=4',
+    '/css/components.css?v=4',
+    '/css/pages.css?v=4',
+    '/css/animations.css?v=4',
+    '/js/utils/helpers.js?v=6',
+    '/js/utils/api.js?v=6',
+    '/js/components/navbar.js?v=6',
+    '/js/components/loader.js?v=6',
+    '/js/pages/dashboard.js?v=6',
+    '/js/pages/askAi.js?v=10',
+    '/js/pages/docs.js?v=4',
+    '/js/pages/codeGitExplorer.js?v=7',
+    '/js/pages/freeApis.js?v=7',
+    '/js/pages/packageScout.js?v=7',
+    '/js/pages/commands.js?v=7',
+    '/js/pages/workspace.js?v=7',
+    '/js/pages/toolsVault.js?v=7',
+    '/js/pages/ai/aiChat.js?v=1',
+    '/js/pages/ai/aiArchitect.js?v=1',
+    '/js/pages/ai/aiCodegen.js?v=1',
+    '/js/pages/ai/aiAnalyzer.js?v=1',
+    '/js/pages/ai/aiStacks.js?v=1',
+    '/js/pages/gitExplorer/githubUser.js?v=1',
+    '/js/pages/gitExplorer/githubStructure.js?v=1',
+    '/js/pages/gitExplorer/githubGit.js?v=1',
+    '/js/router.js?v=7',
+    '/js/search.js?v=1',
+    '/js/app.js?v=6'
 ];
 
 self.addEventListener('install', event => {
@@ -40,6 +48,11 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+    // Skip caching for internal API / proxy calls
+    if (event.request.url.includes('/api/')) {
+        return;
+    }
+    
     if (event.request.url.includes('api.github.com') || event.request.url.includes('registry.npmjs.org')) {
         event.respondWith(
             fetch(event.request).then(response => {

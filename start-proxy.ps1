@@ -60,4 +60,4 @@ Write-Host "╚═════════════════════�
 Write-Host ""
 
 # Start the proxy
-& node groq-proxy.js
+& node core/groq-proxy.js

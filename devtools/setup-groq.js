@@ -20,7 +20,7 @@ const nodeVersion = process.version;
 console.log(`✓ Node.js version: ${nodeVersion}`);
 
 // Check if package.json exists
-const packageJsonPath = path.join(__dirname, 'package.json');
+const packageJsonPath = path.join(__dirname, '..', 'package.json');
 if (!fs.existsSync(packageJsonPath)) {
     console.error('❌ package.json not found!');
     process.exit(1);
@@ -28,10 +28,11 @@ if (!fs.existsSync(packageJsonPath)) {
 console.log('✓ package.json found');
 
 // Check if node_modules exists
-const nodeModulesPath = path.join(__dirname, 'node_modules');
+const nodeModulesPath = path.join(__dirname, '..', 'node_modules');
 if (!fs.existsSync(nodeModulesPath)) {
     console.log('\n⚠️  node_modules not found. Installing dependencies...\n');
     try {
+        process.chdir(path.join(__dirname, '..'));
         execSync('npm install', { stdio: 'inherit' });
         console.log('\n✓ Dependencies installed successfully!');
     } catch (error) {
@@ -84,7 +85,7 @@ console.log(`
 Next steps:
 
 1. Start Groq Proxy:
-   node groq-proxy.js
+   npm run proxy
 
 2. In another terminal, start Vertex App:
    npm start

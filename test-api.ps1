@@ -24,7 +24,7 @@ Write-Host ""
 
 # Run the test
 try {
-    & node test-groq-api.js
+    & node devtools/test-groq-api.js
     $exitCode = $LASTEXITCODE
 } catch {
     Write-Host "❌ Test script failed" -ForegroundColor Red

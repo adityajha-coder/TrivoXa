@@ -74,7 +74,7 @@ REM Start the proxy with error handling
 echo Starting on localhost:3001...
 echo.
 
-node groq-proxy.js
+node core\groq-proxy.js
 if %errorlevel% neq 0 (
     echo.
     echo ❌ Groq Proxy failed to start!
