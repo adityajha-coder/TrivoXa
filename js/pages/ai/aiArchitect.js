@@ -1,20 +1,31 @@
 const AiArchitectMixin = {
     bindArchitect() {
-        document.getElementById('ai-arch-btn').addEventListener('click', () => this.generateArchitecture());
-        document.getElementById('ai-arch-prompt').addEventListener('keydown', e => {
+        const archBtn = document.getElementById('ai-arch-btn');
+        const archPrompt = document.getElementById('ai-arch-prompt');
+        const copyCmd = document.getElementById('ai-copy-cmd');
+        const suggestionsArea = document.getElementById('ai-arch-suggestions');
+        
+        if (!archBtn || !archPrompt || !copyCmd) {
+            console.warn('[Architect] Missing architect elements - skipping binding');
+            return;
+        }
+        
+        archBtn.addEventListener('click', () => this.generateArchitecture());
+        archPrompt.addEventListener('keydown', e => {
             if(e.key === 'Enter') this.generateArchitecture();
         });
-        document.getElementById('ai-copy-cmd').addEventListener('click', () => {
-            const cmd = document.getElementById('ai-arch-cmd').textContent;
-            Helpers.copyToClipboard(cmd);
-            Toast.show('Command copied!', 'success');
+        copyCmd.addEventListener('click', () => {
+            const cmd = document.getElementById('ai-arch-cmd');
+            if (cmd) {
+                Helpers.copyToClipboard(cmd.textContent);
+                Toast.show('Command copied!', 'success');
+            }
         });
 
-        const suggestionsArea = document.getElementById('ai-arch-suggestions');
         if(suggestionsArea) {
             suggestionsArea.addEventListener('click', (e) => {
                 if(e.target.classList.contains('ai-suggest-chip')) {
-                    document.getElementById('ai-arch-prompt').value = e.target.dataset.q;
+                    archPrompt.value = e.target.dataset.q;
                     this.generateArchitecture();
                 }
             });

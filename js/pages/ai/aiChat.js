@@ -1,33 +1,105 @@
 const AiChatMixin = {
     bindChat() {
+        console.log('[AI Chat] Starting chat binding...');
+        
         const input = document.getElementById('ai-bot-input');
         const send = document.getElementById('ai-bot-send');
         const explain = document.getElementById('ai-bot-explain');
         const debug = document.getElementById('ai-bot-debug');
         
-        const handleSend = () => { const q = input.value.trim(); if (!q) return; this.addMsg(q, 'user'); input.value = ''; setTimeout(() => this.genReply(q), 400); };
-        const handleExplain = () => { const code = input.value.trim(); if (!code) return Toast.show('Paste code first, then click Explain', 'warning'); const q = "Explain this code to me like I'm a beginner:\n\n" + code; this.addMsg("Explain this code to me like a beginner:\n" + code, 'user'); input.value = ''; setTimeout(() => this.genReply(q), 400); };
-        const handleDebug = () => { const code = input.value.trim(); if (!code) return Toast.show('Paste the error or code first', 'warning'); const q = "Debug this error or code. Tell me what's wrong and how to fix it:\n\n" + code; this.addMsg("Debug this:\n" + code, 'user'); input.value = ''; setTimeout(() => this.genReply(q), 400); };
+        console.log('[AI Chat] Elements found:', {
+            input: !!input,
+            send: !!send,
+            explain: !!explain,
+            debug: !!debug
+        });
         
-        send.addEventListener('click', handleSend);
-        explain.addEventListener('click', handleExplain);
-        debug.addEventListener('click', handleDebug);
+        if (!input || !send || !explain || !debug) {
+            console.warn('[AI Chat] Missing chat elements - skipping binding');
+            console.warn('[AI Chat] input:', input, 'send:', send, 'explain:', explain, 'debug:', debug);
+            return;
+        }
         
-        input.addEventListener('keydown', e => { 
+        // Bind send button
+        send.addEventListener('click', () => {
+            console.log('[AI Chat] Send button clicked');
+            const q = input.value.trim();
+            console.log('[AI Chat] Query:', q);
+            if (!q) {
+                console.log('[AI Chat] Empty query, not sending');
+                return;
+            }
+            console.log('[AI Chat] Adding user message');
+            this.addMsg(q, 'user');
+            input.value = '';
+            console.log('[AI Chat] Generating reply');
+            setTimeout(() => this.genReply(q), 400);
+        });
+        
+        // Bind explain button
+        explain.addEventListener('click', () => {
+            console.log('[AI Chat] Explain button clicked');
+            const code = input.value.trim();
+            if (!code) {
+                Toast.show('Paste code first, then click Explain', 'warning');
+                return;
+            }
+            const q = "Explain this code to me like I'm a beginner:\n\n" + code;
+            this.addMsg("Explain this code to me like a beginner:\n" + code, 'user');
+            input.value = '';
+            setTimeout(() => this.genReply(q), 400);
+        });
+        
+        // Bind debug button
+        debug.addEventListener('click', () => {
+            console.log('[AI Chat] Debug button clicked');
+            const code = input.value.trim();
+            if (!code) {
+                Toast.show('Paste the error or code first', 'warning');
+                return;
+            }
+            const q = "Debug this error or code. Tell me what's wrong and how to fix it:\n\n" + code;
+            this.addMsg("Debug this:\n" + code, 'user');
+            input.value = '';
+            setTimeout(() => this.genReply(q), 400);
+        });
+        
+        // Bind Enter key
+        input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
+                console.log('[AI Chat] Enter key pressed');
                 e.preventDefault();
-                handleSend(); 
+                const q = input.value.trim();
+                if (!q) return;
+                this.addMsg(q, 'user');
+                input.value = '';
+                setTimeout(() => this.genReply(q), 400);
             }
         });
+        
+        // Bind clear button
+        const clearBtn = document.getElementById('ai-clear-chat');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                const msgs = document.getElementById('ai-bot-messages');
+                if (msgs) {
+                    msgs.innerHTML = `<div class="ai-msg bot-msg"><div class="msg-avatar"><i class="fa-solid fa-robot"></i></div><div class="msg-bubble">Chat cleared. How can I help you?</div></div>`;
+                    Toast.show('Chat cleared', 'success');
+                }
+            });
+        }
+        
+        // Bind suggestion chips
         document.querySelectorAll('.ai-suggest-chip').forEach(chip => {
-            chip.addEventListener('click', () => { const q = chip.dataset.q; this.addMsg(q, 'user'); setTimeout(() => this.genReply(q), 400); });
+            chip.addEventListener('click', () => {
+                const q = chip.dataset.q;
+                console.log('[AI Chat] Suggestion clicked:', q);
+                this.addMsg(q, 'user');
+                setTimeout(() => this.genReply(q), 400);
+            });
         });
-
-        document.getElementById('ai-clear-chat').addEventListener('click', () => {
-            const msgs = document.getElementById('ai-bot-messages');
-            msgs.innerHTML = `<div class="ai-msg bot-msg"><div class="msg-avatar"><i class="fa-solid fa-robot"></i></div><div class="msg-bubble">Chat cleared. How can I help you?</div></div>`;
-            Toast.show('Chat cleared', 'success');
-        });
+        
+        console.log('[AI Chat] Chat binding complete - all event listeners attached');
     },
 
     addMsg(text, sender) {

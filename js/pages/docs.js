@@ -60,18 +60,26 @@ const DocsPage = {
     bindEvents() {
         const btn = document.getElementById('docs-search-btn');
         const input = document.getElementById('docs-search-input');
+        const suggestionsArea = document.getElementById('docs-suggestions');
+        
+        if (!btn || !input) {
+            console.warn('[Docs] Missing search elements - skipping binding');
+            return;
+        }
         
         btn.addEventListener('click', () => this.searchDocs(input.value));
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') this.searchDocs(input.value);
         });
 
-        document.getElementById('docs-suggestions').addEventListener('click', (e) => {
-            if(e.target.classList.contains('ai-suggest-chip')) {
-                input.value = e.target.dataset.q;
-                this.searchDocs(input.value);
-            }
-        });
+        if (suggestionsArea) {
+            suggestionsArea.addEventListener('click', (e) => {
+                if(e.target.classList.contains('ai-suggest-chip')) {
+                    input.value = e.target.dataset.q;
+                    this.searchDocs(input.value);
+                }
+            });
+        }
     },
 
     _renderDocs(docs) {
@@ -130,16 +138,16 @@ const DocsPage = {
             return;
         }
 
-        const aiModel = (typeof AskAiPage !== 'undefined' && AskAiPage.currentAiModel) ? AskAiPage.currentAiModel : 'openai';
+        const systemPrompt = `You are a JSON API. Return ONLY valid JSON array. NO markdown, NO code fences, NO extra text.
 
-        const systemPrompt = `You are a JSON API that returns programming documentation. Return ONLY a valid JSON array with NO markdown, NO code fences, NO explanation text, NO emojis. The array must have exactly 3 objects with detailed, accurate, production-quality documentation.
+Format: [{"title":"Name","tags":["tag1","tag2"],"summary":"...200+ words..."}]
 
-Each object MUST have these exact fields:
-- "title": A clear descriptive title with the language/framework name
-- "tags": An array of 2 relevant category tags
-- "summary": A detailed explanation with code examples. Use \\n for newlines. Include syntax, examples, and best practices. Make it thorough — at least 150 words per card.
+Create exactly 3 objects. Each must have:
+- title: String with language/framework
+- tags: Array of exactly 2 strings
+- summary: 200+ word detailed explanation with code examples, syntax, and best practices. Use \\n for line breaks.
 
-Return ONLY the raw JSON array. Nothing else.`;
+Return ONLY the JSON array between [ and ]. Nothing else.`;
 
         try {
             const controller = new AbortController();
@@ -149,14 +157,13 @@ Return ONLY the raw JSON array. Nothing else.`;
             try {
                 const res = await API.callGroqChat([
                     { role: 'system', content: systemPrompt },
-                    { role: 'user', content: 'Generate comprehensive documentation for: ' + query + '. Return ONLY a JSON array of 3 documentation cards.' }
+                    { role: 'user', content: 'Get docs for: ' + query }
                 ], 'llama-3.1-8b-instant', 0.7);
 
                 clearTimeout(timeout);
                 
-                const data = res;
-                text = data.choices[0]?.message?.content || "";
-                if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
+                text = res.choices?.[0]?.message?.content || "";
+                if (typeof AskAiPage !== 'undefined' && AskAiPage?.cleanAiResponse) {
                     text = AskAiPage.cleanAiResponse(text);
                 }
             } catch(e) {
@@ -164,7 +171,9 @@ Return ONLY the raw JSON array. Nothing else.`;
                 console.error('[Docs Search Error]', e.message);
                 throw e;
             }
-            text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+            
+            // Clean response - extract JSON array
+            text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').replace(/^[^\[]*/, '').replace(/[^\]]*$/, '').trim();
 
             let parsed = null;
             

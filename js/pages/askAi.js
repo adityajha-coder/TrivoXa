@@ -139,7 +139,7 @@ const AskAiPage = {
                                 <option value="gemma">Gemma 7B</option>
                             </select>
                         </div>
-                        <div class="form-group" style="min-width: 200px;">
+                        <div class="form-group" style="min-width: 200px; display:none;">
                             <label class="text-xs text-muted mb-xs" style="display:block;">Groq API Key</label>
                             <input type="password" id="ai-api-key" class="input-field" placeholder="gsk_..." value="${localStorage.getItem('vertex_groq_key') || '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'}" style="padding: 8px 12px; font-size: 0.85rem; height:auto;">
                         </div>
@@ -442,17 +442,30 @@ const AskAiPage = {
     },
 
     bindTabs() {
-        document.getElementById('ai-hub-tabs').addEventListener('click', e => {
+        const aiHubTabs = document.getElementById('ai-hub-tabs');
+        if (!aiHubTabs) {
+            console.warn('[Ask AI] Missing ai-hub-tabs element - skipping tab binding');
+            return;
+        }
+        
+        aiHubTabs.addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
             if (!tab) return;
             document.querySelectorAll('#ai-hub-tabs .tab-item').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             const target = tab.dataset.tab;
-            document.getElementById('ai-tab-chat').style.display = target === 'chat' ? 'block' : 'none';
-            document.getElementById('ai-tab-architect').style.display = target === 'architect' ? 'block' : 'none';
-            document.getElementById('ai-tab-codegen').style.display = target === 'codegen' ? 'block' : 'none';
-            document.getElementById('ai-tab-analyzer').style.display = target === 'analyzer' ? 'block' : 'none';
-            document.getElementById('ai-tab-stacks').style.display = target === 'stacks' ? 'block' : 'none';
+            
+            const chatTab = document.getElementById('ai-tab-chat');
+            const archTab = document.getElementById('ai-tab-architect');
+            const codegenTab = document.getElementById('ai-tab-codegen');
+            const analyzerTab = document.getElementById('ai-tab-analyzer');
+            const stacksTab = document.getElementById('ai-tab-stacks');
+            
+            if (chatTab) chatTab.style.display = target === 'chat' ? 'block' : 'none';
+            if (archTab) archTab.style.display = target === 'architect' ? 'block' : 'none';
+            if (codegenTab) codegenTab.style.display = target === 'codegen' ? 'block' : 'none';
+            if (analyzerTab) analyzerTab.style.display = target === 'analyzer' ? 'block' : 'none';
+            if (stacksTab) stacksTab.style.display = target === 'stacks' ? 'block' : 'none';
         });
     }
 };

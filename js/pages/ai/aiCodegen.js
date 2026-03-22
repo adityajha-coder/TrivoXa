@@ -1,38 +1,85 @@
 const AiCodegenMixin = {
     bindCodeGen() {
-        document.getElementById('framework-tabs').addEventListener('click', (e) => {
+        console.log('[Code Gen] Starting code gen binding...');
+        
+        const frameworkTabs = document.getElementById('framework-tabs');
+        const generateBtn = document.getElementById('generate-ai-code-btn');
+        const copyBtn = document.getElementById('copy-code-btn');
+        const saveBtn = document.getElementById('save-workspace-btn');
+        const runBtn = document.getElementById('run-container-btn');
+        const codePrompt = document.getElementById('ai-code-prompt');
+        
+        console.log('[Code Gen] Elements found:', {
+            frameworkTabs: !!frameworkTabs,
+            generateBtn: !!generateBtn,
+            copyBtn: !!copyBtn,
+            saveBtn: !!saveBtn,
+            runBtn: !!runBtn,
+            codePrompt: !!codePrompt
+        });
+        
+        if (!frameworkTabs || !generateBtn || !copyBtn || !saveBtn || !runBtn || !codePrompt) {
+            console.warn('[Code Gen] Missing code gen elements - skipping binding');
+            return;
+        }
+        
+        // Framework tabs
+        frameworkTabs.addEventListener('click', (e) => {
             const tab = e.target.closest('.tab-item');
             if (!tab) return;
             document.querySelectorAll('#framework-tabs .tab-item').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             this.currentFramework = tab.dataset.fw;
+            console.log('[Code Gen] Selected framework:', this.currentFramework);
         });
 
-        document.getElementById('generate-ai-code-btn').addEventListener('click', () => {
-            const prompt = document.getElementById('ai-code-prompt').value.trim();
-            if(!prompt) return Toast.show('Please enter a description first', 'error');
+        // Generate button
+        generateBtn.addEventListener('click', () => {
+            console.log('[Code Gen] Generate button clicked');
+            const prompt = codePrompt.value.trim();
+            console.log('[Code Gen] Generate prompt:', prompt.substring(0, 50));
+            if(!prompt) {
+                Toast.show('Please enter a description first', 'error');
+                return;
+            }
+            console.log('[Code Gen] Calling generateAICode');
             this.generateAICode(prompt);
         });
 
-        document.getElementById('copy-code-btn').addEventListener('click', () => {
+        // Copy button
+        copyBtn.addEventListener('click', () => {
+            console.log('[Code Gen] Copy button clicked');
             const code = this.editor ? this.editor.getValue() : '';
-            if(!code) return Toast.show('No code to copy', 'error');
+            if(!code) {
+                Toast.show('No code to copy', 'error');
+                return;
+            }
             Helpers.copyToClipboard(code);
             Toast.show('Code copied to clipboard!', 'success');
         });
 
-        document.getElementById('save-workspace-btn').addEventListener('click', () => {
+        // Save button
+        saveBtn.addEventListener('click', () => {
+            console.log('[Code Gen] Save button clicked');
             const code = this.editor ? this.editor.getValue() : '';
-            if(!code) return Toast.show('No code to save', 'error');
+            if(!code) {
+                Toast.show('No code to save', 'error');
+                return;
+            }
             const fw = this.currentFramework;
             WorkspacePage.saveSnippet(`AI Generated ${fw.toUpperCase()}`, code, fw);
             Toast.show('Saved to My Workspace!', 'success');
         });
 
-        document.getElementById('run-container-btn').addEventListener('click', async () => {
+        // Run button
+        runBtn.addEventListener('click', async () => {
+            console.log('[Code Gen] Run button clicked');
             const outputDiv = document.getElementById('ai-code-output');
             const code = this.editor ? this.editor.getValue() : '';
-            if(!code.trim() || code.includes('// Code generation failed')) return Toast.show('No valid code to run', 'warning');
+            if(!code.trim() || code.includes('// Code generation failed')) {
+                Toast.show('No valid code to run', 'warning');
+                return;
+            }
 
             const fw = this.currentFramework;
             let project = {
@@ -99,36 +146,45 @@ const AiCodegenMixin = {
                 { openFile: Object.keys(project.files).find(f => f.includes('App') || f.includes('index')), height: 450, forceEmbedLayout: true }
             );
         });
+
+        console.log('[Code Gen] Code gen binding complete - all event listeners attached');
     },
 
     async generateAICode(prompt) {
         document.getElementById('generator-output-area').style.display = 'none';
         document.getElementById('loading-overlay').style.display = 'block';
 
-        const systemPrompt = `You are an expert coder. Write ONLY the code for a ${prompt} component using ${this.currentFramework}. Do NOT include markdown blocks like \`\`\`html or \`\`\`javascript, and do NOT include any explanations. Output pure, valid code.`;
+        const systemPrompt = `You must generate valid ${this.currentFramework} code. Do not include: markdown, code blocks (```), backticks, explanations, or comments. Output ONLY pure executable code.`;
         
         try {
             let code = '';
             try {
-                const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 60000);
-                
                 const res = await API.callGroqChat([
                     { role: 'system', content: systemPrompt },
-                    { role: 'user', content: prompt }
+                    { role: 'user', content: `Generate ${this.currentFramework} code for: ${prompt}` }
                 ], 'llama-3.1-8b-instant', 0.7);
-                clearTimeout(timeout);
                 
-                code = res.choices[0]?.message?.content || '';
-                if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
-                    code = AskAiPage.cleanAiResponse(code);
+                code = res.choices?.[0]?.message?.content || '';
+                console.log('[CodeGen Raw Response]:', code.substring(0, 200));
+                
+                // Aggressive cleaning - remove all markdown variations
+                code = code
+                    .replace(/^```[\s\S]*/gm, '')          // Remove opening ```
+                    .replace(/```[\s\S]*$/gm, '')          // Remove closing ```
+                    .replace(/^```[a-zA-Z0-9\-]*\n?/gm, '') // Remove ``` with language specifier
+                    .replace(/\n```\s*$/gm, '')             // Remove trailing ```
+                    .replace(/^\s*`{1,3}[a-zA-Z0-9-]*\n?/gm, '') // backticks variations
+                    .trim();
+                
+                console.log('[CodeGen Cleaned]:', code.substring(0, 200));
+                
+                if (!code || code.length < 10) {
+                    code = '<!-- Failed to generate valid code. Try a more specific prompt -->';
                 }
             } catch(postErr) {
                 console.error('[Code Generator Error]', postErr.message);
-                code = '// Error: ' + postErr.message + '\n// Please check console and ensure Groq Proxy is running.';
+                code = `<!-- Error: ${postErr.message} -->\n<!-- Please check console and ensure Groq Proxy is running -->`;
             }
-            
-            code = code.replace(/^```[a-zA-Z]*\n?/gm, '').replace(/\n?```$/gm, '').trim();
 
             document.getElementById('loading-overlay').style.display = 'none';
             document.getElementById('generator-output-area').style.display = 'block';
@@ -140,8 +196,12 @@ const AiCodegenMixin = {
                 if(lang === 'vue' || lang === 'react') lang = 'html';
                 window.monaco?.editor.setModelLanguage(this.editor.getModel(), lang);
                 this.editor.setValue(code);
+                console.log('[CodeGen Editor Updated with:', code.length, 'chars]');
+            } else {
+                console.error('[CodeGen] Editor not initialized');
             }
         } catch(e) {
+            console.error('[CodeGen Exception]', e);
             document.getElementById('loading-overlay').style.display = 'none';
             Toast.show('Failed to generate code. Please try again.', 'error');
         }
