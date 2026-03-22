@@ -69,6 +69,7 @@ const AiChatMixin = {
             if (e.key === 'Enter' && !e.shiftKey) {
                 console.log('[AI Chat] Enter key pressed');
                 e.preventDefault();
+                e.stopPropagation();
                 const q = input.value.trim();
                 if (!q) return;
                 this.addMsg(q, 'user');

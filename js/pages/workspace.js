@@ -231,6 +231,31 @@ const WorkspacePage = {
             } else if (lang === 'html') {
                 project.template = 'html';
                 project.files = { 'index.html': snippet.code };
+                
+                // For HTML, use direct iframe preview as fallback
+                const embedWrap = document.createElement('div');
+                embedWrap.id = 'ws-stackblitz-wrap';
+                embedWrap.style.cssText = 'margin-top:20px;';
+                embedWrap.innerHTML = `
+                    <div class="glass-card-static" style="padding:0; overflow:hidden;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+                                <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Live Preview — ${snippet.title}</span>
+                            </div>
+                            <button class="btn btn-ghost btn-xs" id="ws-close-embed"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <iframe id="ws-html-preview-iframe" style="width:100%;height:450px;border:none;background:white;" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+                    </div>`;
+                document.getElementById('ws-tab-snippets').appendChild(embedWrap);
+                document.getElementById('ws-close-embed').addEventListener('click', () => { embedWrap.style.display = 'none'; });
+                
+                // Set iframe content
+                const iframe = document.getElementById('ws-html-preview-iframe');
+                iframe.srcDoc = snippet.code;
+                embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                Toast.show('HTML preview loaded!', 'success');
+                return;
             } else if (lang === 'angular') {
                 project.template = 'angular-cli';
                 project.files = { 'src/app/app.component.ts': snippet.code };
@@ -249,8 +274,24 @@ const WorkspacePage = {
             }
 
             if (!window.StackBlitzSDK) {
-                Toast.show('Loading WebContainer...', 'info', 2000);
-                await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
+                Toast.show('Loading development environment...', 'info', 3000);
+                try {
+                    await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
+                    // Wait for SDK to be available (up to 3 seconds)
+                    let retries = 0;
+                    while (!window.StackBlitzSDK && retries < 30) {
+                        await new Promise(r => setTimeout(r, 100));
+                        retries++;
+                    }
+                } catch (e) {
+                    console.error('[StackBlitz Load Error]:', e);
+                }
+                
+                if (!window.StackBlitzSDK) {
+                    Toast.show('Development environment unavailable. Showing code instead.', 'warning');
+                    document.getElementById('ws-tab-snippets').scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
             }
 
             const embedWrap = document.createElement('div');
@@ -272,6 +313,10 @@ const WorkspacePage = {
             
             embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
             Toast.show('Booting Live Server...', 'success');
+            
+            if (!window.StackBlitzSDK) {
+                return Toast.show('WebContainer SDK not available', 'error');
+            }
             
             const openFile = Object.keys(project.files).find(f => f.includes('App') || f.includes('index') || f.includes('main'));
             window.StackBlitzSDK.embedProject(

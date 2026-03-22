@@ -89,6 +89,34 @@ const AiCodegenMixin = {
                 files: { 'index.js': code }
             };
 
+            if (fw === 'html') {
+                const outputDiv = document.getElementById('ai-code-output');
+                let embedWrap = document.getElementById('stackblitz-embed-wrap');
+                if (embedWrap) embedWrap.remove();
+                
+                embedWrap = document.createElement('div');
+                embedWrap.id = 'stackblitz-embed-wrap';
+                embedWrap.style.cssText = 'margin-top:20px;';
+                embedWrap.innerHTML = `
+                    <div class="glass-card-static" style="padding:0; overflow:hidden;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+                                <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Live Preview</span>
+                            </div>
+                            <button class="btn btn-ghost btn-xs" id="close-embed-btn"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <iframe id="html-preview-iframe" style="width:100%;height:450px;border:none;background:white;" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+                    </div>`;
+                document.getElementById('generator-output-area').appendChild(embedWrap);
+                document.getElementById('close-embed-btn').addEventListener('click', () => { embedWrap.style.display = 'none'; });
+                
+                const iframe = document.getElementById('html-preview-iframe');
+                if (iframe) iframe.srcDoc = code;
+                Toast.show('HTML preview loaded!', 'success');
+                return;
+            }
+
             if (fw === 'react') {
                 project.template = 'create-react-app';
                 project.files = {
@@ -106,16 +134,29 @@ const AiCodegenMixin = {
                     'App.vue': code,
                     'vite.config.js': 'import { defineConfig } from "vite";\nimport vue from "@vitejs/plugin-vue";\nexport default defineConfig({plugins:[vue()]});'
                 };
-            } else if (fw === 'html') {
-                project.template = 'html';
-                project.files = { 'index.html': code };
             } else if (fw === 'python') {
                 return Toast.show('WebContainers Python runtime coming soon. Try React/Vue/HTML.', 'info');
             }
 
             if (!window.StackBlitzSDK) {
-                Toast.show('Loading WebContainer...', 'info', 2000);
-                await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
+                Toast.show('Loading development environment...', 'info', 3000);
+                try {
+                    await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
+                    // Wait for SDK to be available (up to 3 seconds)
+                    let retries = 0;
+                    while (!window.StackBlitzSDK && retries < 30) {
+                        await new Promise(r => setTimeout(r, 100));
+                        retries++;
+                    }
+                } catch (e) {
+                    console.error('[StackBlitz Load Error]:', e);
+                }
+                
+                if (!window.StackBlitzSDK) {
+                    Toast.show('Development environment unavailable. Showing code instead.', 'warning');
+                    document.getElementById('generator-output-area').scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
             }
 
             let embedWrap = document.getElementById('stackblitz-embed-wrap');
@@ -140,6 +181,11 @@ const AiCodegenMixin = {
             embedWrap.style.display = 'block';
 
             Toast.show('Booting Live Server...', 'success');
+            
+            if (!window.StackBlitzSDK) {
+                return Toast.show('WebContainer SDK not available', 'error');
+            }
+            
             window.StackBlitzSDK.embedProject(
                 document.getElementById('stackblitz-embed'),
                 project,
@@ -154,7 +200,7 @@ const AiCodegenMixin = {
         document.getElementById('generator-output-area').style.display = 'none';
         document.getElementById('loading-overlay').style.display = 'block';
 
-        const systemPrompt = `You must generate valid ${this.currentFramework} code. Do not include: markdown, code blocks (```), backticks, explanations, or comments. Output ONLY pure executable code.`;
+        const systemPrompt = `You must generate valid ${this.currentFramework} code. Do not include: markdown, code blocks, backticks, explanations, or comments. Output ONLY pure executable code.`;
         
         try {
             let code = '';
@@ -167,13 +213,11 @@ const AiCodegenMixin = {
                 code = res.choices?.[0]?.message?.content || '';
                 console.log('[CodeGen Raw Response]:', code.substring(0, 200));
                 
-                // Aggressive cleaning - remove all markdown variations
+                // Aggressive cleaning - remove markdown fences safely
                 code = code
-                    .replace(/^```[\s\S]*/gm, '')          // Remove opening ```
-                    .replace(/```[\s\S]*$/gm, '')          // Remove closing ```
-                    .replace(/^```[a-zA-Z0-9\-]*\n?/gm, '') // Remove ``` with language specifier
-                    .replace(/\n```\s*$/gm, '')             // Remove trailing ```
-                    .replace(/^\s*`{1,3}[a-zA-Z0-9-]*\n?/gm, '') // backticks variations
+                    .replace(/^```[a-zA-Z0-9\-]*\n?/gm, '') // Remove starting fence + language tag
+                    .replace(/\n?```$/gm, '')                // Remove ending fence
+                    .replace(/`{1,3}/g, '')                  // Remove any stray backticks
                     .trim();
                 
                 console.log('[CodeGen Cleaned]:', code.substring(0, 200));

@@ -117,7 +117,15 @@ const AiAnalyzerMixin = {
             } else { scoreEl.style.color = 'var(--text)'; }
 
             document.getElementById('analyzer-review').textContent = result.review || 'No review generated.';
-            document.getElementById('analyzer-suggestions').innerHTML = (result.suggestions || '').replace(/\n/g, '<br>');
+            
+            let suggestions = result.suggestions || '';
+            if (Array.isArray(suggestions)) {
+                suggestions = suggestions.join('\n');
+            } else if (typeof suggestions !== 'string') {
+                suggestions = String(suggestions);
+            }
+            
+            document.getElementById('analyzer-suggestions').innerHTML = suggestions.replace(/\n/g, '<br>');
 
         } catch (error) {
             document.getElementById('analyzer-loading').style.display = 'none';
