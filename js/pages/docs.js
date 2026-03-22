@@ -149,9 +149,13 @@ Return ONLY the raw JSON array. Nothing else.`;
             try {
                 let airforceModel = await (typeof AskAiPage !== 'undefined' && AskAiPage.getAirforceModel ? AskAiPage.getAirforceModel(aiModel) : 'gpt-4o-mini');
 
-                const res = await fetch(`https://api.airforce/v1/chat/completions`, { 
+                const headers = { 'Content-Type': 'application/json' };
+                if (this.apiKey) {
+                    headers['Authorization'] = `Bearer ${this.apiKey}`;
+                }
+                const res = await fetch(`https://api.openai.com/v1/chat/completions`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headers,
                     body: JSON.stringify({
                         model: airforceModel,
                         messages: [

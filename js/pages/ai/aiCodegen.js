@@ -31,8 +31,8 @@ const AiCodegenMixin = {
 
         document.getElementById('run-container-btn').addEventListener('click', async () => {
             const outputDiv = document.getElementById('ai-code-output');
-            const code = outputDiv ? outputDiv.textContent : '';
-            if(!code.trim() || code.includes('Pollinations') || code.includes('// Code generation failed')) return Toast.show('No valid code to run', 'warning');
+            const code = this.editor ? this.editor.getValue() : '';
+            if(!code.trim() || code.includes('// Code generation failed')) return Toast.show('No valid code to run', 'warning');
 
             const fw = this.currentFramework;
             let project = {
@@ -72,9 +72,7 @@ const AiCodegenMixin = {
             }
 
             let embedWrap = document.getElementById('stackblitz-embed-wrap');
-            if (embedWrap) {
-                embedWrap.remove();
-            }
+            if (embedWrap) embedWrap.remove();
 
             embedWrap = document.createElement('div');
             embedWrap.id = 'stackblitz-embed-wrap';
@@ -110,29 +108,28 @@ const AiCodegenMixin = {
         const systemPrompt = `You are an expert coder. Write ONLY the code for a ${prompt} component using ${this.currentFramework}. Do NOT include markdown blocks like \`\`\`html or \`\`\`javascript, and do NOT include any explanations. Output pure, valid code.`;
         
         try {
-            let response, code = '';
+            let code = '';
             try {
-                let airforceModel = await this.getAirforceModel();
-
                 const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 45000);
-                response = await fetch(`https://api.airforce/v1/chat/completions`, { 
+                const timeout = setTimeout(() => controller.abort(), 60000);
+                
+                const res = await fetch('https://text.pollinations.ai/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: airforceModel,
                         messages: [
                             { role: 'system', content: systemPrompt },
                             { role: 'user', content: prompt }
-                        ]
+                        ],
+                        model: 'openai',
+                        seed: Math.floor(Math.random() * 100000)
                     }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
-                if (!response.ok) throw new Error('API failed');
+                if (!res.ok) throw new Error('API failed');
                 
-                const data = await response.json();
-                code = data.choices[0]?.message?.content || '// Code generation failed. Please try again.';
+                code = await res.text();
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     code = AskAiPage.cleanAiResponse(code);
                 }

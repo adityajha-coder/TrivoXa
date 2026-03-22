@@ -62,32 +62,35 @@ const AiChatMixin = {
             let replyText = '';
             try {
                 const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 45000);
+                const timeout = setTimeout(() => controller.abort(), 60000);
                 
                 let sysPrompt = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough.";
-                let airforceModel = await this.getAirforceModel();
                 
-                const res = await fetch(`https://api.airforce/v1/chat/completions`, { 
+                const res = await fetch('https://text.pollinations.ai/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: airforceModel,
                         messages: [
                             { role: 'system', content: sysPrompt },
                             { role: 'user', content: query }
-                        ]
+                        ],
+                        model: 'openai',
+                        seed: Math.floor(Math.random() * 100000)
                     }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
-                if (!res.ok) throw new Error('API failed');
-                const data = await res.json();
-                replyText = data.choices[0]?.message?.content || "No response generated.";
+                if (!res.ok) throw new Error('API failed with status ' + res.status);
+                replyText = await res.text();
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     replyText = AskAiPage.cleanAiResponse(replyText);
                 }
             } catch(e) {
-                return this.addMsg('Sorry, the AI service is temporarily unavailable. Please try again in a moment.', 'bot');
+                console.error('AI Chat error:', e);
+                this.addMsg('Sorry, the AI service is temporarily unavailable. Please try again in a moment.', 'bot');
+                document.getElementById('ai-bot-send').disabled = false;
+                document.getElementById('ai-bot-send').innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+                return;
             }
             
             let formattedReply = replyText.replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:8px;font-size:12px;overflow-x:auto;">$1</pre>');

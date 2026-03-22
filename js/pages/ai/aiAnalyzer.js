@@ -8,24 +8,13 @@ const AiAnalyzerMixin = {
         if(!dropZone || !fileUpload) return;
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, e => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
+            dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); });
         });
-
         ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => {
-                dropZone.style.borderColor = 'var(--primary)';
-                dropZone.style.background = 'rgba(212,168,67,0.05)';
-            });
+            dropZone.addEventListener(eventName, () => { dropZone.style.borderColor = 'var(--primary)'; dropZone.style.background = 'rgba(212,168,67,0.05)'; });
         });
-
         ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => {
-                dropZone.style.borderColor = 'var(--border)';
-                dropZone.style.background = 'transparent';
-            });
+            dropZone.addEventListener(eventName, () => { dropZone.style.borderColor = 'var(--border)'; dropZone.style.background = 'transparent'; });
         });
 
         dropZone.addEventListener('drop', e => {
@@ -34,19 +23,9 @@ const AiAnalyzerMixin = {
             if(files && files.length > 0) this.handleCodeFile(files[0]);
         });
 
-        browseBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            fileUpload.click();
-        });
-        dropZone.addEventListener('click', (e) => {
-            if(e.target !== browseBtn) fileUpload.click();
-        });
-
-        fileUpload.addEventListener('change', () => {
-            if(fileUpload.files.length > 0) {
-                this.handleCodeFile(fileUpload.files[0]);
-            }
-        });
+        browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileUpload.click(); });
+        dropZone.addEventListener('click', (e) => { if(e.target !== browseBtn) fileUpload.click(); });
+        fileUpload.addEventListener('change', () => { if(fileUpload.files.length > 0) this.handleCodeFile(fileUpload.files[0]); });
 
         if(analyzeAnother) {
             analyzeAnother.addEventListener('click', () => {
@@ -59,7 +38,6 @@ const AiAnalyzerMixin = {
 
     handleCodeFile(file) {
         if(file.size > 100000) return Toast.show('File is too large (max 100KB).', 'error');
-        
         const reader = new FileReader();
         reader.onload = async (e) => {
             const code = e.target.result;
@@ -84,29 +62,27 @@ const AiAnalyzerMixin = {
 
         try {
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 45000);
+            const timeout = setTimeout(() => controller.abort(), 60000);
             
             let text = '';
             try {
-                let airforceModel = await this.getAirforceModel();
-
-                const res = await fetch(`https://api.airforce/v1/chat/completions`, {
+                const res = await fetch('https://text.pollinations.ai/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: airforceModel,
                         messages: [
                             { role: 'system', content: sysPrompt },
                             { role: 'user', content: "Filename: " + filename + "\n" + codeContent.substring(0, 1500) }
-                        ]
+                        ],
+                        model: 'openai',
+                        seed: Math.floor(Math.random() * 100000)
                     }),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
                 if (!res.ok) throw new Error('API error');
                 
-                const data = await res.json();
-                text = data.choices[0]?.message?.content || "";
+                text = await res.text();
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     text = AskAiPage.cleanAiResponse(text);
                 }
@@ -147,9 +123,7 @@ const AiAnalyzerMixin = {
                 if(scoreVal >= 85) scoreEl.style.color = 'var(--success)';
                 else if(scoreVal >= 60) scoreEl.style.color = 'var(--warning)';
                 else scoreEl.style.color = 'var(--error)';
-            } else {
-                scoreEl.style.color = 'var(--text)';
-            }
+            } else { scoreEl.style.color = 'var(--text)'; }
 
             document.getElementById('analyzer-review').textContent = result.review || 'No review generated.';
             document.getElementById('analyzer-suggestions').innerHTML = (result.suggestions || '').replace(/\n/g, '<br>');

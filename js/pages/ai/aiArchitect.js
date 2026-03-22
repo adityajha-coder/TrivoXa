@@ -10,7 +10,6 @@ const AiArchitectMixin = {
             Toast.show('Command copied!', 'success');
         });
 
-
         const suggestionsArea = document.getElementById('ai-arch-suggestions');
         if(suggestionsArea) {
             suggestionsArea.addEventListener('click', (e) => {
@@ -37,29 +36,27 @@ JSON schema:
 Rules: setupCommand is a single bash line. tree is nested folders/files. flatFiles has relative path keys with file content values for StackBlitz. Respond with ONLY the JSON object.`;
 
             const abortController = new AbortController();
-            const timeout = setTimeout(() => abortController.abort(), 45000);
+            const timeout = setTimeout(() => abortController.abort(), 60000);
 
             let text = '';
             try {
-                let airforceModel = await this.getAirforceModel();
-
-                const res = await fetch(`https://api.airforce/v1/chat/completions`, {
+                const res = await fetch('https://text.pollinations.ai/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: airforceModel,
                         messages: [
                             { role: 'system', content: sysPrompt },
                             { role: 'user', content: 'Project: ' + prompt + '. Return ONLY JSON.' }
-                        ]
+                        ],
+                        model: 'openai',
+                        seed: Math.floor(Math.random() * 100000)
                     }),
                     signal: abortController.signal
                 });
                 clearTimeout(timeout);
                 if (!res.ok) throw new Error('API error');
                 
-                const data = await res.json();
-                text = data.choices[0]?.message?.content || "";
+                text = await res.text();
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     text = AskAiPage.cleanAiResponse(text);
                 }
@@ -177,6 +174,4 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
 
         return { setupCommand, tree, flatFiles };
     },
-
-
 };
