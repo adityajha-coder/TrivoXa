@@ -50,13 +50,27 @@ const GithubGitMixin = {
         const { branches, commits } = this.repoData;
         const container = document.getElementById('git-3d');
         const w = container.clientWidth || 800, h = container.clientHeight || 400;
+        const aspect = h === 0 ? 1 : w / h;
         this.gitScene = new THREE.Scene();
         this.gitScene.background = new THREE.Color(0x000000);
-        this.gitCamera = new THREE.PerspectiveCamera(50, w / h, 0.1, 500);
+        this.gitCamera = new THREE.PerspectiveCamera(50, aspect, 0.1, 500);
         this.gitCamera.position.set(5, 10, 30);
         this.gitRenderer = new THREE.WebGLRenderer({ antialias: true });
         this.gitRenderer.setSize(w, h);
-        this.gitRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.gitRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+        // Add resize listener to prevent "ratio error" on orientation change
+        const resizeHandler = () => {
+            const nw = container.clientWidth, nh = container.clientHeight;
+            if (nw && nh) {
+                this.gitCamera.aspect = nw / nh;
+                this.gitCamera.updateProjectionMatrix();
+                this.gitRenderer.setSize(nw, nh);
+            }
+        };
+        window.addEventListener('resize', resizeHandler);
+        // Store for cleanup
+        this._gitResizeHandler = resizeHandler;
         container.innerHTML = '';
         container.appendChild(this.gitRenderer.domElement);
         this.gitControls = new THREE.OrbitControls(this.gitCamera, this.gitRenderer.domElement);
@@ -101,12 +115,19 @@ const GithubGitMixin = {
         document.getElementById('git-reset').onclick = () => { this.gitCamera.position.set(5, 10, 30); this.gitControls.target.set(0, 0, 0); };
         this.animateGit();
     },
-
     animateGit() {
         this.gitAnimId = requestAnimationFrame(() => this.animateGit());
         this.gitControls.update();
         const t = Date.now() * 0.001;
         this.gitNodes.forEach((n, i) => { n.position.y += Math.sin(t + i * 0.3) * 0.0015; });
         this.gitRenderer.render(this.gitScene, this.gitCamera);
+    },
+
+    cleanup() {
+        if (this.gitAnimId) cancelAnimationFrame(this.gitAnimId);
+        if (this._gitResizeHandler) window.removeEventListener('resize', this._gitResizeHandler);
+        this.gitScene = null;
+        this.gitCamera = null;
+        this.gitRenderer = null;
     }
 };

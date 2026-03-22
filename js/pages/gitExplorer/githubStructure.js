@@ -108,7 +108,8 @@ const GithubStructureMixin = {
                 .onNodeClick(node => {
                     // Focus camera on node
                     const distance = 40;
-                    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+                    const dist = Math.hypot(node.x, node.y, node.z) || 1e-6;
+                    const distRatio = 1 + distance/dist;
                     this.forceGraph.cameraPosition(
                         { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, 
                         node, 
@@ -120,13 +121,24 @@ const GithubStructureMixin = {
                 this.forceGraph.cameraPosition({ x: 0, y: 0, z: 250 }, { x:0, y:0, z:0 }, 1000);
             };
 
-            window.addEventListener('resize', () => { 
+            const resizeHandler = () => { 
                 const nw = container.clientWidth, nh = container.clientHeight; 
-                this.forceGraph.width(nw).height(nh);
-            });
+                this.forceGraph.width(nw || 100).height(nh || 100);
+            };
+            window.addEventListener('resize', resizeHandler);
+            this._structureResizeHandler = resizeHandler;
+
             } catch (err) {
                 fetch('http://localhost:4444', { method: 'POST', body: '3D Graph Error: ' + (err.stack || err) });
             }
         }, 100);
+    },
+
+    cleanup() {
+        if (this._structureResizeHandler) window.removeEventListener('resize', this._structureResizeHandler);
+        if (this.forceGraph) {
+            try { this.forceGraph._destructor(); } catch(e) {}
+            this.forceGraph = null;
+        }
     }
 };
