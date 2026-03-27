@@ -1872,10 +1872,7 @@ const FreeApisPage = {
                 "cors": true,
                 "pricing": "Free"
         }
-]
-
-    ],
-
+],
     categories: [],
     activeCategory: 'All',
     activePricing: 'All',
@@ -1898,11 +1895,11 @@ const FreeApisPage = {
                             <i class="fa-solid fa-magnifying-glass search-icon" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
                             <input class="input-field" id="api-search" type="text" placeholder="Search APIs..." style="width:100%; padding-left:40px;" />
                         </div>
-                        <select class="input-field" id="api-pricing-filter" style="width:140px; padding:0 12px; cursor:pointer; background:var(--card-bg);">
-                            <option value="All">All Pricing</option>
-                            <option value="Free">Free</option>
-                            <option value="Freemium">Freemium</option>
-                            <option value="Paid">Paid</option>
+                        <select class="input-field" id="api-pricing-filter" style="width:140px; padding:0 12px; cursor:pointer; background:#000; color:#fff; border:1px solid rgba(255,255,255,0.1);">
+                            <option value="All" style="background:#000; color:#fff;">All Pricing</option>
+                            <option value="Free" style="background:#000; color:#fff;">Free</option>
+                            <option value="Freemium" style="background:#000; color:#fff;">Freemium</option>
+                            <option value="Paid" style="background:#000; color:#fff;">Paid</option>
                         </select>
                     </div>
                     <div class="flex-gap" style="font-size: 0.82rem; color: var(--text-muted);">
