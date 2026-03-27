@@ -1929,9 +1929,7 @@ const FreeApisPage = {
     categories: [],
     activeCategory: 'All',
     activePricing: 'All',
-    searchQuery: '',
-
-    render() {
+    searchQuery: '',    render() {
         Navbar.renderTopbar('APIs');
         this.categories = ['All', ...new Set(this.apis.map(a => a.category))].sort();
         const content = document.getElementById('page-content');
@@ -1943,12 +1941,13 @@ const FreeApisPage = {
                 </div>
                 
                 <div class="flex-between mb-lg flex-wrap gap-md">
-                    <div class="search-container" style="min-width: 280px; flex: 1; max-width: 400px; display:flex; gap:10px;">
+                    <div class="search-container" style="min-width: 280px; flex: 1; max-width: 600px; display:flex; gap:10px;">
                         <div style="position:relative; flex:1;">
                             <i class="fa-solid fa-magnifying-glass search-icon" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
                             <input class="input-field" id="api-search" type="text" placeholder="Search APIs..." style="width:100%; padding-left:40px;" />
                         </div>
-                        <select class="input-field" id="api-pricing-filter" style="width:140px; padding:0 12px; cursor:pointer; background:#000; color:#fff; border:1px solid rgba(255,255,255,0.1);">
+                        <select class="input-field" id="api-category-filter" style="width:180px; padding:0 12px; cursor:pointer; background:#000; color:#fff; border:1px solid rgba(255,255,255,0.1); font-size: 0.85rem;"></select>
+                        <select class="input-field" id="api-pricing-filter" style="width:130px; padding:0 12px; cursor:pointer; background:#000; color:#fff; border:1px solid rgba(255,255,255,0.1); font-size: 0.85rem;">
                             <option value="All" style="background:#000; color:#fff;">All Pricing</option>
                             <option value="Free" style="background:#000; color:#fff;">Free</option>
                             <option value="Freemium" style="background:#000; color:#fff;">Freemium</option>
@@ -1960,19 +1959,19 @@ const FreeApisPage = {
                         <span>${this.apis.length} APIs available</span>
                     </div>
                 </div>
-                <div class="tabs mb-lg" id="api-category-tabs" style="overflow-x: auto;"></div>
                 <div class="grid-3" id="api-grid"></div>
             </div>`;
 
-        this.renderCategoryTabs();
+        this.renderCategoryFilter();
         this.renderApiGrid();
         this.bindEvents();
     },
 
-    renderCategoryTabs() {
-        const tabs = document.getElementById('api-category-tabs');
-        tabs.innerHTML = this.categories.map(cat =>
-            `<button class="tab-item ${cat === this.activeCategory ? 'active' : ''}" data-cat="${cat}">${cat}</button>`
+    renderCategoryFilter() {
+        const sel = document.getElementById('api-category-filter');
+        if(!sel) return;
+        sel.innerHTML = this.categories.map(cat =>
+            `<option value="${cat}" ${cat === this.activeCategory ? 'selected' : ''} style="background:#000; color:#fff;">${cat}</option>`
         ).join('');
     },
 
@@ -2025,23 +2024,28 @@ const FreeApisPage = {
     },
 
     bindEvents() {
-        document.getElementById('api-category-tabs').addEventListener('click', (e) => {
-            if (!e.target.classList.contains('tab-item')) return;
-            this.activeCategory = e.target.dataset.cat;
-            document.querySelectorAll('#api-category-tabs .tab-item').forEach(t => t.classList.remove('active'));
-            e.target.classList.add('active');
-            this.renderApiGrid();
-        });
-
+        const catFilter = document.getElementById('api-category-filter');
+        if(catFilter) {
+            catFilter.addEventListener('change', (e) => {
+                this.activeCategory = e.target.value;
+                this.renderApiGrid();
+            });
+        }
         
-        document.getElementById('api-pricing-filter').addEventListener('change', (e) => {
-            this.activePricing = e.target.value;
-            this.renderApiGrid();
-        });
+        const priceFilter = document.getElementById('api-pricing-filter');
+        if(priceFilter) {
+            priceFilter.addEventListener('change', (e) => {
+                this.activePricing = e.target.value;
+                this.renderApiGrid();
+            });
+        }
 
-        document.getElementById('api-search').addEventListener('input', Helpers.debounce((e) => {
-            this.searchQuery = e.target.value;
-            this.renderApiGrid();
-        }, 200));
+        const searchInput = document.getElementById('api-search');
+        if(searchInput) {
+            searchInput.addEventListener('input', Helpers.debounce((e) => {
+                this.searchQuery = e.target.value;
+                this.renderApiGrid();
+            }, 200));
+        }
     }
 };
