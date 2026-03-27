@@ -299,7 +299,7 @@ const ToolsVaultPage = {
                     <button class="tab-item" data-view="extensions">VS Code Extensions</button>
                 </div>
                 
-                <div id="tv-resources-view" class="flex-col mb-xl">
+                <div id="tv-resources-view" class="mb-xl">
                     <div class="flex-center mb-xl">
                         <div class="search-container glass-card" style="width:100%; max-width:700px; display:flex; gap:10px; padding:10px; align-items:center;">
                             <div style="position:relative; flex:1;">
@@ -325,7 +325,7 @@ const ToolsVaultPage = {
                                         <button class="btn btn-secondary btn-xs tv-copy-bp" data-idx="${idx}"><i class="fa-solid fa-copy"></i> Copy</button>
                                     </div>
                                 </div>
-                                <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
+                                <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow:hidden;">
                                     <pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--primary-light);">${Helpers.escapeHtml(b.code)}</pre>
                                 </div>
                             </div>
@@ -350,13 +350,25 @@ const ToolsVaultPage = {
                 </div>
             </div>
             <style>
+            .tool-link-card {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
             .tool-link-card:hover {
                 background: rgba(212,168,67,0.04);
                 border-color: rgba(212,168,67,0.3);
                 transform: translateY(-2px);
             }
+            .line-clamp-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
             .ext-card {
                 display: flex; flex-direction: column; gap: 6px; transition: all 0.2s;
+                height: 100%;
             }
             .ext-card:hover {
                 background: rgba(212,168,67,0.04);
@@ -380,6 +392,12 @@ const ToolsVaultPage = {
             }
             .tool-link-card:hover i {
                 color: var(--primary-light);
+            }
+            /* Boilerplate pre overflow fix */
+            .grid-2 .glass-card pre {
+                overflow-x: auto;
+                max-width: 100%;
+                word-break: break-word;
             }
             </style>
         `;
@@ -441,7 +459,7 @@ const ToolsVaultPage = {
             tab.classList.add('active');
             
             const view = tab.dataset.view;
-            document.getElementById('tv-resources-view').style.display = view === 'resources' ? 'flex' : 'none';
+            document.getElementById('tv-resources-view').style.display = view === 'resources' ? 'block' : 'none';
             document.getElementById('tv-boilerplates-view').style.display = view === 'boilerplates' ? 'block' : 'none';
             document.getElementById('tv-extensions-view').style.display = view === 'extensions' ? 'block' : 'none';
             if (view === 'extensions') this.renderExtensionsGrid();

@@ -118,7 +118,7 @@ const DocsPage = {
         }).join('');
     },
 
-    async searchDocs(query) {
+    async searchDocs(query, retryCount = 0) {
         query = query.trim();
         if (!query) return Toast.show('Please enter a search term', 'warning');
 
@@ -138,81 +138,41 @@ const DocsPage = {
             return;
         }
 
-        const systemPrompt = `You are a JSON API. Return ONLY valid JSON array. NO markdown, NO code fences, NO extra text.
+        const systemPrompt = `You are a documentation API. You MUST return ONLY a valid JSON array with exactly 3 documentation objects. No markdown, no explanation, no code fences.
 
-Format: [{"title":"Name","tags":["tag1","tag2"],"summary":"...200+ words..."}]
+Each object must have these exact keys:
+- "title": a descriptive title string
+- "tags": an array of 2 keyword strings
+- "summary": a detailed 150+ word explanation string
 
-Create exactly 3 objects. Each must have:
-- title: String with language/framework
-- tags: Array of exactly 2 strings
-- summary: 200+ word detailed explanation with code examples, syntax, and best practices. Use \\n for line breaks.
+Example format:
+[{"title":"Topic Name","tags":["tag1","tag2"],"summary":"Detailed explanation here..."}]
 
-Return ONLY the JSON array between [ and ]. Nothing else.`;
+IMPORTANT: Return ONLY the JSON array. Start your response with [ and end with ]. No other text.`;
 
         try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 45000);
-            
             let text = '';
             try {
                 const res = await API.callGroqChat([
                     { role: 'system', content: systemPrompt },
-                    { role: 'user', content: 'Get docs for: ' + query }
-                ], 'llama-3.1-8b-instant', 0.7);
+                    { role: 'user', content: query }
+                ], 'llama-3.1-8b-instant', 0.3);
 
-                clearTimeout(timeout);
-                
                 text = res.choices?.[0]?.message?.content || "";
-                if (typeof AskAiPage !== 'undefined' && AskAiPage?.cleanAiResponse) {
-                    text = AskAiPage.cleanAiResponse(text);
-                }
             } catch(e) {
-                clearTimeout(timeout);
                 console.error('[Docs Search Error]', e.message);
                 throw e;
             }
             
-            // Clean response - extract JSON array
-            text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').replace(/^[^\[]*/, '').replace(/[^\]]*$/, '').trim();
+            // Robust JSON extraction
+            let parsed = this._parseJsonResponse(text);
 
-            let parsed = null;
-            
-            try { parsed = JSON.parse(text); } catch(e1) {}
-            
-            if (!parsed) {
-                const arrStart = text.indexOf('[');
-                const arrEnd = text.lastIndexOf(']');
-                if (arrStart !== -1 && arrEnd !== -1 && arrEnd > arrStart) {
-                    try {
-                        let cleaned = text.substring(arrStart, arrEnd + 1);
-                        cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ').replace(/,\s*]/g, ']').replace(/,\s*}/g, '}');
-                        parsed = JSON.parse(cleaned);
-                    } catch(e2) {}
-                }
-            }
-            
-            if (!parsed) {
-                const objStart = text.indexOf('{');
-                const objEnd = text.lastIndexOf('}');
-                if (objStart !== -1 && objEnd !== -1 && objEnd > objStart) {
-                    try {
-                        let cleaned = text.substring(objStart, objEnd + 1);
-                        cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ').replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-                        parsed = [JSON.parse(cleaned)];
-                    } catch(e3) {}
-                }
-            }
-            
-            if (!parsed) {
-                const jsonObjects = [];
-                const regex = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    try {
-                        jsonObjects.push(JSON.parse(match[0]));
-                    } catch(e) {}
-                }
-                if (jsonObjects.length > 0) parsed = jsonObjects;
+            // Retry once if parsing failed
+            if (!parsed && retryCount < 1) {
+                console.warn('[Docs] First parse failed, retrying...');
+                btn.disabled = false;
+                document.getElementById('docs-loading').style.display = 'none';
+                return this.searchDocs(query + ' ', 1);
             }
 
             if (!parsed || (Array.isArray(parsed) && parsed.length === 0)) {
@@ -227,28 +187,17 @@ Return ONLY the JSON array between [ and ]. Nothing else.`;
                 return;
             }
 
-            let docs = [];
-            if (Array.isArray(parsed)) {
-                docs = parsed;
-            } else if (parsed && typeof parsed === 'object') {
-                const arrayVal = Object.values(parsed).find(v => Array.isArray(v));
-                if (arrayVal) {
-                    docs = arrayVal;
-                } else {
-                    docs = [parsed];
-                }
-            }
+            let docs = Array.isArray(parsed) ? parsed : [parsed];
 
             const validDocs = docs.filter(d => d && typeof d === 'object').map(d => ({
                 title: d.title || d.name || d.concept || query,
-                tags: d.tags || d.keywords || [],
+                tags: Array.isArray(d.tags || d.keywords) ? (d.tags || d.keywords) : [],
                 summary: d.summary || d.description || d.content || d.explanation || d.details || ''
             }));
 
             const finalDocs = validDocs.length > 0 ? validDocs : docs;
             
             this.docsCache[cacheKey] = finalDocs;
-
             this._renderDocs(finalDocs);
 
         } catch(err) {
@@ -259,5 +208,62 @@ Return ONLY the JSON array between [ and ]. Nothing else.`;
         } finally {
             btn.disabled = false;
         }
+    },
+
+    _parseJsonResponse(text) {
+        if (!text || !text.trim()) return null;
+
+        // Step 1: Strip markdown code fences
+        text = text.replace(/```(?:json)?\s*/gi, '').replace(/```\s*/g, '').trim();
+
+        // Step 2: Try direct parse
+        try { return JSON.parse(text); } catch(e) {}
+
+        // Step 3: Extract JSON array between first [ and last ]
+        const arrStart = text.indexOf('[');
+        const arrEnd = text.lastIndexOf(']');
+        if (arrStart !== -1 && arrEnd > arrStart) {
+            let chunk = text.substring(arrStart, arrEnd + 1);
+            // Clean control characters and trailing commas
+            chunk = chunk.replace(/[\x00-\x1F\x7F]/g, ' ')
+                         .replace(/,\s*]/g, ']')
+                         .replace(/,\s*}/g, '}');
+            try { return JSON.parse(chunk); } catch(e) {}
+
+            // Step 3b: Try fixing common LLM issues (unescaped quotes in strings)
+            try {
+                // Replace unescaped newlines inside strings
+                chunk = chunk.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
+                return JSON.parse(chunk);
+            } catch(e) {}
+        }
+
+        // Step 4: Extract JSON object  
+        const objStart = text.indexOf('{');
+        const objEnd = text.lastIndexOf('}');
+        if (objStart !== -1 && objEnd > objStart) {
+            let chunk = text.substring(objStart, objEnd + 1);
+            chunk = chunk.replace(/[\x00-\x1F\x7F]/g, ' ')
+                         .replace(/,\s*}/g, '}')
+                         .replace(/,\s*]/g, ']');
+            try {
+                const obj = JSON.parse(chunk);
+                // If the object contains an array value, use that
+                const arrayVal = Object.values(obj).find(v => Array.isArray(v));
+                return arrayVal || [obj];
+            } catch(e) {}
+        }
+
+        // Step 5: Extract individual JSON objects via regex
+        const jsonObjects = [];
+        const regex = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            try {
+                const cleaned = match[0].replace(/[\x00-\x1F\x7F]/g, ' ');
+                jsonObjects.push(JSON.parse(cleaned));
+            } catch(e) {}
+        }
+        return jsonObjects.length > 0 ? jsonObjects : null;
     }
 };
