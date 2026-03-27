@@ -1,0 +1,25 @@
+{
+  "name": "vertex-developer-toolkit",
+  "version": "1.0.0",
+  "description": "The unified developer toolkit for development",
+  "scripts": {
+    "dev": "npx -y serve . -l 8080",
+    "start": "npx -y serve . -l 8080",
+    "proxy": "node core/groq-proxy.js",
+    "proxy:dev": "nodemon core/groq-proxy.js",
+    "both": "concurrently \"npm run proxy\" \"npm start\"",
+    "test:api": "node devtools/test-groq-api.js",
+    "setup": "node devtools/setup-groq.js"
+  },
+  "dependencies": {
+    "axios": "^1.13.6",
+    "body-parser": "^1.20.2",
+    "check-error": "^2.1.3",
+    "cors": "^2.8.5",
+    "express": "^4.22.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.1"
+  }
+}
