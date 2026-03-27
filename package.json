@@ -5,11 +5,11 @@
   "scripts": {
     "dev": "npx -y serve . -l 8080",
     "start": "npx -y serve . -l 8080",
-    "proxy": "node core/groq-proxy.js",
-    "proxy:dev": "nodemon core/groq-proxy.js",
+    "proxy": "node server/groq-proxy.js",
+    "proxy:dev": "nodemon server/groq-proxy.js",
     "both": "concurrently \"npm run proxy\" \"npm start\"",
-    "test:api": "node devtools/test-groq-api.js",
-    "setup": "node devtools/setup-groq.js"
+    "test:api": "node scripts/test-groq-api.js",
+    "setup": "node scripts/setup-groq.js"
   },
   "dependencies": {
     "axios": "^1.13.6",

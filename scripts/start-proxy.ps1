@@ -1,5 +1,6 @@
 # Groq Proxy Launcher for PowerShell
 # This is easier than using batch files
+Set-Location (Split-Path $PSScriptRoot -Parent)
 
 Clear-Host
 Write-Host ""
@@ -60,4 +61,4 @@ Write-Host "╚═════════════════════�
 Write-Host ""
 
 # Start the proxy
-& node core/groq-proxy.js
+& node server/groq-proxy.js

@@ -1,6 +1,7 @@
 @echo off
 REM Groq Proxy + Vertex App Launcher for Windows
 REM This script starts both the Groq Proxy and Vertex App in separate windows
+cd /d "%~dp0\.."
 
 echo.
 echo  ╔════════════════════════════════════════════════════╗
@@ -39,7 +40,7 @@ if "%choice%"=="1" (
     echo.
     echo 🚀 Starting Groq Proxy on localhost:3001...
     echo.
-    node core\groq-proxy.js
+    node server\groq-proxy.js
 ) else if "%choice%"=="2" (
     echo.
     echo 🚀 Starting Vertex App Server...
@@ -48,7 +49,7 @@ if "%choice%"=="1" (
 ) else if "%choice%"=="3" (
     echo.
     echo 🚀 Starting Groq Proxy on localhost:3001...
-    start "Groq Proxy" cmd /k "node core\groq-proxy.js"
+    start "Groq Proxy" cmd /k "node server\groq-proxy.js"
     
     timeout /t 2 /nobreak
     
