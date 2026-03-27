@@ -94,6 +94,23 @@ const CodeGitExplorerPage = {
                         </div>
                     </div>
                 </div>
+                <div id="explorer-ai-summary" style="display:none;" class="glass-card mb-lg">
+                    <div class="flex-between mb-sm">
+                        <div class="flex-gap" style="font-size:0.92rem; font-weight:600;">
+                            <i class="fa-solid fa-robot" style="color:var(--primary-light);"></i>
+                            <span>AI Repository Summary</span>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" id="ai-summary-refresh" title="Regenerate summary">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                    </div>
+                    <div id="ai-summary-content" style="font-size:0.85rem; line-height:1.7; color:var(--text-secondary);">
+                        <div class="flex-gap" style="padding:20px; justify-content:center;">
+                            <div class="loader-spinner" style="width:18px;height:18px;border-width:2px;"></div>
+                            <span class="text-muted">Generating AI summary...</span>
+                        </div>
+                    </div>
+                </div>
                 <div id="explorer-structure-view" style="display:none;">
                     <div class="grid-2 explorer-layout-grid" style="grid-template-columns: 280px 1fr;">
                         <div class="glass-card-static" style="padding:0; max-height: 500px; display: flex; flex-direction: column;">
@@ -159,6 +176,9 @@ const CodeGitExplorerPage = {
     bindEvents() {
         document.getElementById('explorer-btn').addEventListener('click', () => this.load());
         document.getElementById('explorer-input').addEventListener('keydown', e => { if (e.key === 'Enter') this.load(); });
+        document.getElementById('ai-summary-refresh')?.addEventListener('click', () => {
+            if (this.repoData?.repo) this.generateAiSummary(this.repoData.repo, this.repoData.tree || []);
+        });
         document.getElementById('explorer-tabs')?.addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
             if (!tab) return;
@@ -253,8 +273,59 @@ const CodeGitExplorerPage = {
             document.getElementById('explorer-git-view').style.display = 'none';
             this.showStructure();
             this.prepareGitView();
+            this.generateAiSummary(repo, tree.tree || []);
         } catch (err) { Toast.show(err.message, 'error'); }
         finally { btn.innerHTML = '<i class="fa-solid fa-search"></i> Explore'; btn.disabled = false; }
+    },
+
+    async generateAiSummary(repo, tree) {
+        const panel = document.getElementById('explorer-ai-summary');
+        const content = document.getElementById('ai-summary-content');
+        if (!panel || !content) return;
+
+        panel.style.display = 'block';
+        content.innerHTML = `<div class="flex-gap" style="padding:20px; justify-content:center;"><div class="loader-spinner" style="width:18px;height:18px;border-width:2px;"></div><span class="text-muted">Analyzing repository with AI...</span></div>`;
+
+        const topFiles = tree.filter(f => f.type === 'blob').slice(0, 60).map(f => f.path);
+        const topDirs = [...new Set(tree.filter(f => f.path && f.path.includes('/')).map(f => f.path.split('/')[0]))].slice(0, 20);
+
+        const prompt = `You are a senior software engineer. Analyze this GitHub repository and provide a concise, insightful summary.
+
+Repository: ${repo.full_name}
+Description: ${repo.description || 'No description provided'}
+Language: ${repo.language || 'Not specified'}
+Stars: ${repo.stargazers_count}, Forks: ${repo.forks_count}
+Topics: ${(repo.topics || []).join(', ') || 'None'}
+License: ${repo.license?.name || 'Not specified'}
+Created: ${new Date(repo.created_at).toLocaleDateString()}
+Last Updated: ${new Date(repo.updated_at).toLocaleDateString()}
+Size: ${repo.size} KB
+
+Top-level directories: ${topDirs.join(', ')}
+Key files: ${topFiles.slice(0, 30).join(', ')}
+
+Provide a summary with these sections (use markdown bold for headers):
+1. **Overview** - What does this project do? (2-3 sentences)
+2. **Tech Stack** - Key technologies/frameworks detected from the file structure
+3. **Architecture** - How is the codebase organized? (based on folder structure)
+4. **Notable** - Any interesting observations (monorepo, CI/CD, testing, docs)
+
+Keep it concise (under 200 words). Do not use code blocks.`;
+
+        try {
+            const result = await API.callGroqChat([
+                { role: 'system', content: 'You are a helpful code analyst. Be concise and insightful.' },
+                { role: 'user', content: prompt }
+            ], 'llama-3.1-8b-instant', 0.4);
+
+            const text = result?.choices?.[0]?.message?.content || 'Unable to generate summary.';
+            const formatted = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--primary-light);">$1</strong>')
+                .replace(/\n/g, '<br>');
+            content.innerHTML = '<div style="padding:4px 0;">' + formatted + '</div>';
+        } catch (err) {
+            content.innerHTML = '<div style="padding:12px; text-align:center; color:var(--text-muted);"><i class="fa-solid fa-exclamation-triangle" style="color:var(--warning); margin-right:6px;"></i>Could not generate AI summary: ' + err.message + '</div>';
+        }
     },
     async loadLocalFolder(fileList) {
         if (!fileList || fileList.length === 0) return;
