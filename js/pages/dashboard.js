@@ -5,138 +5,240 @@ const DashboardPage = {
 
         content.innerHTML = `
             <style>
-                .dash-header { margin-bottom: 32px; }
-                .dash-title { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
-                .dash-sub { color: var(--text-secondary); font-size: 0.95rem; }
+                .dash-header { margin-bottom: 32px; padding-top: 10px; }
+                .dash-title { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 8px; color: var(--text); }
+                .dash-sub { color: var(--text-secondary); font-size: 1.05rem; }
 
-                .dash-hero {
-                    display: grid; grid-template-columns: 1.5fr 1fr; gap: 14px; margin-bottom: 28px;
-                }
-                .hero-main {
-                    background: rgba(212,168,67,0.06); border: 1px solid rgba(212,168,67,0.15);
-                    border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden;
-                    cursor: pointer; transition: border-color 0.3s, box-shadow 0.3s;
-                }
-                .hero-main:hover { border-color: rgba(212,168,67,0.35); box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
-                .hero-main h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
-                .hero-main p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; max-width: 85%; margin-bottom: 16px; }
-                .hero-main .hero-bg { position: absolute; right: 16px; bottom: -8px; font-size: 7rem; opacity: 0.04; pointer-events: none; color: var(--primary-light); }
-                .hero-side {
-                    display: grid; grid-template-rows: 1fr 1fr; gap: 14px;
-                }
-                .hero-card {
-                    background: rgba(255,255,255,0.02); border: 1px solid var(--border-light);
-                    border-radius: 14px; padding: 20px 24px; cursor: pointer;
-                    transition: border-color 0.3s, background 0.3s;
-                }
-                .hero-card:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
-                .hero-card h3 { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
-                .hero-card p { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
-
-
-                .section-title { font-size: 1rem; font-weight: 700; color: var(--text-muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.78rem; }
-                .tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-                .tcard {
-                    background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05);
-                    border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 14px;
-                    cursor: pointer; transition: all 0.25s ease;
-                }
-                .tcard:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.12); transform: translateY(-1px); }
-                .tcard-icon {
-                    width: 38px; height: 38px; min-width: 38px; border-radius: 9px;
-                    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+                .bento-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 16px;
+                    margin-bottom: 40px;
+                    grid-auto-rows: minmax(140px, auto);
                 }
 
-                .ic-gold { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.2); }
-                .ic-gold i { color: #eab308; }
-                .ic-blue { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.2); }
-                .ic-blue i { color: #3b82f6; }
-                .ic-green { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.2); }
-                .ic-green i { color: #22c55e; }
-                .ic-cyan { background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.2); }
-                .ic-cyan i { color: #06b6d4; }
-                .ic-purple { background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.2); }
-                .ic-purple i { color: #a855f7; }
-                .ic-pink { background: rgba(236,72,153,0.12); border: 1px solid rgba(236,72,153,0.2); }
-                .ic-pink i { color: #ec4899; }
-
-                .tcard-info { flex: 1; }
-                .tcard-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
-                .tcard-desc { font-size: 0.76rem; color: var(--text-muted); margin-top: 1px; }
-                .tcard-arrow { color: rgba(255,255,255,0.1); font-size: 0.75rem; transition: all 0.25s; }
-                .tcard:hover .tcard-arrow { color: rgba(255,255,255,0.6); transform: translateX(3px); }
-
-                @media (max-width: 900px) {
-                    .dash-hero { grid-template-columns: 1fr; }
-                    .hero-side { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+                .bento-card {
+                    background: rgba(255, 255, 255, 0.015);
+                    border: 1px solid var(--border-light);
+                    border-radius: var(--radius-lg);
+                    padding: 24px;
+                    position: relative;
+                    overflow: hidden;
+                    cursor: pointer;
+                    display: flex;
+                    flex-direction: column;
+                    transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
                 }
-                @media (max-width: 550px) {
-                    .dash-title { font-size: 1.5rem; }
-                    .hero-side { grid-template-columns: 1fr; }
-                    .tgrid { grid-template-columns: 1fr; }
+
+                .bento-card::before {
+                    content: '';
+                    position: absolute;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent 40%);
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                    pointer-events: none;
+                    z-index: 1;
+                }
+
+                .bento-card:hover {
+                    border-color: rgba(255,255,255,0.15);
+                    background: rgba(255,255,255,0.025);
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3);
+                }
+                
+                .bento-card:hover::before {
+                    opacity: 1;
+                }
+
+                /* Layout Spans */
+                .span-2-col { grid-column: span 2; }
+                
+                .card-inner {
+                    position: relative;
+                    z-index: 2;
+                    display: flex;
+                    flex-direction: column;
+                    height: 100%;
+                }
+
+                .card-icon-wrap {
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.1rem;
+                    margin-bottom: 16px;
+                    border: 1px solid rgba(255,255,255,0.05);
+                    background: rgba(0,0,0,0.2);
+                    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                }
+
+                .bento-card:hover .card-icon-wrap {
+                    transform: scale(1.05);
+                }
+
+                .c-primary { color: var(--primary-light); background: rgba(212,168,67,0.1); border-color: rgba(212,168,67,0.2); }
+                .c-blue    { color: #60a5fa; background: rgba(96,165,250,0.1); border-color: rgba(96,165,250,0.2); }
+                .c-green   { color: #34d399; background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.2); }
+                .c-purple  { color: #c084fc; background: rgba(192,132,252,0.1); border-color: rgba(192,132,252,0.2); }
+                .c-pink    { color: #f472b6; background: rgba(244,114,182,0.1); border-color: rgba(244,114,182,0.2); }
+                .c-orange  { color: #fb923c; background: rgba(251,146,60,0.1); border-color: rgba(251,146,60,0.2); }
+                .c-emerald { color: #10b981; background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.2); }
+
+                .bento-card h3 {
+                    font-size: 1.05rem;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                    color: var(--text);
+                }
+
+                .bento-card p {
+                    font-size: 0.85rem;
+                    color: var(--text-secondary);
+                    line-height: 1.5;
+                    flex: 1;
+                }
+
+                .arrow-icon {
+                    position: absolute;
+                    top: 24px;
+                    right: 24px;
+                    color: var(--text-muted);
+                    opacity: 0;
+                    transform: translate(-5px, 5px);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    font-size: 1rem;
+                }
+
+                .bento-card:hover .arrow-icon {
+                    opacity: 1;
+                    transform: translate(0, 0);
+                    color: var(--text);
+                }
+
+                /* Main feature card styling */
+                .bento-main {
+                    background: linear-gradient(145deg, rgba(212,168,67,0.08) 0%, rgba(255,255,255,0.01) 100%);
+                    border: 1px solid rgba(212,168,67,0.15);
+                }
+                .bento-main:hover {
+                    border-color: rgba(212,168,67,0.3);
+                }
+
+                .bento-main h3 { font-size: 1.35rem; margin-bottom: 8px; }
+                .bento-main p { font-size: 0.95rem; max-width: 85%; }
+                
+                .tech-pattern {
+                    position: absolute;
+                    right: 0;
+                    bottom: 0;
+                    width: 200px;
+                    height: 100%;
+                    background-image: radial-gradient(rgba(212,168,67,0.3) 1px, transparent 1px);
+                    background-size: 16px 16px;
+                    opacity: 0.4;
+                    mask-image: linear-gradient(to right, transparent, black);
+                    -webkit-mask-image: linear-gradient(to right, transparent, black);
+                    pointer-events: none;
+                    z-index: 0;
+                }
+
+                @media (max-width: 1024px) {
+                    .bento-grid { grid-template-columns: repeat(2, 1fr); }
+                    .span-2-col { grid-column: span 2; }
+                }
+                @media (max-width: 650px) {
+                    .dash-title { font-size: 1.7rem; }
+                    .bento-grid { grid-template-columns: 1fr; }
+                    .span-2-col { grid-column: span 1; }
+                    .tech-pattern { opacity: 0.15; }
                 }
             </style>
+            
             <div class="page-enter">
                 <div class="dash-header">
                     <h1 class="dash-title">Ship Code <span class="text-gradient">Faster.</span> Build <span class="text-gradient">Smarter.</span></h1>
-                    <p class="dash-sub" style="font-size:1.05rem;">The unified developer toolkit for development</p>
+                    <p class="dash-sub">The unified developer toolkit for modern workflows.</p>
                 </div>
 
-                <div class="dash-hero">
-                    <div class="hero-main" data-page="ask-ai">
-                        <h2>AI Hub</h2>
-                        <p>Chat with AI, design app architectures, explore tech stacks, and debug errors — all in one place.</p>
-                        <span class="btn btn-primary btn-sm" style="pointer-events:none; border-radius:30px; padding: 10px 22px;"><i class="fa-solid fa-arrow-right"></i> Open AI Hub</span>
-                        <i class="fa-solid fa-robot hero-bg"></i>
-                    </div>
-                    <div class="hero-side">
-                        <div class="hero-card" data-page="ask-ai">
-                            <h3><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--primary-light);"></i> Code Generator</h3>
-                            <p>Generate framework components with AI and run them live.</p>
+                <div class="bento-grid" id="dashboard-bento">
+                    <!-- Main Feature -->
+                    <div class="bento-card bento-main span-2-col" data-page="ask-ai">
+                        <div class="tech-pattern"></div>
+                        <div class="card-inner">
+                            <div class="card-icon-wrap c-primary"><i class="fa-solid fa-layer-group"></i></div>
+                            <h3>Command Center</h3>
+                            <p>Design app architectures, chat with contextual assistants, and generate framework components — all from a single interface.</p>
                         </div>
-                        <div class="hero-card" data-page="code-git-explorer">
-                            <h3><i class="fa-brands fa-github" style="color:var(--success);"></i> GitHub Explorer</h3>
-                            <p>Visualize any repository as an interactive 3D graph.</p>
-                        </div>
+                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
                     </div>
-                </div>
 
-                <div class="section-title">Toolkit</div>
-                <div class="tgrid">
-                    <div class="tcard" data-page="workspace">
-                        <div class="tcard-icon ic-gold"><i class="fa-solid fa-laptop-code"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">My Workspace</div><div class="tcard-desc">Save, edit & run code snippets</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+                    <!-- Toolkit Cards -->
+                    <div class="bento-card" data-page="code-git-explorer">
+                        <div class="card-inner">
+                            <div class="card-icon-wrap c-green"><i class="fa-solid fa-diagram-project"></i></div>
+                            <h3>GitHub Explorer</h3>
+                            <p>Visualize repositories as interactive 3D force-directed graphs.</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
                     </div>
-                    <div class="tcard" data-page="commands">
-                        <div class="tcard-icon ic-green"><i class="fa-solid fa-terminal"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">Commands</div><div class="tcard-desc">Git, npm, Docker reference</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+
+                    <div class="bento-card" data-page="workspace">
+                        <div class="card-inner">
+                            <div class="card-icon-wrap c-orange"><i class="fa-solid fa-laptop-code"></i></div>
+                            <h3>My Workspace</h3>
+                            <p>Save snippets, edit local files, and securely run code directly in the browser.</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
                     </div>
-                    <div class="tcard" data-page="free-apis">
-                        <div class="tcard-icon ic-cyan"><i class="fa-solid fa-cloud"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">Free APIs</div><div class="tcard-desc">55+ curated public endpoints</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+
+                    <div class="bento-card" data-page="commands">
+                        <div class="card-inner">
+                            <div class="card-icon-wrap c-emerald"><i class="fa-solid fa-terminal"></i></div>
+                            <h3>Command Line Info</h3>
+                            <p>Quick-reference cheat sheets for Git, Docker, and npm commands.</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
                     </div>
-                    <div class="tcard" data-page="package-scout">
-                        <div class="tcard-icon ic-blue"><i class="fa-solid fa-box-open"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">Package Scout</div><div class="tcard-desc">NPM insights & analytics</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+
+                    <div class="bento-card" data-page="tools-vault">
+                        <div class="card-inner">
+                            <div class="card-icon-wrap c-purple"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                            <h3>Tools Vault</h3>
+                            <p>A curated directory of frameworks, VS Code extensions, and quick boilerplates.</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
                     </div>
-                    <div class="tcard" data-page="tools-vault">
-                        <div class="tcard-icon ic-purple"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">Tools Vault</div><div class="tcard-desc">Frameworks, libraries & boilerplates</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+
+                    <div class="bento-card" data-page="docs">
+                        <div class="card-inner">
+                            <div class="card-icon-wrap c-pink"><i class="fa-solid fa-book-open-reader"></i></div>
+                            <h3>Developer Docs</h3>
+                            <p>Access precise, contextual documentation generated instantly for any subject.</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
                     </div>
-                    <div class="tcard" data-page="code-git-explorer">
-                        <div class="tcard-icon ic-pink"><i class="fa-brands fa-github"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">GitHub Explorer</div><div class="tcard-desc">3D repo visualizations</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+
+                    <div class="bento-card" data-page="free-apis">
+                        <div class="card-inner">
+                            <div class="card-icon-wrap c-cyan"><i class="fa-solid fa-cloud"></i></div>
+                            <h3>Free APIs</h3>
+                            <p>Test and prototype with 55+ verified, open public API endpoints.</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
                     </div>
-                    <div class="tcard" data-page="docs">
-                        <div class="tcard-icon" style="background:rgba(234,88,12,0.12);border:1px solid rgba(234,88,12,0.2);"><i class="fa-solid fa-book-open-reader" style="color:#ea580c;"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">Developer Docs</div><div class="tcard-desc">Instantly search MDN API Docs</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+
+                    <div class="bento-card" data-page="package-scout">
+                        <div class="card-inner">
+                            <div class="card-icon-wrap c-blue"><i class="fa-solid fa-box-open"></i></div>
+                            <h3>Package Scout</h3>
+                            <p>Deep dive into NPM package heuristics, dependencies, and bundle sizes.</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
                     </div>
                 </div>
             </div>`;
@@ -145,14 +247,26 @@ const DashboardPage = {
     },
 
     bindEvents(content) {
+        // Navigation clicks
         content.querySelectorAll('[data-page]').forEach(el => {
             el.addEventListener('click', () => Router.navigate(el.dataset.page));
+        });
+
+        // Mouse tracking for interactive spotlight effect
+        content.querySelectorAll('.bento-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
         });
 
         // Onboarding Check
         if(!localStorage.getItem('vdt_first_time')) {
             setTimeout(() => {
-                Toast.show('Welcome to Vertex! Your all-in-one developer hub. Explore the AI tools below or use Ctrl+K to search.', 'info', 6000);
+                Toast.show('Welcome to Vertex! Explore the developer tools below or use Ctrl+K to search.', 'info', 6000);
                 localStorage.setItem('vdt_first_time', 'true');
             }, 1000);
         }
