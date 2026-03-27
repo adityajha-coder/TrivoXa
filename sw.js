@@ -52,7 +52,7 @@ self.addEventListener('fetch', event => {
     if (event.request.url.includes('/api/')) {
         return;
     }
-    
+
     if (event.request.url.includes('api.github.com') || event.request.url.includes('registry.npmjs.org')) {
         event.respondWith(
             fetch(event.request).then(response => {

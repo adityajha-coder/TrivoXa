@@ -5,198 +5,372 @@ const DashboardPage = {
 
         content.innerHTML = `
             <style>
-                /* Prevent scrolling on desktop, allow on mobile */
                 #page-content {
-                    height: calc(100vh - 64px); /* Fill the screen minus navbar */
+                    height: calc(100vh - 56px);
                     display: flex;
                     flex-direction: column;
-                    overflow: hidden;
-                    padding: 16px 32px; /* reduced general padding */
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    padding: 0;
+                    background: var(--bg-primary);
                 }
-                
-                .dash-header { margin-bottom: 12px; flex-shrink: 0; }
-                .dash-title { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; color: var(--text); }
-                .dash-sub { color: var(--text-secondary); font-size: 0.85rem; }
 
-                .dash-layout-container {
+                .dash-wrapper {
+                    max-width: 1280px;
+                    width: 100%;
+                    margin: 0 auto;
+                    padding: 36px 48px;
                     display: flex;
                     flex-direction: column;
-                    gap: 12px;
-                    flex: 1; /* take remaining height */
-                    min-height: 0;
+                    gap: 32px;
                 }
 
-                .dash-top-grid {
+                /* ===== HERO TOP TEXT ===== */
+                .hero-top-text {
+                    margin-bottom: 8px;
+                }
+
+                .hero-main-title {
+                    font-size: 2.2rem;
+                    font-weight: 700;
+                    color: #fff;
+                    margin: 0 0 8px 0;
+                    letter-spacing: -0.5px;
+                }
+
+                .hero-main-title .gold {
+                    color: var(--primary-light);
+                }
+
+                .lead-text {
+                    display: block;
+                    font-size: 1.05rem;
+                    color: var(--text-secondary);
+                    font-weight: 400;
+                    margin-top: 8px;
+                }
+
+                /* ===== HERO SECTION ===== */
+                .dash-hero-section {
                     display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    gap: 12px;
-                    height: 130px; /* highly condensed fixed height */
-                    flex-shrink: 0;
+                    grid-template-columns: 1.1fr 0.9fr;
+                    gap: 24px;
+                    min-height: 240px;
                 }
 
-                .dash-bottom-grid {
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 12px;
-                    flex: 1; /* stretch remaining */
-                    min-height: 0;
-                }
-
-                .bento-card {
-                    background: rgba(255, 255, 255, 0.015);
-                    border: 1px solid var(--border-light);
-                    border-radius: var(--radius-lg);
+                .hero-main-card {
+                    background: var(--surface);
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 36px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
                     position: relative;
                     overflow: hidden;
                     cursor: pointer;
-                    display: flex;
-                    flex-direction: column;
                 }
 
-                /* Arrow Icon */
-                .arrow-icon {
+                .hero-main-card h3 {
+                    font-size: 1.4rem;
+                    font-weight: 700;
+                    color: #fff;
+                    margin-bottom: 12px;
+                }
+
+                .hero-main-sub {
+                    font-size: 0.95rem;
+                    color: var(--text-secondary);
+                    line-height: 1.5;
+                    max-width: 440px;
+                    margin-bottom: 32px;
+                }
+
+                .hero-main-bottom {
+                    display: flex;
+                    align-items: center;
+                    margin-top: auto;
+                }
+
+                .hero-cta {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 10px 24px;
+                    background: var(--primary);
+                    color: #000;
+                    border: none;
+                    border-radius: 30px;
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    font-family: inherit;
+                }
+
+                .hero-bot-graphic {
+                    width: 200px; height: 200px;
                     position: absolute;
-                    top: 16px;
-                    right: 16px;
-                    color: var(--text-muted);
-                    font-size: 0.85rem;
+                    bottom: -40px; right: 0px;
+                    opacity: 0.03;
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 10rem;
+                    color: #fff;
+                    pointer-events: none;
                 }
 
-                .card-inner {
-                    position: relative;
-                    z-index: 2;
+                /* Right stack */
+                .hero-side-stack {
                     display: flex;
                     flex-direction: column;
-                    height: 100%;
+                    gap: 24px;
                 }
 
-                /* Medium Card Styling (Top Row) */
-                .medium-card { padding: 16px; justify-content: flex-start; }
-                .medium-card .card-icon-wrap {
-                    width: 36px; height: 36px; font-size: 1rem;
-                    margin-bottom: 10px; border-radius: 8px;
+                .hero-side-card {
+                    flex: 1;
+                    background: var(--surface);
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 24px;
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 16px;
+                    cursor: pointer;
                 }
-                .medium-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; color: var(--text); }
-                .medium-card p { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; max-width: 95%; }
-                
-                /* Small Card Styling (Bottom Row) */
-                .small-card { padding: 14px 16px; }
-                .small-card .card-icon-wrap {
-                    width: 32px; height: 32px; font-size: 0.85rem;
-                    margin-bottom: 8px; border-radius: 6px;
-                }
-                .small-card h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; color: var(--text); }
-                .small-card p { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3; }
 
-                /* Shared Icon Wrap Base */
-                .card-icon-wrap {
+                .hero-side-icon {
+                    font-size: 1.25rem;
+                    flex-shrink: 0;
+                    margin-top: 2px;
+                }
+
+                .hero-side-text h3 {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: #fff;
+                    margin-bottom: 6px;
+                }
+
+                .hero-side-text p {
+                    font-size: 0.85rem;
+                    color: var(--text-secondary);
+                    line-height: 1.4;
+                }
+
+                /* ===== TOOLKIT SECTION ===== */
+                .toolkit-label {
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 1.5px;
+                    color: var(--text-muted);
+                    margin-bottom: 20px;
+                }
+
+                .toolkit-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 24px;
+                }
+
+                .toolkit-card {
+                    background: var(--surface);
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    cursor: pointer;
+                }
+
+                .toolkit-icon {
+                    width: 48px; height: 48px;
+                    border-radius: 8px;
+                    background: var(--bg-primary);
                     display: flex; align-items: center; justify-content: center;
-                    border: 1px solid rgba(255,255,255,0.05);
-                    background: rgba(0,0,0,0.2);
+                    font-size: 1.15rem;
+                    flex-shrink: 0;
                 }
 
-                /* Icon Colors */
-                .c-primary { color: var(--primary-light); background: rgba(212,168,67,0.1); border-color: rgba(212,168,67,0.2); }
-                .c-blue    { color: #60a5fa; background: rgba(96,165,250,0.1); border-color: rgba(96,165,250,0.2); }
-                .c-green   { color: #34d399; background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.2); }
-                .c-purple  { color: #c084fc; background: rgba(192,132,252,0.1); border-color: rgba(192,132,252,0.2); }
-                .c-pink    { color: #f472b6; background: rgba(244,114,182,0.1); border-color: rgba(244,114,182,0.2); }
-                .c-orange  { color: #fb923c; background: rgba(251,146,60,0.1); border-color: rgba(251,146,60,0.2); }
-                .c-emerald { color: #10b981; background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.2); }
+                .toolkit-text {
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                .toolkit-text h3 {
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                    color: #fff;
+                    margin-bottom: 4px;
+                }
+
+                .toolkit-text p {
+                    font-size: 0.8rem;
+                    color: var(--text-muted);
+                    line-height: 1.35;
+                }
+
+                /* Icon colors */
+                .color-yellow { color: #facc15; }
+                .color-green { color: #4ade80; }
+                .color-blue { color: #38bdf8; }
+                .color-purple { color: #a78bfa; }
+                .color-pink { color: #f472b6; }
+                .color-orange { color: #fb923c; }
+
+                /* ===== RESPONSIVE ===== */
+                @media (max-width: 1024px) {
+                    .dash-wrapper { padding: 32px; gap: 24px; }
+                    .toolkit-grid { grid-template-columns: repeat(3, 1fr); }
+                }
 
                 @media (max-width: 900px) {
-                    #page-content { height: auto; overflow: visible; padding: 20px; }
-                    .dash-top-grid { grid-template-columns: 1fr; height: auto; }
-                    .dash-bottom-grid { grid-template-columns: repeat(2, 1fr); }
-                    .medium-card, .small-card { min-height: 120px; }
+                    .dash-hero-section { grid-template-columns: 1fr; min-height: auto; }
+                    .hero-side-stack { flex-direction: row; }
+                    .toolkit-grid { grid-template-columns: repeat(2, 1fr); }
                 }
+
                 @media (max-width: 600px) {
-                    .dash-title { font-size: 1.4rem; }
-                    .dash-bottom-grid { grid-template-columns: 1fr; }
+                    .dash-wrapper { padding: 20px 16px; gap: 20px; }
+                    .hero-side-stack { flex-direction: column; }
+                    .hero-main-title { font-size: 1.6rem; }
+                    .toolkit-grid { grid-template-columns: 1fr; }
+                }
+
+                /* Entry animations */
+                @keyframes dashFadeUp {
+                    from { opacity: 0; transform: translateY(14px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .dash-animate {
+                    opacity: 0;
+                    animation: dashFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
                 }
             </style>
-            
-            <div class="dash-header">
-                <h1 class="dash-title">Ship Code <span class="text-gradient">Faster.</span> Build <span class="text-gradient">Smarter.</span></h1>
-                <p class="dash-sub">The unified developer toolkit for modern workflows.</p>
-            </div>
 
-            <div class="dash-layout-container" id="dashboard-bento">
-                <!-- Top Medium Cards (50% Width Each) -->
-                <div class="dash-top-grid">
-                    <div class="bento-card medium-card" data-page="ask-ai">
-                        <div class="card-inner">
-                            <div class="card-icon-wrap c-primary"><i class="fa-solid fa-layer-group"></i></div>
-                            <h3>Command Center (AI Hub)</h3>
-                            <p>Design architectures, collaborate with AI assistants, and instantly generate framework code for your projects.</p>
-                        </div>
-                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
-                    </div>
-
-                    <div class="bento-card medium-card" data-page="code-git-explorer">
-                        <div class="card-inner">
-                            <div class="card-icon-wrap c-green"><i class="fa-brands fa-github"></i></div>
-                            <h3>GitHub Explorer</h3>
-                            <p>Transform standard codebases into an interactive 3D universe. Visualize file structures and relationships instantly.</p>
-                        </div>
-                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
+            <div class="dash-wrapper">
+                <div class="dash-animate">
+                    <div class="hero-top-text">
+                        <h1 class="hero-main-title">Ship Code <span class="gold">Faster.</span> Build <span class="gold">Smarter.</span></h1>
+                        <span class="lead-text">The unified developer toolkit for development</span>
                     </div>
                 </div>
 
-                <!-- Bottom Small Cards (3 Columns) -->
-                <div class="dash-bottom-grid">
-                    <div class="bento-card small-card" data-page="workspace">
-                        <div class="card-inner">
-                            <div class="card-icon-wrap c-orange"><i class="fa-solid fa-laptop-code"></i></div>
-                            <h3>My Workspace</h3>
-                            <p>Organize snippets, edit locally, and run code entirely in your browser.</p>
+                <!-- HERO SECTION -->
+                <div class="dash-hero-section dash-animate" style="animation-delay: 0.05s;">
+                    <!-- Main AI Hub Card -->
+                    <div class="hero-main-card" data-page="ask-ai">
+                        <div>
+                            <h3>AI Hub</h3>
+                            <p class="hero-main-sub">
+                                Chat with AI, design app architectures, explore tech stacks, and debug errors — all in one place.
+                            </p>
                         </div>
-                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
+                        <div class="hero-main-bottom">
+                            <button class="hero-cta" onclick="event.stopPropagation(); Router.navigate('ask-ai');">
+                                <i class="fa-solid fa-arrow-right"></i> Open AI Hub
+                            </button>
+                        </div>
+                        <div class="hero-bot-graphic"><i class="fa-solid fa-robot"></i></div>
                     </div>
 
-                    <div class="bento-card small-card" data-page="commands">
-                        <div class="card-inner">
-                            <div class="card-icon-wrap c-emerald"><i class="fa-solid fa-terminal"></i></div>
-                            <h3>Command Line</h3>
-                            <p>Blazing fast cheat-sheets for Git, Docker, npm and terminal utilities.</p>
+                    <!-- Right Side Stack -->
+                    <div class="hero-side-stack">
+                        <div class="hero-side-card" data-page="ask-ai">
+                            <div class="hero-side-icon color-yellow">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </div>
+                            <div class="hero-side-text">
+                                <h3>Code Generator</h3>
+                                <p>Generate framework components with AI and run them live.</p>
+                            </div>
                         </div>
-                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
+                        <div class="hero-side-card" data-page="code-git-explorer">
+                            <div class="hero-side-icon color-green">
+                                <i class="fa-brands fa-github"></i>
+                            </div>
+                            <div class="hero-side-text">
+                                <h3>GitHub Explorer</h3>
+                                <p>Visualize any repository as an interactive 3D graph.</p>
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="bento-card small-card" data-page="tools-vault">
-                        <div class="card-inner">
-                            <div class="card-icon-wrap c-purple"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                            <h3>Tools Vault</h3>
-                            <p>Curated tech-stack generator, quick boilerplates, and VS Code extensions.</p>
+                <!-- TOOLKIT SECTION -->
+                <div class="dash-animate" style="animation-delay: 0.15s;">
+                    <p class="toolkit-label">TOOLKIT</p>
+                    
+                    <div class="toolkit-grid">
+                        <div class="toolkit-card" data-page="workspace">
+                            <div class="toolkit-icon color-yellow">
+                                <i class="fa-solid fa-laptop-code"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>My Workspace</h3>
+                                <p>Save, edit & run code snippets</p>
+                            </div>
                         </div>
-                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
-                    </div>
 
-                    <div class="bento-card small-card" data-page="docs">
-                        <div class="card-inner">
-                            <div class="card-icon-wrap c-pink"><i class="fa-solid fa-book-open-reader"></i></div>
-                            <h3>Developer Docs</h3>
-                            <p>Search any framework or SDK for precise, AI-crafted technical docs.</p>
+                        <div class="toolkit-card" data-page="commands">
+                            <div class="toolkit-icon color-green">
+                                <i class="fa-solid fa-terminal"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>Commands</h3>
+                                <p>Git, npm, Docker reference</p>
+                            </div>
                         </div>
-                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
-                    </div>
 
-                    <div class="bento-card small-card" data-page="free-apis">
-                        <div class="card-inner">
-                            <div class="card-icon-wrap c-cyan"><i class="fa-solid fa-cloud"></i></div>
-                            <h3>Free APIs</h3>
-                            <p>Ping and test 55+ open public endpoints directly within the dashboard.</p>
+                        <div class="toolkit-card" data-page="free-apis">
+                            <div class="toolkit-icon color-blue">
+                                <i class="fa-solid fa-cloud"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>Free APIs</h3>
+                                <p>55+ curated public endpoints</p>
+                            </div>
                         </div>
-                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
-                    </div>
 
-                    <div class="bento-card small-card" data-page="package-scout">
-                        <div class="card-inner">
-                            <div class="card-icon-wrap c-blue"><i class="fa-solid fa-box-open"></i></div>
-                            <h3>Package Scout</h3>
-                            <p>Deep dive into NPM package heuristics, download trends, and bundle sizes.</p>
+                        <div class="toolkit-card" data-page="package-scout">
+                            <div class="toolkit-icon color-purple">
+                                <i class="fa-solid fa-box-open"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>Package Scout</h3>
+                                <p>NPM insights & analytics</p>
+                            </div>
                         </div>
-                        <i class="fa-solid fa-arrow-right arrow-icon"></i>
+
+                        <div class="toolkit-card" data-page="tools-vault">
+                            <div class="toolkit-icon color-purple">
+                                <i class="fa-solid fa-screwdriver-wrench"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>Tools Vault</h3>
+                                <p>Frameworks, libraries & boilerplates</p>
+                            </div>
+                        </div>
+
+                        <div class="toolkit-card" data-page="code-git-explorer">
+                            <div class="toolkit-icon color-pink">
+                                <i class="fa-brands fa-github"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>GitHub Explorer</h3>
+                                <p>3D repo visualizations</p>
+                            </div>
+                        </div>
+
+                        <div class="toolkit-card" data-page="docs">
+                            <div class="toolkit-icon color-orange">
+                                <i class="fa-solid fa-book-bookmark"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>Developer Docs</h3>
+                                <p>Instantly search MDN API Docs</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>`;
@@ -210,19 +384,8 @@ const DashboardPage = {
             el.addEventListener('click', () => Router.navigate(el.dataset.page));
         });
 
-        // Mouse tracking for interactive spotlight effect
-        content.querySelectorAll('.bento-card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-            });
-        });
-
         // Onboarding Check
-        if(!localStorage.getItem('vdt_first_time')) {
+        if (!localStorage.getItem('vdt_first_time')) {
             setTimeout(() => {
                 Toast.show('Welcome to Vertex! Explore the developer tools below or use Ctrl+K to search.', 'info', 6000);
                 localStorage.setItem('vdt_first_time', 'true');
