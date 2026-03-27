@@ -106,22 +106,9 @@ const Helpers = {
         return colors[lang] || '#64748b';
     },
 
-    formatBytes(bytes) {
-        if (bytes === 0) return '0 B';
-        const k = 1024;
-        const sizes = ['B', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-    },
-
     truncate(str, len = 100) {
         if (str.length <= len) return str;
         return str.substring(0, len) + '...';
-    },
-
-    randomColor() {
-        const hue = Math.floor(Math.random() * 360);
-        return `hsl(${hue}, 70%, 60%)`;
     },
 
     _scriptCache: {},

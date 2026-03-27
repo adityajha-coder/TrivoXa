@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vertex-v6';
+const CACHE_NAME = 'vertex-v7';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -16,7 +16,7 @@ const STATIC_ASSETS = [
     '/js/pages/dashboard.js?v=6',
     '/js/pages/askAi.js?v=10',
     '/js/pages/docs.js?v=4',
-    '/js/pages/codeGitExplorer.js?v=7',
+    '/js/pages/codeGitExplorer.js?v=8',
     '/js/pages/freeApis.js?v=14',
     '/js/pages/packageScout.js?v=7',
     '/js/pages/commands.js?v=7',

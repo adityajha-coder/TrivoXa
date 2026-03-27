@@ -2,8 +2,6 @@ const DashboardPage = {
     render() {
         Navbar.renderTopbar('Dashboard');
         const content = document.getElementById('page-content');
-        const hours = new Date().getHours();
-        const greeting = hours < 12 ? 'Good Morning' : hours < 18 ? 'Good Afternoon' : 'Good Evening';
 
         content.innerHTML = `
             <style>
@@ -48,7 +46,7 @@ const DashboardPage = {
                     width: 38px; height: 38px; min-width: 38px; border-radius: 9px;
                     display: flex; align-items: center; justify-content: center; font-size: 1rem;
                 }
-                .tcard-icon i { }
+
                 .ic-gold { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.2); }
                 .ic-gold i { color: #eab308; }
                 .ic-blue { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.2); }
