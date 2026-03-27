@@ -1,65 +1,56 @@
-# Vertex — The All-in-One Toolkit for Developers
+# Vertex — Developer Operations Toolkit
 
-Vertex is a high-performance, AI-powered developer toolkit designed to supercharge your workflow. Whether you're a beginner exploring new tech stacks or a seasoned engineer looking for quick references, Vertex consolidates everything you need into a single, comprehensive dashboard.
+Vertex is a blazingly fast, deeply integrated developer toolkit built for modern workflows. It consolidates scattered utilities—from IDE extensions and standard documentation to 3D repository visualization and intelligent architectural scaffolding—into a single, high-contrast, keyboard-first environment. 
 
-## ✨ Key Features
+Designed with a brutalist, typography-focused aesthetic, Vertex prioritizes developer speed and clarity.
 
-- 🪄 **AI Hub (Chat & Architect)**: Powered by **Groq (Llama 3.1)**. Debug errors, explain code, or use the **AI Architect** to design entire project structures from a single prompt.
-- ⚡ **AI Code Generator**: Generate framework components (React, Vue, HTML/CSS) and run them instantly via **StackBlitz WebContainers**.
-- 💻 **Monaco-powered Workspace**: Edit and save snippets in a native VS Code-like environment (Microsoft Monaco Editor).
-- 🌐 **Interactive 3D GitHub Explorer**: Visualize any repository as a 3D force-directed graph using `Three.js`.
-- 🔍 **AI Code Analyzer**: Score your code's health, security, and complexity with instant AI-driven reviews.
-- 📦 **Package Scout**: Deep dive into npm package analytics and GitHub community stats.
-- 🛠️ **Developer Utilities**: Curated collections of Free APIs, Command References, and Framework Boilerplates.
+## ⚡ Core Systems
 
-## 📁 Project Structure
+- **Workspace (Monaco Engine)**: A native browser-based IDE powered by Microsoft's Monaco Editor. Execute JavaScript/TypeScript locally, save snippets seamlessly, and interact with the filesystem.
+- **Architecture & AI Hub**: Leverage Groq's high-speed Llama 3.1 models for instantaneous architectural scaffolding, stack synthesis, and component generation.
+- **GitHub Force Explorer**: Transform standard static codebases into interactive 3D universe force-directed graphs using `Three.js` and `3d-force-graph`.
+- **Command Cheatsheets**: Instant, categorized lookups for essential CLI tooling (Git, Docker, npm, Node.js).
+- **Doc Architect**: Fast metadata search and index lookup for top-tier developer frameworks.
+- **Package Intelligence**: Deep dive into NPM heuristics, download trends, bundle sizes, and community metrics without leaving the environment.
 
-The project is organized into a clean, modular structure:
+## 🛠️ Technical Architecture
 
-- **`/js`**: All frontend logic, split into `/pages`, `/components`, and `/utils`.
-- **`/api`**: Vercel Serverless Functions for production API proxying.
-- **`/core`**: Local backend proxy server and error logging.
-- **`/devtools`**: Diagnostic tools and setup scripts.
-- **`/config`**: Configuration data for models, compilers, and APIs.
-- **`/css`**: Modular CSS design system (base, layout, components).
+Vertex bypasses heavy build steps, opting for raw ES6+ modules and vanilla JavaScript to ensure zero-latency cold starts.
 
-## 🚀 Getting Started
+- **Frontend**: ES6+ Vanilla JS, Vanilla CSS Variables (Monochrome/Linear aesthetic)
+- **Vendors**: Monaco Editor (AMD Load), Three.js (WebGL), Chart.js
+- **Network Strategy**: Service Worker caching with fully offline PWA capabilities (`IndexedDB`).
+- **Data Fetching**: Optimistic concurrency via custom proxy handlers for GraphQL and REST APIs.
 
-### 1. Local Development (Development Mode)
-To use the AI features locally, you need to start the Groq Proxy:
+## 🚀 Installation & Deployment
+
+### Local Development
+
+To spin up the local diagnostic environment and proxy server:
 
 ```bash
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Start the Groq Proxy (runs on localhost:3001)
-npm run proxy
+# 2. Start the development environment (concurrently local proxy + static server)
+npm run both
 
-# Start the Vertex frontend (runs on localhost:8080)
-npm start
+# Alternatively, just start the static UI on port 8080:
+npm run dev
 ```
 
-### 2. Production Deployment
-Vertex is optimized for **Vercel**. 
+### Production Deployment (Vercel)
 
-- The app automatically detects when it's running in production.
-- It switches from the local proxy to the **Vercel Serverless Proxy** (`/api/groq/chat`) automatically.
-- No local node server is required after deployment.
+Vertex is natively optimized for edge deployments.
+- The UI automatically detects production environments via hostname execution flow.
+- It dynamically switches all API tunneling to **Vercel Serverless Functions** (`/api/groq/*`).
 
-### 🔌 API Configuration
-Vertex uses the **Groq API** for high-speed interference.
-- **Default Key**: A community key is included as a fallback.
-- **Custom Key**: You can provide your own `gsk_` key in the **AI Hub Settings** or by setting a `GROQ_API_KEY` environment variable on Vercel.
+## 🔌 API Configuration
 
-##  Tech Stack
-- **Frontend**: Vanilla JavaScript (ES6+), HTML5, CSS3 (Glassmorphism)
-- **Editor**: Microsoft Monaco Editor
-- **3D Engine**: Three.js / 3d-force-graph
-- **API**: Groq (Llama 3.1 8B/70B)
-- **PWA**: Fully offline-capable with Service Workers and IndexedDB.
-
-## 🤝 Contributing
-Feel free to open PRs or issues. The project is designed to be easily extensible—just add a new module to `js/pages/`.
+Vertex ships with intelligent fallback handlers, but for power-user limits, setting up a primary API key is recommended:
+- **Groq Interface**: Provide a `gsk_` key directly inside the AI Hub Settings panel, or set the `GROQ_API_KEY` environment variable prior to deployment.
+- **GitHub Explorer**: Authenticated limits apply automatically.
 
 ## 📜 License
-MIT License
+
+Distributed under the MIT License. See `LICENSE` for more information.
