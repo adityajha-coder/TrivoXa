@@ -1,6 +1,5 @@
 const FreeApisPage = {
-    apis: [
-        {
+    apis: [        {
                 "name": "JSONPlaceholder",
                 "desc": "Free fake REST API for testing and prototyping. Provides posts, comments, users, and more.",
                 "url": "https://jsonplaceholder.typicode.com",
@@ -592,7 +591,7 @@ const FreeApisPage = {
                 "category": "Blockchain",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Chainlink",
@@ -619,7 +618,7 @@ const FreeApisPage = {
                 "category": "Blockchain",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Etherscan",
@@ -628,7 +627,7 @@ const FreeApisPage = {
                 "category": "Blockchain",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Helium",
@@ -646,7 +645,7 @@ const FreeApisPage = {
                 "category": "Blockchain",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Steem",
@@ -664,7 +663,7 @@ const FreeApisPage = {
                 "category": "Blockchain",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Walltime",
@@ -682,7 +681,7 @@ const FreeApisPage = {
                 "category": "Blockchain",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Apache Superset",
@@ -691,7 +690,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Charity Search",
@@ -700,7 +699,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Clearbit Logo",
@@ -709,7 +708,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Domainsdb.info",
@@ -727,7 +726,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Gmail",
@@ -736,7 +735,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Google Analytics",
@@ -745,7 +744,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Instatus",
@@ -754,7 +753,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Mailchimp",
@@ -763,7 +762,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "mailjet",
@@ -772,7 +771,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "markerapi",
@@ -790,7 +789,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Redash",
@@ -799,7 +798,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Smartsheet",
@@ -808,7 +807,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "OAuth",
                 "cors": false,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Square",
@@ -817,7 +816,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "SwiftKanban",
@@ -826,7 +825,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Tenders in Hungary",
@@ -880,7 +879,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Trello",
@@ -889,7 +888,7 @@ const FreeApisPage = {
                 "category": "Business",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "AnonFiles",
@@ -916,7 +915,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "ddownload",
@@ -925,7 +924,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Dropbox",
@@ -934,7 +933,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "File.io",
@@ -952,7 +951,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "GoFile",
@@ -961,7 +960,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Google Drive",
@@ -970,7 +969,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Gyazo",
@@ -979,7 +978,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Imgbb",
@@ -988,7 +987,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "OneDrive",
@@ -997,7 +996,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Pantry",
@@ -1015,7 +1014,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Pinata",
@@ -1024,7 +1023,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Quip",
@@ -1033,7 +1032,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Storj",
@@ -1042,7 +1041,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "The Null Pointer",
@@ -1060,7 +1059,7 @@ const FreeApisPage = {
                 "category": "Cloud Storage & File Sharing",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "VATlayer",
@@ -1069,7 +1068,7 @@ const FreeApisPage = {
                 "category": "Data Validation",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Lob.com",
@@ -1078,7 +1077,7 @@ const FreeApisPage = {
                 "category": "Data Validation",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Postman Echo",
@@ -1105,7 +1104,7 @@ const FreeApisPage = {
                 "category": "Data Validation",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "US Extract",
@@ -1114,7 +1113,7 @@ const FreeApisPage = {
                 "category": "Data Validation",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "US Street Address",
@@ -1123,7 +1122,7 @@ const FreeApisPage = {
                 "category": "Data Validation",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Aletheia",
@@ -1132,7 +1131,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Alpaca",
@@ -1141,7 +1140,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Banco do Brasil",
@@ -1150,7 +1149,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Bank Data API",
@@ -1159,7 +1158,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Billplz",
@@ -1168,7 +1167,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Binlist",
@@ -1186,7 +1185,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Citi",
@@ -1195,7 +1194,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Econdb",
@@ -1222,7 +1221,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Financial Modeling Prep",
@@ -1231,7 +1230,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Finnhub",
@@ -1240,7 +1239,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "FRED",
@@ -1249,7 +1248,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Front Accounting APIs",
@@ -1258,7 +1257,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Hotstoks",
@@ -1267,7 +1266,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "IEX Cloud",
@@ -1276,7 +1275,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "IG",
@@ -1285,7 +1284,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Indian Mutual Fund",
@@ -1303,7 +1302,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Klarna",
@@ -1312,7 +1311,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "MercadoPago",
@@ -1321,7 +1320,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Mono",
@@ -1330,7 +1329,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Moov",
@@ -1339,7 +1338,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Nordigen",
@@ -1348,7 +1347,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "OpenFIGI",
@@ -1357,7 +1356,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Plaid",
@@ -1366,7 +1365,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": false,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Polygon",
@@ -1375,7 +1374,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Portfolio Optimizer",
@@ -1402,7 +1401,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "SEC EDGAR Data",
@@ -1420,7 +1419,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "StockData",
@@ -1429,7 +1428,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Styvio",
@@ -1438,7 +1437,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Tax Data API",
@@ -1447,7 +1446,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": false,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Tradier",
@@ -1456,7 +1455,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Twelve Data",
@@ -1465,7 +1464,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "VAT Validation",
@@ -1474,7 +1473,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "WallstreetBets",
@@ -1492,7 +1491,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "YNAB",
@@ -1501,7 +1500,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Zoho Books",
@@ -1510,7 +1509,7 @@ const FreeApisPage = {
                 "category": "Finance",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "4chan",
@@ -1528,7 +1527,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "aztro",
@@ -1546,7 +1545,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Cisco Spark",
@@ -1555,7 +1554,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Dangerous Discord Database",
@@ -1564,7 +1563,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Discord",
@@ -1573,7 +1572,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Disqus",
@@ -1582,7 +1581,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Doge-Meme",
@@ -1600,7 +1599,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Foursquare",
@@ -1609,7 +1608,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Fuck Off as a Service",
@@ -1627,7 +1626,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "HackerNews",
@@ -1654,7 +1653,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Kakao",
@@ -1663,7 +1662,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Lanyard",
@@ -1681,7 +1680,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "LinkedIn",
@@ -1690,7 +1689,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Meetup.com",
@@ -1699,7 +1698,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Microsoft Graph",
@@ -1708,7 +1707,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "NAVER",
@@ -1717,7 +1716,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Open Collective",
@@ -1735,7 +1734,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Product Hunt",
@@ -1744,7 +1743,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Reddit",
@@ -1753,7 +1752,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Revolt",
@@ -1762,7 +1761,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Saidit",
@@ -1771,7 +1770,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Slack",
@@ -1780,7 +1779,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "TamTam",
@@ -1789,7 +1788,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Telegram Bot",
@@ -1798,7 +1797,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Telegram MTProto",
@@ -1807,7 +1806,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Telegraph",
@@ -1816,7 +1815,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "API Key",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "TikTok",
@@ -1825,7 +1824,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Trash Nothing",
@@ -1834,7 +1833,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Tumblr",
@@ -1843,7 +1842,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Twitch",
@@ -1852,7 +1851,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "Twitter",
@@ -1861,7 +1860,7 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": false,
-                "pricing": "Free"
+                "pricing": "Freemium"
         },
         {
                 "name": "vk",
@@ -1870,7 +1869,61 @@ const FreeApisPage = {
                 "category": "Social",
                 "auth": "OAuth",
                 "cors": true,
-                "pricing": "Free"
+                "pricing": "Freemium"
+        },
+        {
+                "name": "Bloomberg API",
+                "desc": "Enterprise Financial data, real-time pricing.",
+                "url": "https://www.bloomberg.com/professional/product/api/",
+                "category": "Finance",
+                "auth": "API Key",
+                "cors": false,
+                "pricing": "Paid"
+        },
+        {
+                "name": "Equifax API",
+                "desc": "Credit scoring data, consumer authentication.",
+                "url": "https://developer.equifax.com/",
+                "category": "Data",
+                "auth": "OAuth",
+                "cors": false,
+                "pricing": "Paid"
+        },
+        {
+                "name": "Twitter Enterprise",
+                "desc": "Full-archive search, elevated rate limits for Twitter.",
+                "url": "https://developer.twitter.com/en/products/twitter-api/enterprise",
+                "category": "Social",
+                "auth": "OAuth",
+                "cors": false,
+                "pricing": "Paid"
+        },
+        {
+                "name": "Salesforce Einstein",
+                "desc": "High-tier CRM predictive capabilities, advanced AI.",
+                "url": "https://developer.salesforce.com/docs/",
+                "category": "AI/ML",
+                "auth": "OAuth",
+                "cors": false,
+                "pricing": "Paid"
+        },
+        {
+                "name": "Amazon SP-API",
+                "desc": "APIs for Amazon sellers (FBA, catalog creation, selling).",
+                "url": "https://developer-docs.amazon.com/sp-api/",
+                "category": "Business",
+                "auth": "OAuth",
+                "cors": false,
+                "pricing": "Paid"
+        },
+        {
+                "name": "Gnip/Datasift",
+                "desc": "Enterprise data syndication APIs.",
+                "url": "https://www.datasift.com/",
+                "category": "Data",
+                "auth": "API Key",
+                "cors": false,
+                "pricing": "Paid"
         }
 ],
     categories: [],
