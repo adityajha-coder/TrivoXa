@@ -100,11 +100,13 @@ const GithubStructureMixin = {
                 .nodeColor(node => node.color)
                 .nodeRelSize(3)
                 .nodeVal('val')
-                .linkColor(() => 'rgba(255,255,255,0.15)')
-                .linkWidth(0.5)
-                .linkDirectionalParticles(2)
-                .linkDirectionalParticleWidth(1.5)
-                .linkDirectionalParticleSpeed(d => 0.005 + Math.random() * 0.005)
+                .linkColor(() => 'rgba(212, 168, 67, 0.45)')
+                .linkWidth(1.2)
+                .linkOpacity(0.6)
+                .linkDirectionalParticles(3)
+                .linkDirectionalParticleWidth(2.5)
+                .linkDirectionalParticleColor(() => 'rgba(240, 197, 109, 0.9)')
+                .linkDirectionalParticleSpeed(d => 0.004 + Math.random() * 0.004)
                 .onNodeClick(node => {
                     // Focus camera on node
                     const distance = 40;
