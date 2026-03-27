@@ -1,7 +1,7 @@
 {
   "name": "vertex-developer-toolkit",
   "version": "1.0.0",
-  "description": "The unified developer toolkit for development",
+  "description": "All-in-one platform for developers",
   "scripts": {
     "dev": "npx -y serve . -l 8080",
     "start": "npx -y serve . -l 8080",

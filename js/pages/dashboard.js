@@ -251,8 +251,8 @@ const DashboardPage = {
             <div class="dash-wrapper">
                 <div class="dash-animate">
                     <div class="hero-top-text">
-                        <h1 class="hero-main-title">Ship Code <span class="gold">Faster.</span> Build <span class="gold">Smarter.</span></h1>
-                        <span class="lead-text">The unified developer toolkit for development</span>
+                        <h1 class="hero-main-title">Accelerate Your Workflow. <span class="gold">Build Smarter.</span></h1>
+                        <span class="lead-text">All-in-one platform for developers</span>
                     </div>
                 </div>
 
