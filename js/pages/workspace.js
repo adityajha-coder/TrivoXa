@@ -245,14 +245,14 @@ const WorkspacePage = {
                             </div>
                             <button class="btn btn-ghost btn-xs" id="ws-close-embed"><i class="fa-solid fa-xmark"></i></button>
                         </div>
-                        <iframe id="ws-html-preview-iframe" style="width:100%;height:450px;border:none;background:white;" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+                        <iframe id="ws-html-preview-iframe" style="width:100%;height:450px;border:none;background:white;" sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-modals"></iframe>
                     </div>`;
                 document.getElementById('ws-tab-snippets').appendChild(embedWrap);
                 document.getElementById('ws-close-embed').addEventListener('click', () => { embedWrap.style.display = 'none'; });
                 
                 // Set iframe content
                 const iframe = document.getElementById('ws-html-preview-iframe');
-                iframe.srcDoc = snippet.code;
+                iframe.setAttribute('srcdoc', snippet.code);
                 embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 Toast.show('HTML preview loaded!', 'success');
                 return;

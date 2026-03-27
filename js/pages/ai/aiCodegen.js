@@ -106,13 +106,13 @@ const AiCodegenMixin = {
                             </div>
                             <button class="btn btn-ghost btn-xs" id="close-embed-btn"><i class="fa-solid fa-xmark"></i></button>
                         </div>
-                        <iframe id="html-preview-iframe" style="width:100%;height:450px;border:none;background:white;" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+                        <iframe id="html-preview-iframe" style="width:100%;height:450px;border:none;background:white;" sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-modals"></iframe>
                     </div>`;
                 document.getElementById('generator-output-area').appendChild(embedWrap);
                 document.getElementById('close-embed-btn').addEventListener('click', () => { embedWrap.style.display = 'none'; });
                 
                 const iframe = document.getElementById('html-preview-iframe');
-                if (iframe) iframe.srcDoc = code;
+                if (iframe) iframe.setAttribute('srcdoc', code);
                 Toast.show('HTML preview loaded!', 'success');
                 return;
             }
