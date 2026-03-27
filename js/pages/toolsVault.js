@@ -117,41 +117,38 @@ const ToolsVaultPage = {
         { title: 'React Hook Form', code: 'import { useForm } from "react-hook-form";\n\nexport default function App() {\n  const { register, handleSubmit } = useForm();\n  const onSubmit = data => console.log(data);\n  return (\n    <form onSubmit={handleSubmit(onSubmit)}>\n      <input {...register("firstName")} />\n      <input type="submit" />\n    </form>\n  );\n}' }
     ],
 
+    activeCategory: 'All',
+    searchQuery: '',
+
     render() {
         Navbar.renderTopbar('Tools Vault');
         const content = document.getElementById('page-content');
+        const allCats = ['All', ...this.tools.map(t => t.cat)].sort();
         
         content.innerHTML = `
             <div class="page-enter">
                 <div class="page-header">
                     <h1>Tools <span class="text-gradient">Vault</span></h1>
-                    <p>A curated collection of industry-leading dev tools, AI utilities, and frameworks to supercharge your workflow.</p>
+                    <p>A curated directory of industry-leading dev tools, AI utilities, and frameworks to supercharge your workflow.</p>
                 </div>
-                <div class="tabs mb-md" id="tv-tabs">
+                <div class="tabs mb-lg" id="tv-tabs">
                     <button class="tab-item active" data-view="resources">Tools & Resources</button>
                     <button class="tab-item" data-view="boilerplates">Boilerplates</button>
                 </div>
                 
-                <div id="tv-resources-view" class="flex-col flex-gap mb-xl">
-                    ${this.tools.map(section => `
-                        <div>
-                            <h2 class="mb-md" style="font-size:1.2rem; font-weight:600; color:var(--primary-light); border-bottom:1px solid var(--border); padding-bottom:10px;">
-                                ${section.cat}
-                            </h2>
-                            <div class="grid-3">
-                                ${section.items.map(tool => `
-                                    <div class="glass-card tool-link-card" style="display:flex; flex-direction:column; transition:all 0.2s; position:relative;">
-                                        <div style="font-weight:600; font-size:1.05rem; color:var(--text); margin-bottom:6px; display:flex; align-items:center; justify-content:space-between;">
-                                            <a href="${tool.url}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:var(--text); flex:1; display:flex; align-items:center; gap:8px;">
-                                                ${tool.name} <i class="fa-solid fa-arrow-up-right-from-square text-muted text-xs"></i>
-                                            </a>
-                                        </div>
-                                        <div class="text-sm text-secondary line-clamp-2">${tool.desc}</div>
-                                    </div>
-                                `).join('')}
+                <div id="tv-resources-view" class="flex-col mb-xl">
+                    <div class="flex-center mb-xl">
+                        <div class="search-container glass-card" style="width:100%; max-width:700px; display:flex; gap:10px; padding:10px; align-items:center;">
+                            <div style="position:relative; flex:1;">
+                                <i class="fa-solid fa-magnifying-glass search-icon" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;"></i>
+                                <input class="input-field" id="tv-search" type="text" placeholder="Search tools..." style="width:100%; padding-left:40px; border:none; background:rgba(255,255,255,0.05);" />
                             </div>
+                            <select class="input-field" id="tv-category-filter" style="width:220px; padding:0 12px; height:42px; cursor:pointer; background:rgba(255,255,255,0.05); color:#fff; border:none; font-size: 0.85rem;">
+                                ${allCats.map(cat => `<option value="${cat}" ${cat === this.activeCategory ? 'selected' : ''} style="background:#000; color:#fff;">${cat}</option>`).join('')}
+                            </select>
                         </div>
-                    `).join('')}
+                    </div>
+                    <div id="tv-grid-container"></div>
                 </div>
 
                 <div id="tv-boilerplates-view" style="display:none; padding-bottom:40px;">
@@ -188,7 +185,52 @@ const ToolsVaultPage = {
             </style>
         `;
 
+        this.renderToolsGrid();
         this.bindEvents();
+    },
+
+    renderToolsGrid() {
+        const container = document.getElementById('tv-grid-container');
+        if(!container) return;
+
+        let results = [];
+        this.tools.forEach(group => {
+            if (this.activeCategory === 'All' || group.cat === this.activeCategory) {
+                const filteredItems = group.items.filter(item => {
+                    if (!this.searchQuery) return true;
+                    const q = this.searchQuery.toLowerCase();
+                    return item.name.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q);
+                });
+                if (filteredItems.length > 0) {
+                    results.push({ cat: group.cat, items: filteredItems });
+                }
+            }
+        });
+
+        if (results.length === 0) {
+            container.innerHTML = `<div class="empty-state" style="padding:40px;"><i class="fa-solid fa-search" style="font-size:2rem; opacity:0.3; margin-bottom:10px;"></i><h3>No matching tools found</h3></div>`;
+            return;
+        }
+
+        container.innerHTML = results.map(section => `
+            <div class="mb-xl">
+                <h2 class="mb-md" style="font-size:1.1rem; font-weight:600; color:var(--primary-light); border-bottom:1px solid var(--border); padding-bottom:8px;">
+                    ${section.cat}
+                </h2>
+                <div class="grid-3">
+                    ${section.items.map(tool => `
+                        <div class="glass-card tool-link-card" style="display:flex; flex-direction:column; transition:all 0.2s;">
+                            <div style="font-weight:600; font-size:1rem; color:var(--text); margin-bottom:4px; display:flex; align-items:center; justify-content:space-between;">
+                                <a href="${tool.url}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:var(--text); flex:1; display:flex; align-items:center; gap:8px;">
+                                    ${tool.name} <i class="fa-solid fa-arrow-up-right-from-square text-muted text-xs"></i>
+                                </a>
+                            </div>
+                            <div class="text-sm text-secondary line-clamp-2" style="line-height:1.4;">${tool.desc}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
     },
 
     bindEvents() {
@@ -202,6 +244,16 @@ const ToolsVaultPage = {
             document.getElementById('tv-resources-view').style.display = view === 'resources' ? 'flex' : 'none';
             document.getElementById('tv-boilerplates-view').style.display = view === 'boilerplates' ? 'block' : 'none';
         });
+
+        document.getElementById('tv-category-filter')?.addEventListener('change', (e) => {
+            this.activeCategory = e.target.value;
+            this.renderToolsGrid();
+        });
+
+        document.getElementById('tv-search')?.addEventListener('input', Helpers.debounce((e) => {
+            this.searchQuery = e.target.value;
+            this.renderToolsGrid();
+        }, 200));
 
         document.getElementById('page-content').addEventListener('click', e => {
             const copyBtn = e.target.closest('.tv-copy-bp');
@@ -222,7 +274,6 @@ const ToolsVaultPage = {
                     Toast.show('Boilerplate saved to Workspace!', 'success');
                 }
             }
-
         });
     }
 };

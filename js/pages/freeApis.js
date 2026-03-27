@@ -1940,24 +1940,24 @@ const FreeApisPage = {
                     <p>A curated directory of free public APIs organized by category for your projects.</p>
                 </div>
                 
-                <div class="flex-between mb-lg flex-wrap gap-md">
-                    <div class="search-container" style="min-width: 280px; flex: 1; max-width: 600px; display:flex; gap:10px;">
+                <div class="flex-center mb-xl">
+                    <div class="search-container glass-card" style="width:100%; max-width:700px; display:flex; gap:10px; padding:10px; align-items:center;">
                         <div style="position:relative; flex:1;">
-                            <i class="fa-solid fa-magnifying-glass search-icon" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
-                            <input class="input-field" id="api-search" type="text" placeholder="Search APIs..." style="width:100%; padding-left:40px;" />
+                            <i class="fa-solid fa-magnifying-glass search-icon" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;"></i>
+                            <input class="input-field" id="api-search" type="text" placeholder="Search APIs..." style="width:100%; padding-left:40px; border:none; background:rgba(255,255,255,0.05);" />
                         </div>
-                        <select class="input-field" id="api-category-filter" style="width:180px; padding:0 12px; cursor:pointer; background:#000; color:#fff; border:1px solid rgba(255,255,255,0.1); font-size: 0.85rem;"></select>
-                        <select class="input-field" id="api-pricing-filter" style="width:130px; padding:0 12px; cursor:pointer; background:#000; color:#fff; border:1px solid rgba(255,255,255,0.1); font-size: 0.85rem;">
+                        <select class="input-field" id="api-category-filter" style="width:180px; padding:0 12px; height:42px; cursor:pointer; background:rgba(255,255,255,0.05); color:#fff; border:none; font-size: 0.85rem;"></select>
+                        <select class="input-field" id="api-pricing-filter" style="width:130px; padding:0 12px; height:42px; cursor:pointer; background:rgba(255,255,255,0.05); color:#fff; border:none; font-size: 0.85rem;">
                             <option value="All" style="background:#000; color:#fff;">All Pricing</option>
                             <option value="Free" style="background:#000; color:#fff;">Free</option>
                             <option value="Freemium" style="background:#000; color:#fff;">Freemium</option>
                             <option value="Paid" style="background:#000; color:#fff;">Paid</option>
                         </select>
                     </div>
-                    <div class="flex-gap" style="font-size: 0.82rem; color: var(--text-muted);">
-                        <i class="fa-solid fa-database"></i>
-                        <span>${this.apis.length} APIs available</span>
-                    </div>
+                </div>
+                <div class="flex-gap mb-md" style="justify-content:center; font-size: 0.85rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-database"></i>
+                    <span>${this.apis.length} APIs available in the repository</span>
                 </div>
                 <div class="grid-3" id="api-grid"></div>
             </div>`;

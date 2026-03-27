@@ -1,11 +1,11 @@
-const CACHE_NAME = 'vertex-v3';
+const CACHE_NAME = 'vertex-v6';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
     '/favicon.svg',
     '/manifest.json',
     '/css/base.css?v=4',
-    '/css/layout.css?v=4',
+    '/css/layout.css?v=5',
     '/css/components.css?v=4',
     '/css/pages.css?v=4',
     '/css/animations.css?v=4',
@@ -17,11 +17,11 @@ const STATIC_ASSETS = [
     '/js/pages/askAi.js?v=10',
     '/js/pages/docs.js?v=4',
     '/js/pages/codeGitExplorer.js?v=7',
-    '/js/pages/freeApis.js?v=12',
+    '/js/pages/freeApis.js?v=14',
     '/js/pages/packageScout.js?v=7',
     '/js/pages/commands.js?v=7',
     '/js/pages/workspace.js?v=7',
-    '/js/pages/toolsVault.js?v=7',
+    '/js/pages/toolsVault.js?v=11',
     '/js/pages/ai/aiChat.js?v=1',
     '/js/pages/ai/aiArchitect.js?v=1',
     '/js/pages/ai/aiCodegen.js?v=1',
