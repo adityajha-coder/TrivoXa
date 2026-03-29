@@ -49,19 +49,26 @@ const GithubGitMixin = {
         if (this.gitScene) return;
         const { branches, commits } = this.repoData;
         const container = document.getElementById('git-3d');
-        const w = container.clientWidth || 800, h = container.clientHeight || 400;
+        if (!container) return;
+        // Force layout recalculation for mobile
+        container.style.display = 'block';
+        const rect = container.getBoundingClientRect();
+        const w = rect.width || container.clientWidth || container.offsetWidth || 300;
+        const h = rect.height || container.clientHeight || container.offsetHeight || 300;
         const aspect = h === 0 ? 1 : w / h;
         this.gitScene = new THREE.Scene();
         this.gitScene.background = new THREE.Color(0x000000);
         this.gitCamera = new THREE.PerspectiveCamera(50, aspect, 0.1, 500);
         this.gitCamera.position.set(5, 10, 30);
-        this.gitRenderer = new THREE.WebGLRenderer({ antialias: true });
+        this.gitRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
         this.gitRenderer.setSize(w, h);
         this.gitRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
         // Add resize listener to prevent "ratio error" on orientation change
         const resizeHandler = () => {
-            const nw = container.clientWidth, nh = container.clientHeight;
+            const rect = container.getBoundingClientRect();
+            const nw = rect.width || container.clientWidth;
+            const nh = rect.height || container.clientHeight;
             if (nw && nh) {
                 this.gitCamera.aspect = nw / nh;
                 this.gitCamera.updateProjectionMatrix();
@@ -69,6 +76,8 @@ const GithubGitMixin = {
             }
         };
         window.addEventListener('resize', resizeHandler);
+        // Also listen for orientation change on mobile
+        window.addEventListener('orientationchange', () => setTimeout(resizeHandler, 200));
         // Store for cleanup
         this._gitResizeHandler = resizeHandler;
         container.innerHTML = '';

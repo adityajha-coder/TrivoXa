@@ -327,8 +327,8 @@ const AskAiPage = {
                                     </button>
                                 </div>
                             </div>
-                            <div class="generator-output" style="background:rgba(0,0,0,0.5); padding:16px; border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; width:100%; min-width:0; box-sizing:border-box;">
-                                <div id="monaco-code-output" style="height:500px; width:100%; min-width:0;"></div>
+                            <div class="generator-output" style="background:rgba(0,0,0,0.5); padding:16px; border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; width:100%; min-width:0; max-width:100%; box-sizing:border-box;">
+                                <div id="monaco-code-output" style="height:500px; width:100%; min-width:0; max-width:100%; box-sizing:border-box;"></div>
                             </div>
                         </div>
                     </div>
