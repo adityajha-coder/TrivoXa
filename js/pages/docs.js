@@ -9,6 +9,7 @@ const DocsPage = {
     ],
 
     docsCache: {},
+    docsHistory: [],
 
     render() {
         Navbar.renderTopbar('Developer Documentation');
@@ -30,6 +31,11 @@ const DocsPage = {
                         <input class="input-field has-icon" id="docs-search-input" type="text" placeholder="e.g. Python list comprehension, React hooks, Rust ownership..." />
                     </div>
                     <button class="btn btn-primary" id="docs-search-btn">Search Docs</button>
+                </div>
+                
+                <div id="docs-history-container" class="mb-md" style="display:none; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <span class="text-xs text-secondary" style="font-weight:600;"><i class="fa-solid fa-clock-rotate-left"></i> History:</span>
+                    <div id="docs-history-list" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
                 </div>
 
                 <div class="ai-bot-suggestions mb-lg" id="docs-suggestions" style="justify-content:flex-start;">
@@ -55,6 +61,8 @@ const DocsPage = {
         `;
 
         this.bindEvents();
+        // Load history, but wait a tick for auth to potentially initialize if not already
+        setTimeout(() => this.loadHistory(), 800);
     },
 
     bindEvents() {
@@ -80,6 +88,72 @@ const DocsPage = {
                 }
             });
         }
+        
+        const historyList = document.getElementById('docs-history-list');
+        if (historyList) {
+            historyList.addEventListener('click', (e) => {
+                const btn = e.target.closest('.history-chip');
+                if (btn) {
+                    input.value = btn.dataset.q;
+                    this.searchDocs(input.value);
+                }
+            });
+        }
+    },
+
+    async loadHistory() {
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try {
+                const snap = await window.db.collection('users').doc(userId).collection('docs_history').orderBy('timestamp', 'desc').limit(15).get();
+                this.docsHistory = snap.docs.map(doc => doc.data());
+            } catch(e) {
+                console.error('[Docs] Failed to load history from DB:', e);
+                this.docsHistory = JSON.parse(localStorage.getItem('docs_history') || '[]');
+            }
+        } else {
+            this.docsHistory = JSON.parse(localStorage.getItem('docs_history') || '[]');
+        }
+        this.renderHistory();
+    },
+
+    async saveHistory(query) {
+        if (!query) return;
+        // Check duplicates
+        if (this.docsHistory.some(h => h.query.toLowerCase() === query.toLowerCase())) return;
+        
+        const item = { id: 'doc_' + Date.now().toString(36), query, timestamp: Date.now() };
+        this.docsHistory.unshift(item);
+        if (this.docsHistory.length > 15) this.docsHistory.pop();
+        
+        this.renderHistory();
+
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try {
+                await window.db.collection('users').doc(userId).collection('docs_history').doc(item.id).set(item);
+            } catch(e) {
+                console.error('[Docs] Failed to save history to DB:', e);
+            }
+        } else {
+            localStorage.setItem('docs_history', JSON.stringify(this.docsHistory));
+        }
+    },
+
+    renderHistory() {
+        const container = document.getElementById('docs-history-container');
+        const list = document.getElementById('docs-history-list');
+        if(!container || !list) return;
+
+        if (this.docsHistory.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+
+        container.style.display = 'flex';
+        list.innerHTML = this.docsHistory.map(h => 
+            `<button class="btn btn-ghost btn-xs history-chip" data-q="${Helpers.escapeHtml(h.query)}" style="border: 1px solid var(--border); border-radius: 20px;">${Helpers.escapeHtml(h.query)}</button>`
+        ).join('');
     },
 
     _renderDocs(docs) {
@@ -199,6 +273,7 @@ IMPORTANT: Return ONLY the JSON array. Start your response with [ and end with ]
             
             this.docsCache[cacheKey] = finalDocs;
             this._renderDocs(finalDocs);
+            this.saveHistory(query);
 
         } catch(err) {
             console.error('Docs search error:', err);

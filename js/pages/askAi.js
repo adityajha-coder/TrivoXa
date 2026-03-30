@@ -92,6 +92,7 @@ const AskAiPage = {
     currentFramework: 'html',
     currentAiModel: localStorage.getItem('vertex_ai_model') || 'mixtral',
     apiKey: localStorage.getItem('vertex_groq_key') || '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',
+    aiHistory: [],
     
     archSuggestions: [
         "Scalable Node.js Microservices", "React native chat app", 
@@ -176,6 +177,7 @@ const AskAiPage = {
                     <button class="tab-item" data-tab="codegen"><i class="fa-solid fa-laptop-code" style="margin-right:6px;"></i>Generator</button>
                     <button class="tab-item" data-tab="analyzer"><i class="fa-solid fa-microscope" style="margin-right:6px;"></i>Analyzer</button>
                     <button class="tab-item" data-tab="stacks"><i class="fa-solid fa-compass" style="margin-right:6px;"></i>Stacks</button>
+                    <button class="tab-item" data-tab="history"><i class="fa-solid fa-clock-rotate-left" style="margin-right:6px;"></i>History</button>
                 </div>
 
                 <!-- ===== TAB 1: AI CHAT ===== -->
@@ -406,6 +408,18 @@ const AskAiPage = {
                         <div id="role-detail-stack"></div>
                     </div>
                 </div>
+
+                <!-- ===== TAB 6: HISTORY ===== -->
+                <div id="ai-tab-history" style="display:none;">
+                    <div class="flex-between mb-md">
+                        <h2 style="font-size:1.05rem;font-weight:600;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary-light);margin-right:6px;"></i>Saved AI Output History</h2>
+                    </div>
+                    <div id="ai-history-list" class="flex-col" style="gap:12px;"></div>
+                    <div id="ai-history-empty" style="text-align:center; padding: 40px 0; display:none;">
+                        <i class="fa-regular fa-folder-open text-muted mb-md" style="font-size:3rem; opacity:0.5;"></i>
+                        <p class="text-muted">No AI history saved yet.</p>
+                    </div>
+                </div>
             </div>
 
             <style>
@@ -443,6 +457,99 @@ const AskAiPage = {
                     roundedSelection: true
                 });
             }
+        });
+        
+        // Load history logic
+        setTimeout(() => this.loadHistory(), 800);
+    },
+
+    async loadHistory() {
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try {
+                const snap = await window.db.collection('users').doc(userId).collection('ai_history').orderBy('timestamp', 'desc').limit(20).get();
+                this.aiHistory = snap.docs.map(doc => doc.data());
+            } catch(e) {
+                console.error('[AskAi] Failed to load history from DB:', e);
+                this.aiHistory = JSON.parse(localStorage.getItem('ai_history') || '[]');
+            }
+        } else {
+            this.aiHistory = JSON.parse(localStorage.getItem('ai_history') || '[]');
+        }
+        this.renderHistory();
+    },
+
+    async saveAiHistory(moduleType, prompt, response) {
+        if (!prompt || !response) return;
+        
+        const item = { 
+            id: 'ai_' + Date.now().toString(36), 
+            module: moduleType, 
+            prompt, 
+            response, 
+            timestamp: Date.now() 
+        };
+        
+        this.aiHistory.unshift(item);
+        if (this.aiHistory.length > 20) this.aiHistory.pop();
+        
+        this.renderHistory();
+
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try {
+                await window.db.collection('users').doc(userId).collection('ai_history').doc(item.id).set(item);
+            } catch(e) {
+                console.error('[AskAi] Failed to save history to DB:', e);
+            }
+        } else {
+            localStorage.setItem('ai_history', JSON.stringify(this.aiHistory));
+        }
+    },
+
+    renderHistory() {
+        const list = document.getElementById('ai-history-list');
+        const empty = document.getElementById('ai-history-empty');
+        if (!list || !empty) return;
+
+        if (this.aiHistory.length === 0) {
+            list.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+        }
+
+        list.style.display = 'flex';
+        empty.style.display = 'none';
+
+        const icons = { 'chat': 'fa-comments', 'architect': 'fa-code-merge', 'codegen': 'fa-laptop-code', 'analyzer': 'fa-microscope' };
+        
+        list.innerHTML = this.aiHistory.map((h, i) => {
+            const icon = icons[h.module] || 'fa-robot';
+            return `
+            <div class="glass-card-static" style="padding:16px;">
+                <div class="flex-between mb-sm" style="align-items:flex-start;">
+                    <div style="flex:1; margin-right: 12px;">
+                        <span class="tag tag-primary text-xs mb-xs" style="text-transform:uppercase;"><i class="fa-solid ${icon}"></i> ${h.module}</span>
+                        <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:4px; max-height:40px; overflow:hidden; text-overflow:ellipsis;">${Helpers.escapeHtml(h.prompt)}</h4>
+                        <p class="text-xs text-muted">${new Date(h.timestamp).toLocaleString()}</p>
+                    </div>
+                    <button class="btn btn-ghost btn-sm toggle-ai-history" data-idx="${i}"><i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+                <div class="ai-history-content" id="ai-hist-content-${i}" style="display:none; margin-top:12px; height:200px; overflow-y:auto; background:rgba(0,0,0,0.3); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-size:0.85rem; color:var(--text-secondary);">
+                    ${h.response}
+                </div>
+            </div>`;
+        }).join('');
+
+        // Bind toggles
+        list.querySelectorAll('.toggle-ai-history').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = e.currentTarget.dataset.idx;
+                const content = document.getElementById('ai-hist-content-' + idx);
+                const isHidden = content.style.display === 'none';
+                content.style.display = isHidden ? 'block' : 'none';
+                e.currentTarget.innerHTML = isHidden ? '<i class="fa-solid fa-chevron-up"></i>' : '<i class="fa-solid fa-chevron-down"></i>';
+            });
         });
     },
 
@@ -484,12 +591,14 @@ const AskAiPage = {
             const codegenTab = document.getElementById('ai-tab-codegen');
             const analyzerTab = document.getElementById('ai-tab-analyzer');
             const stacksTab = document.getElementById('ai-tab-stacks');
+            const historyTab = document.getElementById('ai-tab-history');
             
             if (chatTab) chatTab.style.display = target === 'chat' ? 'block' : 'none';
             if (archTab) archTab.style.display = target === 'architect' ? 'block' : 'none';
             if (codegenTab) codegenTab.style.display = target === 'codegen' ? 'block' : 'none';
             if (analyzerTab) analyzerTab.style.display = target === 'analyzer' ? 'block' : 'none';
             if (stacksTab) stacksTab.style.display = target === 'stacks' ? 'block' : 'none';
+            if (historyTab) historyTab.style.display = target === 'history' ? 'block' : 'none';
             
             if (target === 'codegen' && this.editor) {
                 // Fix Monaco layout breaking when initialized inside display:none

@@ -245,6 +245,10 @@ const AiCodegenMixin = {
             } else {
                 console.error('[CodeGen] Editor not initialized');
             }
+            
+            if (typeof this.saveAiHistory === 'function') {
+                this.saveAiHistory('codegen', prompt, `<pre style="font-size:12px; font-family:var(--font-mono); overflow-x:auto; margin:0;">${Helpers.escapeHtml(code.substring(0, 500))}${code.length > 500 ? '\n... (Code truncated)' : ''}</pre>`);
+            }
         } catch(e) {
             console.error('[CodeGen Exception]', e);
             document.getElementById('loading-overlay').style.display = 'none';

@@ -111,6 +111,10 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
             document.getElementById('ai-arch-cmd').textContent = data.setupCommand || "echo 'No command provided'";
             document.getElementById('ai-arch-results').style.display = 'grid';
             Toast.show('Architecture built successfully!', 'success');
+            
+            if (typeof this.saveAiHistory === 'function') {
+                this.saveAiHistory('architect', prompt, `<pre style="font-size:12px; font-family:var(--font-mono); overflow-x:auto; margin:0;"><strong>Setup Command:</strong>\n${data.setupCommand}\n\n<strong>Structure:</strong>\n${JSON.stringify(data.tree || data.flatFiles, null, 2)}</pre>`);
+            }
 
         } catch (err) {
             console.error('Architect AI error:', err);
