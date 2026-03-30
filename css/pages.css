@@ -495,7 +495,7 @@
     #generator-output-area .flex-gap { flex-wrap: wrap; justify-content: center; gap: 6px; }
     #generator-output-area .flex-gap .btn { flex: 1; min-width: 0; font-size: 0.78rem; padding: 8px 10px; white-space: nowrap; }
     .generator-output { padding: 8px !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; overflow: hidden !important; }
-    #monaco-code-output { height: 55vh !important; min-height: 300px !important; max-height: 500px !important; width: 100% !important; min-width: 0 !important; }
+    #monaco-code-output { height: 60vh !important; min-height: 300px !important; max-height: none !important; width: 100% !important; min-width: 0 !important; }
 
     /* Framework tabs */
     #framework-tabs { display: flex !important; flex-wrap: wrap; gap: 6px; }
@@ -517,7 +517,7 @@
     #ai-hub-tabs .tab-item i { margin-right: 0 !important; }
     .ai-msg { max-width: 95%; }
     .ai-msg .msg-bubble { font-size: 0.78rem; padding: 8px 12px; }
-    #monaco-code-output { height: 45vh !important; min-height: 250px !important; max-height: 400px !important; }
+    #monaco-code-output { height: 55vh !important; min-height: 250px !important; max-height: none !important; }
     .generator-output { padding: 6px !important; }
     .role-cards-grid { grid-template-columns: 1fr !important; }
     .three-canvas-wrap { min-height: 240px !important; }

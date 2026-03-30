@@ -9,6 +9,7 @@ const GithubUserMixin = {
             document.getElementById('explorer-empty').style.display = 'none';
             document.getElementById('explorer-tabs-area').style.display = 'none';
             document.getElementById('explorer-info').style.display = 'none';
+            document.getElementById('explorer-ai-summary').style.display = 'none';
             document.getElementById('explorer-structure-view').style.display = 'none';
             document.getElementById('explorer-git-view').style.display = 'none';
             

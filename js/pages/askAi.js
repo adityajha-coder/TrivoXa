@@ -328,7 +328,7 @@ const AskAiPage = {
                                 </div>
                             </div>
                             <div class="generator-output" style="background:rgba(0,0,0,0.5); padding:16px; border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; width:100%; min-width:0; max-width:100%; box-sizing:border-box;">
-                                <div id="monaco-code-output" style="height:500px; width:100%; min-width:0; max-width:100%; box-sizing:border-box;"></div>
+                                <div id="monaco-code-output" style="height:60vh; min-height:400px; max-height:600px; width:100%; min-width:0; max-width:100%; box-sizing:border-box;"></div>
                             </div>
                         </div>
                     </div>
@@ -490,6 +490,11 @@ const AskAiPage = {
             if (codegenTab) codegenTab.style.display = target === 'codegen' ? 'block' : 'none';
             if (analyzerTab) analyzerTab.style.display = target === 'analyzer' ? 'block' : 'none';
             if (stacksTab) stacksTab.style.display = target === 'stacks' ? 'block' : 'none';
+            
+            if (target === 'codegen' && this.editor) {
+                // Fix Monaco layout breaking when initialized inside display:none
+                setTimeout(() => this.editor.layout(), 50);
+            }
         });
     }
 };

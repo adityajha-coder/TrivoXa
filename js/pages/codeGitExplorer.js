@@ -195,6 +195,12 @@ const CodeGitExplorerPage = {
             document.querySelectorAll('#explorer-type-tabs .tab-item').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             this.searchType = tab.dataset.type;
+            
+            if (this.searchType === 'user' || this.searchType === 'local') {
+                const aiSummary = document.getElementById('explorer-ai-summary');
+                if (aiSummary) aiSummary.style.display = 'none';
+            }
+
             const input = document.getElementById('explorer-input');
             const localBtn = document.getElementById('local-upload-btn');
             const exploreBtn = document.getElementById('explorer-btn');

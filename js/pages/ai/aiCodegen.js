@@ -240,6 +240,7 @@ const AiCodegenMixin = {
                 if(lang === 'vue' || lang === 'react') lang = 'html';
                 window.monaco?.editor.setModelLanguage(this.editor.getModel(), lang);
                 this.editor.setValue(code);
+                setTimeout(() => this.editor.layout(), 50);
                 console.log('[CodeGen Editor Updated with:', code.length, 'chars]');
             } else {
                 console.error('[CodeGen] Editor not initialized');

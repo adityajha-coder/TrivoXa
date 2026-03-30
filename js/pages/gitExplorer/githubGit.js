@@ -104,23 +104,8 @@ const GithubGitMixin = {
             this.gitNodes.push(node);
             if (i > 0) { const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-(i-1)*2.6, 0, 0), new THREE.Vector3(x, 0, 0)]); this.gitScene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.4 }))); }
         });
-        branches.slice(1, 5).forEach((b, bi) => {
-            const color = branchColors[(bi + 1) % branchColors.length];
-            const y = (bi + 1) * 4;
-            const si = Math.floor(Math.random() * Math.min(6, commits.length - 2)) + 1;
-            const sx = -si * 2.6;
-            const len = Math.floor(Math.random() * 4) + 2;
-            const fp = [new THREE.Vector3(sx, 0, 0), new THREE.Vector3(sx - 1, y * 0.5, 0), new THREE.Vector3(sx - 1.4, y, 0)];
-            this.gitScene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(fp), new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.3 })));
-            for (let j = 0; j < len; j++) {
-                const x = sx - 1.4 - j * 2.6;
-                const nd = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), new THREE.MeshPhongMaterial({ color, emissive: color, emissiveIntensity: 0.1 }));
-                nd.position.set(x, y, 0);
-                this.gitScene.add(nd);
-                this.gitNodes.push(nd);
-                if (j > 0) { const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(sx-1.4-(j-1)*2.6, y, 0), new THREE.Vector3(x, y, 0)]); this.gitScene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.35 }))); }
-            }
-        });
+        // Real data only: we build the linear history from fetched commits
+        // (Further enhancements could parse commit.parents to render actual branches)
         document.getElementById('git-reset').onclick = () => { this.gitCamera.position.set(5, 10, 30); this.gitControls.target.set(0, 0, 0); };
         this.animateGit();
     },
