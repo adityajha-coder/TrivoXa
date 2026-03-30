@@ -207,7 +207,7 @@ const CodeGitExplorerPage = {
             const input = document.getElementById('explorer-input');
             const localBtn = document.getElementById('local-upload-btn');
             const exploreBtn = document.getElementById('explorer-btn');
-            
+
             if (this.searchType === 'local') {
                 input.style.display = 'none';
                 localBtn.style.display = 'flex';
@@ -236,7 +236,7 @@ const CodeGitExplorerPage = {
     async load() {
         const input = document.getElementById('explorer-input').value.trim();
         if (!input) { Toast.show(this.searchType === 'user' ? 'Enter a GitHub username' : 'Enter a GitHub repo URL', 'error'); return; }
-        
+
         const btn = document.getElementById('explorer-btn');
         btn.innerHTML = '<div class="loader-spinner" style="width:16px;height:16px;border-width:2px;"></div>';
         btn.disabled = true;
@@ -267,17 +267,17 @@ const CodeGitExplorerPage = {
             this.repoData = { repo, tree: tree.tree || [], branches, commits };
             document.getElementById('explorer-empty').style.display = 'none';
             document.getElementById('explorer-user-view').style.display = 'none';
-            
+
             document.getElementById('explorer-tabs-area').style.display = 'block';
             document.getElementById('explorer-info').style.display = 'block';
             document.getElementById('explorer-repo-name').textContent = repo.full_name;
             document.getElementById('explorer-lang').textContent = repo.language || '';
             document.getElementById('explorer-stars').innerHTML = `<i class="fa-solid fa-star"></i> ${Helpers.formatNumber(repo.stargazers_count)}`;
             document.getElementById('explorer-forks').innerHTML = `<i class="fa-solid fa-code-fork"></i> ${Helpers.formatNumber(repo.forks_count)}`;
-            
+
             this.activeView = 'structure';
             document.querySelectorAll('#explorer-tabs .tab-item').forEach((t, i) => {
-                if (i===0) t.classList.add('active'); else t.classList.remove('active');
+                if (i === 0) t.classList.add('active'); else t.classList.remove('active');
             });
             document.getElementById('explorer-git-view').style.display = 'none';
             this.showStructure();
@@ -339,34 +339,34 @@ Keep it concise (under 200 words). Do not use code blocks.`;
     async loadLocalFolder(fileList) {
         if (!fileList || fileList.length === 0) return;
         Toast.show('Parsing local directory...', 'info');
-        
+
         const filesArray = [];
         for (let i = 0; i < fileList.length; i++) {
-             const f = fileList[i];
-             if (!f.webkitRelativePath.includes('.git/') && !f.webkitRelativePath.includes('node_modules/')) {
-                 filesArray.push({
-                     path: f.webkitRelativePath,
-                     size: f.size,
-                     type: 'blob',
-                     fileObj: f
-                 });
-             }
+            const f = fileList[i];
+            if (!f.webkitRelativePath.includes('.git/') && !f.webkitRelativePath.includes('node_modules/')) {
+                filesArray.push({
+                    path: f.webkitRelativePath,
+                    size: f.size,
+                    type: 'blob',
+                    fileObj: f
+                });
+            }
         }
-        
+
         this.repoData = { tree: filesArray };
-        
+
         document.getElementById('explorer-empty').style.display = 'none';
         document.getElementById('explorer-user-view').style.display = 'none';
         document.getElementById('explorer-git-view').style.display = 'none';
-        
+
         document.getElementById('explorer-info').style.display = 'block';
         document.getElementById('explorer-repo-name').textContent = 'Local Directory';
         document.getElementById('explorer-lang').textContent = Object.keys(filesArray).length + ' Files';
         document.getElementById('explorer-stars').innerHTML = '';
         document.getElementById('explorer-forks').innerHTML = '';
-        
+
         document.getElementById('explorer-tabs-area').style.display = 'none';
-        
+
         this.activeView = 'structure';
         this.showStructure();
     },
@@ -374,7 +374,7 @@ Keep it concise (under 200 words). Do not use code blocks.`;
 
     animate() {
         this.animationId = requestAnimationFrame(() => this.animate());
-        if(this.controls && this.renderer && this.scene && this.camera) {
+        if (this.controls && this.renderer && this.scene && this.camera) {
             this.controls.update();
             this.renderer.render(this.scene, this.camera);
         }
@@ -385,9 +385,9 @@ Keep it concise (under 200 words). Do not use code blocks.`;
         if (this.renderer) this.renderer.dispose();
         if (this.gitAnimId) cancelAnimationFrame(this.gitAnimId);
         if (this.gitRenderer) this.gitRenderer.dispose();
-        
+
         if (this.forceGraph) {
-            try { this.forceGraph._destructor(); } catch(e) {}
+            try { this.forceGraph._destructor(); } catch (e) { }
             const oldContainer = document.getElementById('structure-3d');
             if (oldContainer) {
                 const newContainer = oldContainer.cloneNode(false);
@@ -395,7 +395,7 @@ Keep it concise (under 200 words). Do not use code blocks.`;
             }
             this.forceGraph = null;
         }
-        
+
         this.scene = null;
         this.gitScene = null;
         this.nodes = [];
