@@ -404,6 +404,67 @@
     background: rgba(62,207,110,0.1);
 }
 
+/* ===== OS Toggle Pill ===== */
+.os-toggle-pill {
+    display: inline-flex;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 3px;
+    gap: 2px;
+    transition: all var(--transition);
+}
+.os-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: none;
+    border-radius: 100px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    outline: none;
+}
+.os-toggle-btn i {
+    font-size: 0.82rem;
+    transition: color 0.2s ease;
+}
+.os-toggle-btn:hover {
+    color: var(--text-secondary);
+    background: rgba(212, 168, 67, 0.04);
+}
+.os-toggle-btn.active {
+    background: rgba(212, 168, 67, 0.12);
+    color: var(--primary-light);
+    font-weight: 600;
+    box-shadow: 0 1px 6px rgba(212, 168, 67, 0.08);
+}
+.os-toggle-btn.active i {
+    color: var(--primary-light);
+}
+
+@media (max-width: 600px) {
+    .os-toggle-pill {
+        margin-top: 4px;
+    }
+    .os-toggle-btn {
+        padding: 6px 10px;
+        font-size: 0.72rem;
+    }
+    .os-toggle-btn span {
+        display: none;
+    }
+    .os-toggle-btn i {
+        font-size: 0.9rem;
+    }
+}
+
 /* ===== AI Hub Responsive ===== */
 @media (max-width: 768px) {
     /* Tabs: horizontal scroll on mobile */
