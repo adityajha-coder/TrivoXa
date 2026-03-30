@@ -413,8 +413,9 @@ const AskAiPage = {
                 <div id="ai-tab-history" style="display:none;">
                     <div class="flex-between mb-md">
                         <h2 style="font-size:1.05rem;font-weight:600;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary-light);margin-right:6px;"></i>Saved AI Output History</h2>
+                        <button class="btn btn-ghost btn-sm" id="clear-ai-history"><i class="fa-solid fa-trash-can" style="margin-right:6px;"></i> Clear All</button>
                     </div>
-                    <div id="ai-history-list" class="flex-col" style="gap:12px;"></div>
+                    <div id="ai-history-list" class="grid-2 mt-sm" style="gap:16px;"></div>
                     <div id="ai-history-empty" style="text-align:center; padding: 40px 0; display:none;">
                         <i class="fa-regular fa-folder-open text-muted mb-md" style="font-size:3rem; opacity:0.5;"></i>
                         <p class="text-muted">No AI history saved yet.</p>
@@ -507,6 +508,43 @@ const AskAiPage = {
         }
     },
 
+    async deleteAiHistory(id) {
+        this.aiHistory = this.aiHistory.filter(h => h.id !== id);
+        this.renderHistory();
+
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try {
+                await window.db.collection('users').doc(userId).collection('ai_history').doc(id).delete();
+            } catch(e) {
+                console.error('[AskAi] Failed to delete history:', e);
+            }
+        } else {
+            localStorage.setItem('ai_history', JSON.stringify(this.aiHistory));
+        }
+    },
+
+    async clearAllAiHistory() {
+        if (!confirm('Are you sure you want to clear all AI history?')) return;
+        
+        this.aiHistory = [];
+        this.renderHistory();
+        
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try {
+                const snap = await window.db.collection('users').doc(userId).collection('ai_history').get();
+                const batch = window.db.batch();
+                snap.docs.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+            } catch(e) {
+                console.error('[AskAi] Failed to clear history:', e);
+            }
+        } else {
+            localStorage.removeItem('ai_history');
+        }
+    },
+
     renderHistory() {
         const list = document.getElementById('ai-history-list');
         const empty = document.getElementById('ai-history-empty');
@@ -518,7 +556,7 @@ const AskAiPage = {
             return;
         }
 
-        list.style.display = 'flex';
+        list.style.display = 'grid';
         empty.style.display = 'none';
 
         const icons = { 'chat': 'fa-comments', 'architect': 'fa-code-merge', 'codegen': 'fa-laptop-code', 'analyzer': 'fa-microscope' };
@@ -526,16 +564,19 @@ const AskAiPage = {
         list.innerHTML = this.aiHistory.map((h, i) => {
             const icon = icons[h.module] || 'fa-robot';
             return `
-            <div class="glass-card-static" style="padding:16px;">
+            <div class="glass-card-static flex-col" style="padding:16px;">
                 <div class="flex-between mb-sm" style="align-items:flex-start;">
-                    <div style="flex:1; margin-right: 12px;">
+                    <div style="flex:1; margin-right: 12px; min-width:0;">
                         <span class="tag tag-primary text-xs mb-xs" style="text-transform:uppercase;"><i class="fa-solid ${icon}"></i> ${h.module}</span>
-                        <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:4px; max-height:40px; overflow:hidden; text-overflow:ellipsis;">${Helpers.escapeHtml(h.prompt)}</h4>
-                        <p class="text-xs text-muted">${new Date(h.timestamp).toLocaleString()}</p>
+                        <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${Helpers.escapeHtml(h.prompt)}">${Helpers.escapeHtml(h.prompt)}</h4>
+                        <p class="text-xs text-muted"><i class="fa-regular fa-clock"></i> ${new Date(h.timestamp).toLocaleString()}</p>
                     </div>
-                    <button class="btn btn-ghost btn-sm toggle-ai-history" data-idx="${i}"><i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="flex-gap">
+                        <button class="btn btn-ghost btn-xs toggle-ai-history" data-idx="${i}" title="Toggle Output"><i class="fa-solid fa-chevron-down"></i></button>
+                        <button class="btn btn-ghost btn-xs delete-ai-history" data-id="${h.id}" title="Delete" style="color:var(--error);"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 </div>
-                <div class="ai-history-content" id="ai-hist-content-${i}" style="display:none; margin-top:12px; height:200px; overflow-y:auto; background:rgba(0,0,0,0.3); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-size:0.85rem; color:var(--text-secondary);">
+                <div class="ai-history-content" id="ai-hist-content-${i}" style="display:none; margin-top:12px; height:200px; overflow-y:auto; background:rgba(0,0,0,0.3); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-size:0.85rem; color:var(--text-secondary); width:100%; box-sizing:border-box;">
                     ${h.response}
                 </div>
             </div>`;
@@ -551,6 +592,23 @@ const AskAiPage = {
                 e.currentTarget.innerHTML = isHidden ? '<i class="fa-solid fa-chevron-up"></i>' : '<i class="fa-solid fa-chevron-down"></i>';
             });
         });
+        
+        // Bind deletes
+        list.querySelectorAll('.delete-ai-history').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if(confirm('Delete this from history?')) {
+                    this.deleteAiHistory(e.currentTarget.dataset.id);
+                }
+            });
+        });
+        
+        // Bind clear all
+        const clearBtn = document.getElementById('clear-ai-history');
+        if (clearBtn && !clearBtn.dataset.bound) {
+            clearBtn.dataset.bound = 'true';
+            clearBtn.addEventListener('click', () => this.clearAllAiHistory());
+        }
     },
 
     bindModelSelect() {
