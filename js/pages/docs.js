@@ -9,6 +9,7 @@ const DocsPage = {
     ],
 
     docsCache: {},
+    docsHistory: [],
 
     render() {
         Navbar.renderTopbar('Developer Documentation');
@@ -31,9 +32,17 @@ const DocsPage = {
                     </div>
                     <button class="btn btn-primary" id="docs-search-btn">Search Docs</button>
                 </div>
-
+                
                 <div class="ai-bot-suggestions mb-lg" id="docs-suggestions" style="justify-content:flex-start;">
                     ${randomSuggestionsHtml}
+                </div>
+
+                <div id="docs-history-wrapper" style="display:none; margin-top: 20px; padding-top: 30px; border-top: 1px solid var(--border);">
+                    <div class="flex-between mb-md">
+                        <h3 style="font-weight:600;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary-light);margin-right:8px;"></i> Search History</h3>
+                        <button class="btn btn-ghost btn-sm" id="clear-docs-history"><i class="fa-solid fa-trash-can" style="margin-right:6px;"></i> Clear All</button>
+                    </div>
+                    <div id="docs-history-grid" style="display:flex; overflow-x:auto; gap:16px; padding-bottom:12px; scrollbar-width:thin;"></div>
                 </div>
 
                 <div id="docs-loading" style="display:none; text-align:center; padding:40px 0;">
@@ -55,6 +64,8 @@ const DocsPage = {
         `;
 
         this.bindEvents();
+        // Load history, but wait a tick for auth to potentially initialize if not already
+        setTimeout(() => this.loadHistory(), 800);
     },
 
     bindEvents() {
@@ -79,6 +90,132 @@ const DocsPage = {
                     this.searchDocs(input.value);
                 }
             });
+        }
+    },
+
+    async loadHistory() {
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try {
+                const snap = await window.db.collection('users').doc(userId).collection('docs_history').orderBy('timestamp', 'desc').limit(15).get();
+                this.docsHistory = snap.docs.map(doc => doc.data());
+            } catch(e) {
+                console.error('[Docs] Failed to load history from DB:', e);
+                this.docsHistory = JSON.parse(localStorage.getItem('docs_history') || '[]');
+            }
+        } else {
+            this.docsHistory = JSON.parse(localStorage.getItem('docs_history') || '[]');
+        }
+        this.renderHistory();
+    },
+
+    async saveHistory(query) {
+        if (!query) return;
+        // Check duplicates
+        if (this.docsHistory.some(h => h.query.toLowerCase() === query.toLowerCase())) return;
+        
+        const item = { id: 'doc_' + Date.now().toString(36), query, timestamp: Date.now() };
+        this.docsHistory.unshift(item);
+        if (this.docsHistory.length > 15) this.docsHistory.pop();
+        
+        this.renderHistory();
+
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try {
+                await window.db.collection('users').doc(userId).collection('docs_history').doc(item.id).set(item);
+            } catch(e) {
+                console.error('[Docs] Failed to save history to DB:', e);
+            }
+        } else {
+            localStorage.setItem('docs_history', JSON.stringify(this.docsHistory));
+        }
+    },
+
+    async deleteHistory(id) {
+        this.docsHistory = this.docsHistory.filter(h => h.id !== id);
+        this.renderHistory();
+
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try { await window.db.collection('users').doc(userId).collection('docs_history').doc(id).delete(); } catch(e) {}
+        } else {
+            localStorage.setItem('docs_history', JSON.stringify(this.docsHistory));
+        }
+    },
+    
+    async clearAllHistory() {
+        if(!confirm('Clear all search history?')) return;
+        this.docsHistory = [];
+        this.renderHistory();
+        
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try { 
+                const snap = await window.db.collection('users').doc(userId).collection('docs_history').get();
+                const batch = window.db.batch();
+                snap.docs.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+            } catch(e) {}
+        } else {
+            localStorage.removeItem('docs_history');
+        }
+    },
+
+    renderHistory() {
+        const wrapper = document.getElementById('docs-history-wrapper');
+        const grid = document.getElementById('docs-history-grid');
+        const empty = document.getElementById('docs-empty');
+        if(!wrapper || !grid) return;
+
+        if (this.docsHistory.length === 0) {
+            wrapper.style.display = 'none';
+            if (empty) empty.style.display = 'block';
+            return;
+        }
+
+        wrapper.style.display = 'block';
+        if (empty) empty.style.display = 'none'; // hide the standard empty state
+        
+        grid.innerHTML = this.docsHistory.map((h, i) => 
+            `<div class="glass-card-static doc-history-card" data-idx="${i}" style="min-width: 260px; max-width: 260px; flex: 0 0 auto; padding: 16px; cursor: pointer; transition: all 0.2s;">
+                <div class="flex-between mb-xs" style="align-items:flex-start;">
+                    <h4 style="font-size:0.95rem; font-weight:600; text-overflow:ellipsis; overflow:hidden; max-width:80%;" title="${Helpers.escapeHtml(h.query)}">
+                        <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted); font-size:0.8rem; margin-right:6px;"></i> ${Helpers.escapeHtml(h.query)}
+                    </h4>
+                    <button class="btn btn-ghost btn-xs delete-doc-history" data-id="${h.id}" style="color:var(--error); margin-top:-4px; margin-right:-8px;" title="Delete">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="text-xs text-muted"><i class="fa-regular fa-clock"></i> ${new Date(h.timestamp).toLocaleString()}</div>
+            </div>`
+        ).join('');
+
+        // Bind clicks to replay search
+        grid.querySelectorAll('.doc-history-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const idx = card.dataset.idx;
+                const h = this.docsHistory[idx];
+                const input = document.getElementById('docs-search-input');
+                if (input && h) {
+                    input.value = h.query;
+                    this.searchDocs(h.query);
+                }
+            });
+        });
+
+        // Bind delete
+        grid.querySelectorAll('.delete-doc-history').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // prevent clicking the card
+                this.deleteHistory(e.currentTarget.dataset.id);
+            });
+        });
+
+        const clearBtn = document.getElementById('clear-docs-history');
+        if (clearBtn && !clearBtn.dataset.bound) {
+            clearBtn.dataset.bound = 'true';
+            clearBtn.addEventListener('click', () => this.clearAllHistory());
         }
     },
 
@@ -199,6 +336,7 @@ IMPORTANT: Return ONLY the JSON array. Start your response with [ and end with ]
             
             this.docsCache[cacheKey] = finalDocs;
             this._renderDocs(finalDocs);
+            this.saveHistory(query);
 
         } catch(err) {
             console.error('Docs search error:', err);
