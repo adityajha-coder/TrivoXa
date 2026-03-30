@@ -41,6 +41,20 @@ const DocsPage = {
                     <div class="grid-3" id="docs-history-grid" style="gap:16px;"></div>
                 </div>
 
+                <div class="ai-bot-suggestions mb-lg mt-md" id="docs-suggestions" style="justify-content:flex-start;">
+                    ${randomSuggestionsHtml}
+                </div>
+
+                <div id="docs-loading" style="display:none; text-align:center; padding:40px 0;">
+                    <div class="spinner" style="margin: 0 auto 16px; width:40px; height:40px; border:4px solid rgba(88,166,255,0.1); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
+                    <p class="text-muted">AI is retrieving documentation...</p>
+                </div>
+
+                <div id="docs-results-area" style="display:none;">
+                    <h3 class="mb-md" style="font-weight:600;"><i class="fa-solid fa-book" style="color:var(--primary-light);margin-right:8px;"></i> Search Results</h3>
+                    <div class="grid-3" id="docs-results-grid"></div>
+                </div>
+
                 <div id="docs-empty" style="text-align:center; padding: 60px 0;">
                     <i class="fa-solid fa-book-open-reader text-muted mb-md" style="font-size:3rem; opacity:0.5;"></i>
                     <h3 style="color:var(--text-secondary); margin-bottom:8px;">Search for any development concept</h3>
