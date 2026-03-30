@@ -165,7 +165,7 @@ const AskAiPage = {
                         </div>
                         <div class="form-group" style="min-width: 200px; display:none;">
                             <label class="text-xs text-muted mb-xs" style="display:block;">Groq API Key</label>
-                            <input type="password" id="ai-api-key" class="input-field" placeholder="gsk_..." value="${localStorage.getItem('vertex_groq_key') || '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'}" style="padding: 8px 12px; font-size: 0.85rem; height:auto;">
+                            <input type="text" id="ai-api-key" class="input-field" placeholder="gsk_..." value="${localStorage.getItem('vertex_groq_key') || this.apiKey}" autocomplete="off" data-form-type="other" data-lpignore="true" style="padding: 8px 12px; font-size: 0.85rem; height:auto; -webkit-text-security: disc; -moz-text-security: disc; text-security: disc;">
                         </div>
                     </div>
                 </div>
