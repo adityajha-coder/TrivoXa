@@ -328,7 +328,7 @@ const DashboardPage = {
                             </div>
                             <div class="toolkit-text">
                                 <h3>Free APIs</h3>
-                                <p>55+ curated public endpoints</p>
+                                <p>120+ robust public endpoints</p>
                             </div>
                         </div>
 
@@ -338,7 +338,7 @@ const DashboardPage = {
                             </div>
                             <div class="toolkit-text">
                                 <h3>Package Scout</h3>
-                                <p>NPM insights & analytics</p>
+                                <p>Real-time NPM insights & analytics</p>
                             </div>
                         </div>
 
@@ -348,7 +348,7 @@ const DashboardPage = {
                             </div>
                             <div class="toolkit-text">
                                 <h3>Tools Vault</h3>
-                                <p>Frameworks, libraries & boilerplates</p>
+                                <p>100+ modern framework boilerplates</p>
                             </div>
                         </div>
 
@@ -358,7 +358,7 @@ const DashboardPage = {
                             </div>
                             <div class="toolkit-text">
                                 <h3>GitHub Explorer</h3>
-                                <p>3D repo visualizations</p>
+                                <p>Interactive 3D structural mapping</p>
                             </div>
                         </div>
 

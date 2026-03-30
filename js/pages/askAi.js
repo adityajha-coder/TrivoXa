@@ -165,7 +165,7 @@ const AskAiPage = {
                         </div>
                         <div class="form-group" style="min-width: 200px; display:none;">
                             <label class="text-xs text-muted mb-xs" style="display:block;">Groq API Key</label>
-                            <input type="password" id="ai-api-key" class="input-field" placeholder="gsk_..." value="${localStorage.getItem('vertex_groq_key') || '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'}" style="padding: 8px 12px; font-size: 0.85rem; height:auto;">
+                            <input type="text" id="ai-api-key" class="input-field" placeholder="gsk_..." value="${localStorage.getItem('vertex_groq_key') || this.apiKey}" autocomplete="off" data-form-type="other" data-lpignore="true" style="padding: 8px 12px; font-size: 0.85rem; height:auto; -webkit-text-security: disc; -moz-text-security: disc; text-security: disc;">
                         </div>
                     </div>
                 </div>
@@ -328,7 +328,7 @@ const AskAiPage = {
                                 </div>
                             </div>
                             <div class="generator-output" style="background:rgba(0,0,0,0.5); padding:16px; border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; width:100%; min-width:0; max-width:100%; box-sizing:border-box;">
-                                <div id="monaco-code-output" style="height:500px; width:100%; min-width:0; max-width:100%; box-sizing:border-box;"></div>
+                                <div id="monaco-code-output" style="height:60vh; min-height:400px; max-height:600px; width:100%; min-width:0; max-width:100%; box-sizing:border-box;"></div>
                             </div>
                         </div>
                     </div>
@@ -490,6 +490,11 @@ const AskAiPage = {
             if (codegenTab) codegenTab.style.display = target === 'codegen' ? 'block' : 'none';
             if (analyzerTab) analyzerTab.style.display = target === 'analyzer' ? 'block' : 'none';
             if (stacksTab) stacksTab.style.display = target === 'stacks' ? 'block' : 'none';
+            
+            if (target === 'codegen' && this.editor) {
+                // Fix Monaco layout breaking when initialized inside display:none
+                setTimeout(() => this.editor.layout(), 50);
+            }
         });
     }
 };

@@ -1,6 +1,7 @@
 const CommandsPage = {
     activeTab: 'git',
     activeCat: 'All',
+    activeOS: localStorage.getItem('vertex_cmd_os') || 'unix',
 
     gitCommands: [
         { cmd: 'git init', desc: 'Initialize a new Git repository in the current directory.', example: 'git init', cat: 'Setup', step: 1 },
@@ -80,46 +81,86 @@ const CommandsPage = {
     ],
 
     terminalCommands: [
-        { cmd: 'cd <dir>', desc: 'Change the current working directory.', example: 'cd ~/projects/myapp', cat: 'Navigation', step: 1 },
-        { cmd: 'ls / dir', desc: 'List files and directories in current folder.', example: 'ls -la', cat: 'Navigation', step: 1 },
-        { cmd: 'pwd', desc: 'Print the current working directory path.', example: 'pwd', cat: 'Navigation', step: 1 },
-        { cmd: 'mkdir <name>', desc: 'Create a new directory.', example: 'mkdir my-project', cat: 'Files', step: 2 },
-        { cmd: 'touch <file>', desc: 'Create a new empty file (Unix/Mac).', example: 'touch index.html', cat: 'Files', step: 2 },
-        { cmd: 'cp <src> <dest>', desc: 'Copy files or directories.', example: 'cp -r src/ backup/', cat: 'Files', step: 2 },
-        { cmd: 'mv <src> <dest>', desc: 'Move or rename files and directories.', example: 'mv old.js new.js', cat: 'Files', step: 2 },
-        { cmd: 'rm <file>', desc: 'Delete a file. Use -rf for directories.', example: 'rm -rf node_modules/', cat: 'Files', step: 2 },
-        { cmd: 'cat <file>', desc: 'Display the contents of a file.', example: 'cat package.json', cat: 'View', step: 3 },
-        { cmd: 'head / tail', desc: 'Show first/last lines of a file.', example: 'tail -n 20 server.log', cat: 'View', step: 3 },
-        { cmd: 'grep <pattern> <file>', desc: 'Search for text patterns in files.', example: 'grep -r "TODO" src/', cat: 'Search', step: 4 },
-        { cmd: 'find <path> -name', desc: 'Find files by name or pattern.', example: 'find . -name "*.js"', cat: 'Search', step: 4 },
-        { cmd: 'which <cmd>', desc: 'Show the path of a command.', example: 'which node', cat: 'Search', step: 4 },
-        { cmd: 'echo <text>', desc: 'Print text to terminal or redirect to file.', example: 'echo "Hello" > file.txt', cat: 'IO', step: 5 },
-        { cmd: 'pipe |', desc: 'Send output of one command to another.', example: 'cat file.txt | grep "error"', cat: 'IO', step: 5 },
-        { cmd: '> / >>', desc: 'Redirect output to file (overwrite / append).', example: 'echo "log" >> debug.log', cat: 'IO', step: 5 },
-        { cmd: 'chmod', desc: 'Change file permissions.', example: 'chmod +x script.sh', cat: 'System', step: 6 },
-        { cmd: 'chown', desc: 'Change file ownership.', example: 'chown user:group file.txt', cat: 'System', step: 6 },
-        { cmd: 'ps / top', desc: 'List running processes.', example: 'ps aux | grep node', cat: 'Process', step: 7 },
-        { cmd: 'kill <pid>', desc: 'Terminate a process by ID.', example: 'kill -9 1234', cat: 'Process', step: 7 },
-        { cmd: 'Ctrl+C', desc: 'Interrupt/stop a running command.', example: 'Press Ctrl+C to stop npm start', cat: 'Process', step: 7 },
-        { cmd: 'curl <url>', desc: 'Make HTTP requests from terminal.', example: 'curl https://api.github.com/users/octocat', cat: 'Network', step: 8 },
-        { cmd: 'ping <host>', desc: 'Test network connectivity.', example: 'ping google.com', cat: 'Network', step: 8 },
-        { cmd: 'ssh user@host', desc: 'Connect to a remote server securely.', example: 'ssh deploy@myserver.com', cat: 'Network', step: 8 },
-        { cmd: 'scp <file> user@host:', desc: 'Copy files to/from remote server.', example: 'scp dist.zip user@server:~/apps/', cat: 'Network', step: 8 },
-        { cmd: 'tar -czf', desc: 'Compress files into an archive.', example: 'tar -czf backup.tar.gz project/', cat: 'Archive', step: 9 },
-        { cmd: 'unzip / tar -xzf', desc: 'Extract compressed archives.', example: 'tar -xzf backup.tar.gz', cat: 'Archive', step: 9 },
-        { cmd: 'alias', desc: 'Create shortcuts for long commands.', example: 'alias gs="git status"', cat: 'Shortcuts', step: 10 },
-        { cmd: 'history', desc: 'Show command history.', example: 'history | grep "npm"', cat: 'Shortcuts', step: 10 },
-        { cmd: 'clear / cls', desc: 'Clear the terminal screen.', example: 'clear', cat: 'Shortcuts', step: 10 },
-        { cmd: 'df -h', desc: 'Show disk space usage.', example: 'df -h', cat: 'System', step: 6 },
-        { cmd: 'du -sh', desc: 'Estimate file and directory space usage.', example: 'du -sh *', cat: 'System', step: 6 },
-        { cmd: 'ln -s', desc: 'Create a symbolic link.', example: 'ln -s /path/to/target linkname', cat: 'Files', step: 2 },
-        { cmd: 'wget <url>', desc: 'Download files from the web non-interactively.', example: 'wget https://example.com/file.zip', cat: 'Network', step: 8 },
-        { cmd: 'curl -O <url>', desc: 'Download a file and save it with its original name.', example: 'curl -O https://example.com/file.zip', cat: 'Network', step: 8 },
-        { cmd: 'top / htop', desc: 'Interactive process viewer.', example: 'htop', cat: 'Process', step: 7 },
-        { cmd: 'watch -n', desc: 'Execute a program periodically, showing output.', example: 'watch -n 1 date', cat: 'Process', step: 7 },
-        { cmd: 'env', desc: 'Print environment variables.', example: 'env', cat: 'System', step: 6 },
-        { cmd: 'export', desc: 'Set an environment variable.', example: 'export VAR="value"', cat: 'System', step: 6 },
-        { cmd: 'source / .', desc: 'Execute commands from a file in current shell.', example: 'source ~/.bashrc', cat: 'System', step: 6 }
+        { cmd: 'cd <dir>', desc: 'Change the current working directory.', example: 'cd ~/projects/myapp', cat: 'Navigation', step: 1,
+          win: { cmd: 'cd <dir>', desc: 'Change the current working directory.', example: 'cd C:\\Users\\you\\projects\\myapp' } },
+        { cmd: 'ls / dir', desc: 'List files and directories in current folder.', example: 'ls -la', cat: 'Navigation', step: 1,
+          win: { cmd: 'Get-ChildItem (dir)', desc: 'List files and directories in current folder.', example: 'Get-ChildItem -Force' } },
+        { cmd: 'pwd', desc: 'Print the current working directory path.', example: 'pwd', cat: 'Navigation', step: 1,
+          win: { cmd: 'Get-Location (pwd)', desc: 'Print the current working directory path.', example: 'Get-Location' } },
+        { cmd: 'mkdir <name>', desc: 'Create a new directory.', example: 'mkdir my-project', cat: 'Files', step: 2,
+          win: { cmd: 'mkdir <name>', desc: 'Create a new directory.', example: 'mkdir my-project' } },
+        { cmd: 'touch <file>', desc: 'Create a new empty file (Unix/Mac).', example: 'touch index.html', cat: 'Files', step: 2,
+          win: { cmd: 'New-Item <file>', desc: 'Create a new empty file in PowerShell.', example: 'New-Item index.html -ItemType File' } },
+        { cmd: 'cp <src> <dest>', desc: 'Copy files or directories.', example: 'cp -r src/ backup/', cat: 'Files', step: 2,
+          win: { cmd: 'Copy-Item (copy)', desc: 'Copy files or directories recursively.', example: 'Copy-Item src\\ backup\\ -Recurse' } },
+        { cmd: 'mv <src> <dest>', desc: 'Move or rename files and directories.', example: 'mv old.js new.js', cat: 'Files', step: 2,
+          win: { cmd: 'Move-Item (move)', desc: 'Move or rename files and directories.', example: 'Move-Item old.js new.js' } },
+        { cmd: 'rm <file>', desc: 'Delete a file. Use -rf for directories.', example: 'rm -rf node_modules/', cat: 'Files', step: 2,
+          win: { cmd: 'Remove-Item (rmdir /s)', desc: 'Delete a file or directory recursively.', example: 'Remove-Item node_modules -Recurse -Force' } },
+        { cmd: 'cat <file>', desc: 'Display the contents of a file.', example: 'cat package.json', cat: 'View', step: 3,
+          win: { cmd: 'Get-Content (type)', desc: 'Display the contents of a file.', example: 'Get-Content package.json' } },
+        { cmd: 'head / tail', desc: 'Show first/last lines of a file.', example: 'tail -n 20 server.log', cat: 'View', step: 3,
+          win: { cmd: 'Select -First / -Last', desc: 'Show first/last lines of a file in PowerShell.', example: 'Get-Content server.log | Select -Last 20' } },
+        { cmd: 'grep <pattern> <file>', desc: 'Search for text patterns in files.', example: 'grep -r "TODO" src/', cat: 'Search', step: 4,
+          win: { cmd: 'Select-String (findstr)', desc: 'Search for text patterns in files.', example: 'Select-String -Path src\\*.* -Pattern "TODO" -Recurse' } },
+        { cmd: 'find <path> -name', desc: 'Find files by name or pattern.', example: 'find . -name "*.js"', cat: 'Search', step: 4,
+          win: { cmd: 'Get-ChildItem -Filter', desc: 'Find files by name or pattern recursively.', example: 'Get-ChildItem -Recurse -Filter "*.js"' } },
+        { cmd: 'which <cmd>', desc: 'Show the path of a command.', example: 'which node', cat: 'Search', step: 4,
+          win: { cmd: 'Get-Command (where)', desc: 'Show the path of a command.', example: 'Get-Command node' } },
+        { cmd: 'echo <text>', desc: 'Print text to terminal or redirect to file.', example: 'echo "Hello" > file.txt', cat: 'IO', step: 5,
+          win: { cmd: 'Write-Output (echo)', desc: 'Print text to terminal or redirect to file.', example: 'echo "Hello" > file.txt' } },
+        { cmd: 'pipe |', desc: 'Send output of one command to another.', example: 'cat file.txt | grep "error"', cat: 'IO', step: 5,
+          win: { cmd: 'pipe |', desc: 'Send output of one cmdlet to another.', example: 'Get-Content file.txt | Select-String "error"' } },
+        { cmd: '> / >>', desc: 'Redirect output to file (overwrite / append).', example: 'echo "log" >> debug.log', cat: 'IO', step: 5,
+          win: { cmd: '> / >> (Out-File)', desc: 'Redirect output to file (overwrite / append).', example: '"log" | Out-File debug.log -Append' } },
+        { cmd: 'chmod', desc: 'Change file permissions.', example: 'chmod +x script.sh', cat: 'System', step: 6,
+          win: { cmd: 'icacls', desc: 'Change file permissions (Windows ACLs).', example: 'icacls script.ps1 /grant Users:RX' } },
+        { cmd: 'chown', desc: 'Change file ownership.', example: 'chown user:group file.txt', cat: 'System', step: 6,
+          win: { cmd: 'icacls /setowner', desc: 'Change file ownership via ACLs.', example: 'icacls file.txt /setowner "Username"' } },
+        { cmd: 'ps / top', desc: 'List running processes.', example: 'ps aux | grep node', cat: 'Process', step: 7,
+          win: { cmd: 'Get-Process (tasklist)', desc: 'List running processes.', example: 'Get-Process | Where-Object {$_.Name -like "*node*"}' } },
+        { cmd: 'kill <pid>', desc: 'Terminate a process by ID.', example: 'kill -9 1234', cat: 'Process', step: 7,
+          win: { cmd: 'Stop-Process (taskkill)', desc: 'Terminate a process by ID or name.', example: 'Stop-Process -Id 1234 -Force' } },
+        { cmd: 'Ctrl+C', desc: 'Interrupt/stop a running command.', example: 'Press Ctrl+C to stop npm start', cat: 'Process', step: 7,
+          win: { cmd: 'Ctrl+C', desc: 'Interrupt/stop a running command.', example: 'Press Ctrl+C to stop npm start' } },
+        { cmd: 'curl <url>', desc: 'Make HTTP requests from terminal.', example: 'curl https://api.github.com/users/octocat', cat: 'Network', step: 8,
+          win: { cmd: 'Invoke-WebRequest (curl)', desc: 'Make HTTP requests from PowerShell.', example: 'Invoke-WebRequest https://api.github.com/users/octocat' } },
+        { cmd: 'ping <host>', desc: 'Test network connectivity.', example: 'ping google.com', cat: 'Network', step: 8,
+          win: { cmd: 'Test-Connection (ping)', desc: 'Test network connectivity.', example: 'Test-Connection google.com' } },
+        { cmd: 'ssh user@host', desc: 'Connect to a remote server securely.', example: 'ssh deploy@myserver.com', cat: 'Network', step: 8,
+          win: { cmd: 'ssh user@host', desc: 'Connect to a remote server (OpenSSH built-in).', example: 'ssh deploy@myserver.com' } },
+        { cmd: 'scp <file> user@host:', desc: 'Copy files to/from remote server.', example: 'scp dist.zip user@server:~/apps/', cat: 'Network', step: 8,
+          win: { cmd: 'scp <file> user@host:', desc: 'Copy files to/from remote server (OpenSSH).', example: 'scp dist.zip user@server:~/apps/' } },
+        { cmd: 'tar -czf', desc: 'Compress files into an archive.', example: 'tar -czf backup.tar.gz project/', cat: 'Archive', step: 9,
+          win: { cmd: 'Compress-Archive', desc: 'Compress files into a .zip archive.', example: 'Compress-Archive -Path project\\ -DestinationPath backup.zip' } },
+        { cmd: 'unzip / tar -xzf', desc: 'Extract compressed archives.', example: 'tar -xzf backup.tar.gz', cat: 'Archive', step: 9,
+          win: { cmd: 'Expand-Archive', desc: 'Extract compressed .zip archives.', example: 'Expand-Archive -Path backup.zip -DestinationPath .\\project' } },
+        { cmd: 'alias', desc: 'Create shortcuts for long commands.', example: 'alias gs="git status"', cat: 'Shortcuts', step: 10,
+          win: { cmd: 'Set-Alias', desc: 'Create shortcuts for long commands in PowerShell.', example: 'Set-Alias gs "git status"' } },
+        { cmd: 'history', desc: 'Show command history.', example: 'history | grep "npm"', cat: 'Shortcuts', step: 10,
+          win: { cmd: 'Get-History (h)', desc: 'Show command history in PowerShell.', example: 'Get-History | Select-String "npm"' } },
+        { cmd: 'clear / cls', desc: 'Clear the terminal screen.', example: 'clear', cat: 'Shortcuts', step: 10,
+          win: { cmd: 'cls / Clear-Host', desc: 'Clear the terminal screen.', example: 'cls' } },
+        { cmd: 'df -h', desc: 'Show disk space usage.', example: 'df -h', cat: 'System', step: 6,
+          win: { cmd: 'Get-PSDrive', desc: 'Show disk space usage for drives.', example: 'Get-PSDrive -PSProvider FileSystem' } },
+        { cmd: 'du -sh', desc: 'Estimate file and directory space usage.', example: 'du -sh *', cat: 'System', step: 6,
+          win: { cmd: 'Get-ChildItem -Recurse', desc: 'Estimate folder size via recursive listing.', example: '(Get-ChildItem -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB' } },
+        { cmd: 'ln -s', desc: 'Create a symbolic link.', example: 'ln -s /path/to/target linkname', cat: 'Files', step: 2,
+          win: { cmd: 'New-Item -ItemType SymbolicLink', desc: 'Create a symbolic link (requires admin).', example: 'New-Item -ItemType SymbolicLink -Path linkname -Target C:\\path\\to\\target' } },
+        { cmd: 'wget <url>', desc: 'Download files from the web non-interactively.', example: 'wget https://example.com/file.zip', cat: 'Network', step: 8,
+          win: { cmd: 'Invoke-WebRequest -OutFile', desc: 'Download files from the web in PowerShell.', example: 'Invoke-WebRequest https://example.com/file.zip -OutFile file.zip' } },
+        { cmd: 'curl -O <url>', desc: 'Download a file and save it with its original name.', example: 'curl -O https://example.com/file.zip', cat: 'Network', step: 8,
+          win: { cmd: 'Invoke-WebRequest -OutFile', desc: 'Download and save a file in PowerShell.', example: 'Invoke-WebRequest https://example.com/file.zip -OutFile file.zip' } },
+        { cmd: 'top / htop', desc: 'Interactive process viewer.', example: 'htop', cat: 'Process', step: 7,
+          win: { cmd: 'Get-Process (Task Manager)', desc: 'Interactive process viewer. Use taskmgr GUI.', example: 'Get-Process | Sort-Object CPU -Descending | Select -First 20' } },
+        { cmd: 'watch -n', desc: 'Execute a program periodically, showing output.', example: 'watch -n 1 date', cat: 'Process', step: 7,
+          win: { cmd: 'while loop', desc: 'Execute a command periodically in PowerShell.', example: 'while ($true) { Get-Date; Start-Sleep 1; Clear-Host }' } },
+        { cmd: 'env', desc: 'Print environment variables.', example: 'env', cat: 'System', step: 6,
+          win: { cmd: 'Get-ChildItem Env:', desc: 'Print environment variables in PowerShell.', example: 'Get-ChildItem Env:' } },
+        { cmd: 'export', desc: 'Set an environment variable.', example: 'export VAR="value"', cat: 'System', step: 6,
+          win: { cmd: '$env:VAR = (setx)', desc: 'Set an environment variable in PowerShell.', example: '$env:VAR = "value"' } },
+        { cmd: 'source / .', desc: 'Execute commands from a file in current shell.', example: 'source ~/.bashrc', cat: 'System', step: 6,
+          win: { cmd: '. (dot-source)', desc: 'Execute a PowerShell script in current scope.', example: '. .\\profile.ps1' } }
     ],
 
     dockerCommands: [
@@ -252,10 +293,23 @@ const CommandsPage = {
                     <div class="glass-card mt-md" id="flow-detail" style="padding:16px;display:none;border-left:3px solid var(--primary);"></div>
                 </div>
 
-                <div class="flex-gap mb-lg flex-wrap">
+                <div class="flex-gap mb-lg flex-wrap" style="align-items:center;">
                     <div class="search-container" style="flex:1; max-width: 400px;">
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
                         <input class="input-field" id="cmd-search" type="text" placeholder="Search commands..." />
+                    </div>
+                    <div id="os-toggle-wrap" style="display:none;">
+                        <div class="os-toggle-pill" id="os-toggle">
+                            <button class="os-toggle-btn ${this.activeOS === 'unix' ? 'active' : ''}" data-os="unix" id="os-btn-unix">
+                                <i class="fa-brands fa-apple"></i>
+                                <i class="fa-brands fa-linux" style="margin-left:2px;"></i>
+                                <span>Mac / Linux</span>
+                            </button>
+                            <button class="os-toggle-btn ${this.activeOS === 'win' ? 'active' : ''}" data-os="win" id="os-btn-win">
+                                <i class="fa-brands fa-windows"></i>
+                                <span>PowerShell</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="tabs mb-lg" id="cmd-cat-tabs"></div>
@@ -263,17 +317,29 @@ const CommandsPage = {
             </div>`;
 
         this.bindEvents();
+        this.bindOSToggle();
+        this.updateOSToggleVisibility();
         this.buildFlow();
         this.renderCategories();
         this.renderCards();
     },
 
     getActiveCommands() {
-        return this.activeTab === 'git' ? this.gitCommands : 
+        const base = this.activeTab === 'git' ? this.gitCommands : 
                this.activeTab === 'npm' ? this.npmCommands : 
                this.activeTab === 'docker' ? this.dockerCommands : 
                this.activeTab === 'http' ? this.httpCommands : 
                this.terminalCommands;
+        // For terminal commands, apply OS-specific translations when Windows is selected
+        if (this.activeTab === 'terminal' && this.activeOS === 'win') {
+            return base.map(c => ({
+                ...c,
+                cmd: c.win?.cmd || c.cmd,
+                desc: c.win?.desc || c.desc,
+                example: c.win?.example || c.example
+            }));
+        }
+        return base;
     },
 
     bindEvents() {
@@ -287,12 +353,39 @@ const CommandsPage = {
                 document.getElementById('flow-title').innerHTML = `<i class="fa-solid fa-route" style="color:var(--primary-light);margin-right:6px;"></i>${titles[this.activeTab]}`;
                 document.getElementById('cmd-search').value = '';
                 document.getElementById('cmd-search').placeholder = `Search ${this.activeTab} commands...`;
+                this.updateOSToggleVisibility();
                 this.buildFlow();
                 this.renderCategories();
                 this.renderCards();
             });
         });
         document.getElementById('cmd-search').addEventListener('input', Helpers.debounce(() => this.renderCards(), 200));
+    },
+
+    bindOSToggle() {
+        const toggle = document.getElementById('os-toggle');
+        if (!toggle) return;
+        toggle.addEventListener('click', (e) => {
+            const btn = e.target.closest('.os-toggle-btn');
+            if (!btn) return;
+            const os = btn.dataset.os;
+            if (os === this.activeOS) return;
+            this.activeOS = os;
+            localStorage.setItem('vertex_cmd_os', os);
+            document.querySelectorAll('#os-toggle .os-toggle-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            Toast.show(os === 'win' ? 'Switched to Windows / PowerShell' : 'Switched to Mac / Linux', 'info');
+            this.buildFlow();
+            this.renderCategories();
+            this.renderCards();
+        });
+    },
+
+    updateOSToggleVisibility() {
+        const wrap = document.getElementById('os-toggle-wrap');
+        if (wrap) {
+            wrap.style.display = this.activeTab === 'terminal' ? 'flex' : 'none';
+        }
     },
 
     buildFlow() {
