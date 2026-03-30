@@ -33,16 +33,16 @@ const DocsPage = {
                     <button class="btn btn-primary" id="docs-search-btn">Search Docs</button>
                 </div>
                 
-                <div id="docs-history-wrapper" style="display:none; margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border);">
+                <div class="ai-bot-suggestions mb-lg" id="docs-suggestions" style="justify-content:flex-start;">
+                    ${randomSuggestionsHtml}
+                </div>
+
+                <div id="docs-history-wrapper" style="display:none; margin-top: 20px; padding-top: 30px; border-top: 1px solid var(--border);">
                     <div class="flex-between mb-md">
                         <h3 style="font-weight:600;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary-light);margin-right:8px;"></i> Search History</h3>
                         <button class="btn btn-ghost btn-sm" id="clear-docs-history"><i class="fa-solid fa-trash-can" style="margin-right:6px;"></i> Clear All</button>
                     </div>
                     <div class="grid-3" id="docs-history-grid" style="gap:16px;"></div>
-                </div>
-
-                <div class="ai-bot-suggestions mb-lg mt-md" id="docs-suggestions" style="justify-content:flex-start;">
-                    ${randomSuggestionsHtml}
                 </div>
 
                 <div id="docs-loading" style="display:none; text-align:center; padding:40px 0;">
