@@ -42,7 +42,7 @@ const DocsPage = {
                         <h3 style="font-weight:600;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary-light);margin-right:8px;"></i> Search History</h3>
                         <button class="btn btn-ghost btn-sm" id="clear-docs-history"><i class="fa-solid fa-trash-can" style="margin-right:6px;"></i> Clear All</button>
                     </div>
-                    <div class="grid-3" id="docs-history-grid" style="gap:16px;"></div>
+                    <div id="docs-history-grid" style="display:flex; overflow-x:auto; gap:16px; padding-bottom:12px; scrollbar-width:thin;"></div>
                 </div>
 
                 <div id="docs-loading" style="display:none; text-align:center; padding:40px 0;">
@@ -178,7 +178,7 @@ const DocsPage = {
         if (empty) empty.style.display = 'none'; // hide the standard empty state
         
         grid.innerHTML = this.docsHistory.map((h, i) => 
-            `<div class="glass-card-static doc-history-card" data-idx="${i}" style="padding: 16px; cursor: pointer; transition: all 0.2s;">
+            `<div class="glass-card-static doc-history-card" data-idx="${i}" style="min-width: 260px; max-width: 260px; flex: 0 0 auto; padding: 16px; cursor: pointer; transition: all 0.2s;">
                 <div class="flex-between mb-xs" style="align-items:flex-start;">
                     <h4 style="font-size:0.95rem; font-weight:600; text-overflow:ellipsis; overflow:hidden; max-width:80%;" title="${Helpers.escapeHtml(h.query)}">
                         <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted); font-size:0.8rem; margin-right:6px;"></i> ${Helpers.escapeHtml(h.query)}
