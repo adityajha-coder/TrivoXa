@@ -183,6 +183,17 @@ const WorkspacePage = {
         if (document.getElementById('snippets-grid')) {
             this.renderSnippets();
         }
+
+        // Push to Firebase Cloud Database if available
+        if (window.db) {
+            try {
+                const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "anonymous";
+                await window.db.collection('users').doc(userId).collection('snippets').doc(newSnip.id).set(newSnip);
+                console.log("☁️ Snippet successfully synced to Firebase!");
+            } catch(e) {
+                console.error("Failed to sync snippet to cloud:", e);
+            }
+        }
     },
 
     async _runSnippet(idx) {
@@ -456,6 +467,14 @@ const WorkspacePage = {
                 this.snippets.splice(idx, 1);
                 await this.deleteFromIndexedDB(id);
                 
+                // Delete from Firebase
+                if (window.db) {
+                    try {
+                        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "anonymous";
+                        await window.db.collection('users').doc(userId).collection('snippets').doc(id).delete();
+                    } catch(e) { console.error("Cloud delete fail", e); }
+                }
+
                 this.renderSnippets();
                 Toast.show('Snippet deleted', 'success');
             }
