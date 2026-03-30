@@ -100,9 +100,14 @@ const CodeGitExplorerPage = {
                             <i class="fa-solid fa-robot" style="color:var(--primary-light);"></i>
                             <span>AI Repository Summary</span>
                         </div>
-                        <button class="btn btn-ghost btn-sm" id="ai-summary-refresh" title="Regenerate summary">
-                            <i class="fa-solid fa-rotate"></i>
-                        </button>
+                        <div class="flex-gap gap-sm">
+                            <button class="btn btn-ghost btn-sm" id="ai-summary-refresh" title="Regenerate summary">
+                                <i class="fa-solid fa-rotate"></i>
+                            </button>
+                            <button class="btn btn-ghost btn-sm" id="ai-summary-close" title="Close summary">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
                     </div>
                     <div id="ai-summary-content" style="font-size:0.85rem; line-height:1.7; color:var(--text-secondary);">
                         <div class="flex-gap" style="padding:20px; justify-content:center;">
@@ -179,6 +184,10 @@ const CodeGitExplorerPage = {
         document.getElementById('ai-summary-refresh')?.addEventListener('click', () => {
             if (this.repoData?.repo) this.generateAiSummary(this.repoData.repo, this.repoData.tree || []);
         });
+        document.getElementById('ai-summary-close')?.addEventListener('click', () => {
+            const el = document.getElementById('explorer-ai-summary');
+            if (el) el.style.display = 'none';
+        });
         document.getElementById('explorer-tabs')?.addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
             if (!tab) return;
@@ -195,12 +204,6 @@ const CodeGitExplorerPage = {
             document.querySelectorAll('#explorer-type-tabs .tab-item').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             this.searchType = tab.dataset.type;
-            
-            if (this.searchType === 'user' || this.searchType === 'local') {
-                const aiSummary = document.getElementById('explorer-ai-summary');
-                if (aiSummary) aiSummary.style.display = 'none';
-            }
-
             const input = document.getElementById('explorer-input');
             const localBtn = document.getElementById('local-upload-btn');
             const exploreBtn = document.getElementById('explorer-btn');
