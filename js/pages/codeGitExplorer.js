@@ -11,10 +11,7 @@ const CodeGitExplorerPage = {
 
     async _loadDeps() {
         if (this._libsLoaded) return;
-        Toast.show('Loading 3D engine...', 'info', 2000);
-        await Helpers.loadScripts([
-            'https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js'
-        ]);
+        Toast.show('Loading 3D engine...', 'info', 1000);
         this._libsLoaded = true;
     },
 

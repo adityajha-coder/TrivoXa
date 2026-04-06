@@ -139,7 +139,7 @@ const GithubStructureMixin = {
             this._structureResizeHandler = resizeHandler;
 
             } catch (err) {
-                fetch('http://localhost:4444', { method: 'POST', body: '3D Graph Error: ' + (err.stack || err) });
+                console.error('3D Graph Error:', err);
             }
         }, 100);
     },
