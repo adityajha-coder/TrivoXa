@@ -5,138 +5,372 @@ const DashboardPage = {
 
         content.innerHTML = `
             <style>
-                .dash-header { margin-bottom: 32px; }
-                .dash-title { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
-                .dash-sub { color: var(--text-secondary); font-size: 0.95rem; }
-
-                .dash-hero {
-                    display: grid; grid-template-columns: 1.5fr 1fr; gap: 14px; margin-bottom: 28px;
-                }
-                .hero-main {
-                    background: rgba(212,168,67,0.06); border: 1px solid rgba(212,168,67,0.15);
-                    border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden;
-                    cursor: pointer; transition: border-color 0.3s, box-shadow 0.3s;
-                }
-                .hero-main:hover { border-color: rgba(212,168,67,0.35); box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
-                .hero-main h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
-                .hero-main p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; max-width: 85%; margin-bottom: 16px; }
-                .hero-main .hero-bg { position: absolute; right: 16px; bottom: -8px; font-size: 7rem; opacity: 0.04; pointer-events: none; color: var(--primary-light); }
-                .hero-side {
-                    display: grid; grid-template-rows: 1fr 1fr; gap: 14px;
-                }
-                .hero-card {
-                    background: rgba(255,255,255,0.02); border: 1px solid var(--border-light);
-                    border-radius: 14px; padding: 20px 24px; cursor: pointer;
-                    transition: border-color 0.3s, background 0.3s;
-                }
-                .hero-card:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
-                .hero-card h3 { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
-                .hero-card p { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
-
-
-                .section-title { font-size: 1rem; font-weight: 700; color: var(--text-muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.78rem; }
-                .tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-                .tcard {
-                    background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05);
-                    border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 14px;
-                    cursor: pointer; transition: all 0.25s ease;
-                }
-                .tcard:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.12); transform: translateY(-1px); }
-                .tcard-icon {
-                    width: 38px; height: 38px; min-width: 38px; border-radius: 9px;
-                    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+                #page-content {
+                    height: calc(100vh - 56px);
+                    display: flex;
+                    flex-direction: column;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    padding: 0;
+                    background: var(--bg-primary);
                 }
 
-                .ic-gold { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.2); }
-                .ic-gold i { color: #eab308; }
-                .ic-blue { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.2); }
-                .ic-blue i { color: #3b82f6; }
-                .ic-green { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.2); }
-                .ic-green i { color: #22c55e; }
-                .ic-cyan { background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.2); }
-                .ic-cyan i { color: #06b6d4; }
-                .ic-purple { background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.2); }
-                .ic-purple i { color: #a855f7; }
-                .ic-pink { background: rgba(236,72,153,0.12); border: 1px solid rgba(236,72,153,0.2); }
-                .ic-pink i { color: #ec4899; }
+                .dash-wrapper {
+                    max-width: 1280px;
+                    width: 100%;
+                    margin: 0 auto;
+                    padding: 36px 48px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 32px;
+                }
 
-                .tcard-info { flex: 1; }
-                .tcard-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
-                .tcard-desc { font-size: 0.76rem; color: var(--text-muted); margin-top: 1px; }
-                .tcard-arrow { color: rgba(255,255,255,0.1); font-size: 0.75rem; transition: all 0.25s; }
-                .tcard:hover .tcard-arrow { color: rgba(255,255,255,0.6); transform: translateX(3px); }
+                /* ===== HERO TOP TEXT ===== */
+                .hero-top-text {
+                    margin-bottom: 8px;
+                }
+
+                .hero-main-title {
+                    font-size: 2.2rem;
+                    font-weight: 700;
+                    color: #fff;
+                    margin: 0 0 8px 0;
+                    letter-spacing: -0.5px;
+                }
+
+                .hero-main-title .gold {
+                    color: var(--primary-light);
+                }
+
+                .lead-text {
+                    display: block;
+                    font-size: 1.05rem;
+                    color: var(--text-secondary);
+                    font-weight: 400;
+                    margin-top: 8px;
+                }
+
+                /* ===== HERO SECTION ===== */
+                .dash-hero-section {
+                    display: grid;
+                    grid-template-columns: 1.1fr 0.9fr;
+                    gap: 24px;
+                    min-height: 240px;
+                }
+
+                .hero-main-card {
+                    background: var(--surface);
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 36px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    position: relative;
+                    overflow: hidden;
+                    cursor: pointer;
+                }
+
+                .hero-main-card h3 {
+                    font-size: 1.4rem;
+                    font-weight: 700;
+                    color: #fff;
+                    margin-bottom: 12px;
+                }
+
+                .hero-main-sub {
+                    font-size: 0.95rem;
+                    color: var(--text-secondary);
+                    line-height: 1.5;
+                    max-width: 440px;
+                    margin-bottom: 32px;
+                }
+
+                .hero-main-bottom {
+                    display: flex;
+                    align-items: center;
+                    margin-top: auto;
+                }
+
+                .hero-cta {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 10px 24px;
+                    background: var(--primary);
+                    color: #000;
+                    border: none;
+                    border-radius: 30px;
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    font-family: inherit;
+                }
+
+                .hero-bot-graphic {
+                    width: 200px; height: 200px;
+                    position: absolute;
+                    bottom: -40px; right: 0px;
+                    opacity: 0.03;
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 10rem;
+                    color: #fff;
+                    pointer-events: none;
+                }
+
+                /* Right stack */
+                .hero-side-stack {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 24px;
+                }
+
+                .hero-side-card {
+                    flex: 1;
+                    background: var(--surface);
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 24px;
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 16px;
+                    cursor: pointer;
+                }
+
+                .hero-side-icon {
+                    font-size: 1.25rem;
+                    flex-shrink: 0;
+                    margin-top: 2px;
+                }
+
+                .hero-side-text h3 {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: #fff;
+                    margin-bottom: 6px;
+                }
+
+                .hero-side-text p {
+                    font-size: 0.85rem;
+                    color: var(--text-secondary);
+                    line-height: 1.4;
+                }
+
+                /* ===== TOOLKIT SECTION ===== */
+                .toolkit-label {
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 1.5px;
+                    color: var(--text-muted);
+                    margin-bottom: 20px;
+                }
+
+                .toolkit-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 24px;
+                }
+
+                .toolkit-card {
+                    background: var(--surface);
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    cursor: pointer;
+                }
+
+                .toolkit-icon {
+                    width: 48px; height: 48px;
+                    border-radius: 8px;
+                    background: var(--bg-primary);
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 1.15rem;
+                    flex-shrink: 0;
+                }
+
+                .toolkit-text {
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                .toolkit-text h3 {
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                    color: #fff;
+                    margin-bottom: 4px;
+                }
+
+                .toolkit-text p {
+                    font-size: 0.8rem;
+                    color: var(--text-muted);
+                    line-height: 1.35;
+                }
+
+                /* Icon colors */
+                .color-yellow { color: #facc15; }
+                .color-green { color: #4ade80; }
+                .color-blue { color: #38bdf8; }
+                .color-purple { color: #a78bfa; }
+                .color-pink { color: #f472b6; }
+                .color-orange { color: #fb923c; }
+
+                /* ===== RESPONSIVE ===== */
+                @media (max-width: 1024px) {
+                    .dash-wrapper { padding: 32px; gap: 24px; }
+                    .toolkit-grid { grid-template-columns: repeat(3, 1fr); }
+                }
 
                 @media (max-width: 900px) {
-                    .dash-hero { grid-template-columns: 1fr; }
-                    .hero-side { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+                    .dash-hero-section { grid-template-columns: 1fr; min-height: auto; }
+                    .hero-side-stack { flex-direction: row; }
+                    .toolkit-grid { grid-template-columns: repeat(2, 1fr); }
                 }
-                @media (max-width: 550px) {
-                    .dash-title { font-size: 1.5rem; }
-                    .hero-side { grid-template-columns: 1fr; }
-                    .tgrid { grid-template-columns: 1fr; }
+
+                @media (max-width: 600px) {
+                    .dash-wrapper { padding: 20px 16px; gap: 20px; }
+                    .hero-side-stack { flex-direction: column; }
+                    .hero-main-title { font-size: 1.6rem; }
+                    .toolkit-grid { grid-template-columns: 1fr; }
+                }
+
+                /* Entry animations */
+                @keyframes dashFadeUp {
+                    from { opacity: 0; transform: translateY(14px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .dash-animate {
+                    opacity: 0;
+                    animation: dashFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
                 }
             </style>
-            <div class="page-enter">
-                <div class="dash-header">
-                    <h1 class="dash-title">Ship Code <span class="text-gradient">Faster.</span> Build <span class="text-gradient">Smarter.</span></h1>
-                    <p class="dash-sub" style="font-size:1.05rem;">The unified developer toolkit for development</p>
-                </div>
 
-                <div class="dash-hero">
-                    <div class="hero-main" data-page="ask-ai">
-                        <h2>AI Hub</h2>
-                        <p>Chat with AI, design app architectures, explore tech stacks, and debug errors — all in one place.</p>
-                        <span class="btn btn-primary btn-sm" style="pointer-events:none; border-radius:30px; padding: 10px 22px;"><i class="fa-solid fa-arrow-right"></i> Open AI Hub</span>
-                        <i class="fa-solid fa-robot hero-bg"></i>
-                    </div>
-                    <div class="hero-side">
-                        <div class="hero-card" data-page="ask-ai">
-                            <h3><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--primary-light);"></i> Code Generator</h3>
-                            <p>Generate framework components with AI and run them live.</p>
-                        </div>
-                        <div class="hero-card" data-page="code-git-explorer">
-                            <h3><i class="fa-brands fa-github" style="color:var(--success);"></i> GitHub Explorer</h3>
-                            <p>Visualize any repository as an interactive 3D graph.</p>
-                        </div>
+            <div class="dash-wrapper">
+                <div class="dash-animate">
+                    <div class="hero-top-text">
+                        <h1 class="hero-main-title">Accelerate Your Workflow. <span class="gold">Build Smarter.</span></h1>
+                        <span class="lead-text">All-in-one platform for developers</span>
                     </div>
                 </div>
 
-                <div class="section-title">Toolkit</div>
-                <div class="tgrid">
-                    <div class="tcard" data-page="workspace">
-                        <div class="tcard-icon ic-gold"><i class="fa-solid fa-laptop-code"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">My Workspace</div><div class="tcard-desc">Save, edit & run code snippets</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+                <!-- HERO SECTION -->
+                <div class="dash-hero-section dash-animate" style="animation-delay: 0.05s;">
+                    <!-- Main AI Hub Card -->
+                    <div class="hero-main-card" data-page="ask-ai">
+                        <div>
+                            <h3>AI Hub</h3>
+                            <p class="hero-main-sub">
+                                Chat with AI, design app architectures, explore tech stacks, and debug errors — all in one place.
+                            </p>
+                        </div>
+                        <div class="hero-main-bottom">
+                            <button class="hero-cta" onclick="event.stopPropagation(); Router.navigate('ask-ai');">
+                                <i class="fa-solid fa-arrow-right"></i> Open AI Hub
+                            </button>
+                        </div>
+                        <div class="hero-bot-graphic"><i class="fa-solid fa-robot"></i></div>
                     </div>
-                    <div class="tcard" data-page="commands">
-                        <div class="tcard-icon ic-green"><i class="fa-solid fa-terminal"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">Commands</div><div class="tcard-desc">Git, npm, Docker reference</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+
+                    <!-- Right Side Stack -->
+                    <div class="hero-side-stack">
+                        <div class="hero-side-card" data-page="ask-ai">
+                            <div class="hero-side-icon color-yellow">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </div>
+                            <div class="hero-side-text">
+                                <h3>Code Generator</h3>
+                                <p>Generate framework components with AI and run them live.</p>
+                            </div>
+                        </div>
+                        <div class="hero-side-card" data-page="code-git-explorer">
+                            <div class="hero-side-icon color-green">
+                                <i class="fa-brands fa-github"></i>
+                            </div>
+                            <div class="hero-side-text">
+                                <h3>GitHub Explorer</h3>
+                                <p>Visualize any repository as an interactive 3D graph.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="tcard" data-page="free-apis">
-                        <div class="tcard-icon ic-cyan"><i class="fa-solid fa-cloud"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">Free APIs</div><div class="tcard-desc">55+ curated public endpoints</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
-                    </div>
-                    <div class="tcard" data-page="package-scout">
-                        <div class="tcard-icon ic-blue"><i class="fa-solid fa-box-open"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">Package Scout</div><div class="tcard-desc">NPM insights & analytics</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
-                    </div>
-                    <div class="tcard" data-page="tools-vault">
-                        <div class="tcard-icon ic-purple"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">Tools Vault</div><div class="tcard-desc">Frameworks, libraries & boilerplates</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
-                    </div>
-                    <div class="tcard" data-page="code-git-explorer">
-                        <div class="tcard-icon ic-pink"><i class="fa-brands fa-github"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">GitHub Explorer</div><div class="tcard-desc">3D repo visualizations</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
-                    </div>
-                    <div class="tcard" data-page="docs">
-                        <div class="tcard-icon" style="background:rgba(234,88,12,0.12);border:1px solid rgba(234,88,12,0.2);"><i class="fa-solid fa-book-open-reader" style="color:#ea580c;"></i></div>
-                        <div class="tcard-info"><div class="tcard-name">Developer Docs</div><div class="tcard-desc">Instantly search MDN API Docs</div></div>
-                        <i class="fa-solid fa-chevron-right tcard-arrow"></i>
+                </div>
+
+                <!-- TOOLKIT SECTION -->
+                <div class="dash-animate" style="animation-delay: 0.15s;">
+                    <p class="toolkit-label">TOOLKIT</p>
+                    
+                    <div class="toolkit-grid">
+                        <div class="toolkit-card" data-page="workspace">
+                            <div class="toolkit-icon color-yellow">
+                                <i class="fa-solid fa-laptop-code"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>My Workspace</h3>
+                                <p>Save, edit & run code snippets</p>
+                            </div>
+                        </div>
+
+                        <div class="toolkit-card" data-page="commands">
+                            <div class="toolkit-icon color-green">
+                                <i class="fa-solid fa-terminal"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>Commands</h3>
+                                <p>Git, npm, Docker reference</p>
+                            </div>
+                        </div>
+
+                        <div class="toolkit-card" data-page="free-apis">
+                            <div class="toolkit-icon color-blue">
+                                <i class="fa-solid fa-cloud"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>Free APIs</h3>
+                                <p>120+ robust public endpoints</p>
+                            </div>
+                        </div>
+
+                        <div class="toolkit-card" data-page="package-scout">
+                            <div class="toolkit-icon color-purple">
+                                <i class="fa-solid fa-box-open"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>Package Scout</h3>
+                                <p>Real-time NPM insights & analytics</p>
+                            </div>
+                        </div>
+
+                        <div class="toolkit-card" data-page="tools-vault">
+                            <div class="toolkit-icon color-purple">
+                                <i class="fa-solid fa-screwdriver-wrench"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>Tools Vault</h3>
+                                <p>100+ modern framework boilerplates</p>
+                            </div>
+                        </div>
+
+                        <div class="toolkit-card" data-page="code-git-explorer">
+                            <div class="toolkit-icon color-pink">
+                                <i class="fa-brands fa-github"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>GitHub Explorer</h3>
+                                <p>Interactive 3D structural mapping</p>
+                            </div>
+                        </div>
+
+                        <div class="toolkit-card" data-page="docs">
+                            <div class="toolkit-icon color-orange">
+                                <i class="fa-solid fa-book-bookmark"></i>
+                            </div>
+                            <div class="toolkit-text">
+                                <h3>Developer Docs</h3>
+                                <p>Instantly search MDN API Docs</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>`;
@@ -145,14 +379,15 @@ const DashboardPage = {
     },
 
     bindEvents(content) {
+        // Navigation clicks
         content.querySelectorAll('[data-page]').forEach(el => {
             el.addEventListener('click', () => Router.navigate(el.dataset.page));
         });
 
         // Onboarding Check
-        if(!localStorage.getItem('vdt_first_time')) {
+        if (!localStorage.getItem('vdt_first_time')) {
             setTimeout(() => {
-                Toast.show('Welcome to Vertex! Your all-in-one developer hub. Explore the AI tools below or use Ctrl+K to search.', 'info', 6000);
+                Toast.show('Welcome to Vertex! Explore the developer tools below or use Ctrl+K to search.', 'info', 6000);
                 localStorage.setItem('vdt_first_time', 'true');
             }, 1000);
         }

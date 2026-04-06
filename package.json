@@ -1,7 +1,7 @@
 {
   "name": "vertex-developer-toolkit",
   "version": "1.0.0",
-  "description": "The unified developer toolkit for development",
+  "description": "All-in-one platform for developers",
   "scripts": {
     "dev": "npx -y serve . -l 8080",
     "start": "npx -y serve . -l 8080",
@@ -20,5 +20,18 @@
   "devDependencies": {
     "concurrently": "^8.2.0",
     "nodemon": "^3.0.1"
-  }
+  },
+  "main": "sw.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adityajha-coder/vertex-devloper-toolkit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/adityajha-coder/vertex-devloper-toolkit/issues"
+  },
+  "homepage": "https://github.com/adityajha-coder/vertex-devloper-toolkit#readme"
 }

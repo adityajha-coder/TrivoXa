@@ -160,6 +160,7 @@ const WorkspacePage = {
                 <div class="flex-between mb-sm">
                     <div style="font-weight:600;">${Helpers.escapeHtml(s.title)}</div>
                     <div class="flex-gap">
+                        <button class="btn btn-ghost btn-xs toggle-snip-btn" data-idx="${idx}" title="Toggle snippet code"><i class="fa-solid fa-chevron-down toggle-icon-${idx}"></i></button>
                         <button class="btn btn-ghost btn-xs edit-snip-btn" data-idx="${idx}" title="Edit snippet" style="color:var(--primary-light);"><i class="fa-solid fa-pen-to-square"></i></button>
                         <button class="btn btn-ghost btn-xs run-snip-btn" data-idx="${idx}" title="Run in live environment" style="color:var(--success);"><i class="fa-solid fa-play"></i></button>
                         <button class="btn btn-ghost btn-xs copy-snip-btn" data-idx="${idx}"><i class="fa-solid fa-copy"></i></button>
@@ -167,7 +168,7 @@ const WorkspacePage = {
                     </div>
                 </div>
                 ${s.lang ? `<span class="tag mb-sm" style="display:inline-block; font-weight:600; background: ${Helpers.getExtColor(s.lang)}20; color: ${Helpers.getExtColor(s.lang)}; border: 1px solid ${Helpers.getExtColor(s.lang)}40;">${s.lang.toUpperCase()}</span>` : ''}
-                <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
+                <div id="snip-code-${idx}" style="display:none; background:rgba(0,0,0,0.5); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
                     <pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">${Helpers.escapeHtml(s.code)}</pre>
                 </div>
             </div>
@@ -181,6 +182,17 @@ const WorkspacePage = {
         await this.saveToIndexedDB(newSnip);
         if (document.getElementById('snippets-grid')) {
             this.renderSnippets();
+        }
+
+        // Push to Firebase Cloud Database if available
+        if (window.db) {
+            try {
+                const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "anonymous";
+                await window.db.collection('users').doc(userId).collection('snippets').doc(newSnip.id).set(newSnip);
+                console.log("☁️ Snippet successfully synced to Firebase!");
+            } catch(e) {
+                console.error("Failed to sync snippet to cloud:", e);
+            }
         }
     },
 
@@ -426,6 +438,18 @@ const WorkspacePage = {
         });
 
         document.getElementById('page-content').addEventListener('click', async (e) => {
+            if(e.target.closest('.toggle-snip-btn')) {
+                const idx = e.target.closest('.toggle-snip-btn').dataset.idx;
+                const codeDiv = document.getElementById('snip-code-' + idx);
+                const icon = document.querySelector('.toggle-icon-' + idx);
+                if (codeDiv && codeDiv.style.display === 'none') {
+                    codeDiv.style.display = 'block';
+                    if (icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
+                } else if (codeDiv) {
+                    codeDiv.style.display = 'none';
+                    if (icon) { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
+                }
+            }
             if(e.target.closest('.run-snip-btn')) {
                 const idx = parseInt(e.target.closest('.run-snip-btn').dataset.idx);
                 this._runSnippet(idx);
@@ -443,6 +467,14 @@ const WorkspacePage = {
                 this.snippets.splice(idx, 1);
                 await this.deleteFromIndexedDB(id);
                 
+                // Delete from Firebase
+                if (window.db) {
+                    try {
+                        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "anonymous";
+                        await window.db.collection('users').doc(userId).collection('snippets').doc(id).delete();
+                    } catch(e) { console.error("Cloud delete fail", e); }
+                }
+
                 this.renderSnippets();
                 Toast.show('Snippet deleted', 'success');
             }

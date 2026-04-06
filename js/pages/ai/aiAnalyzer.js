@@ -127,6 +127,17 @@ const AiAnalyzerMixin = {
             
             document.getElementById('analyzer-suggestions').innerHTML = suggestions.replace(/\n/g, '<br>');
 
+            if (typeof this.saveAiHistory === 'function') {
+                this.saveAiHistory('analyzer', `Analyzed file: ${filename}`, `
+                    <div style="display:flex; gap:16px; margin-bottom:12px; font-weight:600;">
+                        <span style="color:var(--text);font-size:0.85rem;">Score: <span style="color:var(--primary-light);">${result.healthScore || '--'}</span></span>
+                        <span style="color:var(--text);font-size:0.85rem;">Complexity: <span style="color:var(--warning);">${result.complexity || '--'}</span></span>
+                        <span style="color:var(--text);font-size:0.85rem;">Security: <span style="color:var(--error);">${result.security || '--'}</span></span>
+                    </div>
+                    <div style="color:var(--text-secondary); line-height:1.6; font-size:0.82rem;">${result.review || 'No review generated.'}</div>
+                `);
+            }
+
         } catch (error) {
             document.getElementById('analyzer-loading').style.display = 'none';
             document.getElementById('drop-zone').style.display = 'block';

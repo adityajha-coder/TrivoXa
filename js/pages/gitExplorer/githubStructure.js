@@ -47,8 +47,13 @@ const GithubStructureMixin = {
     init3DStructure(files) {
         this.cleanup();
         const container = document.getElementById('structure-3d');
+        if (!container) return;
         container.innerHTML = '';
-        const w = container.clientWidth || 800, h = container.clientHeight || 500;
+        // Force layout recalculation for mobile
+        container.style.display = 'block';
+        const rect = container.getBoundingClientRect();
+        const w = rect.width || container.clientWidth || container.offsetWidth || 300;
+        const h = rect.height || container.clientHeight || container.offsetHeight || 300;
 
         const nodes = [];
         const links = [];
@@ -124,14 +129,17 @@ const GithubStructureMixin = {
             };
 
             const resizeHandler = () => { 
-                const nw = container.clientWidth, nh = container.clientHeight; 
-                this.forceGraph.width(nw || 100).height(nh || 100);
+                const rect = container.getBoundingClientRect();
+                const nw = rect.width || container.clientWidth; 
+                const nh = rect.height || container.clientHeight; 
+                if (nw && nh) this.forceGraph.width(nw).height(nh);
             };
             window.addEventListener('resize', resizeHandler);
+            window.addEventListener('orientationchange', () => setTimeout(resizeHandler, 200));
             this._structureResizeHandler = resizeHandler;
 
             } catch (err) {
-                fetch('http://localhost:4444', { method: 'POST', body: '3D Graph Error: ' + (err.stack || err) });
+                console.error('3D Graph Error:', err);
             }
         }, 100);
     },

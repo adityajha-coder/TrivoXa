@@ -9,6 +9,7 @@ const DocsPage = {
     ],
 
     docsCache: {},
+    docsHistory: [],
 
     render() {
         Navbar.renderTopbar('Developer Documentation');
@@ -31,9 +32,17 @@ const DocsPage = {
                     </div>
                     <button class="btn btn-primary" id="docs-search-btn">Search Docs</button>
                 </div>
-
+                
                 <div class="ai-bot-suggestions mb-lg" id="docs-suggestions" style="justify-content:flex-start;">
                     ${randomSuggestionsHtml}
+                </div>
+
+                <div id="docs-history-wrapper" style="display:none; margin-top: 20px; padding-top: 30px; border-top: 1px solid var(--border);">
+                    <div class="flex-between mb-md">
+                        <h3 style="font-weight:600;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary-light);margin-right:8px;"></i> Search History</h3>
+                        <button class="btn btn-ghost btn-sm" id="clear-docs-history"><i class="fa-solid fa-trash-can" style="margin-right:6px;"></i> Clear All</button>
+                    </div>
+                    <div id="docs-history-grid" style="display:flex; overflow-x:auto; gap:16px; padding-bottom:12px; scrollbar-width:thin;"></div>
                 </div>
 
                 <div id="docs-loading" style="display:none; text-align:center; padding:40px 0;">
@@ -55,6 +64,8 @@ const DocsPage = {
         `;
 
         this.bindEvents();
+        // Load history, but wait a tick for auth to potentially initialize if not already
+        setTimeout(() => this.loadHistory(), 800);
     },
 
     bindEvents() {
@@ -79,6 +90,132 @@ const DocsPage = {
                     this.searchDocs(input.value);
                 }
             });
+        }
+    },
+
+    async loadHistory() {
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try {
+                const snap = await window.db.collection('users').doc(userId).collection('docs_history').orderBy('timestamp', 'desc').limit(15).get();
+                this.docsHistory = snap.docs.map(doc => doc.data());
+            } catch(e) {
+                console.error('[Docs] Failed to load history from DB:', e);
+                this.docsHistory = JSON.parse(localStorage.getItem('docs_history') || '[]');
+            }
+        } else {
+            this.docsHistory = JSON.parse(localStorage.getItem('docs_history') || '[]');
+        }
+        this.renderHistory();
+    },
+
+    async saveHistory(query) {
+        if (!query) return;
+        // Check duplicates
+        if (this.docsHistory.some(h => h.query.toLowerCase() === query.toLowerCase())) return;
+        
+        const item = { id: 'doc_' + Date.now().toString(36), query, timestamp: Date.now() };
+        this.docsHistory.unshift(item);
+        if (this.docsHistory.length > 15) this.docsHistory.pop();
+        
+        this.renderHistory();
+
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try {
+                await window.db.collection('users').doc(userId).collection('docs_history').doc(item.id).set(item);
+            } catch(e) {
+                console.error('[Docs] Failed to save history to DB:', e);
+            }
+        } else {
+            localStorage.setItem('docs_history', JSON.stringify(this.docsHistory));
+        }
+    },
+
+    async deleteHistory(id) {
+        this.docsHistory = this.docsHistory.filter(h => h.id !== id);
+        this.renderHistory();
+
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try { await window.db.collection('users').doc(userId).collection('docs_history').doc(id).delete(); } catch(e) {}
+        } else {
+            localStorage.setItem('docs_history', JSON.stringify(this.docsHistory));
+        }
+    },
+    
+    async clearAllHistory() {
+        if(!confirm('Clear all search history?')) return;
+        this.docsHistory = [];
+        this.renderHistory();
+        
+        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+        if (userId && window.db) {
+            try { 
+                const snap = await window.db.collection('users').doc(userId).collection('docs_history').get();
+                const batch = window.db.batch();
+                snap.docs.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+            } catch(e) {}
+        } else {
+            localStorage.removeItem('docs_history');
+        }
+    },
+
+    renderHistory() {
+        const wrapper = document.getElementById('docs-history-wrapper');
+        const grid = document.getElementById('docs-history-grid');
+        const empty = document.getElementById('docs-empty');
+        if(!wrapper || !grid) return;
+
+        if (this.docsHistory.length === 0) {
+            wrapper.style.display = 'none';
+            if (empty) empty.style.display = 'block';
+            return;
+        }
+
+        wrapper.style.display = 'block';
+        if (empty) empty.style.display = 'none'; // hide the standard empty state
+        
+        grid.innerHTML = this.docsHistory.map((h, i) => 
+            `<div class="glass-card-static doc-history-card" data-idx="${i}" style="min-width: 260px; max-width: 260px; flex: 0 0 auto; padding: 16px; cursor: pointer; transition: all 0.2s;">
+                <div class="flex-between mb-xs" style="align-items:flex-start;">
+                    <h4 style="font-size:0.95rem; font-weight:600; text-overflow:ellipsis; overflow:hidden; max-width:80%;" title="${Helpers.escapeHtml(h.query)}">
+                        <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted); font-size:0.8rem; margin-right:6px;"></i> ${Helpers.escapeHtml(h.query)}
+                    </h4>
+                    <button class="btn btn-ghost btn-xs delete-doc-history" data-id="${h.id}" style="color:var(--error); margin-top:-4px; margin-right:-8px;" title="Delete">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="text-xs text-muted"><i class="fa-regular fa-clock"></i> ${new Date(h.timestamp).toLocaleString()}</div>
+            </div>`
+        ).join('');
+
+        // Bind clicks to replay search
+        grid.querySelectorAll('.doc-history-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const idx = card.dataset.idx;
+                const h = this.docsHistory[idx];
+                const input = document.getElementById('docs-search-input');
+                if (input && h) {
+                    input.value = h.query;
+                    this.searchDocs(h.query);
+                }
+            });
+        });
+
+        // Bind delete
+        grid.querySelectorAll('.delete-doc-history').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // prevent clicking the card
+                this.deleteHistory(e.currentTarget.dataset.id);
+            });
+        });
+
+        const clearBtn = document.getElementById('clear-docs-history');
+        if (clearBtn && !clearBtn.dataset.bound) {
+            clearBtn.dataset.bound = 'true';
+            clearBtn.addEventListener('click', () => this.clearAllHistory());
         }
     },
 
@@ -118,7 +255,7 @@ const DocsPage = {
         }).join('');
     },
 
-    async searchDocs(query) {
+    async searchDocs(query, retryCount = 0) {
         query = query.trim();
         if (!query) return Toast.show('Please enter a search term', 'warning');
 
@@ -138,81 +275,41 @@ const DocsPage = {
             return;
         }
 
-        const systemPrompt = `You are a JSON API. Return ONLY valid JSON array. NO markdown, NO code fences, NO extra text.
+        const systemPrompt = `You are a documentation API. You MUST return ONLY a valid JSON array with exactly 3 documentation objects. No markdown, no explanation, no code fences.
 
-Format: [{"title":"Name","tags":["tag1","tag2"],"summary":"...200+ words..."}]
+Each object must have these exact keys:
+- "title": a descriptive title string
+- "tags": an array of 2 keyword strings
+- "summary": a detailed 150+ word explanation string
 
-Create exactly 3 objects. Each must have:
-- title: String with language/framework
-- tags: Array of exactly 2 strings
-- summary: 200+ word detailed explanation with code examples, syntax, and best practices. Use \\n for line breaks.
+Example format:
+[{"title":"Topic Name","tags":["tag1","tag2"],"summary":"Detailed explanation here..."}]
 
-Return ONLY the JSON array between [ and ]. Nothing else.`;
+IMPORTANT: Return ONLY the JSON array. Start your response with [ and end with ]. No other text.`;
 
         try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 45000);
-            
             let text = '';
             try {
                 const res = await API.callGroqChat([
                     { role: 'system', content: systemPrompt },
-                    { role: 'user', content: 'Get docs for: ' + query }
-                ], 'llama-3.1-8b-instant', 0.7);
+                    { role: 'user', content: query }
+                ], 'llama-3.1-8b-instant', 0.3);
 
-                clearTimeout(timeout);
-                
                 text = res.choices?.[0]?.message?.content || "";
-                if (typeof AskAiPage !== 'undefined' && AskAiPage?.cleanAiResponse) {
-                    text = AskAiPage.cleanAiResponse(text);
-                }
             } catch(e) {
-                clearTimeout(timeout);
                 console.error('[Docs Search Error]', e.message);
                 throw e;
             }
             
-            // Clean response - extract JSON array
-            text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').replace(/^[^\[]*/, '').replace(/[^\]]*$/, '').trim();
+            // Robust JSON extraction
+            let parsed = this._parseJsonResponse(text);
 
-            let parsed = null;
-            
-            try { parsed = JSON.parse(text); } catch(e1) {}
-            
-            if (!parsed) {
-                const arrStart = text.indexOf('[');
-                const arrEnd = text.lastIndexOf(']');
-                if (arrStart !== -1 && arrEnd !== -1 && arrEnd > arrStart) {
-                    try {
-                        let cleaned = text.substring(arrStart, arrEnd + 1);
-                        cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ').replace(/,\s*]/g, ']').replace(/,\s*}/g, '}');
-                        parsed = JSON.parse(cleaned);
-                    } catch(e2) {}
-                }
-            }
-            
-            if (!parsed) {
-                const objStart = text.indexOf('{');
-                const objEnd = text.lastIndexOf('}');
-                if (objStart !== -1 && objEnd !== -1 && objEnd > objStart) {
-                    try {
-                        let cleaned = text.substring(objStart, objEnd + 1);
-                        cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ').replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-                        parsed = [JSON.parse(cleaned)];
-                    } catch(e3) {}
-                }
-            }
-            
-            if (!parsed) {
-                const jsonObjects = [];
-                const regex = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    try {
-                        jsonObjects.push(JSON.parse(match[0]));
-                    } catch(e) {}
-                }
-                if (jsonObjects.length > 0) parsed = jsonObjects;
+            // Retry once if parsing failed
+            if (!parsed && retryCount < 1) {
+                console.warn('[Docs] First parse failed, retrying...');
+                btn.disabled = false;
+                document.getElementById('docs-loading').style.display = 'none';
+                return this.searchDocs(query + ' ', 1);
             }
 
             if (!parsed || (Array.isArray(parsed) && parsed.length === 0)) {
@@ -227,29 +324,19 @@ Return ONLY the JSON array between [ and ]. Nothing else.`;
                 return;
             }
 
-            let docs = [];
-            if (Array.isArray(parsed)) {
-                docs = parsed;
-            } else if (parsed && typeof parsed === 'object') {
-                const arrayVal = Object.values(parsed).find(v => Array.isArray(v));
-                if (arrayVal) {
-                    docs = arrayVal;
-                } else {
-                    docs = [parsed];
-                }
-            }
+            let docs = Array.isArray(parsed) ? parsed : [parsed];
 
             const validDocs = docs.filter(d => d && typeof d === 'object').map(d => ({
                 title: d.title || d.name || d.concept || query,
-                tags: d.tags || d.keywords || [],
+                tags: Array.isArray(d.tags || d.keywords) ? (d.tags || d.keywords) : [],
                 summary: d.summary || d.description || d.content || d.explanation || d.details || ''
             }));
 
             const finalDocs = validDocs.length > 0 ? validDocs : docs;
             
             this.docsCache[cacheKey] = finalDocs;
-
             this._renderDocs(finalDocs);
+            this.saveHistory(query);
 
         } catch(err) {
             console.error('Docs search error:', err);
@@ -259,5 +346,62 @@ Return ONLY the JSON array between [ and ]. Nothing else.`;
         } finally {
             btn.disabled = false;
         }
+    },
+
+    _parseJsonResponse(text) {
+        if (!text || !text.trim()) return null;
+
+        // Step 1: Strip markdown code fences
+        text = text.replace(/```(?:json)?\s*/gi, '').replace(/```\s*/g, '').trim();
+
+        // Step 2: Try direct parse
+        try { return JSON.parse(text); } catch(e) {}
+
+        // Step 3: Extract JSON array between first [ and last ]
+        const arrStart = text.indexOf('[');
+        const arrEnd = text.lastIndexOf(']');
+        if (arrStart !== -1 && arrEnd > arrStart) {
+            let chunk = text.substring(arrStart, arrEnd + 1);
+            // Clean control characters and trailing commas
+            chunk = chunk.replace(/[\x00-\x1F\x7F]/g, ' ')
+                         .replace(/,\s*]/g, ']')
+                         .replace(/,\s*}/g, '}');
+            try { return JSON.parse(chunk); } catch(e) {}
+
+            // Step 3b: Try fixing common LLM issues (unescaped quotes in strings)
+            try {
+                // Replace unescaped newlines inside strings
+                chunk = chunk.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
+                return JSON.parse(chunk);
+            } catch(e) {}
+        }
+
+        // Step 4: Extract JSON object  
+        const objStart = text.indexOf('{');
+        const objEnd = text.lastIndexOf('}');
+        if (objStart !== -1 && objEnd > objStart) {
+            let chunk = text.substring(objStart, objEnd + 1);
+            chunk = chunk.replace(/[\x00-\x1F\x7F]/g, ' ')
+                         .replace(/,\s*}/g, '}')
+                         .replace(/,\s*]/g, ']');
+            try {
+                const obj = JSON.parse(chunk);
+                // If the object contains an array value, use that
+                const arrayVal = Object.values(obj).find(v => Array.isArray(v));
+                return arrayVal || [obj];
+            } catch(e) {}
+        }
+
+        // Step 5: Extract individual JSON objects via regex
+        const jsonObjects = [];
+        const regex = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            try {
+                const cleaned = match[0].replace(/[\x00-\x1F\x7F]/g, ' ');
+                jsonObjects.push(JSON.parse(cleaned));
+            } catch(e) {}
+        }
+        return jsonObjects.length > 0 ? jsonObjects : null;
     }
 };

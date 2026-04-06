@@ -240,9 +240,14 @@ const AiCodegenMixin = {
                 if(lang === 'vue' || lang === 'react') lang = 'html';
                 window.monaco?.editor.setModelLanguage(this.editor.getModel(), lang);
                 this.editor.setValue(code);
+                setTimeout(() => this.editor.layout(), 50);
                 console.log('[CodeGen Editor Updated with:', code.length, 'chars]');
             } else {
                 console.error('[CodeGen] Editor not initialized');
+            }
+            
+            if (typeof this.saveAiHistory === 'function') {
+                this.saveAiHistory('codegen', prompt, `<pre style="font-size:12px; font-family:var(--font-mono); overflow-x:auto; margin:0;">${Helpers.escapeHtml(code.substring(0, 500))}${code.length > 500 ? '\n... (Code truncated)' : ''}</pre>`);
             }
         } catch(e) {
             console.error('[CodeGen Exception]', e);

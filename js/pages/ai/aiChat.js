@@ -176,6 +176,10 @@ const AiChatMixin = {
             let formattedReply = replyText.replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:8px;font-size:12px;overflow-x:auto;">$1</pre>');
             
             this.addMsg(formattedReply.trim(), 'bot');
+            
+            if (this.saveAiHistory) {
+                this.saveAiHistory('chat', query, formattedReply.trim());
+            }
         } finally {
             document.getElementById('ai-bot-send').disabled = false;
             document.getElementById('ai-bot-send').innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
