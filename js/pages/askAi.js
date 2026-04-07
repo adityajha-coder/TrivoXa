@@ -1,77 +1,95 @@
 const AskAiPage = {
     roleData: {
-        web: { title: 'Build Websites', desc: 'Everything you need to go from idea to deployed website.', stack: [
-            { name: 'HTML/CSS/JS', type: 'Foundation', desc: 'Core web technologies — start here', icon: 'fa-brands fa-html5', color: '#e34f26' },
-            { name: 'React / Vue', type: 'Framework', desc: 'Build dynamic, component-based UIs', icon: 'fa-brands fa-react', color: '#61dafb' },
-            { name: 'Tailwind CSS', type: 'Styling', desc: 'Utility-first CSS for rapid UI development', icon: 'fa-solid fa-palette', color: '#06b6d4' },
-            { name: 'Vercel / Netlify', type: 'Hosting', desc: 'Deploy instantly with git push', icon: 'fa-solid fa-rocket', color: '#3ecf6e' },
-            { name: 'REST APIs', type: 'Data', desc: 'Fetch data from external services', icon: 'fa-solid fa-plug', color: 'var(--primary-light)' },
-            { name: 'GitHub Pages', type: 'Free Hosting', desc: 'Host static sites directly from your repo', icon: 'fa-brands fa-github', color: '#e8e4dc' }
-        ]},
-        mobile: { title: 'Build Mobile Apps', desc: 'Create cross-platform mobile applications for iOS and Android.', stack: [
-            { name: 'React Native', type: 'Framework', desc: 'Build native apps with React and JS', icon: 'fa-brands fa-react', color: '#61dafb' },
-            { name: 'Expo', type: 'Toolchain', desc: 'Fastest way to build React Native apps', icon: 'fa-solid fa-bolt', color: 'var(--primary-light)' },
-            { name: 'Flutter', type: 'Framework', desc: 'Google UI toolkit for mobile, web, desktop', icon: 'fa-solid fa-feather', color: '#02569B' },
-            { name: 'Firebase', type: 'Backend', desc: 'Auth, database, storage, hosting', icon: 'fa-solid fa-fire', color: '#f0a030' },
-            { name: 'AsyncStorage', type: 'Storage', desc: 'Simple key-value local storage', icon: 'fa-solid fa-database', color: '#8b5cf6' },
-            { name: 'Play Store / App Store', type: 'Distribution', desc: 'Publish to millions of users', icon: 'fa-solid fa-store', color: '#3ecf6e' }
-        ]},
-        ai: { title: 'Learn AI / ML', desc: 'Get started with artificial intelligence — from APIs to training models.', stack: [
-            { name: 'OpenAI API', type: 'AI API', desc: 'GPT models for text generation', icon: 'fa-solid fa-brain', color: '#10a37f' },
-            { name: 'TensorFlow.js', type: 'ML Library', desc: 'Run ML models in the browser', icon: 'fa-solid fa-robot', color: '#ff6f00' },
-            { name: 'Hugging Face', type: 'Models Hub', desc: 'Thousands of pre-trained models', icon: 'fa-solid fa-face-smile', color: '#ffd21e' },
-            { name: 'Python + Jupyter', type: 'Environment', desc: 'Standard toolkit for data science', icon: 'fa-brands fa-python', color: '#3776ab' },
-            { name: 'Kaggle', type: 'Datasets', desc: 'Free datasets and competitions', icon: 'fa-solid fa-chart-line', color: '#20beff' },
-            { name: 'Replicate', type: 'Inference', desc: 'Run ML models via API calls', icon: 'fa-solid fa-cloud', color: '#8b5cf6' }
-        ]},
-        backend: { title: 'Build Backend / APIs', desc: 'Learn server-side applications, REST APIs, and databases.', stack: [
-            { name: 'Node.js', type: 'Runtime', desc: 'JavaScript on the server', icon: 'fa-brands fa-node-js', color: '#339933' },
-            { name: 'Express.js', type: 'Framework', desc: 'Minimal web framework for Node', icon: 'fa-solid fa-server', color: '#e8e4dc' },
-            { name: 'PostgreSQL', type: 'Database', desc: 'Powerful relational database', icon: 'fa-solid fa-database', color: '#336791' },
-            { name: 'MongoDB', type: 'Database', desc: 'Flexible NoSQL document DB', icon: 'fa-solid fa-leaf', color: '#47A248' },
-            { name: 'JWT / OAuth', type: 'Auth', desc: 'Secure authentication', icon: 'fa-solid fa-shield-halved', color: 'var(--error)' },
-            { name: 'Postman', type: 'Testing', desc: 'Test and debug APIs', icon: 'fa-solid fa-paper-plane', color: '#ff6c37' }
-        ]},
-        devops: { title: 'DevOps & Deployment', desc: 'Automate deployments, containerize apps, and manage infrastructure.', stack: [
-            { name: 'Docker', type: 'Containers', desc: 'Package apps into containers', icon: 'fa-brands fa-docker', color: '#2496ed' },
-            { name: 'GitHub Actions', type: 'CI/CD', desc: 'Automate build/test/deploy', icon: 'fa-brands fa-github', color: '#e8e4dc' },
-            { name: 'AWS / GCP', type: 'Cloud', desc: 'Scalable cloud platforms', icon: 'fa-brands fa-aws', color: '#ff9900' },
-            { name: 'Nginx', type: 'Web Server', desc: 'Reverse proxy and load balancer', icon: 'fa-solid fa-globe', color: '#009639' },
-            { name: 'Terraform', type: 'IaC', desc: 'Infrastructure as code', icon: 'fa-solid fa-cubes', color: '#7b42bc' },
-            { name: 'Linux / Bash', type: 'OS', desc: 'Server administration skills', icon: 'fa-brands fa-linux', color: '#fcc624' }
-        ]},
-        game: { title: 'Build Games', desc: 'Create 2D and 3D games for web, mobile, or desktop.', stack: [
-            { name: 'Three.js', type: '3D Engine', desc: '3D experiences in the browser', icon: 'fa-solid fa-cube', color: 'var(--primary-light)' },
-            { name: 'Phaser', type: '2D Engine', desc: 'Fast HTML5 game framework', icon: 'fa-solid fa-gamepad', color: '#ec4899' },
-            { name: 'Unity', type: 'Game Engine', desc: 'Industry-standard engine', icon: 'fa-solid fa-dice-d20', color: '#e8e4dc' },
-            { name: 'Godot', type: 'Game Engine', desc: 'Free open-source alternative', icon: 'fa-solid fa-gem', color: '#478cbf' },
-            { name: 'PixiJS', type: '2D Renderer', desc: 'Super fast WebGL rendering', icon: 'fa-solid fa-star', color: '#ff6f91' },
-            { name: 'Socket.io', type: 'Multiplayer', desc: 'Real-time multiplayer', icon: 'fa-solid fa-network-wired', color: '#06b6d4' }
-        ]},
-        cloud: { title: 'Cloud Architecture', desc: 'Design and manage scalable cloud infrastructure and serverless apps.', stack: [
-            { name: 'AWS Lambda', type: 'Serverless', desc: 'Run code without provisioning servers', icon: 'fa-brands fa-aws', color: '#ff9900' },
-            { name: 'Kubernetes', type: 'Orchestration', desc: 'Manage containerized applications at scale', icon: 'fa-solid fa-dharmachakra', color: '#326ce5' },
-            { name: 'Terraform', type: 'IaC', desc: 'Infrastructure as code for automation', icon: 'fa-solid fa-cubes', color: '#7b42bc' },
-            { name: 'Azure / GCP', type: 'Cloud', desc: 'Enterprise-grade cloud services', icon: 'fa-brands fa-microsoft', color: '#00a4ef' },
-            { name: 'Redis', type: 'Caching', desc: 'In-memory data structure store', icon: 'fa-solid fa-bolt', color: '#d82c20' },
-            { name: 'Grafana / Prometheus', type: 'Monitoring', desc: 'Visualizing and alert on metrics', icon: 'fa-solid fa-chart-line', color: '#f46800' }
-        ]},
-        security: { title: 'Cybersecurity', desc: 'Protect applications, networks, and data from digital attacks.', stack: [
-            { name: 'OWASP ZAP', type: 'Scanning', desc: 'Find vulnerabilities in web apps', icon: 'fa-solid fa-shield-virus', color: '#3ecf6e' },
-            { name: 'Kali Linux', type: 'Pentesting', desc: 'Advanced penetration testing platform', icon: 'fa-brands fa-linux', color: '#55aaff' },
-            { name: 'Wireshark', type: 'Network', desc: 'Analyze network protocol and traffic', icon: 'fa-solid fa-network-wired', color: '#167ec2' },
-            { name: 'Burp Suite', type: 'Security', desc: 'Web application security testing', icon: 'fa-solid fa-user-shield', color: '#ff6633' },
-            { name: 'Hashcat', type: 'Cracking', desc: 'Advanced password recovery tool', icon: 'fa-solid fa-unlock', color: '#ffbe00' },
-            { name: 'Metasploit', type: 'Exploitation', desc: 'Software for offensive security', icon: 'fa-solid fa-skull', color: '#ee4444' }
-        ]},
-        data: { title: 'Data Science', desc: 'Extract insights from data using statistical and computational techniques.', stack: [
-            { name: 'Python / R', type: 'Language', desc: 'Primary languages for data analysis', icon: 'fa-brands fa-python', color: '#3776ab' },
-            { name: 'Pandas / NumPy', type: 'Analysis', desc: 'Data manipulation and computation', icon: 'fa-solid fa-table', color: '#150458' },
-            { name: 'Scikit-Learn', type: 'Machine Learning', desc: 'Simple tools for predictive analysis', icon: 'fa-solid fa-microchip', color: '#f89939' },
-            { name: 'Tableau / PowerBI', type: 'BI', desc: 'Business intelligence and visualization', icon: 'fa-solid fa-chart-pie', color: '#e97627' },
-            { name: 'SQL / BigQuery', type: 'Query', desc: 'Retrieve data from large datasets', icon: 'fa-solid fa-database', color: '#4285f4' },
-            { name: 'Matplotlib / Seaborn', type: 'Plotting', desc: 'Create static, animated visualizations', icon: 'fa-solid fa-chart-area', color: '#888888' }
-        ]}
+        web: {
+            title: 'Build Websites', desc: 'Everything you need to go from idea to deployed website.', stack: [
+                { name: 'HTML/CSS/JS', type: 'Foundation', desc: 'Core web technologies — start here', icon: 'fa-brands fa-html5', color: '#e34f26' },
+                { name: 'React / Vue', type: 'Framework', desc: 'Build dynamic, component-based UIs', icon: 'fa-brands fa-react', color: '#61dafb' },
+                { name: 'Tailwind CSS', type: 'Styling', desc: 'Utility-first CSS for rapid UI development', icon: 'fa-solid fa-palette', color: '#06b6d4' },
+                { name: 'Vercel / Netlify', type: 'Hosting', desc: 'Deploy instantly with git push', icon: 'fa-solid fa-rocket', color: '#3ecf6e' },
+                { name: 'REST APIs', type: 'Data', desc: 'Fetch data from external services', icon: 'fa-solid fa-plug', color: 'var(--primary-light)' },
+                { name: 'GitHub Pages', type: 'Free Hosting', desc: 'Host static sites directly from your repo', icon: 'fa-brands fa-github', color: '#e8e4dc' }
+            ]
+        },
+        mobile: {
+            title: 'Build Mobile Apps', desc: 'Create cross-platform mobile applications for iOS and Android.', stack: [
+                { name: 'React Native', type: 'Framework', desc: 'Build native apps with React and JS', icon: 'fa-brands fa-react', color: '#61dafb' },
+                { name: 'Expo', type: 'Toolchain', desc: 'Fastest way to build React Native apps', icon: 'fa-solid fa-bolt', color: 'var(--primary-light)' },
+                { name: 'Flutter', type: 'Framework', desc: 'Google UI toolkit for mobile, web, desktop', icon: 'fa-solid fa-feather', color: '#02569B' },
+                { name: 'Firebase', type: 'Backend', desc: 'Auth, database, storage, hosting', icon: 'fa-solid fa-fire', color: '#f0a030' },
+                { name: 'AsyncStorage', type: 'Storage', desc: 'Simple key-value local storage', icon: 'fa-solid fa-database', color: '#8b5cf6' },
+                { name: 'Play Store / App Store', type: 'Distribution', desc: 'Publish to millions of users', icon: 'fa-solid fa-store', color: '#3ecf6e' }
+            ]
+        },
+        ai: {
+            title: 'Learn AI / ML', desc: 'Get started with artificial intelligence — from APIs to training models.', stack: [
+                { name: 'OpenAI API', type: 'AI API', desc: 'GPT models for text generation', icon: 'fa-solid fa-brain', color: '#10a37f' },
+                { name: 'TensorFlow.js', type: 'ML Library', desc: 'Run ML models in the browser', icon: 'fa-solid fa-robot', color: '#ff6f00' },
+                { name: 'Hugging Face', type: 'Models Hub', desc: 'Thousands of pre-trained models', icon: 'fa-solid fa-face-smile', color: '#ffd21e' },
+                { name: 'Python + Jupyter', type: 'Environment', desc: 'Standard toolkit for data science', icon: 'fa-brands fa-python', color: '#3776ab' },
+                { name: 'Kaggle', type: 'Datasets', desc: 'Free datasets and competitions', icon: 'fa-solid fa-chart-line', color: '#20beff' },
+                { name: 'Replicate', type: 'Inference', desc: 'Run ML models via API calls', icon: 'fa-solid fa-cloud', color: '#8b5cf6' }
+            ]
+        },
+        backend: {
+            title: 'Build Backend / APIs', desc: 'Learn server-side applications, REST APIs, and databases.', stack: [
+                { name: 'Node.js', type: 'Runtime', desc: 'JavaScript on the server', icon: 'fa-brands fa-node-js', color: '#339933' },
+                { name: 'Express.js', type: 'Framework', desc: 'Minimal web framework for Node', icon: 'fa-solid fa-server', color: '#e8e4dc' },
+                { name: 'PostgreSQL', type: 'Database', desc: 'Powerful relational database', icon: 'fa-solid fa-database', color: '#336791' },
+                { name: 'MongoDB', type: 'Database', desc: 'Flexible NoSQL document DB', icon: 'fa-solid fa-leaf', color: '#47A248' },
+                { name: 'JWT / OAuth', type: 'Auth', desc: 'Secure authentication', icon: 'fa-solid fa-shield-halved', color: 'var(--error)' },
+                { name: 'Postman', type: 'Testing', desc: 'Test and debug APIs', icon: 'fa-solid fa-paper-plane', color: '#ff6c37' }
+            ]
+        },
+        devops: {
+            title: 'DevOps & Deployment', desc: 'Automate deployments, containerize apps, and manage infrastructure.', stack: [
+                { name: 'Docker', type: 'Containers', desc: 'Package apps into containers', icon: 'fa-brands fa-docker', color: '#2496ed' },
+                { name: 'GitHub Actions', type: 'CI/CD', desc: 'Automate build/test/deploy', icon: 'fa-brands fa-github', color: '#e8e4dc' },
+                { name: 'AWS / GCP', type: 'Cloud', desc: 'Scalable cloud platforms', icon: 'fa-brands fa-aws', color: '#ff9900' },
+                { name: 'Nginx', type: 'Web Server', desc: 'Reverse proxy and load balancer', icon: 'fa-solid fa-globe', color: '#009639' },
+                { name: 'Terraform', type: 'IaC', desc: 'Infrastructure as code', icon: 'fa-solid fa-cubes', color: '#7b42bc' },
+                { name: 'Linux / Bash', type: 'OS', desc: 'Server administration skills', icon: 'fa-brands fa-linux', color: '#fcc624' }
+            ]
+        },
+        game: {
+            title: 'Build Games', desc: 'Create 2D and 3D games for web, mobile, or desktop.', stack: [
+                { name: 'Three.js', type: '3D Engine', desc: '3D experiences in the browser', icon: 'fa-solid fa-cube', color: 'var(--primary-light)' },
+                { name: 'Phaser', type: '2D Engine', desc: 'Fast HTML5 game framework', icon: 'fa-solid fa-gamepad', color: '#ec4899' },
+                { name: 'Unity', type: 'Game Engine', desc: 'Industry-standard engine', icon: 'fa-solid fa-dice-d20', color: '#e8e4dc' },
+                { name: 'Godot', type: 'Game Engine', desc: 'Free open-source alternative', icon: 'fa-solid fa-gem', color: '#478cbf' },
+                { name: 'PixiJS', type: '2D Renderer', desc: 'Super fast WebGL rendering', icon: 'fa-solid fa-star', color: '#ff6f91' },
+                { name: 'Socket.io', type: 'Multiplayer', desc: 'Real-time multiplayer', icon: 'fa-solid fa-network-wired', color: '#06b6d4' }
+            ]
+        },
+        cloud: {
+            title: 'Cloud Architecture', desc: 'Design and manage scalable cloud infrastructure and serverless apps.', stack: [
+                { name: 'AWS Lambda', type: 'Serverless', desc: 'Run code without provisioning servers', icon: 'fa-brands fa-aws', color: '#ff9900' },
+                { name: 'Kubernetes', type: 'Orchestration', desc: 'Manage containerized applications at scale', icon: 'fa-solid fa-dharmachakra', color: '#326ce5' },
+                { name: 'Terraform', type: 'IaC', desc: 'Infrastructure as code for automation', icon: 'fa-solid fa-cubes', color: '#7b42bc' },
+                { name: 'Azure / GCP', type: 'Cloud', desc: 'Enterprise-grade cloud services', icon: 'fa-brands fa-microsoft', color: '#00a4ef' },
+                { name: 'Redis', type: 'Caching', desc: 'In-memory data structure store', icon: 'fa-solid fa-bolt', color: '#d82c20' },
+                { name: 'Grafana / Prometheus', type: 'Monitoring', desc: 'Visualizing and alert on metrics', icon: 'fa-solid fa-chart-line', color: '#f46800' }
+            ]
+        },
+        security: {
+            title: 'Cybersecurity', desc: 'Protect applications, networks, and data from digital attacks.', stack: [
+                { name: 'OWASP ZAP', type: 'Scanning', desc: 'Find vulnerabilities in web apps', icon: 'fa-solid fa-shield-virus', color: '#3ecf6e' },
+                { name: 'Kali Linux', type: 'Pentesting', desc: 'Advanced penetration testing platform', icon: 'fa-brands fa-linux', color: '#55aaff' },
+                { name: 'Wireshark', type: 'Network', desc: 'Analyze network protocol and traffic', icon: 'fa-solid fa-network-wired', color: '#167ec2' },
+                { name: 'Burp Suite', type: 'Security', desc: 'Web application security testing', icon: 'fa-solid fa-user-shield', color: '#ff6633' },
+                { name: 'Hashcat', type: 'Cracking', desc: 'Advanced password recovery tool', icon: 'fa-solid fa-unlock', color: '#ffbe00' },
+                { name: 'Metasploit', type: 'Exploitation', desc: 'Software for offensive security', icon: 'fa-solid fa-skull', color: '#ee4444' }
+            ]
+        },
+        data: {
+            title: 'Data Science', desc: 'Extract insights from data using statistical and computational techniques.', stack: [
+                { name: 'Python / R', type: 'Language', desc: 'Primary languages for data analysis', icon: 'fa-brands fa-python', color: '#3776ab' },
+                { name: 'Pandas / NumPy', type: 'Analysis', desc: 'Data manipulation and computation', icon: 'fa-solid fa-table', color: '#150458' },
+                { name: 'Scikit-Learn', type: 'Machine Learning', desc: 'Simple tools for predictive analysis', icon: 'fa-solid fa-microchip', color: '#f89939' },
+                { name: 'Tableau / PowerBI', type: 'BI', desc: 'Business intelligence and visualization', icon: 'fa-solid fa-chart-pie', color: '#e97627' },
+                { name: 'SQL / BigQuery', type: 'Query', desc: 'Retrieve data from large datasets', icon: 'fa-solid fa-database', color: '#4285f4' },
+                { name: 'Matplotlib / Seaborn', type: 'Plotting', desc: 'Create static, animated visualizations', icon: 'fa-solid fa-chart-area', color: '#888888' }
+            ]
+        }
     },
 
     recommendations: {
@@ -93,14 +111,14 @@ const AskAiPage = {
     currentAiModel: localStorage.getItem('vertex_ai_model') || 'mixtral',
     apiKey: localStorage.getItem('vertex_groq_key') || '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',
     aiHistory: [],
-    
+
     archSuggestions: [
-        "Scalable Node.js Microservices", "React native chat app", 
-        "Python E-commerce with Django", "Vue 3 SSR blog", 
+        "Scalable Node.js Microservices", "React native chat app",
+        "Python E-commerce with Django", "Vue 3 SSR blog",
         "Next.js Portfolio", "Express REST API template",
         "Fullstack SvelteKit store"
     ],
-     async getAirforceModel(fallbackModelStr = null) {
+    async getAirforceModel(fallbackModelStr = null) {
         // Use Groq API models
         const activeModel = fallbackModelStr || this.currentAiModel || 'mixtral';
         const modelMap = {
@@ -144,7 +162,7 @@ const AskAiPage = {
     render() {
         Navbar.renderTopbar('Ask AI');
         const content = document.getElementById('page-content');
-        
+
         const archSuggestHtml = this.archSuggestions.sort(() => 0.5 - Math.random()).slice(0, 4)
             .map(s => `<button class="ai-suggest-chip" data-q="${s}">${s}</button>`).join('');
 
@@ -388,15 +406,15 @@ const AskAiPage = {
                     </div>
                     <div class="role-cards-grid mb-lg" id="role-cards">
                         ${Object.entries(this.roleData).map(([key, data]) => {
-                            const icons = { web:'fa-solid fa-globe', mobile:'fa-solid fa-mobile-screen', ai:'fa-solid fa-brain', backend:'fa-solid fa-server', devops:'fa-solid fa-cloud-arrow-up', game:'fa-solid fa-gamepad', cloud: 'fa-solid fa-cloud', security: 'fa-solid fa-user-shield', data: 'fa-solid fa-chart-line' };
-                            const colors = { web:'rgba(212,168,67,0.08)', mobile:'rgba(62,207,110,0.06)', ai:'rgba(139,92,246,0.06)', backend:'rgba(240,160,48,0.06)', devops:'rgba(6,182,212,0.06)', game:'rgba(236,72,153,0.06)', cloud: 'rgba(50,108,229,0.06)', security: 'rgba(62,207,110,0.06)', data: 'rgba(233,118,39,0.06)' };
-                            const iconColors = { web:'var(--primary-light)', mobile:'var(--success)', ai:'#8b5cf6', backend:'var(--warning)', devops:'#06b6d4', game:'#ec4899', cloud: '#326ce5', security: 'var(--success)', data: '#e97627' };
-                            return `<div class="role-card" data-role="${key}">
+            const icons = { web: 'fa-solid fa-globe', mobile: 'fa-solid fa-mobile-screen', ai: 'fa-solid fa-brain', backend: 'fa-solid fa-server', devops: 'fa-solid fa-cloud-arrow-up', game: 'fa-solid fa-gamepad', cloud: 'fa-solid fa-cloud', security: 'fa-solid fa-user-shield', data: 'fa-solid fa-chart-line' };
+            const colors = { web: 'rgba(212,168,67,0.08)', mobile: 'rgba(62,207,110,0.06)', ai: 'rgba(139,92,246,0.06)', backend: 'rgba(240,160,48,0.06)', devops: 'rgba(6,182,212,0.06)', game: 'rgba(236,72,153,0.06)', cloud: 'rgba(50,108,229,0.06)', security: 'rgba(62,207,110,0.06)', data: 'rgba(233,118,39,0.06)' };
+            const iconColors = { web: 'var(--primary-light)', mobile: 'var(--success)', ai: '#8b5cf6', backend: 'var(--warning)', devops: '#06b6d4', game: '#ec4899', cloud: '#326ce5', security: 'var(--success)', data: '#e97627' };
+            return `<div class="role-card" data-role="${key}">
                                 <div class="role-icon" style="background:${colors[key]};"><i class="${icons[key]}" style="color:${iconColors[key]};"></i></div>
-                                <div class="role-info"><h3>${data.title}</h3><p>${data.stack.slice(0,3).map(s=>s.name).join(', ')}</p></div>
+                                <div class="role-info"><h3>${data.title}</h3><p>${data.stack.slice(0, 3).map(s => s.name).join(', ')}</p></div>
                                 <i class="fa-solid fa-chevron-right role-arrow"></i>
                             </div>`;
-                        }).join('')}
+        }).join('')}
                     </div>
 
                     <div class="glass-card-static mb-lg" id="role-detail" style="display:none;padding:24px;">
@@ -444,7 +462,7 @@ const AskAiPage = {
 
         Helpers.initMonaco().then(monaco => {
             const container = document.getElementById('monaco-code-output');
-            if(container) {
+            if (container) {
                 this.editor = monaco.editor.create(container, {
                     value: '// AI Generated code will appear here...',
                     language: 'javascript',
@@ -459,7 +477,7 @@ const AskAiPage = {
                 });
             }
         });
-        
+
         // Load history logic
         setTimeout(() => this.loadHistory(), 800);
     },
@@ -470,7 +488,7 @@ const AskAiPage = {
             try {
                 const snap = await window.db.collection('users').doc(userId).collection('ai_history').orderBy('timestamp', 'desc').limit(20).get();
                 this.aiHistory = snap.docs.map(doc => doc.data());
-            } catch(e) {
+            } catch (e) {
                 console.error('[AskAi] Failed to load history from DB:', e);
                 this.aiHistory = JSON.parse(localStorage.getItem('ai_history') || '[]');
             }
@@ -482,25 +500,25 @@ const AskAiPage = {
 
     async saveAiHistory(moduleType, prompt, response) {
         if (!prompt || !response) return;
-        
-        const item = { 
-            id: 'ai_' + Date.now().toString(36), 
-            module: moduleType, 
-            prompt, 
-            response, 
-            timestamp: Date.now() 
+
+        const item = {
+            id: 'ai_' + Date.now().toString(36),
+            module: moduleType,
+            prompt,
+            response,
+            timestamp: Date.now()
         };
-        
+
         this.aiHistory.unshift(item);
         if (this.aiHistory.length > 20) this.aiHistory.pop();
-        
+
         this.renderHistory();
 
         const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
         if (userId && window.db) {
             try {
                 await window.db.collection('users').doc(userId).collection('ai_history').doc(item.id).set(item);
-            } catch(e) {
+            } catch (e) {
                 console.error('[AskAi] Failed to save history to DB:', e);
             }
         } else {
@@ -516,7 +534,7 @@ const AskAiPage = {
         if (userId && window.db) {
             try {
                 await window.db.collection('users').doc(userId).collection('ai_history').doc(id).delete();
-            } catch(e) {
+            } catch (e) {
                 console.error('[AskAi] Failed to delete history:', e);
             }
         } else {
@@ -526,10 +544,10 @@ const AskAiPage = {
 
     async clearAllAiHistory() {
         if (!confirm('Are you sure you want to clear all AI history?')) return;
-        
+
         this.aiHistory = [];
         this.renderHistory();
-        
+
         const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
         if (userId && window.db) {
             try {
@@ -537,7 +555,7 @@ const AskAiPage = {
                 const batch = window.db.batch();
                 snap.docs.forEach(doc => batch.delete(doc.ref));
                 await batch.commit();
-            } catch(e) {
+            } catch (e) {
                 console.error('[AskAi] Failed to clear history:', e);
             }
         } else {
@@ -560,7 +578,7 @@ const AskAiPage = {
         empty.style.display = 'none';
 
         const icons = { 'chat': 'fa-comments', 'architect': 'fa-code-merge', 'codegen': 'fa-laptop-code', 'analyzer': 'fa-microscope' };
-        
+
         list.innerHTML = this.aiHistory.map((h, i) => {
             const icon = icons[h.module] || 'fa-robot';
             return `
@@ -592,17 +610,17 @@ const AskAiPage = {
                 e.currentTarget.innerHTML = isHidden ? '<i class="fa-solid fa-chevron-up"></i>' : '<i class="fa-solid fa-chevron-down"></i>';
             });
         });
-        
+
         // Bind deletes
         list.querySelectorAll('.delete-ai-history').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if(confirm('Delete this from history?')) {
+                if (confirm('Delete this from history?')) {
                     this.deleteAiHistory(e.currentTarget.dataset.id);
                 }
             });
         });
-        
+
         // Bind clear all
         const clearBtn = document.getElementById('clear-ai-history');
         if (clearBtn && !clearBtn.dataset.bound) {
@@ -614,14 +632,14 @@ const AskAiPage = {
     bindModelSelect() {
         const sel = document.getElementById('ai-model-select');
         const keyInput = document.getElementById('ai-api-key');
-        if(sel) {
+        if (sel) {
             sel.addEventListener('change', (e) => {
                 this.currentAiModel = e.target.value;
                 localStorage.setItem('vertex_ai_model', this.currentAiModel);
                 Toast.show('Groq Model switched to ' + e.target.options[e.target.selectedIndex].text, 'info');
             });
         }
-        if(keyInput) {
+        if (keyInput) {
             keyInput.addEventListener('input', (e) => {
                 localStorage.setItem('vertex_groq_key', e.target.value);
                 API.setGroqApiKey(e.target.value);
@@ -636,28 +654,28 @@ const AskAiPage = {
             console.warn('[Ask AI] Missing ai-hub-tabs element - skipping tab binding');
             return;
         }
-        
+
         aiHubTabs.addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
             if (!tab) return;
             document.querySelectorAll('#ai-hub-tabs .tab-item').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             const target = tab.dataset.tab;
-            
+
             const chatTab = document.getElementById('ai-tab-chat');
             const archTab = document.getElementById('ai-tab-architect');
             const codegenTab = document.getElementById('ai-tab-codegen');
             const analyzerTab = document.getElementById('ai-tab-analyzer');
             const stacksTab = document.getElementById('ai-tab-stacks');
             const historyTab = document.getElementById('ai-tab-history');
-            
+
             if (chatTab) chatTab.style.display = target === 'chat' ? 'block' : 'none';
             if (archTab) archTab.style.display = target === 'architect' ? 'block' : 'none';
             if (codegenTab) codegenTab.style.display = target === 'codegen' ? 'block' : 'none';
             if (analyzerTab) analyzerTab.style.display = target === 'analyzer' ? 'block' : 'none';
             if (stacksTab) stacksTab.style.display = target === 'stacks' ? 'block' : 'none';
             if (historyTab) historyTab.style.display = target === 'history' ? 'block' : 'none';
-            
+
             if (target === 'codegen' && this.editor) {
                 // Fix Monaco layout breaking when initialized inside display:none
                 setTimeout(() => this.editor.layout(), 50);
