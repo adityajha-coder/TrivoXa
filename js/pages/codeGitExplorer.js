@@ -125,9 +125,17 @@ const CodeGitExplorerPage = {
                         <div class="glass-card-static" style="padding:0;">
                             <div class="pane-header">
                                 <span><i class="fa-solid fa-diagram-project" style="color:var(--primary-light);margin-right:5px;"></i> 3D Map</span>
-                                <button class="btn btn-ghost btn-sm" id="structure-reset"><i class="fa-solid fa-rotate"></i></button>
+                                <div class="flex-gap gap-sm" style="align-items:center;">
+                                    <span class="text-xs" style="color:#4ade80;">●</span>
+                                    <span class="text-xs text-muted">Small</span>
+                                    <span class="text-xs" style="color:#f7df1e;">●</span>
+                                    <span class="text-xs text-muted">Mid</span>
+                                    <span class="text-xs" style="color:#ff4444;">●</span>
+                                    <span class="text-xs text-muted">Large</span>
+                                    <button class="btn btn-ghost btn-sm" id="structure-reset"><i class="fa-solid fa-rotate"></i></button>
+                                </div>
                             </div>
-                            <div class="three-canvas-wrap" id="structure-3d" style="min-height:350px;height:100%;"></div>
+                            <div class="three-canvas-wrap" id="structure-3d" style="min-height:350px;height:100%;position:relative;"></div>
                         </div>
                     </div>
                     <div class="mt-lg">

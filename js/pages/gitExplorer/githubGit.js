@@ -1,9 +1,9 @@
 const GithubGitMixin = {
     prepareGitView() {
         const { repo, branches, commits } = this.repoData;
-        const tagHtml = branches.slice(0, 8).map(b => { 
-            const cls = b.name === 'main' || b.name === 'master' ? 'branch-main' : b.name.includes('fix') ? 'branch-hotfix' : 'branch-feature'; 
-            return `<span class="branch-label ${cls}"><i class="fa-solid fa-code-branch"></i> ${b.name}</span>`; 
+        const tagHtml = branches.slice(0, 8).map(b => {
+            const cls = b.name === 'main' || b.name === 'master' ? 'branch-main' : b.name.includes('fix') ? 'branch-hotfix' : 'branch-feature';
+            return `<span class="branch-label ${cls}"><i class="fa-solid fa-code-branch"></i> ${b.name}</span>`;
         }).join('');
         document.getElementById('branch-tags').innerHTML = tagHtml;
 
@@ -21,8 +21,8 @@ const GithubGitMixin = {
                     <div style="padding:10px;background:rgba(212,168,67,0.03);border-radius:var(--radius);border:1px solid var(--border);"><div class="text-xs text-muted mb-sm">Branches</div><div style="font-size:1rem;font-weight:700;color:var(--success);">${branches.length}</div></div>
                     <div style="padding:10px;background:rgba(212,168,67,0.03);border-radius:var(--radius);border:1px solid var(--border);"><div class="text-xs text-muted mb-sm">Issues</div><div style="font-size:1rem;font-weight:700;color:var(--warning);">${Helpers.formatNumber(repo.open_issues_count)}</div></div>
                 </div>
-                <div><span class="text-sm" style="font-weight:600;">Top Contributors</span><div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">${topContribs.map(([name, count]) => `<div class="flex-between"><span class="text-sm">${Helpers.escapeHtml(name)}</span><div class="flex-gap gap-sm"><div style="width:50px;height:3px;background:rgba(212,168,67,0.05);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${(count/topContribs[0][1])*100}%;background:var(--primary);border-radius:3px;"></div></div><span class="text-xs text-muted">${count}</span></div></div>`).join('')}</div></div>
-                <div><span class="text-sm" style="font-weight:600;">Commit Frequency</span><div style="margin-top:10px;display:flex;align-items:flex-end;gap:5px;height:44px;">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => { const count = dayMap[d] || 0; const max = Math.max(...Object.values(dayMap), 1); const pct = Math.max(6, (count / max) * 100); return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:100%;height:${pct}%;background:linear-gradient(180deg,var(--primary),var(--primary-dark));border-radius:2px 2px 0 0;min-height:2px;"></div><span class="text-xs text-muted">${d.charAt(0)}</span></div>`; }).join('')}</div></div>
+                <div><span class="text-sm" style="font-weight:600;">Top Contributors</span><div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">${topContribs.map(([name, count]) => `<div class="flex-between"><span class="text-sm">${Helpers.escapeHtml(name)}</span><div class="flex-gap gap-sm"><div style="width:50px;height:3px;background:rgba(212,168,67,0.05);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${(count / topContribs[0][1]) * 100}%;background:var(--primary);border-radius:3px;"></div></div><span class="text-xs text-muted">${count}</span></div></div>`).join('')}</div></div>
+                <div><span class="text-sm" style="font-weight:600;">Commit Frequency</span><div style="margin-top:10px;display:flex;align-items:flex-end;gap:5px;height:44px;">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => { const count = dayMap[d] || 0; const max = Math.max(...Object.values(dayMap), 1); const pct = Math.max(6, (count / max) * 100); return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:100%;height:${pct}%;background:linear-gradient(180deg,var(--primary),var(--primary-dark));border-radius:2px 2px 0 0;min-height:2px;"></div><span class="text-xs text-muted">${d.charAt(0)}</span></div>`; }).join('')}</div></div>
             </div>`;
 
         document.getElementById('commit-count').textContent = `${commits.length} loaded`;
@@ -93,7 +93,7 @@ const GithubGitMixin = {
             node.position.set(x, 0, 0);
             this.gitScene.add(node);
             this.gitNodes.push(node);
-            if (i > 0) { const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-(i-1)*2.6, 0, 0), new THREE.Vector3(x, 0, 0)]); this.gitScene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.4 }))); }
+            if (i > 0) { const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-(i - 1) * 2.6, 0, 0), new THREE.Vector3(x, 0, 0)]); this.gitScene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.4 }))); }
         });
         branches.slice(1, 5).forEach((b, bi) => {
             const color = branchColors[(bi + 1) % branchColors.length];
@@ -109,7 +109,7 @@ const GithubGitMixin = {
                 nd.position.set(x, y, 0);
                 this.gitScene.add(nd);
                 this.gitNodes.push(nd);
-                if (j > 0) { const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(sx-1.4-(j-1)*2.6, y, 0), new THREE.Vector3(x, y, 0)]); this.gitScene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.35 }))); }
+                if (j > 0) { const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(sx - 1.4 - (j - 1) * 2.6, y, 0), new THREE.Vector3(x, y, 0)]); this.gitScene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.35 }))); }
             }
         });
         document.getElementById('git-reset').onclick = () => { this.gitCamera.position.set(5, 10, 30); this.gitControls.target.set(0, 0, 0); };

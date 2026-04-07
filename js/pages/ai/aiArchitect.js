@@ -4,15 +4,15 @@ const AiArchitectMixin = {
         const archPrompt = document.getElementById('ai-arch-prompt');
         const copyCmd = document.getElementById('ai-copy-cmd');
         const suggestionsArea = document.getElementById('ai-arch-suggestions');
-        
+
         if (!archBtn || !archPrompt || !copyCmd) {
             console.warn('[Architect] Missing architect elements - skipping binding');
             return;
         }
-        
+
         archBtn.addEventListener('click', () => this.generateArchitecture());
         archPrompt.addEventListener('keydown', e => {
-            if(e.key === 'Enter') this.generateArchitecture();
+            if (e.key === 'Enter') this.generateArchitecture();
         });
         copyCmd.addEventListener('click', () => {
             const cmd = document.getElementById('ai-arch-cmd');
@@ -22,9 +22,9 @@ const AiArchitectMixin = {
             }
         });
 
-        if(suggestionsArea) {
+        if (suggestionsArea) {
             suggestionsArea.addEventListener('click', (e) => {
-                if(e.target.classList.contains('ai-suggest-chip')) {
+                if (e.target.classList.contains('ai-suggest-chip')) {
                     archPrompt.value = e.target.dataset.q;
                     this.generateArchitecture();
                 }
@@ -34,8 +34,8 @@ const AiArchitectMixin = {
 
     async generateArchitecture() {
         const prompt = document.getElementById('ai-arch-prompt').value.trim();
-        if(!prompt) return Toast.show('Please describe your project first.', 'warning');
-        
+        if (!prompt) return Toast.show('Please describe your project first.', 'warning');
+
         const btn = document.getElementById('ai-arch-btn');
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Designing...';
         btn.disabled = true;
@@ -56,31 +56,31 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
                     { role: 'user', content: 'Project: ' + prompt + '. Return ONLY JSON.' }
                 ], 'llama-3.1-8b-instant', 0.7);
                 clearTimeout(timeout);
-                
+
                 text = res.choices[0]?.message?.content || '';
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     text = AskAiPage.cleanAiResponse(text);
                 }
-            } catch(e) {
+            } catch (e) {
                 clearTimeout(timeout);
                 console.error('[Architecture Builder Error]', e.message);
                 throw e;
             }
-            
+
             text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-            
+
             let data = null;
             const startIdx = text.indexOf('{');
             const endIdx = text.lastIndexOf('}');
             if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
                 try {
                     data = JSON.parse(text.slice(startIdx, endIdx + 1));
-                } catch(innerErr) {
+                } catch (innerErr) {
                     try {
                         let cleaned = text.slice(startIdx, endIdx + 1);
                         cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ').replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
                         data = JSON.parse(cleaned);
-                    } catch(cleanErr) {
+                    } catch (cleanErr) {
                         console.warn('AI Architect: Could not parse AI response, using smart fallback.');
                         data = null;
                     }
@@ -92,12 +92,12 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
             }
 
             this.currentProjectState = data;
-            
+
             const renderTree = (node) => {
-                if(typeof node !== 'object' || node === null) return '';
+                if (typeof node !== 'object' || node === null) return '';
                 let html = '<ul class="folder-tree">';
-                for(let key in node) {
-                    if(typeof node[key] === 'object' && node[key] !== null) {
+                for (let key in node) {
+                    if (typeof node[key] === 'object' && node[key] !== null) {
                         html += `<li><div class="dir-label"><i class="fa-solid fa-folder"></i> ${Helpers.escapeHtml(key)}/</div>${renderTree(node[key])}</li>`;
                     } else {
                         html += `<li><div class="file-label"><i class="fa-regular fa-file-code"></i> ${Helpers.escapeHtml(key)}</div></li>`;
@@ -111,7 +111,7 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
             document.getElementById('ai-arch-cmd').textContent = data.setupCommand || "echo 'No command provided'";
             document.getElementById('ai-arch-results').style.display = 'grid';
             Toast.show('Architecture built successfully!', 'success');
-            
+
             if (typeof this.saveAiHistory === 'function') {
                 this.saveAiHistory('architect', prompt, `<pre style="font-size:12px; font-family:var(--font-mono); overflow-x:auto; margin:0;"><strong>Setup Command:</strong>\n${data.setupCommand}\n\n<strong>Structure:</strong>\n${JSON.stringify(data.tree || data.flatFiles, null, 2)}</pre>`);
             }
@@ -122,10 +122,10 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
                 const data = this._buildFallbackArch(prompt);
                 this.currentProjectState = data;
                 const renderTree = (node) => {
-                    if(typeof node !== 'object' || node === null) return '';
+                    if (typeof node !== 'object' || node === null) return '';
                     let html = '<ul class="folder-tree">';
-                    for(let key in node) {
-                        if(typeof node[key] === 'object' && node[key] !== null) {
+                    for (let key in node) {
+                        if (typeof node[key] === 'object' && node[key] !== null) {
                             html += `<li><div class="dir-label"><i class="fa-solid fa-folder"></i> ${Helpers.escapeHtml(key)}/</div>${renderTree(node[key])}</li>`;
                         } else {
                             html += `<li><div class="file-label"><i class="fa-regular fa-file-code"></i> ${Helpers.escapeHtml(key)}</div></li>`;
@@ -138,7 +138,7 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
                 document.getElementById('ai-arch-cmd').textContent = data.setupCommand;
                 document.getElementById('ai-arch-results').style.display = 'grid';
                 Toast.show('Generated architecture using smart fallback.', 'info');
-            } catch(fallbackErr) {
+            } catch (fallbackErr) {
                 Toast.show('AI failed to build architecture. Please try again.', 'error');
             }
         } finally {
@@ -153,7 +153,7 @@ Rules: setupCommand is a single bash line. tree is nested folders/files. flatFil
         const isVue = p.includes('vue');
         const isNode = p.includes('node') || p.includes('express') || p.includes('api') || p.includes('backend') || p.includes('server');
         const isPython = p.includes('python') || p.includes('django') || p.includes('flask');
-        
+
         let tree, setupCommand, flatFiles;
 
         if (isReact) {

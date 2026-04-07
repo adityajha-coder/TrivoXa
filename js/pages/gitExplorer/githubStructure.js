@@ -11,20 +11,31 @@ const GithubStructureMixin = {
 
     renderTree(files) {
         const structure = {};
-        files.forEach(f => { const parts = f.path.split('/'); let cur = structure; parts.forEach((p, i) => { if (i === parts.length - 1) cur[p] = { type: 'file', size: f.size }; else { if (!cur[p]) cur[p] = {}; cur = cur[p]; } }); });
+        files.forEach(f => {
+            const parts = f.path.split('/');
+            let cur = structure;
+            parts.forEach((p, i) => {
+                if (i === parts.length - 1) cur[p] = { type: 'file', size: f.size };
+                else { if (!cur[p]) cur[p] = {}; cur = cur[p]; }
+            });
+        });
+
         const renderLevel = (obj, depth = 0) => {
             let html = '';
-            const sorted = Object.entries(obj).sort((a, b) => { const aD = typeof a[1] === 'object' && !a[1].type; const bD = typeof b[1] === 'object' && !b[1].type; if (aD !== bD) return aD ? -1 : 1; return a[0].localeCompare(b[0]); });
+            const sorted = Object.entries(obj).sort((a, b) => {
+                const aDir = typeof a[1] === 'object' && !a[1].type;
+                const bDir = typeof b[1] === 'object' && !b[1].type;
+                if (aDir !== bDir) return aDir ? -1 : 1;
+                return a[0].localeCompare(b[0]);
+            });
             sorted.forEach(([name, val]) => {
-                const indent = depth * 14;
-                const baseStyles = `padding-left:${10 + indent}px;`;
-                if (val.type === 'file') { 
-                    const fi = Helpers.getFileIcon(name); 
-                    html += `<div class="file-tree-item" style="${baseStyles}"><i class="${fi.icon}" style="color:${fi.color}"></i><span>${name}</span></div>`; 
-                }
-                else { 
-                    html += `<div class="file-tree-item" style="${baseStyles}"><i class="fa-solid fa-folder" style="color:var(--primary-light)"></i><span style="font-weight:500;">${name}</span></div>`; 
-                    html += renderLevel(val, depth + 1); 
+                const pad = `padding-left:${10 + depth * 14}px;`;
+                if (val.type === 'file') {
+                    const fi = Helpers.getFileIcon(name);
+                    html += `<div class="file-tree-item" style="${pad}"><i class="${fi.icon}" style="color:${fi.color}"></i><span>${name}</span></div>`;
+                } else {
+                    html += `<div class="file-tree-item" style="${pad}"><i class="fa-solid fa-folder" style="color:var(--primary-light)"></i><span style="font-weight:500;">${name}</span></div>`;
+                    html += renderLevel(val, depth + 1);
                 }
             });
             return html;
@@ -34,7 +45,10 @@ const GithubStructureMixin = {
 
     renderBreakdown(files) {
         const extCount = {};
-        files.forEach(f => { const ext = f.path.split('.').pop().toLowerCase(); extCount[ext] = (extCount[ext] || 0) + 1; });
+        files.forEach(f => {
+            const ext = f.path.split('.').pop().toLowerCase();
+            extCount[ext] = (extCount[ext] || 0) + 1;
+        });
         const sorted = Object.entries(extCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
         const total = files.length;
         document.getElementById('file-breakdown').innerHTML = sorted.map(([ext, count]) => {
@@ -44,99 +58,100 @@ const GithubStructureMixin = {
         }).join('');
     },
 
+    // green -> yellow -> red based on how big the file is
+    _heatColor(size, max) {
+        const t = Math.min(size / (max || 1), 1);
+        const r = Math.round(t < 0.5 ? t * 2 * 255 : 255);
+        const g = Math.round(t < 0.5 ? 255 : (1 - (t - 0.5) * 2) * 255);
+        return `rgb(${r},${g},60)`;
+    },
+
+    _fmtSize(b) {
+        if (b < 1024) return b + ' B';
+        if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+        return (b / 1048576).toFixed(1) + ' MB';
+    },
+
     init3DStructure(files) {
         this.cleanup();
-        const container = document.getElementById('structure-3d');
-        if (!container) return;
-        container.innerHTML = '';
-        // Force layout recalculation for mobile
-        container.style.display = 'block';
-        const rect = container.getBoundingClientRect();
-        const w = rect.width || container.clientWidth || container.offsetWidth || 300;
-        const h = rect.height || container.clientHeight || container.offsetHeight || 300;
+        const el = document.getElementById('structure-3d');
+        if (!el) return;
+        el.innerHTML = '';
+        el.style.display = 'block';
+
+        const box = el.getBoundingClientRect();
+        const w = box.width || el.clientWidth || 300;
+        const h = box.height || el.clientHeight || 300;
 
         const nodes = [];
         const links = [];
-        const nodeMap = new Map();
+        const seen = new Map();
 
-        // Single Root Node
-        const rootId = 'root';
-        nodes.push({ id: rootId, name: 'Project Root', type: 'folder', val: 10, color: '#d4a843' });
-        nodeMap.set(rootId, true);
+        const maxFileSize = Math.max(...files.map(f => f.size || 0), 1);
 
-        files.forEach(f => {
+        // root node - blue so it pops
+        nodes.push({ id: 'root', name: 'Project Root', type: 'folder', val: 10, color: '#3b82f6' });
+        seen.set('root', true);
+
+        for (const f of files) {
             const parts = f.path.split('/');
-            let parentPath = rootId;
+            let parent = 'root';
 
-            parts.forEach((part, i) => {
-                const currentPath = i === 0 ? part : parts.slice(0, i + 1).join('/');
+            for (let i = 0; i < parts.length; i++) {
+                const id = i === 0 ? parts[0] : parts.slice(0, i + 1).join('/');
                 const isFile = i === parts.length - 1;
-                
-                if (!nodeMap.has(currentPath)) {
-                    let color = '#ccc';
-                    let val = 3;
-                    if (isFile) {
-                        const ext = part.split('.').pop().toLowerCase();
-                        color = Helpers.getExtColor(ext);
-                        val = 2 + Math.min(f.size / 5000, 8);
-                    } else {
-                        color = '#4ade80';
-                        val = 5;
-                    }
 
-                    nodes.push({ id: currentPath, name: part, type: isFile ? 'file' : 'folder', val, color });
-                    nodeMap.set(currentPath, true);
-                    links.push({ source: parentPath, target: currentPath });
+                if (!seen.has(id)) {
+                    const size = f.size || 0;
+                    const color = isFile ? this._heatColor(size, maxFileSize) : '#4ade80';
+                    const val = isFile ? 2 + Math.min(size / 5000, 8) : 5;
+                    const label = isFile ? `${parts[i]} (${this._fmtSize(size)})` : parts[i];
+
+                    nodes.push({ id, name: label, type: isFile ? 'file' : 'folder', val, color });
+                    seen.set(id, true);
+                    links.push({ source: parent, target: id });
                 }
-                parentPath = currentPath;
-            });
-        });
+                parent = id;
+            }
+        }
 
-        const graphData = { nodes, links };
-        
         setTimeout(() => {
             try {
-                this.forceGraph = ForceGraph3D()(container)
-                .width(w)
-                .height(h)
-                .backgroundColor('#000000')
-                .graphData(graphData)
-                .nodeLabel('name')
-                .nodeColor(node => node.color)
-                .nodeRelSize(3)
-                .nodeVal('val')
-                .linkColor(() => 'rgba(212, 168, 67, 0.45)')
-                .linkWidth(1.2)
-                .linkOpacity(0.6)
-                .linkDirectionalParticles(3)
-                .linkDirectionalParticleWidth(2.5)
-                .linkDirectionalParticleColor(() => 'rgba(240, 197, 109, 0.9)')
-                .linkDirectionalParticleSpeed(d => 0.004 + Math.random() * 0.004)
-                .onNodeClick(node => {
-                    // Focus camera on node
-                    const distance = 40;
-                    const dist = Math.hypot(node.x, node.y, node.z) || 1e-6;
-                    const distRatio = 1 + distance/dist;
-                    this.forceGraph.cameraPosition(
-                        { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, 
-                        node, 
-                        3000
-                    );
-                });
+                this.forceGraph = ForceGraph3D()(el)
+                    .width(w).height(h)
+                    .backgroundColor('#000000')
+                    .graphData({ nodes, links })
+                    .nodeLabel('name')
+                    .nodeColor(n => n.color)
+                    .nodeRelSize(3)
+                    .nodeVal('val')
+                    .linkColor(() => 'rgba(212, 168, 67, 0.45)')
+                    .linkWidth(1.2)
+                    .linkOpacity(0.6)
+                    .linkDirectionalParticles(3)
+                    .linkDirectionalParticleWidth(2.5)
+                    .linkDirectionalParticleColor(() => 'rgba(240, 197, 109, 0.9)')
+                    .linkDirectionalParticleSpeed(() => 0.004 + Math.random() * 0.004)
+                    .onNodeClick(node => {
+                        const dist = Math.hypot(node.x, node.y, node.z) || 1;
+                        const ratio = 1 + 40 / dist;
+                        this.forceGraph.cameraPosition(
+                            { x: node.x * ratio, y: node.y * ratio, z: node.z * ratio },
+                            node, 2000
+                        );
+                    });
 
-            document.getElementById('structure-reset').onclick = () => {
-                this.forceGraph.cameraPosition({ x: 0, y: 0, z: 250 }, { x:0, y:0, z:0 }, 1000);
-            };
+                document.getElementById('structure-reset').onclick = () => {
+                    this.forceGraph.cameraPosition({ x: 0, y: 0, z: 250 }, { x: 0, y: 0, z: 0 }, 1000);
+                };
 
-            const resizeHandler = () => { 
-                const rect = container.getBoundingClientRect();
-                const nw = rect.width || container.clientWidth; 
-                const nh = rect.height || container.clientHeight; 
-                if (nw && nh) this.forceGraph.width(nw).height(nh);
-            };
-            window.addEventListener('resize', resizeHandler);
-            window.addEventListener('orientationchange', () => setTimeout(resizeHandler, 200));
-            this._structureResizeHandler = resizeHandler;
+                const onResize = () => {
+                    const r = el.getBoundingClientRect();
+                    if (r.width && r.height) this.forceGraph.width(r.width).height(r.height);
+                };
+                window.addEventListener('resize', onResize);
+                window.addEventListener('orientationchange', () => setTimeout(onResize, 200));
+                this._resizeHandler = onResize;
 
             } catch (err) {
                 console.error('3D Graph Error:', err);
@@ -145,9 +160,9 @@ const GithubStructureMixin = {
     },
 
     cleanup() {
-        if (this._structureResizeHandler) window.removeEventListener('resize', this._structureResizeHandler);
+        if (this._resizeHandler) window.removeEventListener('resize', this._resizeHandler);
         if (this.forceGraph) {
-            try { this.forceGraph._destructor(); } catch(e) {}
+            try { this.forceGraph._destructor(); } catch (e) {}
             this.forceGraph = null;
         }
     }
