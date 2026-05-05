@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
             return res.status(400).json({ error: 'Invalid messages format' });
         }
 
-        const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
+        const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
         const response = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
             model,

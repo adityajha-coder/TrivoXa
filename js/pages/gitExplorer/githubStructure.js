@@ -159,11 +159,5 @@ const GithubStructureMixin = {
         }, 100);
     },
 
-    cleanup() {
-        if (this._resizeHandler) window.removeEventListener('resize', this._resizeHandler);
-        if (this.forceGraph) {
-            try { this.forceGraph._destructor(); } catch (e) {}
-            this.forceGraph = null;
-        }
-    }
+    // cleanup() is consolidated in CodeGitExplorerPage to avoid Object.assign collisions
 };

@@ -66,7 +66,7 @@ const CodeGitExplorerPage = {
                 <div class="flex-gap mb-lg flex-wrap">
                     <div class="input-group" style="flex:1; min-width: 280px;" id="explorer-input-wrapper">
                         <i class="input-icon fa-brands fa-github"></i>
-                        <input class="input-field has-icon" id="explorer-input" type="text" placeholder="e.g. facebook/react or https://github.com/vuejs/core" />
+                        <input class="input-field has-icon" id="explorer-input" type="text" placeholder="e.g. https://github.com/adityajha-coder/PokeDex" />
                         <input type="file" id="local-folder-input" webkitdirectory directory multiple style="display:none;" />
                         <label for="local-folder-input" id="local-upload-btn" class="btn btn-secondary" style="display:none; width:100%; justify-content:center;">Browse Folder to Visualize API / Dependencies</label>
                     </div>
@@ -224,7 +224,7 @@ const CodeGitExplorerPage = {
                 exploreBtn.style.display = 'block';
                 document.querySelector('.input-icon.fa-github').style.display = 'block';
                 if (this.searchType === 'user') {
-                    input.placeholder = "e.g. torvalds or vuejs";
+                    input.placeholder = "e.g. torvalds or adityajha-coder";
                 } else {
                     input.placeholder = "e.g. facebook/react or https://github.com/vuejs/core";
                 }
@@ -386,26 +386,41 @@ Keep it concise (under 200 words). Do not use code blocks.`;
     },
 
     cleanup() {
-        if (this.animationId) cancelAnimationFrame(this.animationId);
-        if (this.renderer) this.renderer.dispose();
-        if (this.gitAnimId) cancelAnimationFrame(this.gitAnimId);
-        if (this.gitRenderer) this.gitRenderer.dispose();
-
+        // --- Structure (ForceGraph3D) cleanup ---
+        if (this._resizeHandler) {
+            window.removeEventListener('resize', this._resizeHandler);
+            this._resizeHandler = null;
+        }
         if (this.forceGraph) {
             try { this.forceGraph._destructor(); } catch (e) { }
-            const oldContainer = document.getElementById('structure-3d');
-            if (oldContainer) {
-                const newContainer = oldContainer.cloneNode(false);
-                oldContainer.parentNode.replaceChild(newContainer, oldContainer);
-            }
             this.forceGraph = null;
+        }
+
+        // --- Git 3D (Three.js) cleanup ---
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        if (this.renderer) { this.renderer.dispose(); this.renderer = null; }
+        if (this.gitAnimId) cancelAnimationFrame(this.gitAnimId);
+        if (this.gitRenderer) { this.gitRenderer.dispose(); this.gitRenderer = null; }
+        if (this._gitResizeHandler) {
+            window.removeEventListener('resize', this._gitResizeHandler);
+            this._gitResizeHandler = null;
         }
 
         this.scene = null;
         this.gitScene = null;
+        this.gitCamera = null;
         this.nodes = [];
         this.gitNodes = [];
     }
 };
 
-Object.assign(CodeGitExplorerPage, GithubUserMixin, GithubStructureMixin, GithubGitMixin);
+// Merge mixins FIRST, then spread CodeGitExplorerPage's own methods back on top
+// so its cleanup() (the consolidated one) always wins over mixin cleanup() methods.
+(function () {
+    const ownMethods = {};
+    // Save CodeGitExplorerPage's own cleanup before mixins overwrite it
+    if (CodeGitExplorerPage.cleanup) ownMethods.cleanup = CodeGitExplorerPage.cleanup;
+    Object.assign(CodeGitExplorerPage, GithubUserMixin, GithubStructureMixin, GithubGitMixin);
+    // Restore the consolidated cleanup
+    Object.assign(CodeGitExplorerPage, ownMethods);
+})();

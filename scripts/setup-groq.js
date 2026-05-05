@@ -69,8 +69,8 @@ if (!fs.existsSync(nodeModulesPath)) {
     }
 }
 
-// Check API key
-const apiKey = process.env.GROQ_API_KEY || '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';
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+const apiKey = process.env.GROQ_API_KEY || '';
 if (apiKey.startsWith('gsk_')) {
     console.log('✓ Groq API key configured');
 } else {

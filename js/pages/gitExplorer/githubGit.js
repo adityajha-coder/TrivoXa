@@ -123,11 +123,5 @@ const GithubGitMixin = {
         this.gitRenderer.render(this.gitScene, this.gitCamera);
     },
 
-    cleanup() {
-        if (this.gitAnimId) cancelAnimationFrame(this.gitAnimId);
-        if (this._gitResizeHandler) window.removeEventListener('resize', this._gitResizeHandler);
-        this.gitScene = null;
-        this.gitCamera = null;
-        this.gitRenderer = null;
-    }
+    // cleanup() is consolidated in CodeGitExplorerPage to avoid Object.assign collisions
 };

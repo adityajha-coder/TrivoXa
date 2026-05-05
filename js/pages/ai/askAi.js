@@ -109,7 +109,7 @@ const AskAiPage = {
     currentProjectState: null,
     currentFramework: 'html',
     currentAiModel: localStorage.getItem('vertex_ai_model') || 'mixtral',
-    apiKey: localStorage.getItem('vertex_groq_key') || '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',
+    apiKey: localStorage.getItem('vertex_groq_key') || '',
     aiHistory: [],
 
     archSuggestions: [
@@ -193,7 +193,6 @@ const AskAiPage = {
                     <button class="tab-item active" data-tab="chat"><i class="fa-solid fa-comments" style="margin-right:6px;"></i>AI Chat</button>
                     <button class="tab-item" data-tab="architect"><i class="fa-solid fa-code-merge" style="margin-right:6px;"></i>Architect</button>
                     <button class="tab-item" data-tab="codegen"><i class="fa-solid fa-laptop-code" style="margin-right:6px;"></i>Generator</button>
-                    <button class="tab-item" data-tab="analyzer"><i class="fa-solid fa-microscope" style="margin-right:6px;"></i>Analyzer</button>
                     <button class="tab-item" data-tab="stacks"><i class="fa-solid fa-compass" style="margin-right:6px;"></i>Stacks</button>
                     <button class="tab-item" data-tab="history"><i class="fa-solid fa-clock-rotate-left" style="margin-right:6px;"></i>History</button>
                 </div>
@@ -224,7 +223,7 @@ const AskAiPage = {
                             </div>
                         </div>
                         <div class="ai-bot-input-area" style="flex-direction: column; align-items: flex-end; gap: 8px;">
-                            <textarea class="input-field" id="ai-bot-input" placeholder='Ask anything... "How do I deploy to Vercel?", "Explain this code...", "I want to build a..."' style="width: 100%; min-height: 60px; resize: vertical; padding-right: 12px; font-family: inherit; line-height: 1.5;"></textarea>
+                            <textarea class="input-field" id="ai-bot-input" placeholder="</> Ask any concept..." style="width: 100%; min-height: 60px; resize: vertical; padding-right: 12px; font-family: inherit; line-height: 1.5; "></textarea>
                             <div class="flex-between" style="width: 100%;">
                                 <div class="flex-gap">
                                     <button class="btn btn-ghost btn-sm" id="ai-bot-explain" style="color:var(--primary-light);">
@@ -354,50 +353,7 @@ const AskAiPage = {
                     </div>
                 </div>
 
-                <!-- ===== TAB 4: CODE ANALYZER ===== -->
-                <div id="ai-tab-analyzer" style="display:none;">
-                    <div class="glass-card mb-lg" id="drop-zone" style="border: 2px dashed var(--border); text-align: center; padding: 60px 20px; cursor: pointer; transition: all 0.3s ease;">
-                        <i class="fa-solid fa-file-code" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 20px; opacity: 0.8;"></i>
-                        <h3 style="font-size: 1.2rem; margin-bottom: 10px; font-weight:600;">Drag & Drop Code File Here</h3>
-                        <p class="text-muted text-sm" style="max-width:300px; margin:0 auto;">Supports .js, .py, .cpp, .java, .html, .css, .txt, .md (Max 100KB). The AI will instantly analyze code health, bugs, and Big-O efficiency.</p>
-                        <button class="btn btn-secondary mt-md" id="browse-file-btn">Browse File</button>
-                        <input type="file" id="file-upload" style="display: none;" accept=".js,.jsx,.ts,.tsx,.py,.cpp,.c,.h,.java,.html,.css,.json,.md,.txt">
-                    </div>
 
-                    <div id="analyzer-loading" style="display:none; text-align:center; padding:40px 0;">
-                        <div class="spinner" style="margin: 0 auto 16px; width:40px; height:40px; border:4px solid rgba(212,168,67,0.1); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
-                        <p class="text-muted" id="analyzer-status">Scanning structural logic...</p>
-                    </div>
-
-                    <div id="analyzer-results" style="display:none; flex-direction: column; gap: 16px;">
-                        <div class="flex-between">
-                            <h3 style="font-size:1.1rem;"><i class="fa-solid fa-chart-line" style="color:var(--primary-light);margin-right:8px;"></i>Analysis Report: <span id="analyze-filename" class="text-muted text-sm"></span></h3>
-                            <button class="btn btn-ghost btn-sm" id="analyze-another-btn"><i class="fa-solid fa-rotate-left"></i> Analyze Another</button>
-                        </div>
-                        <div class="grid-3" id="analyzer-metrics">
-                            <div class="glass-card-static" style="text-align:center; padding:16px;">
-                                <h4 class="text-muted text-xs text-uppercase mb-sm"><i class="fa-solid fa-code-branch mb-xs"></i><br>Big-O Complexity</h4>
-                                <div id="metric-complexity" style="font-size:1.4rem; font-weight:700; color:var(--text); font-family:var(--font-mono);">--</div>
-                            </div>
-                            <div class="glass-card-static" style="text-align:center; padding:16px;">
-                                <h4 class="text-muted text-xs text-uppercase mb-sm"><i class="fa-solid fa-shield-halved mb-xs"></i><br>Security Vulnerabilities</h4>
-                                <div id="metric-security" style="font-size:1.4rem; font-weight:700; color:var(--text);">--</div>
-                            </div>
-                            <div class="glass-card-static" style="text-align:center; padding:16px;">
-                                <h4 class="text-muted text-xs text-uppercase mb-sm"><i class="fa-solid fa-heart-pulse mb-xs"></i><br>Overall Health Score</h4>
-                                <div id="metric-score" style="font-size:1.4rem; font-weight:700; color:var(--text);">--</div>
-                            </div>
-                        </div>
-                        <div class="glass-card-static mt-sm">
-                            <h4 class="mb-sm text-sm" style="color:var(--primary-light);"><i class="fa-solid fa-magnifying-glass"></i> Deep Review</h4>
-                            <div id="analyzer-review" class="text-sm text-secondary" style="line-height: 1.7; white-space: pre-wrap;"></div>
-                        </div>
-                        <div class="glass-card-static">
-                            <h4 class="mb-sm text-sm" style="color:var(--success);"><i class="fa-solid fa-lightbulb"></i> Suggested Improvements</h4>
-                            <div id="analyzer-suggestions" class="text-sm text-secondary" style="line-height: 1.7; white-space: pre-wrap;"></div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- ===== TAB 5: TECH STACKS ===== -->
                 <div id="ai-tab-stacks" style="display:none;">
@@ -457,7 +413,6 @@ const AskAiPage = {
         this.bindChat();
         this.bindArchitect();
         this.bindCodeGen();
-        this.bindAnalyzer();
         this.bindRoles();
 
         Helpers.initMonaco().then(monaco => {
@@ -577,7 +532,7 @@ const AskAiPage = {
         list.style.display = 'grid';
         empty.style.display = 'none';
 
-        const icons = { 'chat': 'fa-comments', 'architect': 'fa-code-merge', 'codegen': 'fa-laptop-code', 'analyzer': 'fa-microscope' };
+        const icons = { 'chat': 'fa-comments', 'architect': 'fa-code-merge', 'codegen': 'fa-laptop-code' };
 
         list.innerHTML = this.aiHistory.map((h, i) => {
             const icon = icons[h.module] || 'fa-robot';
@@ -665,14 +620,12 @@ const AskAiPage = {
             const chatTab = document.getElementById('ai-tab-chat');
             const archTab = document.getElementById('ai-tab-architect');
             const codegenTab = document.getElementById('ai-tab-codegen');
-            const analyzerTab = document.getElementById('ai-tab-analyzer');
             const stacksTab = document.getElementById('ai-tab-stacks');
             const historyTab = document.getElementById('ai-tab-history');
 
             if (chatTab) chatTab.style.display = target === 'chat' ? 'block' : 'none';
             if (archTab) archTab.style.display = target === 'architect' ? 'block' : 'none';
             if (codegenTab) codegenTab.style.display = target === 'codegen' ? 'block' : 'none';
-            if (analyzerTab) analyzerTab.style.display = target === 'analyzer' ? 'block' : 'none';
             if (stacksTab) stacksTab.style.display = target === 'stacks' ? 'block' : 'none';
             if (historyTab) historyTab.style.display = target === 'history' ? 'block' : 'none';
 
@@ -684,4 +637,4 @@ const AskAiPage = {
     }
 };
 
-Object.assign(AskAiPage, AiChatMixin, AiArchitectMixin, AiCodegenMixin, AiAnalyzerMixin, AiStacksMixin);
+Object.assign(AskAiPage, AiChatMixin, AiArchitectMixin, AiCodegenMixin, AiStacksMixin);
