@@ -5,12 +5,11 @@ const API = {
     GROQ_BASE: 'https://api.groq.com/openai/v1',
     GROQ_PROXY: window.location.host.includes('localhost') || window.location.host.includes('127.0.0.1') 
         ? 'http://localhost:3001/api/groq' 
-        : '/api/groq', // Auto-switch to Vercel/Production proxy
-    GROQ_API_KEY: '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',
-    USE_PROXY: true, // Set to false to call Groq directly (requires proper CORS setup)
+        : '/api/groq',
+    USE_PROXY: true,
 
     getGroqApiKey() {
-        return localStorage.getItem('vertex_groq_key') || this.GROQ_API_KEY;
+        return localStorage.getItem('vertex_groq_key') || '';
     },
 
     setGroqApiKey(key) {
@@ -18,19 +17,16 @@ const API = {
     },
 
     async fetchGroq(endpoint, body, model = 'llama-3.1-8b-instant') {
+        // Proxy handles the API key server-side
+        if (this.USE_PROXY) {
+            return this.fetchGroqViaProxy(endpoint, body);
+        }
+
         const apiKey = this.getGroqApiKey();
-        
-        // Validate API key format
         if (!apiKey || !apiKey.startsWith('gsk_')) {
             throw new Error('Invalid Groq API key. Key should start with "gsk_". Check your API key in settings.');
         }
-
-        // Use proxy if available, otherwise use direct connection
-        if (this.USE_PROXY) {
-            return this.fetchGroqViaProxy(endpoint, body);
-        } else {
-            return this.fetchGroqDirect(endpoint, body, apiKey);
-        }
+        return this.fetchGroqDirect(endpoint, body, apiKey);
     },
 
     async fetchGroqViaProxy(endpoint, body) {

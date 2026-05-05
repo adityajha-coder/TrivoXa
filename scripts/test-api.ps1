@@ -1,4 +1,5 @@
 # Groq API Key Tester for PowerShell
+Set-Location (Split-Path $PSScriptRoot -Parent)
 
 Clear-Host
 Write-Host ""
@@ -24,7 +25,7 @@ Write-Host ""
 
 # Run the test
 try {
-    & node devtools/test-groq-api.js
+    & node scripts/test-groq-api.js
     $exitCode = $LASTEXITCODE
 } catch {
     Write-Host "❌ Test script failed" -ForegroundColor Red

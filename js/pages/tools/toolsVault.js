@@ -98,24 +98,6 @@ const ToolsVaultPage = {
             { name: 'CSS Gradient', desc: 'Free css gradient generator tool', url: 'https://cssgradient.io' }
         ]}
     ],
-    boilerplates: [
-        { title: 'HTML5 Boilerplate', code: '<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <title>Document</title>\n</head>\n<body>\n    \n</body>\n</html>' },
-        { title: 'React Component', code: 'import React from "react";\n\nconst Component = () => {\n    return (\n        <div>\n            Hello World\n        </div>\n    );\n};\n\nexport default Component;' },
-        { title: 'Express Server', code: 'const express = require("express");\nconst app = express();\n\napp.use(express.json());\n\napp.get("/", (req, res) => {\n    res.send("Hello World");\n});\n\napp.listen(3000, () => console.log("Server running on port 3000"));' },
-        { title: 'Vue 3 Composition API', code: '<template>\n  <div>\n    <h1>{{ message }}</h1>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from "vue";\nconst message = ref("Hello Vue 3");\n</script>' },
-        { title: 'Next.js 14 Page', code: 'export default function Page() {\n  return (\n    <main className="flex min-h-screen flex-col items-center justify-between p-24">\n      <h1>Next.js Platform</h1>\n    </main>\n  );\n}' },
-        { title: 'Tailwind Config Base', code: '/** @type {import("tailwindcss").Config} */\nmodule.exports = {\n  content: [\n    "./src/**/*.{js,jsx,ts,tsx}",\n  ],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n}' },
-        { title: 'Dockerfile (Node)', code: 'FROM node:18-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm install\nCOPY . .\nEXPOSE 3000\nCMD ["npm", "start"]' },
-        { title: 'Django View (FBV)', code: 'from django.shortcuts import render\nfrom django.http import HttpResponse\n\ndef my_view(request):\n    return HttpResponse("Hello, Django!")' },
-        { title: 'Docker Compose Base', code: 'version: "3.8"\nservices:\n  web:\n    build: .\n    ports:\n      - "8000:8000"\n    volumes:\n      - .:/code\n    environment:\n      - DEBUG=1' },
-        { title: 'FastAPI Main', code: 'from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get("/")\ndef read_root():\n    return {"Hello": "World"}' },
-        { title: 'React Context', code: 'import { createContext, useContext, useState } from "react";\n\nconst AppContext = createContext();\n\nexport const AppProvider = ({ children }) => {\n  const [state, setState] = useState(null);\n  return <AppContext.Provider value={{ state, setState }}>{children}</AppContext.Provider>;\n};\n\nexport const useAppContext = () => useContext(AppContext);' },
-        { title: 'Zustand Store', code: 'import { create } from "zustand";\n\nconst useStore = create((set) => ({\n  count: 0,\n  inc: () => set((state) => ({ count: state.count + 1 })),\n  dec: () => set((state) => ({ count: state.count - 1 })),\n}));\n\nexport default useStore;' },
-        { title: 'GitHub Actions CI', code: 'name: CI\n\non:\n  push:\n    branches: [ main ]\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v3\n    - name: Use Node.js\n      uses: actions/setup-node@v3\n      with:\n        node-version: "18.x"\n    - run: npm ci\n    - run: npm test' },
-        { title: 'Axios Interceptor', code: 'import axios from "axios";\n\nconst api = axios.create({ baseURL: "https://api.example.com" });\n\napi.interceptors.request.use(config => {\n  const token = localStorage.getItem("token");\n  if (token) config.headers.Authorization = `Bearer ${token}`;\n  return config;\n});\n\nexport default api;' },
-        { title: 'SvelteKit + Tailwind', code: 'import adapter from "@sveltejs/adapter-auto";\nimport { vitePreprocess } from "@sveltejs/vite-plugin-svelte";\n\n/** @type {import(\'@sveltejs/kit\').Config} */\nconst config = {\n  preprocess: vitePreprocess(),\n  kit: {\n    adapter: adapter()\n  }\n};\nexport default config;' },
-        { title: 'React Hook Form', code: 'import { useForm } from "react-hook-form";\n\nexport default function App() {\n  const { register, handleSubmit } = useForm();\n  const onSubmit = data => console.log(data);\n  return (\n    <form onSubmit={handleSubmit(onSubmit)}>\n      <input {...register("firstName")} />\n      <input type="submit" />\n    </form>\n  );\n}' }
-    ],
 
     vsCodeExtensions: [
         { cat: 'Essentials', items: [
@@ -295,7 +277,6 @@ const ToolsVaultPage = {
                 </div>
                 <div class="tabs mb-lg" id="tv-tabs">
                     <button class="tab-item active" data-view="resources">Tools & Resources</button>
-                    <button class="tab-item" data-view="boilerplates">Boilerplates</button>
                     <button class="tab-item" data-view="extensions">VS Code Extensions</button>
                 </div>
                 
@@ -314,24 +295,6 @@ const ToolsVaultPage = {
                     <div id="tv-grid-container"></div>
                 </div>
 
-                <div id="tv-boilerplates-view" style="display:none; padding-bottom:40px;">
-                    <div class="grid-2">
-                        ${this.boilerplates.map((b, idx) => `
-                            <div class="glass-card">
-                                <div class="flex-between mb-sm">
-                                    <div style="font-weight:600;">${b.title}</div>
-                                    <div class="flex-gap">
-                                        <button class="btn btn-secondary btn-xs tv-save-bp" data-idx="${idx}"><i class="fa-solid fa-cloud-arrow-up"></i> Save to Workspace</button>
-                                        <button class="btn btn-secondary btn-xs tv-copy-bp" data-idx="${idx}"><i class="fa-solid fa-copy"></i> Copy</button>
-                                    </div>
-                                </div>
-                                <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow:hidden;">
-                                    <pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--primary-light);">${Helpers.escapeHtml(b.code)}</pre>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
 
                 <div id="tv-extensions-view" style="display:none; padding-bottom:40px;">
                     <div class="flex-center mb-lg">
@@ -393,12 +356,7 @@ const ToolsVaultPage = {
             .tool-link-card:hover i {
                 color: var(--primary-light);
             }
-            /* Boilerplate pre overflow fix */
-            .grid-2 .glass-card pre {
-                overflow-x: auto;
-                max-width: 100%;
-                word-break: break-word;
-            }
+
             </style>
         `;
 
@@ -460,7 +418,6 @@ const ToolsVaultPage = {
             
             const view = tab.dataset.view;
             document.getElementById('tv-resources-view').style.display = view === 'resources' ? 'block' : 'none';
-            document.getElementById('tv-boilerplates-view').style.display = view === 'boilerplates' ? 'block' : 'none';
             document.getElementById('tv-extensions-view').style.display = view === 'extensions' ? 'block' : 'none';
             if (view === 'extensions') this.renderExtensionsGrid();
         });
@@ -475,26 +432,7 @@ const ToolsVaultPage = {
             this.renderToolsGrid();
         }, 200));
 
-        document.getElementById('page-content').addEventListener('click', e => {
-            const copyBtn = e.target.closest('.tv-copy-bp');
-            if(copyBtn) {
-                const idx = copyBtn.dataset.idx;
-                if(this.boilerplates[idx]) {
-                    Helpers.copyToClipboard(this.boilerplates[idx].code);
-                    Toast.show('Boilerplate copied!', 'success');
-                }
-            }
-
-            const saveBpBtn = e.target.closest('.tv-save-bp');
-            if(saveBpBtn) {
-                const idx = saveBpBtn.dataset.idx;
-                const bp = this.boilerplates[idx];
-                if(bp) {
-                    WorkspacePage.saveSnippet(`Boilerplate: ${bp.title}`, bp.code, 'javascript');
-                    Toast.show('Boilerplate saved to Workspace!', 'success');
-                }
-            }
-
+        document.getElementById('page-content')?.addEventListener('click', e => {
             const extCopyBtn = e.target.closest('.ext-copy-id');
             if(extCopyBtn) {
                 const extId = extCopyBtn.dataset.extid;

@@ -7,9 +7,10 @@
  * Run: node test-groq-api.js
  */
 
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const axios = require('axios');
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
+const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
 
 console.log(`
 ╔════════════════════════════════════════════════════╗

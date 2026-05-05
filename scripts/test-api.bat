@@ -1,6 +1,7 @@
 @echo off
 REM Test Groq API Key
 REM This validates that your API key is working
+cd /d "%~dp0\.."
 
 echo.
 echo ╔════════════════════════════════════════════════════╗
@@ -37,7 +38,7 @@ echo Testing Groq API Key...
 echo.
 
 REM Run the test script
-node devtools\test-groq-api.js
+node scripts\test-groq-api.js
 
 if %errorlevel% neq 0 (
     echo.

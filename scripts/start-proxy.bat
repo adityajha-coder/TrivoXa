@@ -1,6 +1,7 @@
 @echo off
 REM Groq Proxy - Troubleshooting and Startup Helper
 REM This script helps diagnose and fix common issues
+cd /d "%~dp0\.."
 
 echo.
 echo  ╔════════════════════════════════════════════════════╗
@@ -74,7 +75,7 @@ REM Start the proxy with error handling
 echo Starting on localhost:3001...
 echo.
 
-node core\groq-proxy.js
+node server\groq-proxy.js
 if %errorlevel% neq 0 (
     echo.
     echo ❌ Groq Proxy failed to start!

@@ -15,7 +15,6 @@ const pages = [
     '/#ai-chat',
     '/#ai-architect',
     '/#ai-codegen',
-    '/#ai-analyzer',
     '/#ai-stacks'
 ];
 

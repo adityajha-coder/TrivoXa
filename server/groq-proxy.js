@@ -1,17 +1,15 @@
 /**
  * Groq API Proxy Server
- * Run this server to proxy Groq requests and avoid CORS issues
- * 
- * Installation:
- *   npm install express cors body-parser axios
+ * Proxies Groq requests to avoid CORS issues
  * 
  * Usage:
- *   node groq-proxy.js
+ *   npm run proxy
  *   Server runs on http://localhost:3001
  */
 
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+
 try {
-    // Check if required packages are installed
     const required = ['express', 'cors', 'axios', 'body-parser'];
     for (const pkg of required) {
         try {
@@ -35,12 +33,11 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Verify API key exists
-const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
+// Load API key from .env
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 if (!GROQ_API_KEY || !GROQ_API_KEY.startsWith('gsk_')) {
     console.warn('⚠️  Warning: Invalid or missing GROQ_API_KEY in environment variables');
@@ -48,7 +45,7 @@ if (!GROQ_API_KEY || !GROQ_API_KEY.startsWith('gsk_')) {
 
 // Root endpoint (helps verify server is running)
 app.get('/', (req, res) => {
-    res.json({ 
+    res.json({
         status: 'ok',
         message: 'Groq Proxy Server is running',
         endpoint: 'POST /api/groq/chat'
@@ -96,31 +93,31 @@ app.post('/api/groq/chat', async (req, res) => {
         const errorMessage = error.response?.data?.error?.message || error.message;
 
         if (statusCode === 401) {
-            return res.status(401).json({ 
+            return res.status(401).json({
                 error: 'Unauthorized: API key is invalid or expired',
-                message: errorMessage 
+                message: errorMessage
             });
         }
 
         if (statusCode === 429) {
-            return res.status(429).json({ 
+            return res.status(429).json({
                 error: 'Rate limited: Too many requests',
-                message: 'Wait a moment and try again' 
+                message: 'Wait a moment and try again'
             });
         }
 
-        res.status(statusCode).json({ 
+        res.status(statusCode).json({
             error: 'Groq API error',
             message: errorMessage,
-            details: error.response?.data 
+            details: error.response?.data
         });
     }
 });
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-    res.json({ 
-        status: 'ok', 
+    res.json({
+        status: 'ok',
         message: 'Groq Proxy is running',
         apiKeyConfigured: GROQ_API_KEY ? 'Yes' : 'No'
     });
