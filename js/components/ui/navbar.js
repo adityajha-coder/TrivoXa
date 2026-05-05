@@ -20,7 +20,7 @@ const Navbar = {
         topnav.innerHTML = `
             <div class="topnav-left">
                 <div class="topnav-brand" data-page="dashboard">
-                    <img src="favicon.svg" alt="Vertex" class="topnav-logo" />
+                    <img src="public/favicon.svg" alt="Vertex" class="topnav-logo" />
                     <span class="topnav-name">Vertex</span>
                 </div>
                 <div class="topnav-divider"></div>
@@ -94,7 +94,7 @@ const Navbar = {
                     btnIn.style.display = 'none';
                     btnOut.style.display = 'flex';
                     userProfile.style.display = 'flex';
-                    userAvatar.src = user.photoURL || 'favicon.svg';
+                    userAvatar.src = user.photoURL || 'public/favicon.svg';
                     userName.textContent = user.displayName ? user.displayName.split(' ')[0] : 'User';
                 } else {
                     btnIn.style.display = 'flex';

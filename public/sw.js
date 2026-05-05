@@ -2,8 +2,8 @@ const CACHE_NAME = 'vertex-v3';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
-    '/favicon.svg',
-    '/manifest.json',
+    '/public/favicon.svg',
+    '/public/manifest.json',
     '/css/base.css?v=5',
     '/css/layout.css?v=5',
     '/css/components.css?v=4',
@@ -11,12 +11,12 @@ const STATIC_ASSETS = [
     '/css/animations.css?v=4',
     '/js/utils/helpers.js?v=6',
     '/js/utils/api.js?v=6',
-    '/js/components/navbar.js?v=6',
-    '/js/components/loader.js?v=6',
+    '/js/components/ui/navbar.js?v=6',
+    '/js/components/ui/loader.js?v=6',
     '/js/pages/dashboard.js?v=8',
-    '/js/pages/askAi.js?v=11',
+    '/js/pages/ai/askAi.js?v=11',
     '/js/pages/docs.js?v=5',
-    '/js/pages/codeGitExplorer.js?v=8',
+    '/js/pages/gitExplorer/codeGitExplorer.js?v=8',
     '/js/pages/freeApis.js?v=14',
     '/js/pages/packageScout.js?v=7',
     '/js/pages/commands.js?v=7',
@@ -30,9 +30,9 @@ const STATIC_ASSETS = [
     '/js/pages/gitExplorer/githubUser.js?v=1',
     '/js/pages/gitExplorer/githubStructure.js?v=1',
     '/js/pages/gitExplorer/githubGit.js?v=1',
-    '/js/router.js?v=7',
-    '/js/search.js?v=1',
-    '/js/app.js?v=6'
+    '/js/core/router.js?v=7',
+
+    '/js/core/app.js?v=6'
 ];
 
 // API responses worth caching for offline use
