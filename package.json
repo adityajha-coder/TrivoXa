@@ -4,10 +4,10 @@
   "description": "All-in-one platform for developers",
   "scripts": {
     "dev": "npx -y serve . -l 8080",
-    "start": "npx -y serve . -l 8080",
+    "start:local": "npx -y serve . -l 8080",
     "proxy": "node server/groq-proxy.js",
     "proxy:dev": "nodemon server/groq-proxy.js",
-    "both": "concurrently \"npm run proxy\" \"npm start\"",
+    "both": "concurrently \"npm run proxy\" \"npm run start:local\"",
     "test:api": "node scripts/test-groq-api.js",
     "setup": "node scripts/setup-groq.js"
   },
