@@ -43,6 +43,15 @@ const API = {
         window.dispatchEvent(new Event('auth_changed'));
     },
 
+    // Returns true if logged in, otherwise opens the login modal and returns false
+    requireAuth() {
+        if (this.getAuthToken()) return true;
+        const modal = document.getElementById('auth-modal');
+        if (modal) modal.style.display = 'flex';
+        Toast.show('Please sign in to use this feature', 'warning');
+        return false;
+    },
+
     async register(name, email, password) {
         const res = await fetch(`${this.API_BASE}/api/auth/register`, {
             method: 'POST',

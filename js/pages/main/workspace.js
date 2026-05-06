@@ -452,6 +452,8 @@ const WorkspacePage = {
         });
 
         document.getElementById('save-snip-btn').addEventListener('click', () => {
+            // TODO: Re-enable auth gate after completion
+            // if (!API.requireAuth()) return;
             const title = document.getElementById('snip-title').value.trim();
             const code = this.editor ? this.editor.getValue().trim() : '';
             const lang = document.getElementById('snip-lang-select').value || 'text';
@@ -478,6 +480,8 @@ const WorkspacePage = {
                 }
             }
             if(e.target.closest('.run-snip-btn')) {
+                // TODO: Re-enable auth gate after completion
+                // if (!API.requireAuth()) return;
                 const idx = parseInt(e.target.closest('.run-snip-btn').dataset.idx);
                 this._runSnippet(idx);
             }
@@ -487,6 +491,8 @@ const WorkspacePage = {
                 Toast.show('Snippet copied!', 'success');
             }
             if(e.target.closest('.del-snip-btn')) {
+                // TODO: Re-enable auth gate after completion
+                // if (!API.requireAuth()) return;
                 const btn = e.target.closest('.del-snip-btn');
                 const id = btn.dataset.id;
                 const idx = parseInt(btn.dataset.idx);
@@ -505,6 +511,8 @@ const WorkspacePage = {
                 Toast.show('Snippet deleted', 'success');
             }
             if(e.target.closest('.edit-snip-btn')) {
+                // TODO: Re-enable auth gate after completion
+                // if (!API.requireAuth()) return;
                 const idx = parseInt(e.target.closest('.edit-snip-btn').dataset.idx);
                 const snippet = this.snippets[idx];
                 if(!snippet) return;

@@ -22,23 +22,19 @@ const AiChatMixin = {
         
         // Bind send button
         send.addEventListener('click', () => {
-            console.log('[AI Chat] Send button clicked');
+            // TODO: Re-enable auth gate after completion
+            // if (!API.requireAuth()) return;
             const q = input.value.trim();
-            console.log('[AI Chat] Query:', q);
-            if (!q) {
-                console.log('[AI Chat] Empty query, not sending');
-                return;
-            }
-            console.log('[AI Chat] Adding user message');
+            if (!q) return;
             this.addMsg(q, 'user');
             input.value = '';
-            console.log('[AI Chat] Generating reply');
             setTimeout(() => this.genReply(q), 400);
         });
         
         // Bind explain button
         explain.addEventListener('click', () => {
-            console.log('[AI Chat] Explain button clicked');
+            // TODO: Re-enable auth gate after completion
+            // if (!API.requireAuth()) return;
             const code = input.value.trim();
             if (!code) {
                 Toast.show('Paste code first, then click Explain', 'warning');
@@ -52,7 +48,8 @@ const AiChatMixin = {
         
         // Bind debug button
         debug.addEventListener('click', () => {
-            console.log('[AI Chat] Debug button clicked');
+            // TODO: Re-enable auth gate after completion
+            // if (!API.requireAuth()) return;
             const code = input.value.trim();
             if (!code) {
                 Toast.show('Paste the error or code first', 'warning');
@@ -67,9 +64,10 @@ const AiChatMixin = {
         // Bind Enter key
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
-                console.log('[AI Chat] Enter key pressed');
                 e.preventDefault();
                 e.stopPropagation();
+                // TODO: Re-enable auth gate after completion
+                // if (!API.requireAuth()) return;
                 const q = input.value.trim();
                 if (!q) return;
                 this.addMsg(q, 'user');
@@ -93,8 +91,9 @@ const AiChatMixin = {
         // Bind suggestion chips
         document.querySelectorAll('.ai-suggest-chip').forEach(chip => {
             chip.addEventListener('click', () => {
+                // TODO: Re-enable auth gate after completion
+                // if (!API.requireAuth()) return;
                 const q = chip.dataset.q;
-                console.log('[AI Chat] Suggestion clicked:', q);
                 this.addMsg(q, 'user');
                 setTimeout(() => this.genReply(q), 400);
             });

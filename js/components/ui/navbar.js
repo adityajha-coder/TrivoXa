@@ -131,6 +131,10 @@ const Navbar = {
                     <div>
                         <input type="password" id="auth-password" class="input-field" placeholder="Password" required style="width:100%;">
                     </div>
+                    <div id="auth-confirm-group" style="display:none;">
+                        <input type="password" id="auth-confirm-password" class="input-field" placeholder="Confirm Password" style="width:100%;">
+                        <p id="auth-pw-mismatch" style="display:none; color:var(--error); font-size:0.75rem; margin-top:5px;"><i class="fa-solid fa-circle-exclamation" style="margin-right:4px;"></i>Passwords do not match</p>
+                    </div>
                     <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width:100%; justify-content:center;">Sign In</button>
                 </form>
                 
@@ -152,8 +156,28 @@ const Navbar = {
             document.getElementById('auth-toggle-text').textContent = isLogin ? "Don't have an account?" : "Already have an account?";
             document.getElementById('auth-toggle-link').textContent = isLogin ? 'Register' : 'Sign In';
             document.getElementById('auth-name-group').style.display = isLogin ? 'none' : 'block';
-            if (!isLogin) document.getElementById('auth-name').required = true;
-            else document.getElementById('auth-name').required = false;
+            document.getElementById('auth-confirm-group').style.display = isLogin ? 'none' : 'block';
+            if (!isLogin) {
+                document.getElementById('auth-name').required = true;
+                document.getElementById('auth-confirm-password').required = true;
+            } else {
+                document.getElementById('auth-name').required = false;
+                document.getElementById('auth-confirm-password').required = false;
+                document.getElementById('auth-confirm-password').value = '';
+                document.getElementById('auth-pw-mismatch').style.display = 'none';
+            }
+        });
+
+        // Real-time confirm password validation
+        document.getElementById('auth-confirm-password').addEventListener('input', () => {
+            const pw = document.getElementById('auth-password').value;
+            const cpw = document.getElementById('auth-confirm-password').value;
+            const mismatch = document.getElementById('auth-pw-mismatch');
+            if (cpw && pw !== cpw) {
+                mismatch.style.display = 'block';
+            } else {
+                mismatch.style.display = 'none';
+            }
         });
 
         document.getElementById('auth-close').addEventListener('click', () => {
@@ -179,6 +203,13 @@ const Navbar = {
                     await API.login(email, pass);
                     Toast.show('Welcome back!', 'success');
                 } else {
+                    const confirmPass = document.getElementById('auth-confirm-password').value;
+                    if (pass !== confirmPass) {
+                        Toast.show('Passwords do not match', 'error');
+                        btn.innerHTML = 'Register';
+                        btn.disabled = false;
+                        return;
+                    }
                     await API.register(name, email, pass);
                     Toast.show('Account created successfully!', 'success');
                 }

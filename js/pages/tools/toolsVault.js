@@ -363,7 +363,69 @@ const ToolsVaultPage = {
         this.renderToolsGrid();
         this.renderExtensionsGrid();
         this.bindEvents();
+        // TODO: Re-enable auth gate after completion
+        // this._applyAuthGate();
+
+        // Remove gate when user logs in
+        if (!this._authBound) {
+            window.addEventListener('auth_changed', () => {
+                // TODO: Re-enable auth gate after completion
+                // this._applyAuthGate();
+            });
+            this._authBound = true;
+        }
     },
+
+    /* TODO: Re-enable auth gate after completion
+    _applyAuthGate() {
+        const existing = document.getElementById('tv-auth-gate');
+        if (existing) existing.remove();
+
+        if (API.getAuthToken()) {
+            const container = document.getElementById('tv-grid-container');
+            if (container) container.style.maxHeight = '';
+            const extContainer = document.getElementById('tv-ext-grid-container');
+            if (extContainer) extContainer.style.maxHeight = '';
+            const filter = document.getElementById('tv-category-filter');
+            if (filter) { filter.disabled = false; filter.style.opacity = ''; }
+            const search = document.getElementById('tv-search');
+            if (search) { search.disabled = false; search.style.opacity = ''; }
+            const extFilter = document.getElementById('tv-ext-category-filter');
+            if (extFilter) { extFilter.disabled = false; extFilter.style.opacity = ''; }
+            const extSearch = document.getElementById('tv-ext-search');
+            if (extSearch) { extSearch.disabled = false; extSearch.style.opacity = ''; }
+            return;
+        }
+
+        const container = document.getElementById('tv-grid-container');
+        if (container) {
+            container.style.maxHeight = '400px';
+            container.style.overflow = 'hidden';
+            container.style.position = 'relative';
+            const gate = document.createElement('div');
+            gate.id = 'tv-auth-gate';
+            gate.style.cssText = 'position:absolute; bottom:0; left:0; right:0; height:200px; background:linear-gradient(transparent, rgba(0,0,0,0.95)); display:flex; align-items:flex-end; justify-content:center; padding-bottom:20px; z-index:10;';
+            gate.innerHTML = `
+                <div style="text-align:center; padding:16px 24px; background:rgba(20,20,20,0.9); border:1px solid var(--border); border-radius:var(--radius); backdrop-filter:blur(8px);">
+                    <i class="fa-solid fa-lock" style="font-size:1.4rem; color:var(--primary-light); margin-bottom:8px; display:block;"></i>
+                    <p style="font-size:0.9rem; font-weight:600; color:var(--text); margin-bottom:6px;">Sign in to explore all tools</p>
+                    <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;">Create a free account to unlock full access</p>
+                    <button class="btn btn-primary btn-sm" id="tv-gate-login" style="min-width:120px;"><i class="fa-solid fa-right-to-bracket" style="margin-right:6px;"></i>Sign In</button>
+                </div>`;
+            container.appendChild(gate);
+            document.getElementById('tv-gate-login')?.addEventListener('click', () => { API.requireAuth(); });
+        }
+
+        const filter = document.getElementById('tv-category-filter');
+        if (filter) { filter.disabled = true; filter.style.opacity = '0.4'; }
+        const search = document.getElementById('tv-search');
+        if (search) { search.disabled = true; search.style.opacity = '0.4'; }
+        const extFilter = document.getElementById('tv-ext-category-filter');
+        if (extFilter) { extFilter.disabled = true; extFilter.style.opacity = '0.4'; }
+        const extSearch = document.getElementById('tv-ext-search');
+        if (extSearch) { extSearch.disabled = true; extSearch.style.opacity = '0.4'; }
+    },
+    */
 
     renderToolsGrid() {
         const container = document.getElementById('tv-grid-container');

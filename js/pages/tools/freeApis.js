@@ -1965,7 +1965,51 @@ const FreeApisPage = {
         this.renderCategoryFilter();
         this.renderApiGrid();
         this.bindEvents();
+        // TODO: Re-enable auth gate after completion
+        // this._applyAuthGate();
+
+        if (!this._authBound) {
+            window.addEventListener('auth_changed', () => {
+                // TODO: Re-enable auth gate after completion
+                // this._applyAuthGate();
+            });
+            this._authBound = true;
+        }
     },
+
+    /* TODO: Re-enable auth gate after completion
+    _applyAuthGate() {
+        const existing = document.getElementById('api-auth-gate');
+        if (existing) existing.remove();
+        const gridContainerWrapper = document.getElementById('api-grid').parentElement;
+        const grid = document.getElementById('api-grid');
+        if (API.getAuthToken()) {
+            grid.style.maxHeight = ''; grid.style.overflow = ''; grid.style.position = '';
+            const search = document.getElementById('api-search');
+            if (search) { search.disabled = false; search.style.opacity = ''; }
+            const catFilter = document.getElementById('api-category-filter');
+            if (catFilter) { catFilter.disabled = false; catFilter.style.opacity = ''; }
+            const priceFilter = document.getElementById('api-pricing-filter');
+            if (priceFilter) { priceFilter.disabled = false; priceFilter.style.opacity = ''; }
+            return;
+        }
+        if (grid) {
+            grid.style.maxHeight = '500px'; grid.style.overflow = 'hidden'; grid.style.position = 'relative';
+            const gate = document.createElement('div');
+            gate.id = 'api-auth-gate';
+            gate.style.cssText = 'position:absolute; bottom:0; left:0; right:0; height:200px; background:linear-gradient(transparent, rgba(0,0,0,0.95)); display:flex; align-items:flex-end; justify-content:center; padding-bottom:20px; z-index:10;';
+            gate.innerHTML = `<div style="text-align:center; padding:16px 24px; background:rgba(20,20,20,0.9); border:1px solid var(--border); border-radius:var(--radius); backdrop-filter:blur(8px);"><i class="fa-solid fa-lock" style="font-size:1.4rem; color:var(--primary-light); margin-bottom:8px; display:block;"></i><p style="font-size:0.9rem; font-weight:600; color:var(--text); margin-bottom:6px;">Sign in to explore all APIs</p><p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;">Create a free account to unlock full access</p><button class="btn btn-primary btn-sm" id="api-gate-login" style="min-width:120px;"><i class="fa-solid fa-right-to-bracket" style="margin-right:6px;"></i>Sign In</button></div>`;
+            grid.appendChild(gate);
+            document.getElementById('api-gate-login')?.addEventListener('click', () => { API.requireAuth(); });
+        }
+        const search = document.getElementById('api-search');
+        if (search) { search.disabled = true; search.style.opacity = '0.4'; }
+        const catFilter = document.getElementById('api-category-filter');
+        if (catFilter) { catFilter.disabled = true; catFilter.style.opacity = '0.4'; }
+        const priceFilter = document.getElementById('api-pricing-filter');
+        if (priceFilter) { priceFilter.disabled = true; priceFilter.style.opacity = '0.4'; }
+    },
+    */
 
     renderCategoryFilter() {
         const sel = document.getElementById('api-category-filter');

@@ -88,14 +88,24 @@ const DocsPage = {
             return;
         }
         
-        btn.addEventListener('click', () => this.searchDocs(input.value));
+        btn.addEventListener('click', () => {
+            // TODO: Re-enable auth gate after completion
+            // if (!API.requireAuth()) return;
+            this.searchDocs(input.value);
+        });
         input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') this.searchDocs(input.value);
+            if (e.key === 'Enter') {
+                // TODO: Re-enable auth gate after completion
+                // if (!API.requireAuth()) return;
+                this.searchDocs(input.value);
+            }
         });
 
         if (suggestionsArea) {
             suggestionsArea.addEventListener('click', (e) => {
                 if(e.target.classList.contains('ai-suggest-chip')) {
+                    // TODO: Re-enable auth gate after completion
+                    // if (!API.requireAuth()) return;
                     input.value = e.target.dataset.q;
                     this.searchDocs(input.value);
                 }
