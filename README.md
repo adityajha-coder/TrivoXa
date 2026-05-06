@@ -3,9 +3,8 @@
   
   # Vertex Developer Toolkit
   
-  **A Unified, High-Performance and Developer Utility Suite**
+  **A Unified, High Performance Developer Utility Suite**
   
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://makeapullrequest.com)
   [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PWA-blue.svg)]()
 </div>
@@ -60,41 +59,16 @@ A collection of utilities designed to minimize tab-switching during development.
 
 ---
 
-## Local Development & Setup
+## Contributing
 
-Start running Vertex natively in under a minute.
+Vertex thrives on community contributions. Whether you are optimizing existing modules, writing documentation, or proposing entirely new features, your pull requests are highly encouraged and appreciated.
 
-### Prerequisites
-* Node.js (v16.x or newer recommended)
-* npm or yarn
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/adityajha-coder/vertex-devloper-toolkit.git
-   cd vertex-devloper-toolkit
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Environment Setup (Required for AI Modules):**
-   The AI Hub requires a valid Groq API key to handle inference requests.
-   Create a `.env` file in the root directory:
-   ```env
-   GROQ_API_KEY=your_groq_api_key_here
-   ```
-   *(Alternatively, the API key can be injected dynamically via the Vertex UI settings menu).*
-
-4. **Launch the Application:**
-   Initialize both the local API proxy server and the static development server concurrently:
-   ```bash
-   npm run both
-   ```
-   The application will mount immediately at `http://localhost:8080`.
+To contribute:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ---
 
@@ -128,11 +102,7 @@ When deployed to platforms such as Vercel or Netlify, Vertex dynamically routes 
 
 ---
 
-## License
 
-This project is open-source and distributed under the **MIT License**. See the `LICENSE` file for detailed information.
-
----
 
 <div align="center">
   <i>Engineered by <a href="https://github.com/adityajha-coder">Aditya Jha</a>.</i>
