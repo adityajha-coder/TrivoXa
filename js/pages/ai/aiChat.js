@@ -173,7 +173,7 @@ const AiChatMixin = {
                 return;
             }
             
-            let formattedReply = replyText.replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:8px;font-size:12px;overflow-x:auto;">$1</pre>');
+            let formattedReply = this.formatMarkdown(replyText);
             
             this.addMsg(formattedReply.trim(), 'bot');
             
@@ -184,5 +184,82 @@ const AiChatMixin = {
             document.getElementById('ai-bot-send').disabled = false;
             document.getElementById('ai-bot-send').innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
         }
+    },
+
+    /**
+     * Lightweight Markdown → HTML renderer for AI chat responses.
+     * Handles code blocks, headings, bold, italic, inline code,
+     * numbered/bullet lists, and line breaks so responses look
+     * clean and structured instead of a wall of text.
+     */
+    formatMarkdown(text) {
+        if (!text) return '';
+
+        // Step 1: Protect code blocks from being processed
+        const codeBlocks = [];
+        text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+            const idx = codeBlocks.length;
+            codeBlocks.push(`<pre style="background:rgba(0,0,0,0.4);padding:12px;border-radius:8px;border:1px solid var(--border);margin:8px 0;font-size:12px;overflow-x:auto;font-family:var(--font-mono);line-height:1.6;"><code>${code.replace(/</g,'&lt;').replace(/>/g,'&gt;').trim()}</code></pre>`);
+            return `__CODE_BLOCK_${idx}__`;
+        });
+
+        // Step 2: Process line-by-line to handle lists and headings properly
+        const lines = text.split('\n');
+        let html = '';
+        let inList = false;     // Are we currently inside a <ul> or <ol>?
+        let listType = '';      // 'ul' or 'ol'
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+
+            // --- Headings ---
+            if (line.startsWith('### '))      { line = `<h4 style="margin:12px 0 6px;font-weight:600;color:var(--primary-light);">${line.slice(4)}</h4>`; }
+            else if (line.startsWith('## '))   { line = `<h3 style="margin:14px 0 6px;font-weight:700;color:var(--primary-light);">${line.slice(3)}</h3>`; }
+            else if (line.startsWith('# '))    { line = `<h2 style="margin:16px 0 8px;font-weight:700;color:var(--primary-light);">${line.slice(2)}</h2>`; }
+
+            // --- Numbered list items (e.g. "1. ", "2. ") ---
+            else if (/^\d+\.\s/.test(line)) {
+                if (!inList || listType !== 'ol') {
+                    if (inList) html += `</${listType}>`;
+                    html += '<ol style="margin:8px 0;padding-left:20px;line-height:1.8;">';
+                    inList = true; listType = 'ol';
+                }
+                line = `<li style="margin-bottom:4px;">${line.replace(/^\d+\.\s/, '')}</li>`;
+            }
+
+            // --- Bullet list items (e.g. "- " or "* ") ---
+            else if (/^[\-\*]\s/.test(line)) {
+                if (!inList || listType !== 'ul') {
+                    if (inList) html += `</${listType}>`;
+                    html += '<ul style="margin:8px 0;padding-left:20px;line-height:1.8;">';
+                    inList = true; listType = 'ul';
+                }
+                line = `<li style="margin-bottom:4px;">${line.replace(/^[\-\*]\s/, '')}</li>`;
+            }
+
+            // --- Regular line: close any open list ---
+            else {
+                if (inList) { html += `</${listType}>`; inList = false; listType = ''; }
+                // Empty lines become spacing
+                if (line.trim() === '') { line = '<br>'; }
+                else { line = `<p style="margin:4px 0;line-height:1.7;">${line}</p>`; }
+            }
+
+            html += line;
+        }
+        // Close any remaining open list
+        if (inList) html += `</${listType}>`;
+
+        // Step 3: Inline formatting (bold, italic, inline code)
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        html = html.replace(/`([^`]+)`/g, '<code style="background:rgba(88,166,255,0.12);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.82em;color:var(--primary-light);">$1</code>');
+
+        // Step 4: Restore protected code blocks
+        codeBlocks.forEach((block, idx) => {
+            html = html.replace(`__CODE_BLOCK_${idx}__`, block);
+        });
+
+        return html;
     }
 };

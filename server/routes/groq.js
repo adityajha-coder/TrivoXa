@@ -4,7 +4,7 @@ const axios = require('axios');
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-//proxy to Groq API (no auth required for AI chat)
+// Proxy to Groq API (no auth required for AI chat)
 router.post('/chat', async (req, res) => {
     try {
         const { messages, model = 'llama-3.1-8b-instant', temperature = 0.7, max_tokens = 2048 } = req.body;

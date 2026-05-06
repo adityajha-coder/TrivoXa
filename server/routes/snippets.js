@@ -35,7 +35,7 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-//Delete a snippet
+// Delete a snippet
 router.delete('/:id', auth, async (req, res) => {
     try {
         const snippet = await Snippet.findOneAndDelete({ _id: req.params.id, userId: req.user.id });

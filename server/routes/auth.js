@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
-// POST /api/auth/register
+// Register new user
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -17,7 +17,6 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ error: 'Password must be at least 6 characters.' });
         }
 
-        // Check if user already exists
         const existing = await User.findOne({ email });
         if (existing) {
             return res.status(400).json({ error: 'An account with this email already exists.' });
@@ -26,7 +25,6 @@ router.post('/register', async (req, res) => {
         const user = new User({ name, email, password });
         await user.save();
 
-        // Generate JWT
         const token = jwt.sign(
             { id: user._id, name: user.name, email: user.email },
             process.env.JWT_SECRET,
@@ -43,7 +41,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// POST /api/auth/login
+// Login existing user
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -78,7 +76,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-//Get current user from token
+// Get current user from token
 router.get('/me', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');

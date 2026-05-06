@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const DocsHistory = require('../models/DocsHistory');
 
-// docs search history for logged-in user
+// Get docs search history for logged-in user
 router.get('/', auth, async (req, res) => {
     try {
         const history = await DocsHistory.find({ userId: req.user.id }).sort({ timestamp: -1 }).limit(15);
@@ -36,7 +36,7 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-//Delete a single history item
+// Delete a single history item
 router.delete('/:id', auth, async (req, res) => {
     try {
         await DocsHistory.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
@@ -46,7 +46,7 @@ router.delete('/:id', auth, async (req, res) => {
     }
 });
 
-//Clear all docs history for a user
+// Clear all docs history for a user
 router.delete('/', auth, async (req, res) => {
     try {
         await DocsHistory.deleteMany({ userId: req.user.id });

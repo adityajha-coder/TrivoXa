@@ -1,12 +1,3 @@
-/**
- * Vertex MEN Stack — Main Server Entry Point
- * Connects to MongoDB, configures Express middleware, and mounts all API routes.
- * 
- * Usage:
- *   npm run proxy
- *   Server runs on http://localhost:3001
- */
-
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 
 const express = require('express');
@@ -31,7 +22,7 @@ app.use('/api/ai-history', require('./routes/aiHistory'));
 app.use('/api/docs-history', require('./routes/docsHistory'));
 app.use('/api/groq', require('./routes/groq'));
 
-// Root / Health Check
+// Health Check
 app.get('/', (req, res) => {
     res.json({
         status: 'ok',
@@ -48,6 +39,10 @@ app.get('/', (req, res) => {
             'POST /api/ai-history',
             'DELETE /api/ai-history/:id',
             'DELETE /api/ai-history',
+            'GET  /api/docs-history',
+            'POST /api/docs-history',
+            'DELETE /api/docs-history/:id',
+            'DELETE /api/docs-history',
         ]
     });
 });
