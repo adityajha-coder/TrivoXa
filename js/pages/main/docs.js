@@ -66,6 +66,16 @@ const DocsPage = {
         this.bindEvents();
         // Load history, but wait a tick for auth to potentially initialize if not already
         setTimeout(() => this.loadHistory(), 800);
+
+        // Reactive Data Syncing
+        if (!this._authBound) {
+            window.addEventListener('auth_changed', () => {
+                if (document.getElementById('docs-history-wrapper')) {
+                    this.loadHistory();
+                }
+            });
+            this._authBound = true;
+        }
     },
 
     bindEvents() {
@@ -94,11 +104,9 @@ const DocsPage = {
     },
 
     async loadHistory() {
-        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
-        if (userId && window.db) {
+        if (API.getAuthToken()) {
             try {
-                const snap = await window.db.collection('users').doc(userId).collection('docs_history').orderBy('timestamp', 'desc').limit(15).get();
-                this.docsHistory = snap.docs.map(doc => doc.data());
+                this.docsHistory = await API.fetchAPI('/api/docs-history');
             } catch(e) {
                 console.error('[Docs] Failed to load history from DB:', e);
                 this.docsHistory = JSON.parse(localStorage.getItem('docs_history') || '[]');
@@ -120,10 +128,10 @@ const DocsPage = {
         
         this.renderHistory();
 
-        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
-        if (userId && window.db) {
+        if (API.getAuthToken()) {
             try {
-                await window.db.collection('users').doc(userId).collection('docs_history').doc(item.id).set(item);
+                const saved = await API.fetchAPI('/api/docs-history', 'POST', { query });
+                item.id = saved._id;
             } catch(e) {
                 console.error('[Docs] Failed to save history to DB:', e);
             }
@@ -136,9 +144,8 @@ const DocsPage = {
         this.docsHistory = this.docsHistory.filter(h => h.id !== id);
         this.renderHistory();
 
-        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
-        if (userId && window.db) {
-            try { await window.db.collection('users').doc(userId).collection('docs_history').doc(id).delete(); } catch(e) {}
+        if (API.getAuthToken()) {
+            try { await API.fetchAPI(`/api/docs-history/${id}`, 'DELETE'); } catch(e) {}
         } else {
             localStorage.setItem('docs_history', JSON.stringify(this.docsHistory));
         }
@@ -149,13 +156,9 @@ const DocsPage = {
         this.docsHistory = [];
         this.renderHistory();
         
-        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
-        if (userId && window.db) {
+        if (API.getAuthToken()) {
             try { 
-                const snap = await window.db.collection('users').doc(userId).collection('docs_history').get();
-                const batch = window.db.batch();
-                snap.docs.forEach(doc => batch.delete(doc.ref));
-                await batch.commit();
+                await API.fetchAPI('/api/docs-history', 'DELETE');
             } catch(e) {}
         } else {
             localStorage.removeItem('docs_history');

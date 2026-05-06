@@ -24,6 +24,22 @@ const WorkspacePage = {
 
     async loadSnippets() {
         await this.initDB();
+        
+        // Sync from MongoDB if logged in
+        if (API.getAuthToken()) {
+            try {
+                const cloudSnips = await API.fetchAPI('/api/snippets');
+                const transaction = this.db.transaction(['snippets'], 'readwrite');
+                const store = transaction.objectStore('snippets');
+                store.clear();
+                cloudSnips.forEach(s => {
+                    store.put({ id: s._id, title: s.title, code: s.code, lang: s.lang });
+                });
+            } catch (e) {
+                console.error("Failed to sync snippets from cloud:", e);
+            }
+        }
+
         return new Promise(resolve => {
             const transaction = this.db.transaction(['snippets'], 'readonly');
             const store = transaction.objectStore('snippets');
@@ -119,6 +135,16 @@ const WorkspacePage = {
                 this.renderSnippets();
             });
         });
+
+        // Reactive Data Syncing
+        if (!this._authBound) {
+            window.addEventListener('auth_changed', () => {
+                if (document.getElementById('snippets-grid')) {
+                    this.loadSnippets().then(() => this.renderSnippets());
+                }
+            });
+            this._authBound = true;
+        }
         
         // Initialize Monaco Editor
         Helpers.initMonaco().then(monaco => {
@@ -177,22 +203,23 @@ const WorkspacePage = {
 
     async saveSnippet(title, code, lang) {
         await this.initDB();
-        const newSnip = { id: Date.now().toString(), title, code, lang: lang || 'html' };
+        let newSnip = { id: Date.now().toString(), title, code, lang: lang || 'html' };
+        
+        // Push to MongoDB Backend if logged in
+        if (API.getAuthToken()) {
+            try {
+                const saved = await API.fetchAPI('/api/snippets', 'POST', { title, code, lang: lang || 'html' });
+                newSnip.id = saved._id; // Use MongoDB ID
+                console.log("☁️ Snippet successfully synced to MongoDB!");
+            } catch(e) {
+                console.error("Failed to sync snippet to cloud:", e);
+            }
+        }
+        
         this.snippets.push(newSnip);
         await this.saveToIndexedDB(newSnip);
         if (document.getElementById('snippets-grid')) {
             this.renderSnippets();
-        }
-
-        // Push to Firebase Cloud Database if available
-        if (window.db) {
-            try {
-                const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "anonymous";
-                await window.db.collection('users').doc(userId).collection('snippets').doc(newSnip.id).set(newSnip);
-                console.log("☁️ Snippet successfully synced to Firebase!");
-            } catch(e) {
-                console.error("Failed to sync snippet to cloud:", e);
-            }
         }
     },
 
@@ -467,11 +494,10 @@ const WorkspacePage = {
                 this.snippets.splice(idx, 1);
                 await this.deleteFromIndexedDB(id);
                 
-                // Delete from Firebase
-                if (window.db) {
+                // Delete from MongoDB
+                if (API.getAuthToken()) {
                     try {
-                        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "anonymous";
-                        await window.db.collection('users').doc(userId).collection('snippets').doc(id).delete();
+                        await API.fetchAPI(`/api/snippets/${id}`, 'DELETE');
                     } catch(e) { console.error("Cloud delete fail", e); }
                 }
 

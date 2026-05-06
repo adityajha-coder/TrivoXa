@@ -3,9 +3,9 @@ const API = {
     NPM_SEARCH: 'https://registry.npmjs.org/-/v1/search',
     NPM_PACKAGE: 'https://registry.npmjs.org',
     GROQ_BASE: 'https://api.groq.com/openai/v1',
-    GROQ_PROXY: window.location.host.includes('localhost') || window.location.host.includes('127.0.0.1') 
-        ? 'http://localhost:3001/api/groq' 
-        : '/api/groq',
+    API_BASE: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        ? 'http://localhost:3001' 
+        : '',
     USE_PROXY: true,
 
     getGroqApiKey() {
@@ -14,6 +14,90 @@ const API = {
 
     setGroqApiKey(key) {
         localStorage.setItem('vertex_groq_key', key);
+    },
+
+    // MEN Stack Authentication
+    getAuthToken() {
+        return localStorage.getItem('vertex_auth_token');
+    },
+
+    setAuthToken(token) {
+        if (token) localStorage.setItem('vertex_auth_token', token);
+        else localStorage.removeItem('vertex_auth_token');
+    },
+
+    getUser() {
+        try {
+            return JSON.parse(localStorage.getItem('vertex_user'));
+        } catch { return null; }
+    },
+
+    setUser(user) {
+        if (user) localStorage.setItem('vertex_user', JSON.stringify(user));
+        else localStorage.removeItem('vertex_user');
+    },
+
+    logout() {
+        this.setAuthToken(null);
+        this.setUser(null);
+        window.dispatchEvent(new Event('auth_changed'));
+    },
+
+    async register(name, email, password) {
+        const res = await fetch(`${this.API_BASE}/api/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+        });
+        
+        const text = await res.text();
+        let data;
+        try { data = text ? JSON.parse(text) : {}; } 
+        catch (e) { throw new Error('Server returned an invalid response (might be offline).'); }
+
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+        this.setAuthToken(data.token);
+        this.setUser(data.user);
+        window.dispatchEvent(new Event('auth_changed'));
+        return data;
+    },
+
+    async login(email, password) {
+        const res = await fetch(`${this.API_BASE}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const text = await res.text();
+        let data;
+        try { data = text ? JSON.parse(text) : {}; } 
+        catch (e) { throw new Error('Server returned an invalid response (might be offline).'); }
+
+        if (!res.ok) throw new Error(data.error || 'Login failed');
+        this.setAuthToken(data.token);
+        this.setUser(data.user);
+        window.dispatchEvent(new Event('auth_changed'));
+        return data;
+    },
+
+    async fetchAPI(endpoint, method = 'GET', body = null) {
+        const token = this.getAuthToken();
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const options = { method, headers };
+        if (body) options.body = JSON.stringify(body);
+
+        const res = await fetch(`${this.API_BASE}${endpoint}`, options);
+        
+        const text = await res.text();
+        let data;
+        try { data = text ? JSON.parse(text) : {}; } 
+        catch (e) { throw new Error('Server returned an invalid response (might be offline).'); }
+
+        if (!res.ok) throw new Error(data.error || 'API Request failed');
+        return data;
     },
 
     async fetchGroq(endpoint, body, model = 'llama-3.1-8b-instant') {
@@ -30,7 +114,7 @@ const API = {
     },
 
     async fetchGroqViaProxy(endpoint, body) {
-        const url = `${this.GROQ_PROXY}${endpoint}`;
+        const url = `${this.API_BASE}/api/groq${endpoint}`;
         
         try {
             const res = await fetch(url, {
