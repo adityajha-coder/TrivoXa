@@ -1,12 +1,13 @@
 {
     "name": "Vertex — Developer Toolkit",
     "short_name": "Vertex",
-    "description": "All-in-one developer toolkit with code generation, repo visualization, and Git mastery.",
+    "description": "The ultimate developer toolkit. Master Git, generate code using AI, explore packages, save snippets, and run interactive code environments instantly in the browser.",
     "start_url": "/index.html",
     "display": "standalone",
     "background_color": "#000000",
     "theme_color": "#000000",
-    "orientation": "portrait-primary",
+    "orientation": "any",
+    "categories": ["developer", "productivity", "utilities"],
     "icons": [
         {
             "src": "favicon.svg",
@@ -25,6 +26,23 @@
             "sizes": "512x512",
             "type": "image/svg+xml",
             "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Dashboard",
+            "url": "/#dashboard",
+            "icons": [{ "src": "favicon.svg", "sizes": "any" }]
+        },
+        {
+            "name": "Workspace",
+            "url": "/#workspace",
+            "icons": [{ "src": "favicon.svg", "sizes": "any" }]
+        },
+        {
+            "name": "Ask AI",
+            "url": "/#ask-ai",
+            "icons": [{ "src": "favicon.svg", "sizes": "any" }]
         }
     ]
 }
