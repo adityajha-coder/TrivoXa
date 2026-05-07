@@ -35,13 +35,26 @@ const colors = {
     bold: (t) => `\x1b[1m${t}\x1b[0m`,
 };
 
-function fetch(url, options = {}) {
+function fetch(url, options = {}, redirectCount = 0) {
     return new Promise((resolve, reject) => {
+        if (redirectCount > 5) {
+            reject(new Error('TOO_MANY_REDIRECTS'));
+            return;
+        }
+
         const timeout = setTimeout(() => {
             reject(new Error('TIMEOUT'));
         }, 5000);
 
         const req = http.get(url, (res) => {
+            if (res.statusCode === 301 || res.statusCode === 302) {
+                clearTimeout(timeout);
+                const location = res.headers.location;
+                const nextUrl = location.startsWith('http') ? location : new URL(location, url).href;
+                resolve(fetch(nextUrl, options, redirectCount + 1));
+                return;
+            }
+
             let body = '';
             res.on('data', (chunk) => body += chunk);
             res.on('end', () => {
