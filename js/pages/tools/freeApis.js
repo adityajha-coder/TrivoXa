@@ -1966,18 +1966,17 @@ const FreeApisPage = {
         this.renderApiGrid();
         this.bindEvents();
         // TODO: Re-enable auth gate after completion
-        // this._applyAuthGate();
+        this._applyAuthGate();
 
         if (!this._authBound) {
             window.addEventListener('auth_changed', () => {
                 // TODO: Re-enable auth gate after completion
-                // this._applyAuthGate();
+                this._applyAuthGate();
             });
             this._authBound = true;
         }
     },
 
-    /* TODO: Re-enable auth gate after completion
     _applyAuthGate() {
         const existing = document.getElementById('api-auth-gate');
         if (existing) existing.remove();
@@ -2009,7 +2008,6 @@ const FreeApisPage = {
         const priceFilter = document.getElementById('api-pricing-filter');
         if (priceFilter) { priceFilter.disabled = true; priceFilter.style.opacity = '0.4'; }
     },
-    */
 
     renderCategoryFilter() {
         const sel = document.getElementById('api-category-filter');

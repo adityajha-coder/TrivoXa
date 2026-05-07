@@ -35,8 +35,8 @@ const AiCodegenMixin = {
 
         // Generate button
         generateBtn.addEventListener('click', () => {
-            // TODO: Re-enable auth gate after completion
-            // if (!API.requireAuth()) return;
+            // Auth gate
+            if (!API.requireAuth()) return;
             const prompt = codePrompt.value.trim();
             if(!prompt) {
                 Toast.show('Please enter a description first', 'error');
@@ -59,8 +59,8 @@ const AiCodegenMixin = {
 
         // Save button
         saveBtn.addEventListener('click', () => {
-            // TODO: Re-enable auth gate after completion
-            // if (!API.requireAuth()) return;
+            // Auth gate
+            if (!API.requireAuth()) return;
             const code = this.editor ? this.editor.getValue() : '';
             if(!code) {
                 Toast.show('No code to save', 'error');

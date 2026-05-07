@@ -182,19 +182,18 @@ const CodeGitExplorerPage = {
             </div>`;
         this.bindEvents();
         // TODO: Re-enable auth gate after completion
-        // this._applyAuthGate();
+        this._applyAuthGate();
 
         // React to login/logout
         if (!this._authBound) {
             window.addEventListener('auth_changed', () => {
                 // TODO: Re-enable auth gate after completion
-                // this._applyAuthGate();
+                this._applyAuthGate();
             });
             this._authBound = true;
         }
     },
 
-    /* TODO: Re-enable auth gate after completion
     _applyAuthGate() {
         const existing = document.getElementById('explorer-auth-gate');
         if (existing) existing.remove();
@@ -230,7 +229,7 @@ const CodeGitExplorerPage = {
                     <h3>Sign In to Explore</h3>
                     <p style="max-width:360px; margin:0 auto 20px;">Create a free account to visualize GitHub repositories, browse 3D code maps, and explore commit history.</p>
                     <button class="btn btn-primary" id="explorer-gate-login" style="min-width:140px;">
-                        <i class="fa-solid fa-right-to-bracket" style="margin-right:6px;"></i>Sign In
+                        <i></i>Sign In
                     </button>
                 </div>`;
 
@@ -239,24 +238,20 @@ const CodeGitExplorerPage = {
             });
         }
     },
-    */
 
     bindEvents() {
         document.getElementById('explorer-btn').addEventListener('click', () => {
-            // TODO: Re-enable auth gate after completion
-            // if (!API.requireAuth()) return;
+            if (!API.requireAuth()) return;
             this.load();
         });
         document.getElementById('explorer-input').addEventListener('keydown', e => {
             if (e.key === 'Enter') {
-                // TODO: Re-enable auth gate after completion
-                // if (!API.requireAuth()) return;
+                if (!API.requireAuth()) return;
                 this.load();
             }
         });
         document.getElementById('ai-summary-refresh')?.addEventListener('click', () => {
-            // TODO: Re-enable auth gate after completion
-            // if (!API.requireAuth()) return;
+            if (!API.requireAuth()) return;
             if (this.repoData?.repo) this.generateAiSummary(this.repoData.repo, this.repoData.tree || []);
         });
         document.getElementById('ai-summary-close')?.addEventListener('click', () => {
@@ -276,8 +271,7 @@ const CodeGitExplorerPage = {
         document.getElementById('explorer-type-tabs')?.addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
             if (!tab) return;
-            // TODO: Re-enable auth gate after completion
-            // if (!API.requireAuth()) return;
+            if (!API.requireAuth()) return;
             document.querySelectorAll('#explorer-type-tabs .tab-item').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             this.searchType = tab.dataset.type;
@@ -304,11 +298,10 @@ const CodeGitExplorerPage = {
         });
 
         document.getElementById('local-folder-input').addEventListener('change', (e) => {
-            // TODO: Re-enable auth gate after completion
-            // if (!API.requireAuth()) {
-            //     e.target.value = '';
-            //     return;
-            // }
+            if (!API.requireAuth()) {
+                e.target.value = '';
+                return;
+            }
             if (e.target.files.length) {
                 this.loadLocalFolder(e.target.files);
             }

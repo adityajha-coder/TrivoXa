@@ -23,7 +23,7 @@ const AiChatMixin = {
         // Bind send button
         send.addEventListener('click', () => {
             // TODO: Re-enable auth gate after completion
-            // if (!API.requireAuth()) return;
+            if (!API.requireAuth()) return;
             const q = input.value.trim();
             if (!q) return;
             this.addMsg(q, 'user');
@@ -34,7 +34,7 @@ const AiChatMixin = {
         // Bind explain button
         explain.addEventListener('click', () => {
             // TODO: Re-enable auth gate after completion
-            // if (!API.requireAuth()) return;
+            if (!API.requireAuth()) return;
             const code = input.value.trim();
             if (!code) {
                 Toast.show('Paste code first, then click Explain', 'warning');
@@ -49,7 +49,7 @@ const AiChatMixin = {
         // Bind debug button
         debug.addEventListener('click', () => {
             // TODO: Re-enable auth gate after completion
-            // if (!API.requireAuth()) return;
+            if (!API.requireAuth()) return;
             const code = input.value.trim();
             if (!code) {
                 Toast.show('Paste the error or code first', 'warning');
@@ -67,7 +67,7 @@ const AiChatMixin = {
                 e.preventDefault();
                 e.stopPropagation();
                 // TODO: Re-enable auth gate after completion
-                // if (!API.requireAuth()) return;
+                if (!API.requireAuth()) return;
                 const q = input.value.trim();
                 if (!q) return;
                 this.addMsg(q, 'user');
@@ -92,7 +92,7 @@ const AiChatMixin = {
         document.querySelectorAll('.ai-suggest-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 // TODO: Re-enable auth gate after completion
-                // if (!API.requireAuth()) return;
+                if (!API.requireAuth()) return;
                 const q = chip.dataset.q;
                 this.addMsg(q, 'user');
                 setTimeout(() => this.genReply(q), 400);

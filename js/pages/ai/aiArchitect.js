@@ -11,14 +11,14 @@ const AiArchitectMixin = {
         }
 
         btn.addEventListener('click', () => {
-            // TODO: Re-enable auth gate after completion
-            // if (!API.requireAuth()) return;
+            // Auth gate
+            if (!API.requireAuth()) return;
             this.generateArchitecture();
         });
         input.addEventListener('keydown', e => {
             if (e.key === 'Enter') {
-                // TODO: Re-enable auth gate after completion
-                // if (!API.requireAuth()) return;
+                // Auth gate
+                if (!API.requireAuth()) return;
                 this.generateArchitecture();
             }
         });
@@ -34,8 +34,8 @@ const AiArchitectMixin = {
             chips.addEventListener('click', e => {
                 const chip = e.target.closest('.ai-suggest-chip');
                 if (chip) {
-                    // TODO: Re-enable auth gate after completion
-                    // if (!API.requireAuth()) return;
+                    // Auth gate
+                    if (!API.requireAuth()) return;
                     input.value = chip.dataset.q;
                     this.generateArchitecture();
                 }

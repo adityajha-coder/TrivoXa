@@ -364,19 +364,18 @@ const ToolsVaultPage = {
         this.renderExtensionsGrid();
         this.bindEvents();
         // TODO: Re-enable auth gate after completion
-        // this._applyAuthGate();
+        this._applyAuthGate();
 
         // Remove gate when user logs in
         if (!this._authBound) {
             window.addEventListener('auth_changed', () => {
                 // TODO: Re-enable auth gate after completion
-                // this._applyAuthGate();
+                this._applyAuthGate();
             });
             this._authBound = true;
         }
     },
 
-    /* TODO: Re-enable auth gate after completion
     _applyAuthGate() {
         const existing = document.getElementById('tv-auth-gate');
         if (existing) existing.remove();
@@ -425,7 +424,6 @@ const ToolsVaultPage = {
         const extSearch = document.getElementById('tv-ext-search');
         if (extSearch) { extSearch.disabled = true; extSearch.style.opacity = '0.4'; }
     },
-    */
 
     renderToolsGrid() {
         const container = document.getElementById('tv-grid-container');
