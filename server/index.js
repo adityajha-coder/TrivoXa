@@ -2,6 +2,7 @@ require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') }
 
 const express = require('express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
 
@@ -11,16 +12,53 @@ const PORT = process.env.PORT || 3001;
 // Connect to MongoDB
 connectDB();
 
-// Middleware
-app.use(cors());
+// Middleware — CORS restricted to known origins
+const allowedOrigins = [
+    'http://localhost:8080',
+    'http://localhost:3000',
+    'https://vertex-devloper-toolkit.vercel.app'
+];
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (curl, Postman, server-to-server)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(new Error('CORS: Origin not allowed'), false);
+    },
+    credentials: true
+}));
 app.use(bodyParser.json({ limit: '5mb' }));
 
-// Mount Routes
-app.use('/api/auth', require('./routes/auth'));
+// Rate Limiting — Global: 100 requests per 15 minutes per IP
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests. Please try again later.' }
+});
+app.use(globalLimiter);
+
+// Strict rate limit for auth endpoints (prevent brute-force)
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { error: 'Too many login/register attempts. Please try again in 15 minutes.' }
+});
+
+// Strict rate limit for AI chat (protect Groq API key)
+const aiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: { error: 'AI request limit reached. Please try again in 15 minutes.' }
+});
+
+// Mount Routes (with targeted rate limiters)
+app.use('/api/auth', authLimiter, require('./routes/auth'));
 app.use('/api/snippets', require('./routes/snippets'));
 app.use('/api/ai-history', require('./routes/aiHistory'));
 app.use('/api/docs-history', require('./routes/docsHistory'));
-app.use('/api/groq', require('./routes/groq'));
+app.use('/api/groq', aiLimiter, require('./routes/groq'));
 
 // Health Check
 app.get('/', (req, res) => {
