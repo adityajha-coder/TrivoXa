@@ -1,4 +1,6 @@
 const AiChatMixin = {
+    chatHistory: [],
+    MAX_HISTORY_TURNS: 20,
     bindChat() {
         console.log('[AI Chat] Starting chat binding...');
         
@@ -83,7 +85,8 @@ const AiChatMixin = {
                 const msgs = document.getElementById('ai-bot-messages');
                 if (msgs) {
                     msgs.innerHTML = `<div class="ai-msg bot-msg"><div class="msg-avatar"><i class="fa-solid fa-robot"></i></div><div class="msg-bubble">Chat cleared. How can I help you?</div></div>`;
-                    Toast.show('Chat cleared', 'success');
+                    this.chatHistory = [];
+                    Toast.show('Chat cleared — memory reset', 'success');
                 }
             });
         }
@@ -143,15 +146,26 @@ const AiChatMixin = {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 60000);
                 
-                let sysPrompt = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough.";
+                let sysPrompt = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. You have memory of the full conversation so far. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough.";
                 
+                // Add the new user message to conversation history
+                this.chatHistory.push({ role: 'user', content: query });
+
+                // Trim history to prevent token overflow (keep last N turns)
+                if (this.chatHistory.length > this.MAX_HISTORY_TURNS * 2) {
+                    this.chatHistory = this.chatHistory.slice(-this.MAX_HISTORY_TURNS * 2);
+                }
+
                 const res = await API.callGroqChat([
                     { role: 'system', content: sysPrompt },
-                    { role: 'user', content: query }
+                    ...this.chatHistory
                 ], 'llama-3.1-8b-instant', 0.7);
 
                 clearTimeout(timeout);
                 replyText = res.choices[0]?.message?.content || "No response generated";
+
+                // Store assistant response in history for future context
+                this.chatHistory.push({ role: 'assistant', content: replyText });
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     replyText = AskAiPage.cleanAiResponse(replyText);
                 }
