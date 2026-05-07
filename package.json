@@ -9,6 +9,7 @@
     "proxy:dev": "nodemon server/index.js",
     "both": "concurrently \"npm run proxy\" \"npm run start:local\"",
     "test:api": "node scripts/test-groq-api.js",
+    "test:site": "node scripts/test-website.js",
     "setup": "node scripts/setup-groq.js"
   },
   "dependencies": {

@@ -151,7 +151,7 @@ const API = {
         } catch (err) {
             if (err instanceof TypeError) {
                 console.error('Proxy Connection Error:', err);
-                throw new Error('Cannot reach Groq Proxy server on localhost:3001. Make sure it\'s running: node groq-proxy.js');
+                throw new Error('Cannot reach API server on localhost:3001. Make sure it\'s running: npm run proxy');
             }
             throw err;
         }
@@ -189,7 +189,7 @@ const API = {
         } catch (err) {
             if (err instanceof TypeError) {
                 console.error('Network/CORS Error:', err);
-                throw new Error('Network error. This might be a CORS issue. Try running the Groq Proxy: node groq-proxy.js');
+                throw new Error('Network error. This might be a CORS issue. Try running the server: npm run proxy');
             }
             throw err;
         }

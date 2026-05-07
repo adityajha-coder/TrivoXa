@@ -118,7 +118,14 @@ const AiChatMixin = {
         
         const q = query.toLowerCase();
         let match = null;
-        for (const [key, data] of Object.entries(this.recommendations)) { if (q.includes(key)) { match = data; break; } }
+        // Only show hardcoded recommendations when the user explicitly wants to "build" something
+        const buildIntent = /\b(build|create|make|develop|start)\b/.test(q);
+        if (buildIntent) {
+            for (const [key, data] of Object.entries(this.recommendations)) {
+                const wordRegex = new RegExp(`\\b${key}\\b`);
+                if (wordRegex.test(q)) { match = data; break; }
+            }
+        }
         
         if (match) {
             let html = `<strong>${match.reply}</strong><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">`;
