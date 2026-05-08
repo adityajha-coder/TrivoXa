@@ -1,5 +1,5 @@
 {
-    "name": "Vertex — Developer Toolkit",
+    "name": "Vertex",
     "short_name": "Vertex",
     "description": "The ultimate developer toolkit. Master Git, generate code using AI, explore packages, save snippets, and run interactive code environments instantly in the browser.",
     "start_url": "/index.html",
