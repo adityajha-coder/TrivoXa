@@ -23,6 +23,7 @@ app.use(cors({
         // Allow requests with no origin (curl, Postman, server-to-server)
         if (!origin) return callback(null, true);
         if (allowedOrigins.includes(origin)) return callback(null, true);
+        if (origin.endsWith('.vercel.app')) return callback(null, true);
         return callback(new Error('CORS: Origin not allowed'), false);
     },
     credentials: true
@@ -54,14 +55,29 @@ const aiLimiter = rateLimit({
 });
 
 // Mount Routes (with targeted rate limiters)
-app.use('/api/auth', authLimiter, require('./routes/auth'));
-app.use('/api/snippets', require('./routes/snippets'));
-app.use('/api/ai-history', require('./routes/aiHistory'));
-app.use('/api/docs-history', require('./routes/docsHistory'));
-app.use('/api/groq', aiLimiter, require('./routes/groq'));
+const authRoutes = require('./routes/auth');
+const snippetRoutes = require('./routes/snippets');
+const aiHistoryRoutes = require('./routes/aiHistory');
+const docsHistoryRoutes = require('./routes/docsHistory');
+const groqRoutes = require('./routes/groq');
+
+app.use('/api/auth', authLimiter, authRoutes);
+app.use('/auth', authLimiter, authRoutes);
+
+app.use('/api/snippets', snippetRoutes);
+app.use('/snippets', snippetRoutes);
+
+app.use('/api/ai-history', aiHistoryRoutes);
+app.use('/ai-history', aiHistoryRoutes);
+
+app.use('/api/docs-history', docsHistoryRoutes);
+app.use('/docs-history', docsHistoryRoutes);
+
+app.use('/api/groq', aiLimiter, groqRoutes);
+app.use('/groq', aiLimiter, groqRoutes);
 
 // Health Check
-app.get('/', (req, res) => {
+app.get(['/', '/api'], (req, res) => {
     res.json({
         status: 'ok',
         message: 'Vertex API Server is running',
@@ -85,7 +101,7 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/health', (req, res) => {
+app.get(['/health', '/api/health'], (req, res) => {
     res.json({ status: 'ok', mongo: 'connected' });
 });
 
