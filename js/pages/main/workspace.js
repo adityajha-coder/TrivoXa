@@ -2,7 +2,7 @@ const WorkspacePage = {
     snippets: [],
     db: null,
     _dbReady: null,
-    
+
     initDB() {
         if (this._dbReady) return this._dbReady;
         this._dbReady = new Promise((resolve, reject) => {
@@ -14,7 +14,7 @@ const WorkspacePage = {
             };
             request.onupgradeneeded = e => {
                 const db = e.target.result;
-                if(!db.objectStoreNames.contains('snippets')) {
+                if (!db.objectStoreNames.contains('snippets')) {
                     db.createObjectStore('snippets', { keyPath: 'id' });
                 }
             };
@@ -23,8 +23,13 @@ const WorkspacePage = {
     },
 
     async loadSnippets() {
+        if (!API.getAuthToken()) {
+            this.snippets = [];
+            return;
+        }
+
         await this.initDB();
-        
+
         // Sync from MongoDB if logged in
         if (API.getAuthToken()) {
             try {
@@ -33,7 +38,7 @@ const WorkspacePage = {
                 const store = transaction.objectStore('snippets');
                 store.clear();
                 cloudSnips.forEach(s => {
-                    store.put({ id: s._id, title: s.title, code: s.code, lang: s.lang });
+                    store.put({ id: s._id, title: s.title, code: s.code, itemType: s.itemType || 'text', lang: s.lang, folder: s.folder || 'Uncategorized', tags: s.tags || [], isPinned: s.isPinned || false });
                 });
             } catch (e) {
                 console.error("Failed to sync snippets from cloud:", e);
@@ -74,102 +79,85 @@ const WorkspacePage = {
     render() {
         Navbar.renderTopbar('My Workspace');
         const content = document.getElementById('page-content');
-        
+
         content.innerHTML = `
             <div class="page-enter">
-                <div class="page-header">
-                    <h1>My <span class="text-gradient">Workspace</span></h1>
-                    <p>Save your personal code snippets, run them live, and access common project boilerplates.</p>
+                <div class="page-header flex-between" style="align-items:flex-start; flex-wrap:wrap; gap:16px;">
+                    <div>
+                        <h1>My <span class="text-gradient">Workspace</span></h1>
+                        <p>Assemble project folders, save notes, and bookmark APIs and tools for your upcoming builds.</p>
+                    </div>
+                    <button id="ws-create-folder-btn" class="btn btn-primary"><i class="fa-solid fa-folder-plus"></i> Create Folder</button>
                 </div>
                 
                 <div id="ws-tab-snippets">
-                    <div class="glass-card mb-lg">
-                        <div class="flex-between mb-sm">
-                            <h3 class="mb-0">Add New Snippet</h3>
+                    <!-- New Folder Form -->
+                    <div id="ws-new-folder-container" class="glass-card mb-lg" style="display:none; animation: slideDown 0.3s ease;">
+                        <h3 class="mb-sm"><i class="fa-solid fa-folder-plus text-primary"></i> Create Project Folder</h3>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="ws-new-folder-input" class="input-field" placeholder="Folder Name (e.g. My Next.js App)">
+                            <button id="ws-save-folder-btn" class="btn btn-primary">Create</button>
+                            <button id="ws-cancel-folder-btn" class="btn btn-ghost">Cancel</button>
                         </div>
-                        <input type="text" id="snip-title" class="input-field mb-sm" placeholder="Snippet Title" style="width:100%; border-radius: var(--radius-sm);">
+                    </div>
+
+                    <!-- Add Item Form (Hidden by default) -->
+                    <div class="glass-card mb-lg" id="ws-add-item-card" style="display:none; animation: slideDown 0.3s ease;">
+                        <div class="flex-between mb-sm">
+                            <h3 class="mb-0">Add Item to <span class="text-gradient" id="ws-active-folder-name"></span></h3>
+                            <button id="ws-close-add-item-btn" class="btn btn-ghost btn-sm"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <input type="hidden" id="snip-folder" value="">
+                        
                         <div class="mb-sm" style="position: relative;">
-                            <i class="fa-solid fa-code" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
-                            <i class="fa-solid fa-chevron-down" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem; pointer-events: none; z-index: 1;"></i>
-                            <select id="snip-lang-select" class="input-field" style="width:100%; padding-left: 38px; padding-right: 40px; appearance: none; -webkit-appearance: none; background: #000000 !important; cursor: pointer; font-weight: 500;">
-                                <optgroup label="Runnable Web / Node Languages">
-                                    <option value="html" selected>HTML / CSS</option>
-                                    <option value="javascript">JavaScript (Node.js)</option>
-                                    <option value="typescript">TypeScript</option>
-                                    <option value="react">React (JSX)</option>
-                                    <option value="vue">Vue</option>
-                                    <option value="angular">Angular</option>
-                                    <option value="svelte">Svelte</option>
-                                </optgroup>
-                                <optgroup label="Other Compiled / Scripting Languages">
-                                    <option value="python">Python</option>
-                                    <option value="java">Java</option>
-                                    <option value="cpp">C++</option>
-                                    <option value="c">C</option>
-                                    <option value="csharp">C#</option>
-                                    <option value="go">Go</option>
-                                    <option value="rust">Rust</option>
-                                    <option value="ruby">Ruby</option>
-                                    <option value="php">PHP</option>
-                                    <option value="bash">Bash / Shell</option>
-                                    <option value="sql">SQL</option>
-                                    <option value="text">Plain Text</option>
-                                </optgroup>
+                            <i class="fa-solid fa-list-ul" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
+                            <select id="ws-item-source-select" class="input-field" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm); appearance: none; background: rgba(0,0,0,0.3) !important;">
+                                <option value="custom" style="background:#111; color:#fff;">Custom Text / Code</option>
+                                <option value="api" style="background:#111; color:#fff;">Select from Free APIs</option>
+                                <option value="tool" style="background:#111; color:#fff;">Select from Tools Vault</option>
+                                <option value="history" style="background:#111; color:#fff;">Select from AI History</option>
                             </select>
                         </div>
-                        <div id="monaco-editor-container" style="width:100%; height:300px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 12px; overflow:hidden;"></div>
-                        <button id="save-snip-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save Snippet</button>
+
+                        <div id="ws-preset-selector-container" class="mb-sm" style="display:none; position: relative;">
+                            <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
+                            <select id="ws-preset-select" class="input-field" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm); appearance: none; background: rgba(0,0,0,0.3) !important;">
+                                <option value="">Loading...</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-sm" style="position: relative;">
+                            <input type="hidden" id="snip-title" value="">
+                            <i class="fa-solid fa-tags" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
+                            <input type="text" id="snip-tags" class="input-field" placeholder="Tags (comma separated)" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm);">
+                        </div>
+                        <input type="hidden" id="snip-item-type" value="text">
+                        <textarea id="snip-code" class="input-field" placeholder="Write your note, link, or snippet here..." style="width:100%; height:120px; resize:vertical; border-radius: var(--radius-sm); margin-bottom: 12px; font-family:var(--font-mono); font-size:13px; background:rgba(0,0,0,0.3); border:1px solid var(--border); color:var(--text); padding:12px;"></textarea>
+                        <button id="save-snip-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save to Folder</button>
                     </div>
                     
-                    <div class="flex-between mt-lg mb-sm">
-                        <h3 style="margin-bottom:0;">Saved Snippets</h3>
-                    </div>
-                    <div class="grid-2 mt-sm" id="snippets-grid"></div>
-                </div>
+                    <div id="snippets-grid"></div>
                 </div>
             </div>
         `;
-        
+
         this.initDB().then(() => {
             this.loadSnippets().then(() => {
                 this.renderSnippets();
             });
         });
 
-        // Reactive Data Syncing
         if (!this._authBound) {
             window.addEventListener('auth_changed', () => {
+                if (!API.getAuthToken()) {
+                    this.snippets = [];
+                }
                 if (document.getElementById('snippets-grid')) {
                     this.loadSnippets().then(() => this.renderSnippets());
                 }
             });
             this._authBound = true;
         }
-        
-        // Initialize Monaco Editor
-        Helpers.initMonaco().then(monaco => {
-            const container = document.getElementById('monaco-editor-container');
-            if(container) {
-                this.editor = monaco.editor.create(container, {
-                    value: '// Paste your code or type here...',
-                    language: document.getElementById('snip-lang-select').value || 'html',
-                    theme: 'vs-dark',
-                    minimap: { enabled: false },
-                    automaticLayout: true,
-                    fontSize: 14,
-                    fontFamily: 'JetBrains Mono',
-                    scrollBeyondLastLine: false,
-                    roundedSelection: true
-                });
-
-                document.getElementById('snip-lang-select').addEventListener('change', (e) => {
-                    let lang = e.target.value;
-                    if (lang === 'vue' || lang === 'svelte') lang = 'html';
-                    if (lang === 'bash') lang = 'shell';
-                    monaco.editor.setModelLanguage(this.editor.getModel(), lang);
-                });
-            }
-        });
 
         this.bindEvents();
     },
@@ -177,45 +165,115 @@ const WorkspacePage = {
     renderSnippets() {
         const grid = document.getElementById('snippets-grid');
         if (!grid) return;
-        if(!this.snippets.length) {
-            grid.innerHTML = '<p class="text-muted" style="grid-column: span 2;">No snippets saved yet. Add one above!</p>';
+        if (!this.snippets.length) {
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: span 2; padding: 60px 20px; text-align: center;">
+                    <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px; opacity: 0.5;"></i>
+                    <h3 style="margin-bottom: 8px;">No projects yet</h3>
+                    <p class="text-muted" style="max-width: 400px; margin: 0 auto;">Click "Create Folder" above to start assembling your projects.</p>
+                </div>`;
             return;
         }
-        grid.innerHTML = this.snippets.map((s, idx) => `
-            <div class="glass-card">
-                <div class="flex-between mb-sm">
-                    <div style="font-weight:600;">${Helpers.escapeHtml(s.title)}</div>
+
+        const folders = {};
+        this.snippets.forEach(s => {
+            const fName = s.folder || 'Unassigned';
+            if (!folders[fName]) folders[fName] = [];
+            folders[fName].push(s);
+        });
+
+        const folderNames = Object.keys(folders).sort();
+
+        let html = '<div style="display:flex; flex-direction:column; gap:24px;">';
+        folderNames.forEach(fName => {
+            const folderSnips = folders[fName];
+            const activeSnips = folderSnips.filter(s => s.itemType !== 'folder-stub');
+
+            html += `
+            <div class="glass-card folder-card" style="padding:0; overflow:hidden; border-color:var(--border);">
+                <div class="flex-between" style="background:rgba(212,168,67,0.03); padding:16px 20px; border-bottom:1px solid var(--border);">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <i class="fa-solid fa-folder" style="color:var(--primary-light); font-size:1.1rem;"></i>
+                        <h3 style="margin:0; font-size:1.05rem;">${Helpers.escapeHtml(fName)}</h3>
+                        <span class="tag tag-primary text-xs">${activeSnips.length} items</span>
+                    </div>
                     <div class="flex-gap">
-                        <button class="btn btn-ghost btn-xs toggle-snip-btn" data-idx="${idx}" title="Toggle snippet code"><i class="fa-solid fa-chevron-down toggle-icon-${idx}"></i></button>
-                        <button class="btn btn-ghost btn-xs edit-snip-btn" data-idx="${idx}" title="Edit snippet" style="color:var(--primary-light);"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button class="btn btn-ghost btn-xs run-snip-btn" data-idx="${idx}" title="Run in live environment" style="color:var(--success);"><i class="fa-solid fa-play"></i></button>
-                        <button class="btn btn-ghost btn-xs copy-snip-btn" data-idx="${idx}"><i class="fa-solid fa-copy"></i></button>
-                        <button class="btn btn-ghost btn-xs del-snip-btn" data-id="${s.id}" data-idx="${idx}" style="color:var(--error);"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn btn-ghost btn-sm add-to-folder-btn" data-folder="${Helpers.escapeHtml(fName)}"><i class="fa-solid fa-plus"></i> Add Item</button>
+                        <button class="btn btn-ghost btn-sm delete-folder-btn" data-folder="${Helpers.escapeHtml(fName)}" style="color:var(--error);" title="Delete Folder"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn btn-ghost btn-sm toggle-folder-btn"><i class="fa-solid fa-chevron-down"></i></button>
                     </div>
                 </div>
-                ${s.lang ? `<span class="tag mb-sm" style="display:inline-block; font-weight:600; background: ${Helpers.getExtColor(s.lang)}20; color: ${Helpers.getExtColor(s.lang)}; border: 1px solid ${Helpers.getExtColor(s.lang)}40;">${s.lang.toUpperCase()}</span>` : ''}
-                <div id="snip-code-${idx}" style="display:none; background:rgba(0,0,0,0.5); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
-                    <pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">${Helpers.escapeHtml(s.code)}</pre>
+                <div class="folder-content" style="padding:20px; display:block;">
+                    <div class="grid-2">
+                        ${activeSnips.length === 0 ? '<p class="text-muted text-sm" style="grid-column: span 2;">Folder is empty. Add notes, code, or tools here.</p>' :
+                    activeSnips.map(s => {
+                        const idx = this.snippets.indexOf(s);
+                        const tagsArray = Array.isArray(s.tags) ? s.tags : (typeof s.tags === 'string' ? s.tags.split(',') : []);
+                        const tagsHtml = tagsArray.map(t => `<span class="tag mb-sm" style="display:inline-block; font-size:0.7rem; font-weight:600; background:rgba(255,255,255,0.1); color:var(--text-muted); border: 1px solid var(--border); margin-left: 5px;">#${Helpers.escapeHtml(t.trim())}</span>`).join('');
+
+                        let contentHtml = '';
+                        if (s.itemType === 'blueprint') {
+                            contentHtml = `<pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">${Helpers.escapeHtml(s.code)}</pre>`;
+                        } else if (s.itemType === 'api') {
+                            contentHtml = `<div style="font-family:var(--font-mono); font-size:13px; color:var(--success);"><i class="fa-solid fa-link" style="margin-right:6px;"></i>${Helpers.escapeHtml(s.code)}</div>`;
+                        } else if (s.itemType === 'command') {
+                            contentHtml = `<div style="font-family:var(--font-mono); font-size:13px; color:var(--warning);"><i class="fa-solid fa-terminal" style="margin-right:6px;"></i>${Helpers.escapeHtml(s.code)}</div>`;
+                        } else if (s.itemType === 'tool') {
+                            contentHtml = `<a href="${Helpers.escapeHtml(s.code)}" target="_blank" style="color:var(--primary-light); font-weight:600; text-decoration:none;"><i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:6px;"></i>Open Link</a>`;
+                        } else {
+                            contentHtml = `<pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">${Helpers.escapeHtml(s.code)}</pre>`;
+                        }
+
+                        const typeIcons = { 'text': 'fa-file-lines', 'api': 'fa-server', 'command': 'fa-terminal', 'tool': 'fa-wrench', 'blueprint': 'fa-folder-tree' };
+                        const typeIcon = typeIcons[s.itemType || 'text'];
+
+                        return `
+                            <div class="glass-card-static" style="${s.isPinned ? 'border-color: var(--primary-light);' : ''} padding:16px; min-width: 0;">
+                                <div class="flex-between mb-sm" style="align-items: flex-start; gap: 10px;">
+                                    <div style="font-weight:600; display:flex; align-items:center; gap:8px; min-width: 0; flex: 1;">
+                                        <i class="fa-solid ${typeIcon}" style="color:var(--text-muted); font-size:0.9rem; flex-shrink: 0;"></i>
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${Helpers.escapeHtml(s.title)}</span>
+                                        ${s.isPinned ? '<i class="fa-solid fa-thumbtack" style="color:var(--primary-light); font-size:0.8rem; flex-shrink: 0;" title="Pinned"></i>' : ''}
+                                    </div>
+                                    <div class="flex-gap" style="flex-shrink: 0;">
+                                        <button class="btn btn-ghost btn-xs pin-snip-btn" data-id="${s.id}" data-idx="${idx}" title="${s.isPinned ? 'Unpin' : 'Pin'}" style="color:${s.isPinned ? 'var(--primary-light)' : 'var(--text-muted)'};"><i class="fa-solid fa-thumbtack"></i></button>
+                                        <button class="btn btn-ghost btn-xs toggle-snip-btn" data-idx="${idx}" title="Toggle details"><i class="fa-solid fa-eye toggle-icon-${idx}"></i></button>
+                                        <button class="btn btn-ghost btn-xs copy-snip-btn" data-idx="${idx}"><i class="fa-solid fa-copy"></i></button>
+                                        <button class="btn btn-ghost btn-xs del-snip-btn" data-id="${s.id}" data-idx="${idx}" style="color:var(--error);"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                ${s.itemType === 'text' && s.lang ? `<span class="tag mb-sm" style="display:inline-block; font-weight:600; background: ${Helpers.getExtColor(s.lang)}20; color: ${Helpers.getExtColor(s.lang)}; border: 1px solid ${Helpers.getExtColor(s.lang)}40;">${s.lang.toUpperCase()}</span>` : ''}
+                                ${s.itemType && s.itemType !== 'text' ? `<span class="tag mb-sm" style="display:inline-block; font-weight:600; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border); text-transform:capitalize;">${s.itemType}</span>` : ''}
+                                ${tagsHtml}
+                                <div id="snip-code-${idx}" style="display:none; margin-top:12px; background:rgba(0,0,0,0.4); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
+                                    ${contentHtml}
+                                </div>
+                            </div>
+                            `;
+                    }).join('')}
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        });
+
+        html += '</div>';
+        grid.innerHTML = html;
     },
 
-    async saveSnippet(title, code, lang) {
+    async saveSnippet(title, code, lang, folder = 'Uncategorized', tags = [], itemType = 'text') {
         await this.initDB();
-        let newSnip = { id: Date.now().toString(), title, code, lang: lang || 'html' };
-        
-        // Push to MongoDB Backend if logged in
+        let newSnip = { id: Date.now().toString(), title, code, lang: lang || 'text', folder, tags, itemType, isPinned: false };
+
         if (API.getAuthToken()) {
             try {
-                const saved = await API.fetchAPI('/api/snippets', 'POST', { title, code, lang: lang || 'html' });
-                newSnip.id = saved._id; // Use MongoDB ID
+                const saved = await API.fetchAPI('/api/snippets', 'POST', { title, code, lang: lang || 'text', folder, tags, itemType });
+                newSnip.id = saved._id;
                 console.log("☁️ Snippet successfully synced to MongoDB!");
-            } catch(e) {
+            } catch (e) {
                 console.error("Failed to sync snippet to cloud:", e);
             }
         }
-        
+
         this.snippets.push(newSnip);
         await this.saveToIndexedDB(newSnip);
         if (document.getElementById('snippets-grid')) {
@@ -223,320 +281,259 @@ const WorkspacePage = {
         }
     },
 
-    async _runSnippet(idx) {
-        const snippet = this.snippets[idx];
-        if (!snippet) return Toast.show('Snippet not found', 'error');
-
-        const lang = snippet.lang || 'text';
-        if (lang === 'text') return Toast.show('Cannot run plain text', 'error');
-        if (lang === 'sql') return Toast.show('SQL runner coming soon.', 'info');
-
-        const webLangs = ['html', 'vue', 'react', 'angular', 'svelte', 'typescript'];
-        
-        // Remove existing embed wraps if any
-        ['ws-stackblitz-wrap', 'ws-piston-wrap', 'ws-iframe-wrap'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        });
-
-        // ==========================
-        //  WEB ENVIRONMENT RUNNER (StackBlitz)
-        // ==========================
-        if (webLangs.includes(lang)) {
-            let project = {
-                title: snippet.title || 'Workspace Snippet',
-                description: 'Run from Vertex Workspace',
-                template: 'javascript',
-                files: { 'index.js': snippet.code }
-            };
-
-            if (lang === 'react') {
-                project.template = 'create-react-app';
-                project.files = {
-                    'src/App.js': `import React from 'react';\nimport './style.css';\n\n${snippet.code}`,
-                    'src/index.js': 'import React from "react";\nimport { createRoot } from "react-dom/client";\nimport App from "./App";\nconst root = createRoot(document.getElementById("root"));\nroot.render(<App />);',
-                    'public/index.html': '<div id="root"></div>',
-                    'src/style.css': 'body { font-family: sans-serif; padding: 20px; }'
-                };
-            } else if (lang === 'vue') {
-                project.template = 'node';
-                project.files = { 
-                    'package.json': '{"name":"vue-preview","scripts":{"start":"vite"},"dependencies":{"vue":"^3.2.0"},"devDependencies":{"vite":"^4.0.0","@vitejs/plugin-vue":"^4.0.0"}}',
-                    'index.html': '<div id="app"></div><script type="module" src="/main.js"><\/script>',
-                    'main.js': 'import { createApp } from "vue";\nimport App from "./App.vue";\ncreateApp(App).mount("#app");',
-                    'App.vue': snippet.code,
-                    'vite.config.js': 'import { defineConfig } from "vite";\nimport vue from "@vitejs/plugin-vue";\nexport default defineConfig({plugins:[vue()]});'
-                };
-            } else if (lang === 'html') {
-                project.template = 'html';
-                project.files = { 'index.html': snippet.code };
-                
-                // For HTML, use direct iframe preview as fallback
-                const embedWrap = document.createElement('div');
-                embedWrap.id = 'ws-stackblitz-wrap';
-                embedWrap.style.cssText = 'margin-top:20px;';
-                embedWrap.innerHTML = `
-                    <div class="glass-card-static" style="padding:0; overflow:hidden;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
-                            <div style="display:flex;align-items:center;gap:8px;">
-                                <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
-                                <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Live Preview — ${snippet.title}</span>
-                            </div>
-                            <button class="btn btn-ghost btn-xs" id="ws-close-embed"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                        <iframe id="ws-html-preview-iframe" style="width:100%;height:450px;border:none;background:white;" sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-modals"></iframe>
-                    </div>`;
-                document.getElementById('ws-tab-snippets').appendChild(embedWrap);
-                document.getElementById('ws-close-embed').addEventListener('click', () => { embedWrap.style.display = 'none'; });
-                
-                // Set iframe content
-                const iframe = document.getElementById('ws-html-preview-iframe');
-                iframe.setAttribute('srcdoc', snippet.code);
-                embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                Toast.show('HTML preview loaded!', 'success');
-                return;
-            } else if (lang === 'angular') {
-                project.template = 'angular-cli';
-                project.files = { 'src/app/app.component.ts': snippet.code };
-            } else if (lang === 'svelte') {
-                project.template = 'node';
-                project.files = {
-                    'package.json': '{"scripts":{"dev":"vite"},"devDependencies":{"vite":"^4.0.0","@sveltejs/vite-plugin-svelte":"^2.0.0","svelte":"^3.54.0"}}',
-                    'vite.config.js': 'import { defineConfig } from "vite";\nimport { svelte } from "@sveltejs/vite-plugin-svelte";\nexport default defineConfig({plugins:[svelte()]});',
-                    'index.html': '<div id="app"></div><script type="module" src="/main.js"><\/script>',
-                    'main.js': 'import App from "./App.svelte";\nnew App({target: document.getElementById("app")});',
-                    'App.svelte': snippet.code
-                };
-            } else if (lang === 'typescript') {
-                project.template = 'typescript';
-                project.files = { 'index.ts': snippet.code };
-            }
-
-            if (!window.StackBlitzSDK) {
-                Toast.show('Loading development environment...', 'info', 3000);
-                try {
-                    await Helpers.loadScript('https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js');
-                    // Wait for SDK to be available (up to 3 seconds)
-                    let retries = 0;
-                    while (!window.StackBlitzSDK && retries < 30) {
-                        await new Promise(r => setTimeout(r, 100));
-                        retries++;
-                    }
-                } catch (e) {
-                    console.error('[StackBlitz Load Error]:', e);
-                }
-                
-                if (!window.StackBlitzSDK) {
-                    Toast.show('Development environment unavailable. Showing code instead.', 'warning');
-                    document.getElementById('ws-tab-snippets').scrollIntoView({ behavior: 'smooth' });
-                    return;
-                }
-            }
-
-            const embedWrap = document.createElement('div');
-            embedWrap.id = 'ws-stackblitz-wrap';
-            embedWrap.style.cssText = 'margin-top:20px;';
-            embedWrap.innerHTML = `
-                <div class="glass-card-static" style="padding:0; overflow:hidden;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
-                            <span style="font-size:0.88rem;font-weight:600;color:var(--text);" id="ws-embed-title">Live Preview — ${snippet.title}</span>
-                        </div>
-                        <button class="btn btn-ghost btn-xs" id="ws-close-embed"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div id="ws-stackblitz-embed" style="height:450px;"></div>
-                </div>`;
-            document.getElementById('ws-tab-snippets').appendChild(embedWrap);
-            document.getElementById('ws-close-embed').addEventListener('click', () => { embedWrap.style.display = 'none'; });
-            
-            embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            Toast.show('Booting Live Server...', 'success');
-            
-            if (!window.StackBlitzSDK) {
-                return Toast.show('WebContainer SDK not available', 'error');
-            }
-            
-            const openFile = Object.keys(project.files).find(f => f.includes('App') || f.includes('index') || f.includes('main'));
-            window.StackBlitzSDK.embedProject(
-                document.getElementById('ws-stackblitz-embed'),
-                project,
-                { openFile: openFile, height: 450, forceEmbedLayout: true }
-            );
-            return;
-        }
-
-        // ==========================
-        //  REMOTE EXECUTION RUNNER (Judge0 API)
-        // ==========================
-        const embedWrap = document.createElement('div');
-        embedWrap.id = 'ws-piston-wrap'; // keeping the ID same for css/logic simplicity
-        embedWrap.style.cssText = 'margin-top:20px;';
-        embedWrap.innerHTML = `
-            <div class="glass-card-static" style="padding:0; overflow:hidden;">
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);background:#1a1b26;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <i class="fa-solid fa-terminal" style="color:#7aa2f7;"></i>
-                        <span style="font-size:0.88rem;font-weight:600;color:#c0caf5;">Terminal Output — ${snippet.title}</span>
-                    </div>
-                    <button class="btn btn-ghost btn-xs" id="ws-close-piston"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div style="background:#1a1b26; padding:16px; height:350px; overflow-y:auto; font-family:'JetBrains Mono', monospace; font-size:13px; color:#a9b1d6;" id="ws-piston-output">
-                    <span style="color:#bb9af7;">> Execution started for ${lang} via Judge0...</span><br/>
-                </div>
-            </div>`;
-        document.getElementById('ws-tab-snippets').appendChild(embedWrap);
-        document.getElementById('ws-close-piston').addEventListener('click', () => { embedWrap.style.display = 'none'; });
-        embedWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-        try {
-            // Judge0 CE Language IDs map
-            const judge0Map = {
-                'python': 71,
-                'java': 62,
-                'cpp': 54,
-                'c': 50,
-                'csharp': 51,
-                'go': 60,
-                'rust': 73,
-                'ruby': 72,
-                'php': 68,
-                'bash': 46,
-                'javascript': 63
-            };
-            const langId = judge0Map[lang] || 71;
-
-            const response = await fetch('https://ce.judge0.com/submissions?wait=true', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    language_id: langId,
-                    source_code: snippet.code
-                })
-            });
-
-            const data = await response.json();
-            const outDiv = document.getElementById('ws-piston-output');
-            
-            if (data.compile_output) {
-                outDiv.innerHTML += `<br/><span style="color:#e0af68;">[Compilation Output]</span><br/>${Helpers.escapeHtml(data.compile_output).replace(/\\n/g, '<br/>')}`;
-            }
-
-            if (data.stdout) {
-                outDiv.innerHTML += `<br/><span style="color:#9ece6a;">[Output]</span><br/>${Helpers.escapeHtml(data.stdout).replace(/\\n/g, '<br/>').replace(/\\r/g, '')}`;
-            } 
-            if (data.stderr) {
-                outDiv.innerHTML += `<br/><span style="color:#f7768e;">[Error]</span><br/>${Helpers.escapeHtml(data.stderr).replace(/\\n/g, '<br/>')}`;
-            }
-            if (data.status && data.status.description) {
-                outDiv.innerHTML += `<br/><span style="color:#7dcfff;">[Status: ${data.status.description}]</span>`;
-            }
-            
-            if (!data.stdout && !data.stderr && !data.compile_output) {
-                outDiv.innerHTML += `<br/><span style="color:#7dcfff;">[Program finished with no output]</span>`;
-            }
-        } catch(err) {
-            document.getElementById('ws-piston-output').innerHTML += `<br/><span style="color:#f7768e;">[Execution Failed] ${err.message}</span>`;
-            Toast.show('Failed to execute code.', 'error');
-        }
-    },
-
     bindEvents() {
-
-
-        document.getElementById('snip-lang-tabs')?.addEventListener('click', e => {
-            const tab = e.target.closest('.tab-item');
-            if (!tab) return;
-            document.querySelectorAll('#snip-lang-tabs .tab-item').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
+        document.getElementById('ws-create-folder-btn')?.addEventListener('click', () => {
+            document.getElementById('ws-new-folder-container').style.display = 'block';
+            document.getElementById('ws-new-folder-input').focus();
         });
 
-        document.getElementById('save-snip-btn').addEventListener('click', () => {
-            // Auth gate
+        document.getElementById('ws-cancel-folder-btn')?.addEventListener('click', () => {
+            document.getElementById('ws-new-folder-container').style.display = 'none';
+        });
+
+        document.getElementById('ws-save-folder-btn')?.addEventListener('click', () => {
+            const folderName = document.getElementById('ws-new-folder-input').value.trim();
+            if (!folderName) return Toast.show('Folder name cannot be empty', 'warning');
+
+            this.saveSnippet(`Folder created: ${folderName}`, '', 'text', folderName, [], 'folder-stub');
+            document.getElementById('ws-new-folder-input').value = '';
+            document.getElementById('ws-new-folder-container').style.display = 'none';
+            Toast.show(`Folder "${folderName}" created`, 'success');
+        });
+
+        document.getElementById('save-snip-btn')?.addEventListener('click', () => {
             if (!API.requireAuth()) return;
-            const title = document.getElementById('snip-title').value.trim();
-            const code = this.editor ? this.editor.getValue().trim() : '';
-            const lang = document.getElementById('snip-lang-select').value || 'text';
-            if(!title || !code) return Toast.show('Please fill out the title and code', 'error');
-            
-            this.saveSnippet(title, code, lang);
-            
+            let title = document.getElementById('snip-title').value.trim();
+            const folder = document.getElementById('snip-folder').value.trim() || 'Unassigned';
+            const tagsRaw = document.getElementById('snip-tags').value;
+            const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t);
+            const code = document.getElementById('snip-code').value.trim();
+            const itemType = document.getElementById('snip-item-type').value || 'text';
+
+            if (!code) return Toast.show('Please provide a note or snippet content', 'error');
+
+            if (!title) {
+                title = code.substring(0, 40).replace(/\n/g, ' ') + (code.length > 40 ? '...' : '');
+            }
+
+            this.saveSnippet(title, code, 'text', folder, tags, itemType);
+
             document.getElementById('snip-title').value = '';
-            if(this.editor) this.editor.setValue('');
-            Toast.show('Snippet saved!', 'success');
+            document.getElementById('snip-tags').value = '';
+            document.getElementById('snip-code').value = '';
+            document.getElementById('ws-add-item-card').style.display = 'none';
+            Toast.show(`Saved to ${folder}!`, 'success');
+        });
+
+        document.getElementById('ws-item-source-select')?.addEventListener('change', async (e) => {
+            const source = e.target.value;
+            const presetContainer = document.getElementById('ws-preset-selector-container');
+            const presetSelect = document.getElementById('ws-preset-select');
+
+            if (source === 'custom') {
+                presetContainer.style.display = 'none';
+                document.getElementById('snip-title').value = '';
+                document.getElementById('snip-code').value = '';
+                document.getElementById('snip-tags').value = '';
+                document.getElementById('snip-item-type').value = 'text';
+                return;
+            }
+
+            presetContainer.style.display = 'block';
+            presetSelect.innerHTML = '<option value="">Loading...</option>';
+
+            try {
+                if (source === 'api') {
+                    if (!this._cachedApis) {
+                        const res = await fetch('/data/apis.json');
+                        this._cachedApis = await res.json();
+                    }
+                    presetSelect.innerHTML = '<option value="" style="background:#111; color:#fff;">-- Select an API --</option>' + this._cachedApis.map((a, i) => `<option value="${i}" style="background:#111; color:#fff;">${a.name} (${a.category})</option>`).join('');
+                } else if (source === 'tool') {
+                    if (!this._cachedTools) {
+                        const res = await fetch('/data/tools.json');
+                        this._cachedTools = await res.json();
+                        // Flatten tools
+                        this._flatTools = [];
+                        this._cachedTools.forEach(cat => cat.items.forEach(t => this._flatTools.push({ ...t, category: cat.cat })));
+                    }
+                    presetSelect.innerHTML = '<option value="" style="background:#111; color:#fff;">-- Select a Tool --</option>' + this._flatTools.map((t, i) => `<option value="${i}" style="background:#111; color:#fff;">${t.name} (${t.category})</option>`).join('');
+                } else if (source === 'history') {
+                    if (!this._cachedHistory || Date.now() - (this._lastHistoryFetch || 0) > 60000) {
+                        if (API.getAuthToken()) {
+                            try {
+                                this._cachedHistory = await API.fetchAPI('/api/ai-history');
+                            } catch (e) {
+                                this._cachedHistory = JSON.parse(localStorage.getItem('ai_history') || '[]');
+                            }
+                        } else {
+                            this._cachedHistory = JSON.parse(localStorage.getItem('ai_history') || '[]');
+                        }
+                        this._lastHistoryFetch = Date.now();
+                    }
+
+                    if (!this._cachedHistory || this._cachedHistory.length === 0) {
+                        presetSelect.innerHTML = '<option value="" style="background:#111; color:#fff;">-- No AI History Found --</option>';
+                    } else {
+                        presetSelect.innerHTML = '<option value="" style="background:#111; color:#fff;">-- Select from AI History --</option>' + this._cachedHistory.map((h, i) => {
+                            const shortPrompt = h.prompt.length > 50 ? h.prompt.substring(0, 50) + '...' : h.prompt;
+                            const moduleIcon = h.module === 'architect' ? 'Architecture' : 'Chat';
+                            return `<option value="${i}" style="background:#111; color:#fff;">[${moduleIcon}] ${shortPrompt}</option>`;
+                        }).join('');
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load presets", err);
+                presetSelect.innerHTML = '<option value="">Error loading data</option>';
+            }
+        });
+
+        document.getElementById('ws-preset-select')?.addEventListener('change', (e) => {
+            const idx = e.target.value;
+            if (idx === '') return;
+            const source = document.getElementById('ws-item-source-select').value;
+
+            if (source === 'api' && this._cachedApis) {
+                const api = this._cachedApis[idx];
+                document.getElementById('snip-title').value = api.name + " API";
+                document.getElementById('snip-code').value = api.url;
+                document.getElementById('snip-tags').value = "api, " + api.category.toLowerCase();
+                document.getElementById('snip-item-type').value = 'api';
+            } else if (source === 'tool' && this._flatTools) {
+                const tool = this._flatTools[idx];
+                document.getElementById('snip-title').value = tool.name;
+                document.getElementById('snip-code').value = tool.url;
+                document.getElementById('snip-tags').value = "tool, " + tool.category.toLowerCase();
+                document.getElementById('snip-item-type').value = 'tool';
+            } else if (source === 'history' && this._cachedHistory) {
+                const historyItem = this._cachedHistory[idx];
+                document.getElementById('snip-title').value = historyItem.prompt;
+
+                let content = historyItem.response;
+                let itemType = 'text';
+
+                // Extract bash command from architect history html
+                if (historyItem.module === 'architect') {
+                    const match = content.match(/<strong>Command:<\/strong>\n(.*?)\n\n<strong>Structure:<\/strong>/);
+                    if (match && match[1]) {
+                        content = match[1].trim();
+                        itemType = 'command';
+                    } else {
+                        itemType = 'blueprint';
+                    }
+                }
+
+                document.getElementById('snip-code').value = content;
+                document.getElementById('snip-item-type').value = itemType;
+            }
+        });
+
+        document.getElementById('ws-close-add-item-btn')?.addEventListener('click', () => {
+            document.getElementById('ws-add-item-card').style.display = 'none';
         });
 
         document.getElementById('page-content').addEventListener('click', async (e) => {
-            if(e.target.closest('.toggle-snip-btn')) {
+            if (e.target.closest('.delete-folder-btn')) {
+                if (!API.requireAuth()) return;
+                const folderName = e.target.closest('.delete-folder-btn').dataset.folder;
+
+                if (!confirm(`Are you sure you want to completely delete the folder "${folderName}" and ALL items inside it? This cannot be undone.`)) {
+                    return;
+                }
+
+                // Find all snippets in this folder
+                const snipsToDelete = this.snippets.filter(s => (s.folder || 'Unassigned') === folderName);
+
+                // Remove from local array
+                this.snippets = this.snippets.filter(s => (s.folder || 'Unassigned') !== folderName);
+
+                // Remove from DBs
+                for (const snip of snipsToDelete) {
+                    await this.deleteFromIndexedDB(snip.id);
+                    if (API.getAuthToken()) {
+                        try {
+                            await API.fetchAPI(`/api/snippets/${snip.id}`, 'DELETE');
+                        } catch (err) { console.error("Cloud delete fail", err); }
+                    }
+                }
+
+                this.renderSnippets();
+                Toast.show(`Folder "${folderName}" deleted`, 'success');
+            }
+
+            if (e.target.closest('.toggle-folder-btn')) {
+                const btn = e.target.closest('.toggle-folder-btn');
+                const content = btn.closest('.folder-card').querySelector('.folder-content');
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                    btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+                } else {
+                    content.style.display = 'none';
+                    btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+                }
+            }
+
+            if (e.target.closest('.add-to-folder-btn')) {
+                const folder = e.target.closest('.add-to-folder-btn').dataset.folder;
+                document.getElementById('snip-folder').value = folder;
+                document.getElementById('ws-active-folder-name').textContent = folder;
+                document.getElementById('ws-add-item-card').style.display = 'block';
+                document.getElementById('ws-add-item-card').scrollIntoView({ behavior: 'smooth' });
+            }
+
+            if (e.target.closest('.toggle-snip-btn')) {
                 const idx = e.target.closest('.toggle-snip-btn').dataset.idx;
                 const codeDiv = document.getElementById('snip-code-' + idx);
                 const icon = document.querySelector('.toggle-icon-' + idx);
                 if (codeDiv && codeDiv.style.display === 'none') {
                     codeDiv.style.display = 'block';
-                    if (icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
+                    if (icon) { icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
                 } else if (codeDiv) {
                     codeDiv.style.display = 'none';
-                    if (icon) { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
+                    if (icon) { icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
                 }
             }
-            if(e.target.closest('.run-snip-btn')) {
-                // Auth gate
-                if (!API.requireAuth()) return;
-                const idx = parseInt(e.target.closest('.run-snip-btn').dataset.idx);
-                this._runSnippet(idx);
-            }
-            if(e.target.closest('.copy-snip-btn')) {
+
+            if (e.target.closest('.copy-snip-btn')) {
                 const idx = e.target.closest('.copy-snip-btn').dataset.idx;
                 Helpers.copyToClipboard(this.snippets[idx].code);
                 Toast.show('Snippet copied!', 'success');
             }
-            if(e.target.closest('.del-snip-btn')) {
-                // Auth gate
+            if (e.target.closest('.del-snip-btn')) {
                 if (!API.requireAuth()) return;
                 const btn = e.target.closest('.del-snip-btn');
                 const id = btn.dataset.id;
                 const idx = parseInt(btn.dataset.idx);
-                
+
                 this.snippets.splice(idx, 1);
                 await this.deleteFromIndexedDB(id);
-                
-                // Delete from MongoDB
+
                 if (API.getAuthToken()) {
                     try {
                         await API.fetchAPI(`/api/snippets/${id}`, 'DELETE');
-                    } catch(e) { console.error("Cloud delete fail", e); }
+                    } catch (e) { console.error("Cloud delete fail", e); }
                 }
 
                 this.renderSnippets();
                 Toast.show('Snippet deleted', 'success');
             }
-            if(e.target.closest('.edit-snip-btn')) {
-                // Auth gate
+            if (e.target.closest('.pin-snip-btn')) {
                 if (!API.requireAuth()) return;
-                const idx = parseInt(e.target.closest('.edit-snip-btn').dataset.idx);
-                const snippet = this.snippets[idx];
-                if(!snippet) return;
+                const btn = e.target.closest('.pin-snip-btn');
+                const id = btn.dataset.id;
+                const idx = parseInt(btn.dataset.idx);
 
-                // Load the snippet back into the editor
-                document.getElementById('snip-title').value = snippet.title;
-                const langSelect = document.getElementById('snip-lang-select');
-                if(langSelect) langSelect.value = snippet.lang || 'text';
-                if(this.editor) {
-                    this.editor.setValue(snippet.code);
-                    let lang = snippet.lang || 'text';
-                    if (lang === 'vue' || lang === 'svelte') lang = 'html';
-                    if (lang === 'bash') lang = 'shell';
-                    window.monaco?.editor.setModelLanguage(this.editor.getModel(), lang);
+                this.snippets[idx].isPinned = !this.snippets[idx].isPinned;
+                await this.saveToIndexedDB(this.snippets[idx]);
+
+                if (API.getAuthToken()) {
+                    try {
+                        await API.fetchAPI(`/api/snippets/${id}/pin`, 'PATCH');
+                    } catch (e) { console.error("Cloud pin toggle fail", e); }
                 }
 
-                // Remove old snippet
-                this.snippets.splice(idx, 1);
-                await this.deleteFromIndexedDB(snippet.id);
                 this.renderSnippets();
-
-                // Scroll to editor
-                document.getElementById('monaco-editor-container')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                Toast.show('Editing snippet — make changes and save again.', 'info');
+                Toast.show(this.snippets[idx].isPinned ? 'Snippet pinned' : 'Snippet unpinned', 'success');
             }
         });
     }

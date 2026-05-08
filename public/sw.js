@@ -24,7 +24,6 @@ const STATIC_ASSETS = [
     '/js/pages/tools/packageScout.js?v=8',
     '/js/pages/ai/aiChat.js?v=2',
     '/js/pages/ai/aiArchitect.js?v=2',
-    '/js/pages/ai/aiCodegen.js?v=2',
     '/js/pages/ai/aiStacks.js?v=1',
     '/js/pages/ai/askAi.js?v=11',
     '/js/pages/gitExplorer/githubUser.js?v=1',

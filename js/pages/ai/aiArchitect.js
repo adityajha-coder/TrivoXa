@@ -41,6 +41,30 @@ const AiArchitectMixin = {
                 }
             });
         }
+
+        const saveBtn = document.getElementById('ai-save-arch-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                if (!API.requireAuth()) return;
+                if (!this.currentProjectState) return Toast.show('No architecture generated yet.', 'warning');
+
+                const prompt = input.value.trim() || 'Custom Project';
+                const folder = window.prompt("Enter Collection folder name to save this blueprint to:", "Uncategorized");
+                if (folder === null) return;
+
+                WorkspacePage.saveSnippet(
+                    `Blueprint: ${prompt}`,
+                    this.currentProjectState.setupCommand || "No command generated",
+                    'bash',
+                    folder.trim() || 'Uncategorized',
+                    ['blueprint', 'architecture', 'command'],
+                    'command'
+                );
+
+                saveBtn.innerHTML = '<i class="fa-solid fa-bookmark"></i> Bookmarked';
+                Toast.show('Blueprint added to Collection!', 'success');
+            });
+        }
     },
 
     async generateArchitecture() {

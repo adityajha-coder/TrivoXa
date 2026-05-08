@@ -192,8 +192,6 @@ const AskAiPage = {
                 <div class="tabs mb-lg" id="ai-hub-tabs">
                     <button class="tab-item active" data-tab="chat"><i class="fa-solid fa-comments" style="margin-right:6px;"></i>AI Chat</button>
                     <button class="tab-item" data-tab="architect"><i class="fa-solid fa-code-merge" style="margin-right:6px;"></i>Architect</button>
-                    <button class="tab-item" data-tab="codegen"><i class="fa-solid fa-laptop-code" style="margin-right:6px;"></i>Generator</button>
-                    <button class="tab-item" data-tab="stacks"><i class="fa-solid fa-compass" style="margin-right:6px;"></i>Stacks</button>
                     <button class="tab-item" data-tab="history"><i class="fa-solid fa-clock-rotate-left" style="margin-right:6px;"></i>History</button>
                 </div>
 
@@ -272,6 +270,7 @@ const AskAiPage = {
                         <div class="glass-card flex-col">
                             <div class="flex-between mb-md">
                                 <h3><i class="fa-solid fa-diagram-project" style="color:var(--primary-light); margin-right:8px;"></i> Generated Architecture</h3>
+                                <button class="btn btn-ghost btn-sm" id="ai-save-arch-btn" title="Add to Workspace Collection" style="color:var(--primary-light);"><i class="fa-regular fa-bookmark"></i> Bookmark Blueprint</button>
                             </div>
                             <div id="ai-arch-tree" style="background:rgba(0,0,0,0.4); padding:16px; border-radius:var(--radius); border:1px solid var(--border); overflow-y:auto; flex:1; min-height:300px;"></div>
                         </div>
@@ -292,68 +291,6 @@ const AskAiPage = {
                     
 
                 </div>
-
-                <!-- ===== TAB 3: CODE GENERATOR ===== -->
-                <div id="ai-tab-codegen" style="display:none;">
-                    <div class="glass-card mb-lg">
-                        <div class="flex-gap mb-sm" style="align-items:center;">
-                            <div class="ai-bot-avatar" style="width:36px;height:36px;font-size:0.9rem;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                            <div>
-                                <h3 style="font-size:0.95rem;font-weight:600;">AI Code Generator</h3>
-                                <span class="text-xs text-muted">Generate production-ready code blocks and run them live</span>
-                            </div>
-                        </div>
-                        <div class="form-group mb-md mt-md">
-                            <label class="text-sm text-secondary mb-sm" style="font-weight: 600; display:block;">Framework</label>
-                            <div class="tabs" id="framework-tabs" style="display:inline-flex;">
-                                <button class="tab-item active" data-fw="html">HTML/CSS</button>
-                                <button class="tab-item" data-fw="react">React</button>
-                                <button class="tab-item" data-fw="vue">Vue</button>
-                                <button class="tab-item" data-fw="python">Python</button>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group mb-md">
-                            <label class="text-sm text-secondary mb-sm" style="font-weight: 600; display:block;">Component Description</label>
-                            <textarea id="ai-code-prompt" class="input-field" placeholder="e.g. A modern login form with email, password, and social login buttons, using glassmorphism styling." style="min-height: 100px; width:100%; resize:vertical; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:var(--text); padding:12px; border-radius:var(--radius);"></textarea>
-                        </div>
-                        
-                        <button id="generate-ai-code-btn" class="btn btn-primary" style="width: 100%;">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Code
-                        </button>
-                    </div>
-
-                    <div id="loading-overlay" style="display:none; text-align:center; padding:40px 0;">
-                        <div class="spinner" style="margin: 0 auto 16px; width:40px; height:40px; border:4px solid rgba(212,168,67,0.1); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
-                        <p class="text-muted">AI is crafting your code...</p>
-                    </div>
-
-                    <div id="generator-output-area" style="display: none;">
-                        <div class="glass-card-static">
-                            <div class="flex-between mb-md">
-                                <div class="flex-gap">
-                                    <span class="tag tag-primary" id="output-fw-tag"></span>
-                                </div>
-                                <div class="flex-gap">
-                                    <button class="btn btn-secondary btn-sm" id="run-container-btn" style="background:var(--accent); color:#fff; border-color:var(--accent);">
-                                        <i class="fa-solid fa-play"></i> Run Output
-                                    </button>
-                                    <button class="btn btn-secondary btn-sm" id="copy-code-btn">
-                                        <i class="fa-solid fa-copy"></i> Copy Code
-                                    </button>
-                                    <button class="btn btn-primary btn-sm" id="save-workspace-btn">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i> Save to Workspace
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="generator-output" style="background:rgba(0,0,0,0.5); padding:16px; border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; width:100%; min-width:0; max-width:100%; box-sizing:border-box;">
-                                <div id="monaco-code-output" style="height:60vh; min-height:400px; max-height:600px; width:100%; min-width:0; max-width:100%; box-sizing:border-box;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
 
                 <!-- ===== TAB 5: TECH STACKS ===== -->
                 <div id="ai-tab-stacks" style="display:none;">
@@ -412,26 +349,7 @@ const AskAiPage = {
         this.bindTabs();
         this.bindChat();
         this.bindArchitect();
-        this.bindCodeGen();
         this.bindRoles();
-
-        Helpers.initMonaco().then(monaco => {
-            const container = document.getElementById('monaco-code-output');
-            if (container) {
-                this.editor = monaco.editor.create(container, {
-                    value: '// AI Generated code will appear here...',
-                    language: 'javascript',
-                    theme: 'vs-dark',
-                    minimap: { enabled: false },
-                    readOnly: true,
-                    automaticLayout: true,
-                    fontSize: 14,
-                    fontFamily: 'JetBrains Mono',
-                    scrollBeyondLastLine: false,
-                    roundedSelection: true
-                });
-            }
-        });
 
         // Load history logic
         setTimeout(() => this.loadHistory(), 800);
@@ -535,7 +453,7 @@ const AskAiPage = {
         list.style.display = 'grid';
         empty.style.display = 'none';
 
-        const icons = { 'chat': 'fa-comments', 'architect': 'fa-code-merge', 'codegen': 'fa-laptop-code' };
+        const icons = { 'chat': 'fa-comments', 'architect': 'fa-code-merge' };
 
         list.innerHTML = this.aiHistory.map((h, i) => {
             const icon = icons[h.module] || 'fa-robot';
@@ -622,22 +540,15 @@ const AskAiPage = {
 
             const chatTab = document.getElementById('ai-tab-chat');
             const archTab = document.getElementById('ai-tab-architect');
-            const codegenTab = document.getElementById('ai-tab-codegen');
             const stacksTab = document.getElementById('ai-tab-stacks');
             const historyTab = document.getElementById('ai-tab-history');
 
             if (chatTab) chatTab.style.display = target === 'chat' ? 'block' : 'none';
             if (archTab) archTab.style.display = target === 'architect' ? 'block' : 'none';
-            if (codegenTab) codegenTab.style.display = target === 'codegen' ? 'block' : 'none';
             if (stacksTab) stacksTab.style.display = target === 'stacks' ? 'block' : 'none';
             if (historyTab) historyTab.style.display = target === 'history' ? 'block' : 'none';
-
-            if (target === 'codegen' && this.editor) {
-                // Fix Monaco layout breaking when initialized inside display:none
-                setTimeout(() => this.editor.layout(), 50);
-            }
         });
     }
 };
 
-Object.assign(AskAiPage, AiChatMixin, AiArchitectMixin, AiCodegenMixin, AiStacksMixin);
+Object.assign(AskAiPage, AiChatMixin, AiArchitectMixin, AiStacksMixin);

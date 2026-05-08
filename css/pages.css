@@ -1280,14 +1280,6 @@
         overflow: hidden !important;
     }
 
-    #monaco-code-output {
-        height: 60vh !important;
-        min-height: 300px !important;
-        max-height: none !important;
-        width: 100% !important;
-        min-width: 0 !important;
-    }
-
     /* Framework tabs */
     #framework-tabs {
         display: flex !important;
@@ -1347,12 +1339,6 @@
     .ai-msg .msg-bubble {
         font-size: 0.78rem;
         padding: 8px 12px;
-    }
-
-    #monaco-code-output {
-        height: 55vh !important;
-        min-height: 250px !important;
-        max-height: none !important;
     }
 
     .generator-output {

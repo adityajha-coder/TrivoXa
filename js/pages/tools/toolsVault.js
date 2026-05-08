@@ -45,7 +45,7 @@ const ToolsVaultPage = {
         await this.loadData();
 
         const allCats = ['All', ...this.tools.map(t => t.cat)].sort();
-        
+
         content.innerHTML = `
             <div class="page-enter">
                 <div class="page-header">
@@ -204,7 +204,7 @@ const ToolsVaultPage = {
 
     renderToolsGrid() {
         const container = document.getElementById('tv-grid-container');
-        if(!container) return;
+        if (!container) return;
 
         let results = [];
         this.tools.forEach(group => {
@@ -249,10 +249,10 @@ const ToolsVaultPage = {
     bindEvents() {
         document.getElementById('tv-tabs')?.addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
-            if(!tab) return;
+            if (!tab) return;
             document.querySelectorAll('#tv-tabs .tab-item').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            
+
             const view = tab.dataset.view;
             document.getElementById('tv-resources-view').style.display = view === 'resources' ? 'block' : 'none';
             document.getElementById('tv-extensions-view').style.display = view === 'extensions' ? 'block' : 'none';
@@ -271,12 +271,13 @@ const ToolsVaultPage = {
 
         document.getElementById('page-content')?.addEventListener('click', e => {
             const extCopyBtn = e.target.closest('.ext-copy-id');
-            if(extCopyBtn) {
+            if (extCopyBtn) {
                 const extId = extCopyBtn.dataset.extid;
-                if(extId) {
+                if (extId) {
                     Helpers.copyToClipboard(`ext install ${extId}`);
                     Toast.show('Install command copied!', 'success');
                 }
+                return;
             }
         });
 
@@ -293,7 +294,7 @@ const ToolsVaultPage = {
 
     renderExtensionsGrid() {
         const container = document.getElementById('tv-ext-grid-container');
-        if(!container) return;
+        if (!container) return;
 
         let results = [];
         this.vsCodeExtensions.forEach(group => {
@@ -322,9 +323,11 @@ const ToolsVaultPage = {
                 <div class="grid-3">
                     ${section.items.map(ext => `
                         <div class="glass-card ext-card">
-                            <div style="font-weight:600; font-size:0.95rem; color:var(--text); display:flex; align-items:center; gap:8px;">
-                                <i class="fa-solid fa-puzzle-piece" style="color:var(--primary-light); font-size:0.85rem;"></i>
-                                ${Helpers.escapeHtml(ext.name)}
+                            <div style="font-weight:600; font-size:0.95rem; color:var(--text); display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-puzzle-piece" style="color:var(--primary-light); font-size:0.85rem;"></i>
+                                    ${Helpers.escapeHtml(ext.name)}
+                                </div>
                             </div>
                             <div class="text-sm text-secondary" style="line-height:1.45;">${ext.desc}</div>
                             <a href="https://marketplace.visualstudio.com/items?itemName=${ext.id}" target="_blank" rel="noopener noreferrer" class="ext-install-btn">

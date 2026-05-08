@@ -32,7 +32,7 @@ Vertex is built on a "Member-First" architecture, ensuring data persistence and 
     *   **JWT Authentication:** Secure, stateless session management for member-only features.
 *   **Performance & Offline:**
     *   **Progressive Web App (PWA):** Fully installable with service worker (`sw.js`) caching for instant loading and offline availability of core tools.
-    *   **Asynchronous Loading:** Heavy dependencies like `Monaco Editor`, `Three.js`, and `3D-Force-Graph` are loaded on-demand to optimize initial bundle size.
+    *   **Asynchronous Loading:** Heavy dependencies like `Three.js`, and `3D-Force-Graph` are loaded on-demand to optimize initial bundle size.
 *   **Integrations:**
     *   **Groq Cloud:** Leveraging Llama 3.1 models for ultra-high-speed AI inference.
     *   **GitHub API:** Real-time repository data and user profile exploration.
@@ -49,7 +49,7 @@ An intelligent development suite powered by Groq's high-speed inference layer.
 *   **Code Generator:** Dynamically synthesize UI components and boilerplate logic tailored to your specific tech stack.
 *   **AI Stacks:** Explore and generate optimized technology combinations for new projects.
 
-### Monaco Code Workspace
+### Cheat Sheet Workspace
 A professional IDE environment integrated directly into the browser.
 *   **Execution Engine:** Safely run and validate JavaScript/TypeScript snippets in an isolated environment.
 *   **Cloud Snippets:** Securely persist, edit, and organize reusable code blocks via MongoDB.

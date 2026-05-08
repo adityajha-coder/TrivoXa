@@ -152,8 +152,8 @@ const FreeApisPage = {
         grid.innerHTML = filtered.map(api => `
             <div class="glass-card api-card">
                 <div class="api-header">
-                    <h3>${api.name}</h3>
-                    <div class="flex-gap">
+                    <h3 style="margin-bottom:0;">${api.name}</h3>
+                    <div class="flex-gap" style="align-items:center;">
                         <span class="tag ${priceColors[api.pricing] || 'tag-primary'}">${api.pricing}</span>
                         <span class="tag ${authColors[api.auth] || 'tag-primary'}">${api.auth}</span>
                     </div>
@@ -193,5 +193,7 @@ const FreeApisPage = {
                 this.renderApiGrid();
             }, 200));
         }
+
+
     }
 };

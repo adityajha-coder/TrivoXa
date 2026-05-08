@@ -126,11 +126,11 @@ const CommandsPage = {
     },
 
     getActiveCommands() {
-        const base = this.activeTab === 'git' ? this.gitCommands : 
-               this.activeTab === 'npm' ? this.npmCommands : 
-               this.activeTab === 'docker' ? this.dockerCommands : 
-               this.activeTab === 'http' ? this.httpCommands : 
-               this.terminalCommands;
+        const base = this.activeTab === 'git' ? this.gitCommands :
+            this.activeTab === 'npm' ? this.npmCommands :
+                this.activeTab === 'docker' ? this.dockerCommands :
+                    this.activeTab === 'http' ? this.httpCommands :
+                        this.terminalCommands;
         // For terminal commands, apply OS-specific translations when Windows is selected
         if (this.activeTab === 'terminal' && this.activeOS === 'win') {
             return base.map(c => ({
