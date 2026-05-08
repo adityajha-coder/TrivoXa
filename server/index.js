@@ -9,8 +9,7 @@ const connectDB = require('./config/db');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB is handled by the entry points
 
 // Middleware — CORS restricted to known origins
 const allowedOrigins = [
@@ -107,6 +106,9 @@ app.get(['/health', '/api/health'], (req, res) => {
 
 // Start server only in local environment
 if (process.env.NODE_ENV !== 'production') {
+    const connectDB = require('./config/db');
+    connectDB();
+
     const server = app.listen(PORT, () => {
         console.log(`
 ╔════════════════════════════════════════════════════╗
