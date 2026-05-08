@@ -89,9 +89,10 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', mongo: 'connected' });
 });
 
-// Start server
-const server = app.listen(PORT, () => {
-    console.log(`
+// Start server only in local environment
+if (process.env.NODE_ENV !== 'production') {
+    const server = app.listen(PORT, () => {
+        console.log(`
 ╔════════════════════════════════════════════════════╗
 ║       Vertex API Server Started                    ║
 ╚════════════════════════════════════════════════════╝
@@ -102,28 +103,28 @@ const server = app.listen(PORT, () => {
   Auth:      POST http://localhost:${PORT}/api/auth/login
 
   Keep this terminal open while using the app.
-    `);
-});
-
-server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-        console.error(`\nPort ${PORT} is already in use!`);
-        console.error(`  Windows: netstat -ano | findstr :${PORT}`);
-        console.error(`  Then: taskkill /PID <PID> /F\n`);
-    } else {
-        console.error('Server error:', err);
-    }
-    process.exit(1);
-});
-
-process.on('unhandledRejection', (err) => {
-    console.error('Unhandled rejection:', err);
-});
-
-process.on('SIGINT', () => {
-    console.log('\nShutting down Vertex API Server...');
-    server.close(() => {
-        console.log('Server stopped');
-        process.exit(0);
+        `);
     });
-});
+
+    server.on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+            console.error(`\nPort ${PORT} is already in use!`);
+            console.error(`  Windows: netstat -ano | findstr :${PORT}`);
+            console.error(`  Then: taskkill /PID <PID> /F\n`);
+        } else {
+            console.error('Server error:', err);
+        }
+        process.exit(1);
+    });
+
+    process.on('SIGINT', () => {
+        console.log('\nShutting down Vertex API Server...');
+        server.close(() => {
+            console.log('Server stopped');
+            process.exit(0);
+        });
+    });
+}
+
+// Export the Express app for Vercel serverless functions
+module.exports = app;
