@@ -8,8 +8,7 @@ const connectDB = async () => {
         console.error(`  MongoDB Connection Error: ${error.message}`);
         console.error(`\n  Make sure MONGO_URI is set in your .env file.`);
         console.error(`  Example: MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/vertex\n`);
-        // Do not process.exit(1) on Vercel as it crashes the entire serverless container and returns an HTML 500 page.
-        // Instead, we just let it fail. Subsequent API calls to DB will fail gracefully with JSON errors.
+        throw error;
     }
 };
 
