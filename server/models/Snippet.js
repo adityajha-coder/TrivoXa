@@ -16,9 +16,27 @@ const snippetSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    itemType: {
+        type: String,
+        enum: ['text', 'api', 'command', 'tool', 'blueprint'],
+        default: 'text'
+    },
     lang: {
         type: String,
         default: 'html'
+    },
+    folder: {
+        type: String,
+        default: 'Uncategorized',
+        trim: true
+    },
+    tags: [{
+        type: String,
+        trim: true
+    }],
+    isPinned: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

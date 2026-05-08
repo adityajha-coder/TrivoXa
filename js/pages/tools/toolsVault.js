@@ -237,6 +237,7 @@ const ToolsVaultPage = {
                                 <a href="${tool.url}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:var(--text); flex:1; display:flex; align-items:center; gap:8px;">
                                     ${tool.name} <i class="fa-solid fa-arrow-up-right-from-square text-muted text-xs"></i>
                                 </a>
+                                <button class="btn btn-ghost btn-xs bookmark-tool-btn" data-name="${Helpers.escapeHtml(tool.name)}" data-url="${tool.url}" title="Add to Workspace Collection"><i class="fa-regular fa-bookmark"></i></button>
                             </div>
                             <div class="text-sm text-secondary line-clamp-2" style="line-height:1.4;">${tool.desc}</div>
                         </div>
@@ -277,6 +278,30 @@ const ToolsVaultPage = {
                     Helpers.copyToClipboard(`ext install ${extId}`);
                     Toast.show('Install command copied!', 'success');
                 }
+                return;
+            }
+            
+            const bmBtn = e.target.closest('.bookmark-tool-btn');
+            if(bmBtn) {
+                if (!API.requireAuth()) return;
+                const name = bmBtn.dataset.name;
+                const url = bmBtn.dataset.url;
+                
+                const folder = prompt("Enter Collection folder name to save this to (e.g. 'Frontend Tools'):", "Uncategorized");
+                if (folder === null) return;
+                
+                WorkspacePage.saveSnippet(
+                    `${name}`, 
+                    url, 
+                    'text', 
+                    folder.trim() || 'Uncategorized', 
+                    ['tool'], 
+                    'tool'
+                );
+                
+                bmBtn.innerHTML = '<i class="fa-solid fa-bookmark" style="color:var(--primary-light);"></i>';
+                Toast.show('Tool added to Collection!', 'success');
+                return;
             }
         });
 
@@ -322,9 +347,12 @@ const ToolsVaultPage = {
                 <div class="grid-3">
                     ${section.items.map(ext => `
                         <div class="glass-card ext-card">
-                            <div style="font-weight:600; font-size:0.95rem; color:var(--text); display:flex; align-items:center; gap:8px;">
-                                <i class="fa-solid fa-puzzle-piece" style="color:var(--primary-light); font-size:0.85rem;"></i>
-                                ${Helpers.escapeHtml(ext.name)}
+                            <div style="font-weight:600; font-size:0.95rem; color:var(--text); display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-puzzle-piece" style="color:var(--primary-light); font-size:0.85rem;"></i>
+                                    ${Helpers.escapeHtml(ext.name)}
+                                </div>
+                                <button class="btn btn-ghost btn-xs bookmark-tool-btn" data-name="${Helpers.escapeHtml(ext.name)}" data-url="https://marketplace.visualstudio.com/items?itemName=${ext.id}" title="Add to Workspace Collection"><i class="fa-regular fa-bookmark"></i></button>
                             </div>
                             <div class="text-sm text-secondary" style="line-height:1.45;">${ext.desc}</div>
                             <a href="https://marketplace.visualstudio.com/items?itemName=${ext.id}" target="_blank" rel="noopener noreferrer" class="ext-install-btn">

@@ -40,15 +40,11 @@
 
 
 
-    <!-- libs (Three.js, 3d-force-graph, StackBlitz SDK, Monaco Editor) are loaded on demand by pages that need them -->
-    <!-- Pre-load 3D components before Monaco to prevent UMD AMD module conflicts -->
+    <!-- libs (Three.js, 3d-force-graph) are loaded on demand by pages that need them -->
+    <!-- Pre-load 3D components to prevent UMD AMD module conflicts -->
     <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
     <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://unpkg.com/3d-force-graph@1.71.3/dist/3d-force-graph.min.js"></script>
-
-    <!-- Monaco Loader -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.46.0/min/vs/loader.min.js"></script>
-
 
     <script src="js/utils/helpers.js?v=7"></script>
     <script src="js/utils/api.js?v=8"></script>
@@ -57,7 +53,6 @@
     <script src="js/pages/main/dashboard.js?v=8"></script>
     <script src="js/pages/ai/aiChat.js?v=2"></script>
     <script src="js/pages/ai/aiArchitect.js?v=2"></script>
-    <script src="js/pages/ai/aiCodegen.js?v=2"></script>
     <script src="js/pages/ai/aiStacks.js?v=1"></script>
     <script src="js/pages/ai/askAi.js?v=11"></script>
     <script src="js/pages/gitExplorer/githubUser.js?v=1"></script>
