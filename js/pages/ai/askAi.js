@@ -435,14 +435,22 @@ const AskAiPage = {
 
         // Load history logic
         setTimeout(() => this.loadHistory(), 800);
+
+        // Reactive Data Syncing
+        if (!this._authBound) {
+            window.addEventListener('auth_changed', () => {
+                if (document.getElementById('ai-history-list')) {
+                    this.loadHistory();
+                }
+            });
+            this._authBound = true;
+        }
     },
 
     async loadHistory() {
-        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
-        if (userId && window.db) {
+        if (API.getAuthToken()) {
             try {
-                const snap = await window.db.collection('users').doc(userId).collection('ai_history').orderBy('timestamp', 'desc').limit(20).get();
-                this.aiHistory = snap.docs.map(doc => doc.data());
+                this.aiHistory = await API.fetchAPI('/api/ai-history');
             } catch (e) {
                 console.error('[AskAi] Failed to load history from DB:', e);
                 this.aiHistory = JSON.parse(localStorage.getItem('ai_history') || '[]');
@@ -469,10 +477,10 @@ const AskAiPage = {
 
         this.renderHistory();
 
-        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
-        if (userId && window.db) {
+        if (API.getAuthToken()) {
             try {
-                await window.db.collection('users').doc(userId).collection('ai_history').doc(item.id).set(item);
+                const saved = await API.fetchAPI('/api/ai-history', 'POST', { module: moduleType, prompt, response });
+                item.id = saved._id; // Replace local id with MongoDB id
             } catch (e) {
                 console.error('[AskAi] Failed to save history to DB:', e);
             }
@@ -485,10 +493,9 @@ const AskAiPage = {
         this.aiHistory = this.aiHistory.filter(h => h.id !== id);
         this.renderHistory();
 
-        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
-        if (userId && window.db) {
+        if (API.getAuthToken()) {
             try {
-                await window.db.collection('users').doc(userId).collection('ai_history').doc(id).delete();
+                await API.fetchAPI(`/api/ai-history/${id}`, 'DELETE');
             } catch (e) {
                 console.error('[AskAi] Failed to delete history:', e);
             }
@@ -503,13 +510,9 @@ const AskAiPage = {
         this.aiHistory = [];
         this.renderHistory();
 
-        const userId = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
-        if (userId && window.db) {
+        if (API.getAuthToken()) {
             try {
-                const snap = await window.db.collection('users').doc(userId).collection('ai_history').get();
-                const batch = window.db.batch();
-                snap.docs.forEach(doc => batch.delete(doc.ref));
-                await batch.commit();
+                await API.fetchAPI('/api/ai-history', 'DELETE');
             } catch (e) {
                 console.error('[AskAi] Failed to clear history:', e);
             }

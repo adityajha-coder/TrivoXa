@@ -1,4 +1,6 @@
 const AiChatMixin = {
+    chatHistory: [],
+    MAX_HISTORY_TURNS: 20,
     bindChat() {
         console.log('[AI Chat] Starting chat binding...');
         
@@ -22,23 +24,19 @@ const AiChatMixin = {
         
         // Bind send button
         send.addEventListener('click', () => {
-            console.log('[AI Chat] Send button clicked');
+            // TODO: Re-enable auth gate after completion
+            if (!API.requireAuth()) return;
             const q = input.value.trim();
-            console.log('[AI Chat] Query:', q);
-            if (!q) {
-                console.log('[AI Chat] Empty query, not sending');
-                return;
-            }
-            console.log('[AI Chat] Adding user message');
+            if (!q) return;
             this.addMsg(q, 'user');
             input.value = '';
-            console.log('[AI Chat] Generating reply');
             setTimeout(() => this.genReply(q), 400);
         });
         
         // Bind explain button
         explain.addEventListener('click', () => {
-            console.log('[AI Chat] Explain button clicked');
+            // TODO: Re-enable auth gate after completion
+            if (!API.requireAuth()) return;
             const code = input.value.trim();
             if (!code) {
                 Toast.show('Paste code first, then click Explain', 'warning');
@@ -52,7 +50,8 @@ const AiChatMixin = {
         
         // Bind debug button
         debug.addEventListener('click', () => {
-            console.log('[AI Chat] Debug button clicked');
+            // TODO: Re-enable auth gate after completion
+            if (!API.requireAuth()) return;
             const code = input.value.trim();
             if (!code) {
                 Toast.show('Paste the error or code first', 'warning');
@@ -67,9 +66,10 @@ const AiChatMixin = {
         // Bind Enter key
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
-                console.log('[AI Chat] Enter key pressed');
                 e.preventDefault();
                 e.stopPropagation();
+                // TODO: Re-enable auth gate after completion
+                if (!API.requireAuth()) return;
                 const q = input.value.trim();
                 if (!q) return;
                 this.addMsg(q, 'user');
@@ -85,7 +85,8 @@ const AiChatMixin = {
                 const msgs = document.getElementById('ai-bot-messages');
                 if (msgs) {
                     msgs.innerHTML = `<div class="ai-msg bot-msg"><div class="msg-avatar"><i class="fa-solid fa-robot"></i></div><div class="msg-bubble">Chat cleared. How can I help you?</div></div>`;
-                    Toast.show('Chat cleared', 'success');
+                    this.chatHistory = [];
+                    Toast.show('Chat cleared — memory reset', 'success');
                 }
             });
         }
@@ -93,8 +94,9 @@ const AiChatMixin = {
         // Bind suggestion chips
         document.querySelectorAll('.ai-suggest-chip').forEach(chip => {
             chip.addEventListener('click', () => {
+                // TODO: Re-enable auth gate after completion
+                if (!API.requireAuth()) return;
                 const q = chip.dataset.q;
-                console.log('[AI Chat] Suggestion clicked:', q);
                 this.addMsg(q, 'user');
                 setTimeout(() => this.genReply(q), 400);
             });
@@ -119,7 +121,14 @@ const AiChatMixin = {
         
         const q = query.toLowerCase();
         let match = null;
-        for (const [key, data] of Object.entries(this.recommendations)) { if (q.includes(key)) { match = data; break; } }
+        // Only show hardcoded recommendations when the user explicitly wants to "build" something
+        const buildIntent = /\b(build|create|make|develop|start)\b/.test(q);
+        if (buildIntent) {
+            for (const [key, data] of Object.entries(this.recommendations)) {
+                const wordRegex = new RegExp(`\\b${key}\\b`);
+                if (wordRegex.test(q)) { match = data; break; }
+            }
+        }
         
         if (match) {
             let html = `<strong>${match.reply}</strong><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">`;
@@ -137,15 +146,26 @@ const AiChatMixin = {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 60000);
                 
-                let sysPrompt = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough.";
+                let sysPrompt = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. You have memory of the full conversation so far. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough.";
                 
+                // Add the new user message to conversation history
+                this.chatHistory.push({ role: 'user', content: query });
+
+                // Trim history to prevent token overflow (keep last N turns)
+                if (this.chatHistory.length > this.MAX_HISTORY_TURNS * 2) {
+                    this.chatHistory = this.chatHistory.slice(-this.MAX_HISTORY_TURNS * 2);
+                }
+
                 const res = await API.callGroqChat([
                     { role: 'system', content: sysPrompt },
-                    { role: 'user', content: query }
+                    ...this.chatHistory
                 ], 'llama-3.1-8b-instant', 0.7);
 
                 clearTimeout(timeout);
                 replyText = res.choices[0]?.message?.content || "No response generated";
+
+                // Store assistant response in history for future context
+                this.chatHistory.push({ role: 'assistant', content: replyText });
                 if (typeof AskAiPage !== 'undefined' && AskAiPage.cleanAiResponse) {
                     replyText = AskAiPage.cleanAiResponse(replyText);
                 }
@@ -173,7 +193,7 @@ const AiChatMixin = {
                 return;
             }
             
-            let formattedReply = replyText.replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:8px;font-size:12px;overflow-x:auto;">$1</pre>');
+            let formattedReply = this.formatMarkdown(replyText);
             
             this.addMsg(formattedReply.trim(), 'bot');
             
@@ -184,5 +204,82 @@ const AiChatMixin = {
             document.getElementById('ai-bot-send').disabled = false;
             document.getElementById('ai-bot-send').innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
         }
+    },
+
+    /**
+     * Lightweight Markdown → HTML renderer for AI chat responses.
+     * Handles code blocks, headings, bold, italic, inline code,
+     * numbered/bullet lists, and line breaks so responses look
+     * clean and structured instead of a wall of text.
+     */
+    formatMarkdown(text) {
+        if (!text) return '';
+
+        // Step 1: Protect code blocks from being processed
+        const codeBlocks = [];
+        text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+            const idx = codeBlocks.length;
+            codeBlocks.push(`<pre style="background:rgba(0,0,0,0.4);padding:12px;border-radius:8px;border:1px solid var(--border);margin:8px 0;font-size:12px;overflow-x:auto;font-family:var(--font-mono);line-height:1.6;"><code>${code.replace(/</g,'&lt;').replace(/>/g,'&gt;').trim()}</code></pre>`);
+            return `__CODE_BLOCK_${idx}__`;
+        });
+
+        // Step 2: Process line-by-line to handle lists and headings properly
+        const lines = text.split('\n');
+        let html = '';
+        let inList = false;     // Are we currently inside a <ul> or <ol>?
+        let listType = '';      // 'ul' or 'ol'
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+
+            // --- Headings ---
+            if (line.startsWith('### '))      { line = `<h4 style="margin:12px 0 6px;font-weight:600;color:var(--primary-light);">${line.slice(4)}</h4>`; }
+            else if (line.startsWith('## '))   { line = `<h3 style="margin:14px 0 6px;font-weight:700;color:var(--primary-light);">${line.slice(3)}</h3>`; }
+            else if (line.startsWith('# '))    { line = `<h2 style="margin:16px 0 8px;font-weight:700;color:var(--primary-light);">${line.slice(2)}</h2>`; }
+
+            // --- Numbered list items (e.g. "1. ", "2. ") ---
+            else if (/^\d+\.\s/.test(line)) {
+                if (!inList || listType !== 'ol') {
+                    if (inList) html += `</${listType}>`;
+                    html += '<ol style="margin:8px 0;padding-left:20px;line-height:1.8;">';
+                    inList = true; listType = 'ol';
+                }
+                line = `<li style="margin-bottom:4px;">${line.replace(/^\d+\.\s/, '')}</li>`;
+            }
+
+            // --- Bullet list items (e.g. "- " or "* ") ---
+            else if (/^[\-\*]\s/.test(line)) {
+                if (!inList || listType !== 'ul') {
+                    if (inList) html += `</${listType}>`;
+                    html += '<ul style="margin:8px 0;padding-left:20px;line-height:1.8;">';
+                    inList = true; listType = 'ul';
+                }
+                line = `<li style="margin-bottom:4px;">${line.replace(/^[\-\*]\s/, '')}</li>`;
+            }
+
+            // --- Regular line: close any open list ---
+            else {
+                if (inList) { html += `</${listType}>`; inList = false; listType = ''; }
+                // Empty lines become spacing
+                if (line.trim() === '') { line = '<br>'; }
+                else { line = `<p style="margin:4px 0;line-height:1.7;">${line}</p>`; }
+            }
+
+            html += line;
+        }
+        // Close any remaining open list
+        if (inList) html += `</${listType}>`;
+
+        // Step 3: Inline formatting (bold, italic, inline code)
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        html = html.replace(/`([^`]+)`/g, '<code style="background:rgba(88,166,255,0.12);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.82em;color:var(--primary-light);">$1</code>');
+
+        // Step 4: Restore protected code blocks
+        codeBlocks.forEach((block, idx) => {
+            html = html.replace(`__CODE_BLOCK_${idx}__`, block);
+        });
+
+        return html;
     }
 };

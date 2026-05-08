@@ -20,3 +20,7 @@ Thumbbs.db
 
 # Firebase
 .firebase/
+
+# Personal notes
+TODO.md
+vertex.resolved

@@ -181,12 +181,77 @@ const CodeGitExplorerPage = {
                 </div>
             </div>`;
         this.bindEvents();
+        // TODO: Re-enable auth gate after completion
+        this._applyAuthGate();
+
+        // React to login/logout
+        if (!this._authBound) {
+            window.addEventListener('auth_changed', () => {
+                // TODO: Re-enable auth gate after completion
+                this._applyAuthGate();
+            });
+            this._authBound = true;
+        }
+    },
+
+    _applyAuthGate() {
+        const existing = document.getElementById('explorer-auth-gate');
+        if (existing) existing.remove();
+
+        const input = document.getElementById('explorer-input');
+        const exploreBtn = document.getElementById('explorer-btn');
+        const typeTabs = document.getElementById('explorer-type-tabs');
+        const emptyState = document.getElementById('explorer-empty');
+
+        if (API.getAuthToken()) {
+            if (input) { input.disabled = false; input.style.opacity = ''; }
+            if (exploreBtn) { exploreBtn.disabled = false; exploreBtn.style.opacity = ''; }
+            if (typeTabs) { typeTabs.style.pointerEvents = ''; typeTabs.style.opacity = ''; }
+            if (emptyState && emptyState.querySelector('#explorer-gate-login')) {
+                emptyState.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-brands fa-github"></i>
+                        <h3>Explore GitHub</h3>
+                        <p>Enter a GitHub repository or username to visualize code structure, branches, or user activity.</p>
+                    </div>`;
+            }
+            return;
+        }
+
+        if (input) { input.disabled = true; input.style.opacity = '0.4'; }
+        if (exploreBtn) { exploreBtn.disabled = true; exploreBtn.style.opacity = '0.4'; }
+        if (typeTabs) { typeTabs.style.pointerEvents = 'none'; typeTabs.style.opacity = '0.4'; }
+
+        if (emptyState) {
+            emptyState.innerHTML = `
+                <div class="empty-state" style="position:relative;">
+                    <i class="fa-solid fa-lock" style="font-size:2.5rem; color:var(--primary-light); margin-bottom:16px;"></i>
+                    <h3>Sign In to Explore</h3>
+                    <p style="max-width:360px; margin:0 auto 20px;">Create a free account to visualize GitHub repositories, browse 3D code maps, and explore commit history.</p>
+                    <button class="btn btn-primary" id="explorer-gate-login" style="min-width:140px;">
+                        <i></i>Sign In
+                    </button>
+                </div>`;
+
+            document.getElementById('explorer-gate-login')?.addEventListener('click', () => {
+                API.requireAuth();
+            });
+        }
     },
 
     bindEvents() {
-        document.getElementById('explorer-btn').addEventListener('click', () => this.load());
-        document.getElementById('explorer-input').addEventListener('keydown', e => { if (e.key === 'Enter') this.load(); });
+        document.getElementById('explorer-btn').addEventListener('click', () => {
+            if (!API.requireAuth()) return;
+            this.load();
+        });
+        document.getElementById('explorer-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                if (!API.requireAuth()) return;
+                this.load();
+            }
+        });
         document.getElementById('ai-summary-refresh')?.addEventListener('click', () => {
+            if (!API.requireAuth()) return;
             if (this.repoData?.repo) this.generateAiSummary(this.repoData.repo, this.repoData.tree || []);
         });
         document.getElementById('ai-summary-close')?.addEventListener('click', () => {
@@ -206,6 +271,7 @@ const CodeGitExplorerPage = {
         document.getElementById('explorer-type-tabs')?.addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
             if (!tab) return;
+            if (!API.requireAuth()) return;
             document.querySelectorAll('#explorer-type-tabs .tab-item').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             this.searchType = tab.dataset.type;
@@ -232,6 +298,10 @@ const CodeGitExplorerPage = {
         });
 
         document.getElementById('local-folder-input').addEventListener('change', (e) => {
+            if (!API.requireAuth()) {
+                e.target.value = '';
+                return;
+            }
             if (e.target.files.length) {
                 this.loadLocalFolder(e.target.files);
             }

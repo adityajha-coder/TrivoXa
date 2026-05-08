@@ -35,14 +35,13 @@ const AiCodegenMixin = {
 
         // Generate button
         generateBtn.addEventListener('click', () => {
-            console.log('[Code Gen] Generate button clicked');
+            // Auth gate
+            if (!API.requireAuth()) return;
             const prompt = codePrompt.value.trim();
-            console.log('[Code Gen] Generate prompt:', prompt.substring(0, 50));
             if(!prompt) {
                 Toast.show('Please enter a description first', 'error');
                 return;
             }
-            console.log('[Code Gen] Calling generateAICode');
             this.generateAICode(prompt);
         });
 
@@ -60,7 +59,8 @@ const AiCodegenMixin = {
 
         // Save button
         saveBtn.addEventListener('click', () => {
-            console.log('[Code Gen] Save button clicked');
+            // Auth gate
+            if (!API.requireAuth()) return;
             const code = this.editor ? this.editor.getValue() : '';
             if(!code) {
                 Toast.show('No code to save', 'error');
