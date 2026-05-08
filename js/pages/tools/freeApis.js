@@ -156,7 +156,6 @@ const FreeApisPage = {
                     <div class="flex-gap" style="align-items:center;">
                         <span class="tag ${priceColors[api.pricing] || 'tag-primary'}">${api.pricing}</span>
                         <span class="tag ${authColors[api.auth] || 'tag-primary'}">${api.auth}</span>
-                        <button class="btn btn-ghost btn-xs bookmark-api-btn" data-name="${Helpers.escapeHtml(api.name)}" data-url="${api.url}" title="Add to Workspace Collection"><i class="fa-regular fa-bookmark"></i></button>
                     </div>
                 </div>
                 <p class="api-desc">${api.desc}</p>
@@ -195,28 +194,6 @@ const FreeApisPage = {
             }, 200));
         }
 
-        document.getElementById('api-grid')?.addEventListener('click', (e) => {
-            const btn = e.target.closest('.bookmark-api-btn');
-            if (btn) {
-                if (!API.requireAuth()) return;
-                const name = btn.dataset.name;
-                const url = btn.dataset.url;
-                
-                const folder = prompt("Enter Collection folder name to save this to (e.g. 'Next.js Project'):", "Uncategorized");
-                if (folder === null) return;
-                
-                WorkspacePage.saveSnippet(
-                    `${name} API`, 
-                    url, 
-                    'text', 
-                    folder.trim() || 'Uncategorized', 
-                    ['api'], 
-                    'api'
-                );
-                
-                btn.innerHTML = '<i class="fa-solid fa-bookmark" style="color:var(--primary-light);"></i>';
-                Toast.show('API added to Collection!', 'success');
-            }
-        });
+
     }
 };

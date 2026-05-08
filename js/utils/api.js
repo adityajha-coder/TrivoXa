@@ -3,8 +3,8 @@ const API = {
     NPM_SEARCH: 'https://registry.npmjs.org/-/v1/search',
     NPM_PACKAGE: 'https://registry.npmjs.org',
     GROQ_BASE: 'https://api.groq.com/openai/v1',
-    API_BASE: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-        ? 'http://localhost:3001' 
+    API_BASE: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3001'
         : '',
     USE_PROXY: true,
 
@@ -37,9 +37,30 @@ const API = {
         else localStorage.removeItem('vertex_user');
     },
 
-    logout() {
+    async logout() {
         this.setAuthToken(null);
         this.setUser(null);
+        localStorage.removeItem('ai_history');
+
+        try {
+            await new Promise((resolve) => {
+                const req = indexedDB.open('VertexDB', 1);
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('snippets')) {
+                        return resolve();
+                    }
+                    const tx = db.transaction('snippets', 'readwrite');
+                    tx.objectStore('snippets').clear();
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => resolve();
+                };
+                req.onerror = () => resolve();
+            });
+        } catch (e) {
+            console.error('Failed to clear local workspace cache on logout', e);
+        }
+
         window.dispatchEvent(new Event('auth_changed'));
     },
 
@@ -58,10 +79,10 @@ const API = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password })
         });
-        
+
         const text = await res.text();
         let data;
-        try { data = text ? JSON.parse(text) : {}; } 
+        try { data = text ? JSON.parse(text) : {}; }
         catch (e) { throw new Error('Server returned an invalid response (might be offline).'); }
 
         if (!res.ok) throw new Error(data.error || 'Registration failed');
@@ -77,10 +98,10 @@ const API = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
-        
+
         const text = await res.text();
         let data;
-        try { data = text ? JSON.parse(text) : {}; } 
+        try { data = text ? JSON.parse(text) : {}; }
         catch (e) { throw new Error('Server returned an invalid response (might be offline).'); }
 
         if (!res.ok) throw new Error(data.error || 'Login failed');
@@ -99,10 +120,10 @@ const API = {
         if (body) options.body = JSON.stringify(body);
 
         const res = await fetch(`${this.API_BASE}${endpoint}`, options);
-        
+
         const text = await res.text();
         let data;
-        try { data = text ? JSON.parse(text) : {}; } 
+        try { data = text ? JSON.parse(text) : {}; }
         catch (e) { throw new Error('Server returned an invalid response (might be offline).'); }
 
         if (!res.ok) throw new Error(data.error || 'API Request failed');
@@ -124,7 +145,7 @@ const API = {
 
     async fetchGroqViaProxy(endpoint, body) {
         const url = `${this.API_BASE}/api/groq${endpoint}`;
-        
+
         try {
             const headers = { 'Content-Type': 'application/json' };
             const token = this.getAuthToken();
@@ -139,14 +160,14 @@ const API = {
             if (!res.ok) {
                 const errorText = await res.text();
                 let errorMsg = `Proxy error: ${res.status} ${res.statusText}`;
-                
+
                 try {
                     const errorJson = JSON.parse(errorText);
                     errorMsg = errorJson.error || errorJson.message || errorMsg;
                 } catch {
                     errorMsg += ` - ${errorText}`;
                 }
-                
+
                 console.error('Groq Proxy Error:', { status: res.status, error: errorText });
                 throw new Error(errorMsg);
             }
@@ -177,14 +198,14 @@ const API = {
             if (!res.ok) {
                 const errorText = await res.text();
                 let errorMsg = `Groq API error: ${res.status} ${res.statusText}`;
-                
+
                 try {
                     const errorJson = JSON.parse(errorText);
                     errorMsg += ` - ${errorJson.error?.message || errorText}`;
                 } catch {
                     errorMsg += ` - ${errorText}`;
                 }
-                
+
                 console.error('Groq API Error:', { status: res.status, error: errorText });
                 throw new Error(errorMsg);
             }
@@ -222,14 +243,14 @@ const API = {
         }
 
         const res = await fetch(`${this.GITHUB_BASE}${endpoint}`, options);
-        
+
         if (!res.ok) {
             if (res.status === 401) throw new Error('GitHub PAT is invalid. Please disconnect and reconnect via the Navbar.');
             if (res.status === 403) throw new Error('GitHub API rate limit exceeded. Connect your GitHub account via the top right icon to bypass restrictions.');
             if (res.status === 404) throw new Error('Resource not found. Ensure repository exists or check permissions.');
             throw new Error(`GitHub API error: ${res.status}`);
         }
-        
+
         // GitHub API can return empty responses for some POSTs
         const text = await res.text();
         return text ? JSON.parse(text) : {};

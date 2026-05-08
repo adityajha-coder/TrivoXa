@@ -23,6 +23,11 @@ const WorkspacePage = {
     },
 
     async loadSnippets() {
+        if (!API.getAuthToken()) {
+            this.snippets = [];
+            return;
+        }
+
         await this.initDB();
 
         // Sync from MongoDB if logged in
@@ -144,6 +149,9 @@ const WorkspacePage = {
 
         if (!this._authBound) {
             window.addEventListener('auth_changed', () => {
+                if (!API.getAuthToken()) {
+                    this.snippets = [];
+                }
                 if (document.getElementById('snippets-grid')) {
                     this.loadSnippets().then(() => this.renderSnippets());
                 }
@@ -162,7 +170,7 @@ const WorkspacePage = {
                 <div class="empty-state" style="grid-column: span 2; padding: 60px 20px; text-align: center;">
                     <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px; opacity: 0.5;"></i>
                     <h3 style="margin-bottom: 8px;">No projects yet</h3>
-                    <p class="text-muted" style="max-width: 400px; margin: 0 auto;">Add a note above or use the <i class="fa-regular fa-bookmark"></i> bookmark button in other sections to start assembling your project folders.</p>
+                    <p class="text-muted" style="max-width: 400px; margin: 0 auto;">Click "Create Folder" above to start assembling your projects.</p>
                 </div>`;
             return;
         }
@@ -220,14 +228,14 @@ const WorkspacePage = {
                         const typeIcon = typeIcons[s.itemType || 'text'];
 
                         return `
-                            <div class="glass-card-static" style="${s.isPinned ? 'border-color: var(--primary-light);' : ''} padding:16px;">
-                                <div class="flex-between mb-sm">
-                                    <div style="font-weight:600; display:flex; align-items:center; gap:8px;">
-                                        <i class="fa-solid ${typeIcon}" style="color:var(--text-muted); font-size:0.9rem;"></i>
-                                        ${Helpers.escapeHtml(s.title)}
-                                        ${s.isPinned ? '<i class="fa-solid fa-thumbtack" style="color:var(--primary-light); font-size:0.8rem;" title="Pinned"></i>' : ''}
+                            <div class="glass-card-static" style="${s.isPinned ? 'border-color: var(--primary-light);' : ''} padding:16px; min-width: 0;">
+                                <div class="flex-between mb-sm" style="align-items: flex-start; gap: 10px;">
+                                    <div style="font-weight:600; display:flex; align-items:center; gap:8px; min-width: 0; flex: 1;">
+                                        <i class="fa-solid ${typeIcon}" style="color:var(--text-muted); font-size:0.9rem; flex-shrink: 0;"></i>
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${Helpers.escapeHtml(s.title)}</span>
+                                        ${s.isPinned ? '<i class="fa-solid fa-thumbtack" style="color:var(--primary-light); font-size:0.8rem; flex-shrink: 0;" title="Pinned"></i>' : ''}
                                     </div>
-                                    <div class="flex-gap">
+                                    <div class="flex-gap" style="flex-shrink: 0;">
                                         <button class="btn btn-ghost btn-xs pin-snip-btn" data-id="${s.id}" data-idx="${idx}" title="${s.isPinned ? 'Unpin' : 'Pin'}" style="color:${s.isPinned ? 'var(--primary-light)' : 'var(--text-muted)'};"><i class="fa-solid fa-thumbtack"></i></button>
                                         <button class="btn btn-ghost btn-xs toggle-snip-btn" data-idx="${idx}" title="Toggle details"><i class="fa-solid fa-eye toggle-icon-${idx}"></i></button>
                                         <button class="btn btn-ghost btn-xs copy-snip-btn" data-idx="${idx}"><i class="fa-solid fa-copy"></i></button>
@@ -355,7 +363,7 @@ const WorkspacePage = {
                         if (API.getAuthToken()) {
                             try {
                                 this._cachedHistory = await API.fetchAPI('/api/ai-history');
-                            } catch(e) {
+                            } catch (e) {
                                 this._cachedHistory = JSON.parse(localStorage.getItem('ai_history') || '[]');
                             }
                         } else {
@@ -363,7 +371,7 @@ const WorkspacePage = {
                         }
                         this._lastHistoryFetch = Date.now();
                     }
-                    
+
                     if (!this._cachedHistory || this._cachedHistory.length === 0) {
                         presetSelect.innerHTML = '<option value="" style="background:#111; color:#fff;">-- No AI History Found --</option>';
                     } else {
@@ -400,8 +408,23 @@ const WorkspacePage = {
             } else if (source === 'history' && this._cachedHistory) {
                 const historyItem = this._cachedHistory[idx];
                 document.getElementById('snip-title').value = historyItem.prompt;
-                document.getElementById('snip-code').value = historyItem.response;
-                document.getElementById('snip-item-type').value = historyItem.module === 'architect' ? 'blueprint' : 'text';
+
+                let content = historyItem.response;
+                let itemType = 'text';
+
+                // Extract bash command from architect history html
+                if (historyItem.module === 'architect') {
+                    const match = content.match(/<strong>Command:<\/strong>\n(.*?)\n\n<strong>Structure:<\/strong>/);
+                    if (match && match[1]) {
+                        content = match[1].trim();
+                        itemType = 'command';
+                    } else {
+                        itemType = 'blueprint';
+                    }
+                }
+
+                document.getElementById('snip-code').value = content;
+                document.getElementById('snip-item-type').value = itemType;
             }
         });
 

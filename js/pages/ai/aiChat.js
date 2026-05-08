@@ -91,8 +91,9 @@ const AiChatMixin = {
             });
         }
         
-        // Bind suggestion chips
-        document.querySelectorAll('.ai-suggest-chip').forEach(chip => {
+        // Bind suggestion chips specifically for chat section
+        const chatSuggestions = document.querySelectorAll('#ai-tab-chat .ai-suggest-chip');
+        chatSuggestions.forEach(chip => {
             chip.addEventListener('click', () => {
                 // TODO: Re-enable auth gate after completion
                 if (!API.requireAuth()) return;

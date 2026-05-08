@@ -45,7 +45,7 @@ const ToolsVaultPage = {
         await this.loadData();
 
         const allCats = ['All', ...this.tools.map(t => t.cat)].sort();
-        
+
         content.innerHTML = `
             <div class="page-enter">
                 <div class="page-header">
@@ -204,7 +204,7 @@ const ToolsVaultPage = {
 
     renderToolsGrid() {
         const container = document.getElementById('tv-grid-container');
-        if(!container) return;
+        if (!container) return;
 
         let results = [];
         this.tools.forEach(group => {
@@ -237,7 +237,6 @@ const ToolsVaultPage = {
                                 <a href="${tool.url}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:var(--text); flex:1; display:flex; align-items:center; gap:8px;">
                                     ${tool.name} <i class="fa-solid fa-arrow-up-right-from-square text-muted text-xs"></i>
                                 </a>
-                                <button class="btn btn-ghost btn-xs bookmark-tool-btn" data-name="${Helpers.escapeHtml(tool.name)}" data-url="${tool.url}" title="Add to Workspace Collection"><i class="fa-regular fa-bookmark"></i></button>
                             </div>
                             <div class="text-sm text-secondary line-clamp-2" style="line-height:1.4;">${tool.desc}</div>
                         </div>
@@ -250,10 +249,10 @@ const ToolsVaultPage = {
     bindEvents() {
         document.getElementById('tv-tabs')?.addEventListener('click', e => {
             const tab = e.target.closest('.tab-item');
-            if(!tab) return;
+            if (!tab) return;
             document.querySelectorAll('#tv-tabs .tab-item').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            
+
             const view = tab.dataset.view;
             document.getElementById('tv-resources-view').style.display = view === 'resources' ? 'block' : 'none';
             document.getElementById('tv-extensions-view').style.display = view === 'extensions' ? 'block' : 'none';
@@ -272,35 +271,12 @@ const ToolsVaultPage = {
 
         document.getElementById('page-content')?.addEventListener('click', e => {
             const extCopyBtn = e.target.closest('.ext-copy-id');
-            if(extCopyBtn) {
+            if (extCopyBtn) {
                 const extId = extCopyBtn.dataset.extid;
-                if(extId) {
+                if (extId) {
                     Helpers.copyToClipboard(`ext install ${extId}`);
                     Toast.show('Install command copied!', 'success');
                 }
-                return;
-            }
-            
-            const bmBtn = e.target.closest('.bookmark-tool-btn');
-            if(bmBtn) {
-                if (!API.requireAuth()) return;
-                const name = bmBtn.dataset.name;
-                const url = bmBtn.dataset.url;
-                
-                const folder = prompt("Enter Collection folder name to save this to (e.g. 'Frontend Tools'):", "Uncategorized");
-                if (folder === null) return;
-                
-                WorkspacePage.saveSnippet(
-                    `${name}`, 
-                    url, 
-                    'text', 
-                    folder.trim() || 'Uncategorized', 
-                    ['tool'], 
-                    'tool'
-                );
-                
-                bmBtn.innerHTML = '<i class="fa-solid fa-bookmark" style="color:var(--primary-light);"></i>';
-                Toast.show('Tool added to Collection!', 'success');
                 return;
             }
         });
@@ -318,7 +294,7 @@ const ToolsVaultPage = {
 
     renderExtensionsGrid() {
         const container = document.getElementById('tv-ext-grid-container');
-        if(!container) return;
+        if (!container) return;
 
         let results = [];
         this.vsCodeExtensions.forEach(group => {
@@ -352,7 +328,6 @@ const ToolsVaultPage = {
                                     <i class="fa-solid fa-puzzle-piece" style="color:var(--primary-light); font-size:0.85rem;"></i>
                                     ${Helpers.escapeHtml(ext.name)}
                                 </div>
-                                <button class="btn btn-ghost btn-xs bookmark-tool-btn" data-name="${Helpers.escapeHtml(ext.name)}" data-url="https://marketplace.visualstudio.com/items?itemName=${ext.id}" title="Add to Workspace Collection"><i class="fa-regular fa-bookmark"></i></button>
                             </div>
                             <div class="text-sm text-secondary" style="line-height:1.45;">${ext.desc}</div>
                             <a href="https://marketplace.visualstudio.com/items?itemName=${ext.id}" target="_blank" rel="noopener noreferrer" class="ext-install-btn">
