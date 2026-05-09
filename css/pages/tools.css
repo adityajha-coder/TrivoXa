@@ -1,0 +1,55 @@
+/* ===== Tools, Commands, APIs & Package Styles ===== */
+.cmd-type-card { padding: 16px; transition: all var(--transition); }
+.cmd-type-card.active { border-color: var(--primary); background: rgba(212,168,67,0.04); }
+.cmd-type-card:hover { border-color: rgba(212,168,67,0.12); }
+.api-card { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.api-card h3 { font-size: 0.92rem; font-weight: 600; }
+.api-card .api-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+.api-card .api-link { display: inline-flex; align-items: center; gap: 5px; font-size: 0.78rem; color: var(--primary-light); font-weight: 500; transition: color var(--transition); }
+.api-card .api-link:hover { color: var(--accent); }
+.pkg-card { padding: 16px; display: flex; flex-direction: column; gap: 9px; }
+.pkg-card .pkg-name { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 600; color: var(--primary-light); }
+.pkg-card .pkg-version { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); }
+.pkg-card .pkg-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+.pkg-card .pkg-meta { display: flex; align-items: center; gap: 14px; font-size: 0.72rem; color: var(--text-muted); }
+.pkg-score { height: 4px; background: rgba(212,168,67,0.04); border-radius: 4px; overflow: hidden; }
+.pkg-score-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.git-cmd-card { padding: 16px 18px; border-left: 3px solid var(--primary); }
+.git-cmd-card:hover { border-left-color: var(--accent); }
+.git-cmd-card .cmd-syntax { font-family: var(--font-mono); font-size: 0.84rem; color: var(--primary-light); margin-bottom: 6px; background: rgba(212,168,67,0.04); padding: 6px 10px; border-radius: var(--radius-sm); display: inline-block; }
+.git-cmd-card .cmd-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+.git-cmd-card .cmd-example { margin-top: 6px; font-family: var(--font-mono); font-size: 0.76rem; color: var(--text); padding: 6px 10px; background: var(--bg-secondary); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+
+/* Command flow visual */
+.cmd-flow-visual { display: flex; align-items: center; gap: 0; justify-content: center; padding: 20px 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.cmd-flow-node { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 8px; min-width: 80px; cursor: pointer; transition: all var(--transition); border-radius: var(--radius); -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.cmd-flow-node:hover { background: rgba(212,168,67,0.04); }
+.cmd-flow-node.active { background: rgba(212,168,67,0.08); }
+.cmd-flow-node .node-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+.cmd-flow-node .node-label { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); text-align: center; white-space: nowrap; }
+.cmd-flow-arrow { color: var(--text-muted); font-size: 0.7rem; flex-shrink: 0; }
+
+/* Command copy button */
+.cmd-copy-btn { background: transparent; border: none; color: var(--text-muted); font-size: 0.9rem; cursor: pointer; padding: 6px; border-radius: var(--radius-sm); transition: all var(--transition); display: flex; align-items: center; justify-content: center; outline: none; }
+.cmd-copy-btn:hover { color: var(--primary-light); background: rgba(212,168,67,0.1); }
+.cmd-copy-btn.copied { color: var(--success); background: rgba(62,207,110,0.1); }
+
+/* ===== OS Toggle Pill ===== */
+.os-toggle-pill { display: inline-flex; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 100px; padding: 3px; gap: 2px; transition: all var(--transition); }
+.os-toggle-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: none; border-radius: 100px; background: transparent; color: var(--text-muted); font-size: 0.76rem; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; outline: none; }
+.os-toggle-btn i { font-size: 0.82rem; transition: color 0.2s ease; }
+.os-toggle-btn:hover { color: var(--text-secondary); background: rgba(212,168,67,0.04); }
+.os-toggle-btn.active { background: rgba(212,168,67,0.12); color: var(--primary-light); font-weight: 600; box-shadow: 0 1px 6px rgba(212,168,67,0.08); }
+.os-toggle-btn.active i { color: var(--primary-light); }
+
+@media (max-width: 600px) {
+    .cmd-flow-visual { flex-wrap: wrap; justify-content: flex-start; gap: 4px; overflow-x: visible; padding: 12px 6px; }
+    .cmd-flow-node { min-width: 60px; padding: 8px 6px; flex: 0 0 auto; }
+    .cmd-flow-node .node-dot { width: 32px; height: 32px; font-size: 0.75rem; }
+    .cmd-flow-node .node-label { font-size: 0.62rem; }
+    .cmd-flow-arrow { display: none; }
+    .os-toggle-pill { margin-top: 4px; }
+    .os-toggle-btn { padding: 6px 10px; font-size: 0.72rem; }
+    .os-toggle-btn span { display: none; }
+    .os-toggle-btn i { font-size: 0.9rem; }
+}

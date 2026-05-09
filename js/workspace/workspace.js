@@ -1,81 +1,4 @@
 const WorkspacePage = {
-    snippets: [],
-    db: null,
-    _dbReady: null,
-
-    initDB() {
-        if (this._dbReady) return this._dbReady;
-        this._dbReady = new Promise((resolve, reject) => {
-            const request = indexedDB.open('TrivoXaDB', 1);
-            request.onerror = e => reject(e);
-            request.onsuccess = e => {
-                this.db = e.target.result;
-                resolve();
-            };
-            request.onupgradeneeded = e => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains('snippets')) {
-                    db.createObjectStore('snippets', { keyPath: 'id' });
-                }
-            };
-        });
-        return this._dbReady;
-    },
-
-    async loadSnippets() {
-        if (!API.getAuthToken()) {
-            this.snippets = [];
-            return;
-        }
-
-        await this.initDB();
-
-        // Sync from MongoDB if logged in
-        if (API.getAuthToken()) {
-            try {
-                const cloudSnips = await API.fetchAPI('/api/snippets');
-                const transaction = this.db.transaction(['snippets'], 'readwrite');
-                const store = transaction.objectStore('snippets');
-                store.clear();
-                cloudSnips.forEach(s => {
-                    store.put({ id: s._id, title: s.title, code: s.code, itemType: s.itemType || 'text', lang: s.lang, folder: s.folder || 'Uncategorized', tags: s.tags || [], isPinned: s.isPinned || false });
-                });
-            } catch (e) {
-                console.error("Failed to sync snippets from cloud:", e);
-            }
-        }
-
-        return new Promise(resolve => {
-            const transaction = this.db.transaction(['snippets'], 'readonly');
-            const store = transaction.objectStore('snippets');
-            const request = store.getAll();
-            request.onsuccess = e => {
-                this.snippets = e.target.result || [];
-                resolve();
-            };
-        });
-    },
-
-    async saveToIndexedDB(snippet) {
-        await this.initDB();
-        return new Promise(resolve => {
-            const transaction = this.db.transaction(['snippets'], 'readwrite');
-            const store = transaction.objectStore('snippets');
-            store.put(snippet);
-            transaction.oncomplete = () => resolve();
-        });
-    },
-
-    async deleteFromIndexedDB(id) {
-        await this.initDB();
-        return new Promise(resolve => {
-            const transaction = this.db.transaction(['snippets'], 'readwrite');
-            const store = transaction.objectStore('snippets');
-            store.delete(id);
-            transaction.oncomplete = () => resolve();
-        });
-    },
-
     render() {
         Navbar.renderTopbar('My Workspace');
         const content = document.getElementById('page-content');
@@ -144,6 +67,7 @@ const WorkspacePage = {
         this.initDB().then(() => {
             this.loadSnippets().then(() => {
                 this.renderSnippets();
+                this._applyAuthGate();
             });
         });
 
@@ -152,8 +76,15 @@ const WorkspacePage = {
                 if (!API.getAuthToken()) {
                     this.snippets = [];
                 }
+                this._applyAuthGate();
                 if (document.getElementById('snippets-grid')) {
-                    this.loadSnippets().then(() => this.renderSnippets());
+                    this.loadSnippets()
+                        .catch(err => {
+                            console.error('Workspace data load failed after auth change:', err);
+                        })
+                        .finally(() => {
+                            this.renderSnippets();
+                        });
                 }
             });
             this._authBound = true;
@@ -162,9 +93,40 @@ const WorkspacePage = {
         this.bindEvents();
     },
 
+    _applyAuthGate() {
+        const createBtn = document.getElementById('ws-create-folder-btn');
+        const grid = document.getElementById('snippets-grid');
+        
+        if (API.getAuthToken()) {
+            if (createBtn) { createBtn.disabled = false; createBtn.style.opacity = ''; }
+            return;
+        }
+
+        if (createBtn) { createBtn.disabled = true; createBtn.style.opacity = '0.4'; }
+        
+        // Hide forms if they are open
+        const newFolder = document.getElementById('ws-new-folder-container');
+        const addItem = document.getElementById('ws-add-item-card');
+        if (newFolder) newFolder.style.display = 'none';
+        if (addItem) addItem.style.display = 'none';
+    },
+
     renderSnippets() {
         const grid = document.getElementById('snippets-grid');
         if (!grid) return;
+        
+        if (!API.getAuthToken()) {
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: span 2; padding: 60px 20px; text-align: center; position:relative;">
+                    <i class="fa-solid fa-lock" style="font-size:2.5rem; color:var(--primary-light); margin-bottom:16px;"></i>
+                    <h3 style="margin-bottom:8px;">Sign In to use Workspace</h3>
+                    <p style="max-width:400px; margin:0 auto 20px;" class="text-muted">Create a free account to assemble project folders, save notes, and bookmark APIs.</p>
+                    <button class="btn btn-primary" id="ws-gate-login" style="min-width:140px; margin:0 auto;">Sign In</button>
+                </div>`;
+            document.getElementById('ws-gate-login')?.addEventListener('click', () => API.requireAuth());
+            return;
+        }
+
         if (!this.snippets.length) {
             grid.innerHTML = `
                 <div class="empty-state" style="grid-column: span 2; padding: 60px 20px; text-align: center;">
@@ -551,3 +513,6 @@ const WorkspacePage = {
         });
     }
 };
+
+Object.assign(WorkspacePage, WorkspaceDB);
+
