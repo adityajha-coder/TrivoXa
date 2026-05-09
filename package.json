@@ -1,5 +1,5 @@
 {
-  "name": "vertex",
+  "name": "trivoxa",
   "version": "1.0.0",
   "description": "All-in-one platform for developers",
   "scripts": {
@@ -30,14 +30,14 @@
   "main": "sw.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adityajha-coder/vertex-devloper-toolkit.git"
+    "url": "git+https://github.com/adityajha-coder/trivoxa-devloper-toolkit.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/adityajha-coder/vertex-devloper-toolkit/issues"
+    "url": "https://github.com/adityajha-coder/trivoxa-devloper-toolkit/issues"
   },
-  "homepage": "https://github.com/adityajha-coder/vertex-devloper-toolkit#readme"
+  "homepage": "https://github.com/adityajha-coder/trivoxa-devloper-toolkit#readme"
 }

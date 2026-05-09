@@ -147,7 +147,7 @@ const AiChatMixin = {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 60000);
                 
-                let sysPrompt = "You are Vertex AI, an expert programming assistant embedded in a developer toolkit. You have memory of the full conversation so far. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough.";
+                let sysPrompt = "You are TrivoXa AI, an expert programming assistant embedded in a developer toolkit. You have memory of the full conversation so far. Format your answer clearly with numbered steps when appropriate. If they paste code and ask to explain or debug it, break it down simply. Keep answers concise but thorough.";
                 
                 // Add the new user message to conversation history
                 this.chatHistory.push({ role: 'user', content: query });

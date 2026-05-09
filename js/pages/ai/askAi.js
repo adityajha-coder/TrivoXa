@@ -108,8 +108,8 @@ const AskAiPage = {
 
     currentProjectState: null,
     currentFramework: 'html',
-    currentAiModel: localStorage.getItem('vertex_ai_model') || 'mixtral',
-    apiKey: localStorage.getItem('vertex_groq_key') || '',
+    currentAiModel: localStorage.getItem('trivoxa_ai_model') || 'mixtral',
+    apiKey: localStorage.getItem('trivoxa_groq_key') || '',
     aiHistory: [],
 
     archSuggestions: [
@@ -184,7 +184,7 @@ const AskAiPage = {
                         </div>
                         <div class="form-group" style="min-width: 200px; display:none;">
                             <label class="text-xs text-muted mb-xs" style="display:block;">Groq API Key</label>
-                            <input type="text" id="ai-api-key" class="input-field" placeholder="gsk_..." value="${localStorage.getItem('vertex_groq_key') || this.apiKey}" autocomplete="off" data-form-type="other" data-lpignore="true" style="padding: 8px 12px; font-size: 0.85rem; height:auto; -webkit-text-security: disc; -moz-text-security: disc; text-security: disc;">
+                            <input type="text" id="ai-api-key" class="input-field" placeholder="gsk_..." value="${localStorage.getItem('trivoxa_groq_key') || this.apiKey}" autocomplete="off" data-form-type="other" data-lpignore="true" style="padding: 8px 12px; font-size: 0.85rem; height:auto; -webkit-text-security: disc; -moz-text-security: disc; text-security: disc;">
                         </div>
                     </div>
                 </div>
@@ -202,7 +202,7 @@ const AskAiPage = {
                             <div class="flex-gap">
                                 <div class="ai-bot-avatar"><i class="fa-solid fa-robot"></i></div>
                                 <div>
-                                    <h3 style="font-size:0.95rem;font-weight:600;">Vertex AI Assistant</h3>
+                                    <h3 style="font-size:0.95rem;font-weight:600;">TrivoXa AI Assistant</h3>
                                     <span class="text-xs text-muted">Ask anything — code help, tool recommendations, or explanations</span>
                                 </div>
                             </div>
@@ -211,7 +211,7 @@ const AskAiPage = {
                         <div class="ai-bot-messages" id="ai-bot-messages" style="min-height:200px;max-height:500px;">
                             <div class="ai-msg bot-msg">
                                 <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
-                                <div class="msg-bubble">Hi! I'm your Vertex AI assistant. I can:<br>
+                                <div class="msg-bubble">Hi! I'm your TrivoXa AI assistant. I can:<br>
                                     <strong>1.</strong> Recommend tools for any project idea<br>
                                     <strong>2.</strong> Explain code like you're a beginner<br>
                                     <strong>3.</strong> Debug errors and suggest fixes<br>
@@ -511,13 +511,13 @@ const AskAiPage = {
         if (sel) {
             sel.addEventListener('change', (e) => {
                 this.currentAiModel = e.target.value;
-                localStorage.setItem('vertex_ai_model', this.currentAiModel);
+                localStorage.setItem('trivoxa_ai_model', this.currentAiModel);
                 Toast.show('Groq Model switched to ' + e.target.options[e.target.selectedIndex].text, 'info');
             });
         }
         if (keyInput) {
             keyInput.addEventListener('input', (e) => {
-                localStorage.setItem('vertex_groq_key', e.target.value);
+                localStorage.setItem('trivoxa_groq_key', e.target.value);
                 API.setGroqApiKey(e.target.value);
                 Toast.show('Groq API Key updated', 'success');
             });

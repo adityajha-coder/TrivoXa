@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="public/favicon.svg" alt="Vertex Logo" width="120" height="120">
+  <img src="public/favicon.svg" alt="TrivoXa Logo" width="120" height="120">
   
-  # Vertex Developer Toolkit
+  # TrivoXa Developer Toolkit
   
   **A Unified, High-Performance Workspace for Modern Engineers**
   
@@ -12,15 +12,15 @@
 
 <br>
 
-Vertex is a professional grade, browser based developer toolkit designed to consolidate scattered utilities into a single, cohesive workspace. Engineered for speed and clarity.
+TrivoXa is a professional grade, browser based developer toolkit designed to consolidate scattered utilities into a single, cohesive workspace. Engineered for speed and clarity.
 
-Whether you're visualizing complex GitHub structures in 3D, generating full-stack boilerplates via AI, or managing secure code snippets, Vertex provides a unified, high-contrast monochrome interface optimized for deep work.
+Whether you're visualizing complex GitHub structures in 3D, generating full-stack boilerplates via AI, or managing secure code snippets, TrivoXa provides a unified, high-contrast monochrome interface optimized for deep work.
 
 ---
 
 ## Architecture & Technical Design
 
-Vertex is built on a "Member-First" architecture, ensuring data persistence and secure access to premium AI features.
+TrivoXa is built on a "Member-First" architecture, ensuring data persistence and secure access to premium AI features.
 
 *   **Frontend Engine:** 
     *   **Vanilla JS (ES6+):** Modular application logic with zero framework bloat for maximum execution speed.
@@ -74,7 +74,7 @@ A centralized suite of essential tools to minimize tab-switching.
 ## 📂 Repository Structure
 
 ```text
-vertex/
+trivoxa/
 ├── server/          # Node.js backend (index.js, routes, models, middleware)
 ├── scripts/         # Shell and Node utility scripts for testing/setup
 ├── css/             # Modular CSS enforcing the monochrome design system

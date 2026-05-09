@@ -1,5 +1,5 @@
 /**
- * Vertex Developer Toolkit — Full Website Test
+ * TrivoXa Developer Toolkit — Full Website Test
  * 
  * Tests:
  *   1. Frontend server (port 8080) is alive
@@ -130,7 +130,7 @@ async function testFrontendServer() {
         const res = await fetch(`${FRONTEND}/index.html`);
         if (res.status !== 200) throw new Error(`Status ${res.status}`);
         if (!res.body.includes('<div id="app">')) throw new Error('Missing #app container');
-        if (!res.body.includes('Vertex')) throw new Error('Missing Vertex title');
+        if (!res.body.includes('TrivoXa')) throw new Error('Missing TrivoXa title');
     });
 
     await test('index.html contains all script tags', async () => {
@@ -338,7 +338,7 @@ async function testConfigFiles() {
 async function main() {
     console.log(colors.bold(`
 ╔══════════════════════════════════════════════════════╗
-║         Vertex Developer Toolkit — Full Test         ║
+║         TrivoXa Developer Toolkit — Full Test         ║
 ╚══════════════════════════════════════════════════════╝`));
 
     const startTime = Date.now();

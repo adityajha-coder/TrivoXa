@@ -20,8 +20,8 @@ const Navbar = {
         topnav.innerHTML = `
             <div class="topnav-left">
                 <div class="topnav-brand" data-page="dashboard">
-                    <img src="public/favicon.svg" alt="Vertex" class="topnav-logo" />
-                    <span class="topnav-name">Vertex</span>
+                    <img src="public/favicon.svg" alt="TrivoXa" class="topnav-logo" />
+                    <span class="topnav-name">TrivoXa</span>
                 </div>
                 <div class="topnav-divider"></div>
                 <nav class="topnav-links">${linksHtml}</nav>

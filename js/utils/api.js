@@ -9,32 +9,32 @@ const API = {
     USE_PROXY: true,
 
     getGroqApiKey() {
-        return localStorage.getItem('vertex_groq_key') || '';
+        return localStorage.getItem('trivoxa_groq_key') || '';
     },
 
     setGroqApiKey(key) {
-        localStorage.setItem('vertex_groq_key', key);
+        localStorage.setItem('trivoxa_groq_key', key);
     },
 
     // MEN Stack Authentication
     getAuthToken() {
-        return localStorage.getItem('vertex_auth_token');
+        return localStorage.getItem('trivoxa_auth_token');
     },
 
     setAuthToken(token) {
-        if (token) localStorage.setItem('vertex_auth_token', token);
-        else localStorage.removeItem('vertex_auth_token');
+        if (token) localStorage.setItem('trivoxa_auth_token', token);
+        else localStorage.removeItem('trivoxa_auth_token');
     },
 
     getUser() {
         try {
-            return JSON.parse(localStorage.getItem('vertex_user'));
+            return JSON.parse(localStorage.getItem('trivoxa_user'));
         } catch { return null; }
     },
 
     setUser(user) {
-        if (user) localStorage.setItem('vertex_user', JSON.stringify(user));
-        else localStorage.removeItem('vertex_user');
+        if (user) localStorage.setItem('trivoxa_user', JSON.stringify(user));
+        else localStorage.removeItem('trivoxa_user');
     },
 
     async logout() {
@@ -44,7 +44,7 @@ const API = {
 
         try {
             await new Promise((resolve) => {
-                const req = indexedDB.open('VertexDB', 1);
+                const req = indexedDB.open('TrivoXaDB', 1);
                 req.onsuccess = (e) => {
                     const db = e.target.result;
                     if (!db.objectStoreNames.contains('snippets')) {

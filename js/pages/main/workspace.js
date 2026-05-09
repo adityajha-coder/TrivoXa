@@ -6,7 +6,7 @@ const WorkspacePage = {
     initDB() {
         if (this._dbReady) return this._dbReady;
         this._dbReady = new Promise((resolve, reject) => {
-            const request = indexedDB.open('VertexDB', 1);
+            const request = indexedDB.open('TrivoXaDB', 1);
             request.onerror = e => reject(e);
             request.onsuccess = e => {
                 this.db = e.target.result;
@@ -187,7 +187,11 @@ const WorkspacePage = {
         let html = '<div style="display:flex; flex-direction:column; gap:24px;">';
         folderNames.forEach(fName => {
             const folderSnips = folders[fName];
-            const activeSnips = folderSnips.filter(s => s.itemType !== 'folder-stub');
+            const activeSnips = folderSnips.filter(s => s.itemType !== 'folder-stub').sort((a, b) => {
+                if (a.isPinned && !b.isPinned) return -1;
+                if (!a.isPinned && b.isPinned) return 1;
+                return 0;
+            });
 
             html += `
             <div class="glass-card folder-card" style="padding:0; overflow:hidden; border-color:var(--border);">
@@ -522,6 +526,15 @@ const WorkspacePage = {
                 const btn = e.target.closest('.pin-snip-btn');
                 const id = btn.dataset.id;
                 const idx = parseInt(btn.dataset.idx);
+
+                const isCurrentlyPinned = this.snippets[idx].isPinned;
+                if (!isCurrentlyPinned) {
+                    const folderName = this.snippets[idx].folder || 'Unassigned';
+                    const pinnedCount = this.snippets.filter(s => s.isPinned && (s.folder || 'Unassigned') === folderName).length;
+                    if (pinnedCount >= 3) {
+                        return Toast.show('You can only pin up to 3 items per folder.', 'warning');
+                    }
+                }
 
                 this.snippets[idx].isPinned = !this.snippets[idx].isPinned;
                 await this.saveToIndexedDB(this.snippets[idx]);

@@ -387,7 +387,7 @@ const DashboardPage = {
         // Onboarding Check
         if (!localStorage.getItem('vdt_first_time')) {
             setTimeout(() => {
-                Toast.show('Welcome to Vertex! Explore the developer tools below or use Ctrl+K to search.', 'info', 6000);
+                Toast.show('Welcome to TrivoXa! Explore the developer tools below or use Ctrl+K to search.', 'info', 6000);
                 localStorage.setItem('vdt_first_time', 'true');
             }, 1000);
         }
