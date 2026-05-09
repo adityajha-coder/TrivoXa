@@ -1,7 +1,7 @@
 const CommandsPage = {
     activeTab: 'git',
     activeCat: 'All',
-    activeOS: localStorage.getItem('vertex_cmd_os') || 'unix',
+    activeOS: localStorage.getItem('trivoxa_cmd_os') || 'unix',
 
     gitCommands: [],
     npmCommands: [],
@@ -172,7 +172,7 @@ const CommandsPage = {
             const os = btn.dataset.os;
             if (os === this.activeOS) return;
             this.activeOS = os;
-            localStorage.setItem('vertex_cmd_os', os);
+            localStorage.setItem('trivoxa_cmd_os', os);
             document.querySelectorAll('#os-toggle .os-toggle-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             Toast.show(os === 'win' ? 'Switched to Windows / PowerShell' : 'Switched to Mac / Linux', 'info');

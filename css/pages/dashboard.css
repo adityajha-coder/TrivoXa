@@ -1,0 +1,260 @@
+/* ===== Dashboard Styles ===== */
+
+.dashboard-hero {
+    position: relative;
+    padding: 32px 30px;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.dashboard-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -25%;
+    width: 400px;
+    height: 400px;
+    background: rgba(212, 168, 67, 0.04);
+    border-radius: 50%;
+}
+
+.dashboard-hero h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.7px;
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-hero p {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    margin-top: 6px;
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    line-height: 1.6;
+}
+
+.stat-card {
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--primary-dark);
+    opacity: 0.4;
+}
+
+.stat-card .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    margin-bottom: 14px;
+}
+
+.stat-card .stat-value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 3px;
+    color: var(--primary-light);
+}
+
+.stat-card .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.dash-mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 28px;
+}
+
+.dash-mini-chart .bar {
+    width: 5px;
+    border-radius: 2px 2px 0 0;
+    background: var(--primary);
+    opacity: 0.6;
+}
+
+.dash-mini-chart .bar:hover {
+    opacity: 1;
+}
+
+.dashboard-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.tool-card {
+    padding: 22px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.tool-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--primary);
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.tool-card:hover::after {
+    opacity: 1;
+}
+
+.tool-card .tool-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-bottom: 14px;
+}
+
+.tool-card h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.tool-card p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.tool-card .tool-arrow {
+    position: absolute;
+    bottom: 18px;
+    right: 18px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    transition: all var(--transition);
+}
+
+.tool-card:hover .tool-arrow {
+    color: var(--primary-light);
+    transform: translateX(3px);
+}
+
+.hero-actions {
+    display: flex;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+    margin-top: 16px;
+}
+
+.dash-highlight-card {
+    padding: 24px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.dash-highlight-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.dash-highlight-card:hover::after {
+    opacity: 1;
+}
+
+.dash-highlight-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.dash-highlight-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.dash-highlight-card p {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.dashboard-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.dashboard-hero .hero-text {
+    flex: 1;
+}
+
+.dashboard-hero .hero-quick-search {
+    flex-shrink: 0;
+    min-width: 280px;
+}
+
+@media (max-width: 960px) {
+    .dashboard-hero {
+        flex-direction: column;
+    }
+
+    .dashboard-hero .hero-quick-search {
+        min-width: unset;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-tools-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-hero {
+        padding: 24px 20px;
+    }
+
+    .dashboard-hero h1 {
+        font-size: 1.4rem;
+    }
+}

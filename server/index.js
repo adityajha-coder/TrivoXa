@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
     'http://localhost:8080',
     'http://localhost:3000',
-    'https://vertex-devloper-toolkit.vercel.app'
+    'https://trivoxa-devloper-toolkit.vercel.app'
 ];
 app.use(cors({
     origin: function (origin, callback) {
@@ -79,7 +79,7 @@ app.use('/groq', aiLimiter, groqRoutes);
 app.get(['/', '/api'], (req, res) => {
     res.json({
         status: 'ok',
-        message: 'Vertex API Server is running',
+        message: 'TrivoXa API Server is running',
         endpoints: [
             'POST /api/auth/register',
             'POST /api/auth/login',
@@ -112,7 +112,7 @@ if (process.env.NODE_ENV !== 'production') {
     const server = app.listen(PORT, () => {
         console.log(`
 ╔════════════════════════════════════════════════════╗
-║       Vertex API Server Started                    ║
+║       TrivoXa API Server Started                    ║
 ╚════════════════════════════════════════════════════╝
 
   Server:    http://localhost:${PORT}
@@ -136,7 +136,7 @@ if (process.env.NODE_ENV !== 'production') {
     });
 
     process.on('SIGINT', () => {
-        console.log('\nShutting down Vertex API Server...');
+        console.log('\nShutting down TrivoXa API Server...');
         server.close(() => {
             console.log('Server stopped');
             process.exit(0);

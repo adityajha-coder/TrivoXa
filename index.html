@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="description" content="Vertex - The ultimate developer toolkit with code generation, repo visualization, dependency management, and more.">
+    <meta name="description" content="TrivoXa - The ultimate developer toolkit with code generation, repo visualization, dependency management, and more.">
     <meta name="theme-color" content="#000000">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta property="og:title" content="Vertex - The All-in-One Toolkit for New Developers">
-    <meta property="og:description" content="Vertex is the ultimate developer toolkit. Master Git, generate code using AI, explore packages, save snippets, and run interactive code environments instantly in the browser.">
+    <meta property="og:title" content="TrivoXa - The All-in-One Toolkit for New Developers">
+    <meta property="og:description" content="TrivoXa is the ultimate developer toolkit. Master Git, generate code using AI, explore packages, save snippets, and run interactive code environments instantly in the browser.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1200&h=630">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <title>Vertex — Developer Toolkit</title>
+    <title>TrivoXa</title>
     <link rel="manifest" href="public/manifest.json">
     <link rel="icon" href="public/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="public/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/base.css?v=5">
     <link rel="stylesheet" href="css/layout.css?v=5">
@@ -47,24 +47,28 @@
     <script src="https://unpkg.com/3d-force-graph@1.71.3/dist/3d-force-graph.min.js"></script>
 
     <script src="js/utils/helpers.js?v=7"></script>
-    <script src="js/utils/api.js?v=8"></script>
-    <script src="js/components/ui/navbar.js?v=7"></script>
-    <script src="js/components/ui/loader.js?v=7"></script>
-    <script src="js/pages/main/dashboard.js?v=8"></script>
-    <script src="js/pages/ai/aiChat.js?v=2"></script>
-    <script src="js/pages/ai/aiArchitect.js?v=2"></script>
-    <script src="js/pages/ai/aiStacks.js?v=1"></script>
-    <script src="js/pages/ai/askAi.js?v=11"></script>
-    <script src="js/pages/gitExplorer/githubUser.js?v=1"></script>
-    <script src="js/pages/gitExplorer/githubStructure.js?v=1"></script>
-    <script src="js/pages/gitExplorer/githubGit.js?v=1"></script>
-    <script src="js/pages/main/workspace.js?v=10"></script>
-    <script src="js/pages/main/docs.js?v=13"></script>
-    <script src="js/pages/tools/toolsVault.js?v=8"></script>
-    <script src="js/pages/tools/commands.js?v=6"></script>
-    <script src="js/pages/tools/freeApis.js?v=15"></script>
-    <script src="js/pages/tools/packageScout.js?v=8"></script>
-    <script src="js/pages/gitExplorer/codeGitExplorer.js?v=10"></script>
+    <script src="js/auth/apiAuth.js?v=1"></script>
+    <script src="js/git/apiGithub.js?v=1"></script>
+    <script src="js/utils/api.js?v=9"></script>
+    <script src="js/auth/authModal.js?v=1"></script>
+    <script src="js/ui/navbar.js?v=8"></script>
+    <script src="js/ui/loader.js?v=7"></script>
+    <script src="js/dashboard/dashboard.js?v=8"></script>
+    <script src="js/ai/aiChat.js?v=2"></script>
+    <script src="js/ai/aiArchitect.js?v=2"></script>
+    <script src="js/ai/aiStacks.js?v=1"></script>
+    <script src="js/ai/askAi.js?v=11"></script>
+    <script src="js/git/githubUser.js?v=1"></script>
+    <script src="js/git/githubStructure.js?v=1"></script>
+    <script src="js/git/githubGit.js?v=1"></script>
+    <script src="js/workspace/workspaceDB.js?v=1"></script>
+    <script src="js/workspace/workspace.js?v=11"></script>
+    <script src="js/docs/docs.js?v=13"></script>
+    <script src="js/tools/toolsVault.js?v=8"></script>
+    <script src="js/tools/commands.js?v=6"></script>
+    <script src="js/tools/freeApis.js?v=15"></script>
+    <script src="js/tools/packageScout.js?v=8"></script>
+    <script src="js/git/codeGitExplorer.js?v=10"></script>
     <script src="js/core/router.js?v=7"></script>
 
     <script src="js/core/app.js?v=6"></script>

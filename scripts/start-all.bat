@@ -1,11 +1,11 @@
 @echo off
-REM Groq Proxy + Vertex App Launcher for Windows
-REM This script starts both the Groq Proxy and Vertex App in separate windows
+REM Groq Proxy + TrivoXa App Launcher for Windows
+REM This script starts both the Groq Proxy and TrivoXa App in separate windows
 cd /d "%~dp0\.."
 
 echo.
 echo  ╔════════════════════════════════════════════════════╗
-echo  ║  Groq API + Vertex Launcher                        ║
+echo  ║  Groq API + TrivoXa Launcher                        ║
 echo  ╚════════════════════════════════════════════════════╝
 echo.
 
@@ -24,7 +24,7 @@ echo.
 REM Ask user which to run
 echo Please select what to run:
 echo 1. Start Groq Proxy only
-echo 2. Start Vertex App only
+echo 2. Start TrivoXa App only
 echo 3. Start Both (Recommended)
 echo.
 
@@ -43,7 +43,7 @@ if "%choice%"=="1" (
     node server\groq-proxy.js
 ) else if "%choice%"=="2" (
     echo.
-    echo 🚀 Starting Vertex App Server...
+    echo 🚀 Starting TrivoXa App Server...
     echo.
     npm start
 ) else if "%choice%"=="3" (
@@ -53,13 +53,13 @@ if "%choice%"=="1" (
     
     timeout /t 2 /nobreak
     
-    echo 🚀 Starting Vertex App Server (will open in 2 seconds)...
-    start "Vertex App" cmd /k "npm start"
+    echo 🚀 Starting TrivoXa App Server (will open in 2 seconds)...
+    start "TrivoXa App" cmd /k "npm start"
     
     echo.
     echo ✓ Both servers started!
     echo   - Groq Proxy: http://localhost:3001
-    echo   - Vertex App: Check the "Vertex App" window for the URL
+    echo   - TrivoXa App: Check the "TrivoXa App" window for the URL
     echo.
     echo Keep both windows open while using the app.
     echo Close them to stop the servers.

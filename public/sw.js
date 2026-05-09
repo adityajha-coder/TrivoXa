@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vertex-v4';
+const CACHE_NAME = 'TrivoXa';
 const STATIC_ASSETS = [
     '/',
     '/index.html',

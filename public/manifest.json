@@ -1,6 +1,6 @@
 {
-    "name": "Vertex",
-    "short_name": "Vertex",
+    "name": "TrivoXa",
+    "short_name": "TrivoXa",
     "description": "The ultimate developer toolkit. Master Git, generate code using AI, explore packages, save snippets, and run interactive code environments instantly in the browser.",
     "start_url": "/index.html",
     "display": "standalone",

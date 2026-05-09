@@ -87,7 +87,7 @@ Next steps:
 1. Start Groq Proxy:
    npm run proxy
 
-2. In another terminal, start Vertex App:
+2. In another terminal, start TrivoXa App:
    npm start
 
 3. Open http://localhost:8080 in your browser
