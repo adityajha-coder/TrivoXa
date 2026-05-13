@@ -15,15 +15,22 @@ const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
     'http://localhost:8080',
     'http://localhost:3000',
+    'http://127.0.0.1:5500',
+    'http://localhost:5500',
+    'http://127.0.0.1:5501',
+    'http://localhost:5501',
+    'http://127.0.0.1:8080',
     'https://trivoxa-devloper-toolkit.vercel.app'
 ];
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (curl, Postman, server-to-server)
-        if (!origin) return callback(null, true);
+        // Allow requests with no origin (curl, Postman, server-to-server, file://)
+        if (!origin || origin === 'null') return callback(null, true);
         if (allowedOrigins.includes(origin)) return callback(null, true);
         if (origin.endsWith('.vercel.app')) return callback(null, true);
-        return callback(new Error('CORS: Origin not allowed'), false);
+        // During dev, allow any localhost/127 origin to make it easier
+        if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) return callback(null, true);
+        return callback(new Error('CORS: Origin not allowed: ' + origin), false);
     },
     credentials: true
 }));

@@ -4,7 +4,7 @@ const API = {
     NPM_SEARCH: 'https://registry.npmjs.org/-/v1/search',
     NPM_PACKAGE: 'https://registry.npmjs.org',
     GROQ_BASE: 'https://api.groq.com/openai/v1',
-    API_BASE: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    API_BASE: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
         ? 'http://localhost:3001'
         : '',
     USE_PROXY: true,
