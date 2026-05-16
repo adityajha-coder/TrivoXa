@@ -9,7 +9,7 @@ const DashboardPage = {
                     <section class="home-hero home-reveal">
                         <div>
                             <div class="hero-eyebrow">Developer toolkit for focused building</div>
-                            <h1 class="hero-title">Everything a modern developer needs, <span>in one workspace.</span></h1>
+                            <h1 class="hero-title">Accelerate Your Workflow. <br><span>Build Smarter.</span></br></h1>
                             <p class="hero-copy">
                                 TrivoXa is a browser based developer platform that brings AI assistance, code execution, technical references, package research, public APIs, and repository exploration into one connected experience. If you are visiting for the first time, this page will show you exactly what the platform does and how it can help you work faster with less context switching.
                             </p>
@@ -213,8 +213,7 @@ const DashboardPage = {
                         </div>
 
                         <div class="signup-panel">
-                            <h3>Create an account when you are ready to keep your work.</h3>
-                            <p>Sign up to persist snippets, keep your AI history, and turn TrivoXa from a useful toolkit into your personal development workspace.</p>
+                            <h3>Ready to build with TrivoXa?</h3>                           
                             <div class="signup-actions">
                                 <button class="hero-btn hero-btn-primary" onclick="DashboardPage.openSignup();">Create free account</button>
                                 <button class="hero-btn hero-btn-secondary" onclick="DashboardPage.openSignin();">Sign in</button>
