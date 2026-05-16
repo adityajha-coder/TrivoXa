@@ -12,379 +12,460 @@ const DashboardPage = {
                     overflow-y: auto;
                     overflow-x: hidden;
                     padding: 0;
-                    background: var(--bg-primary);
+                    background:
+                        radial-gradient(circle at top left, rgba(212, 168, 67, 0.12), transparent 30%),
+                        radial-gradient(circle at 82% 0%, rgba(56, 189, 248, 0.08), transparent 28%),
+                        var(--bg-primary);
                 }
 
-                .dash-wrapper {
-                    max-width: 1280px;
-                    width: 100%;
+                .home-shell {
+                    width: min(1240px, 100%);
                     margin: 0 auto;
-                    padding: 36px 48px;
+                    padding: 34px 40px 42px;
                     display: flex;
                     flex-direction: column;
-                    gap: 32px;
+                    gap: 26px;
                 }
 
-                /* ===== HERO TOP TEXT ===== */
-                .hero-top-text {
-                    margin-bottom: 8px;
-                }
-
-                .hero-main-title {
-                    font-size: 2.2rem;
-                    font-weight: 700;
-                    color: #fff;
-                    margin: 0 0 8px 0;
-                    letter-spacing: -0.5px;
-                }
-
-                .hero-main-title .gold {
-                    color: var(--primary-light);
-                }
-
-                .lead-text {
-                    display: block;
-                    font-size: 1.05rem;
-                    color: var(--text-secondary);
-                    font-weight: 400;
-                    margin-top: 8px;
-                }
-
-                /* ===== HERO SECTION ===== */
-                .dash-hero-section {
+                .home-hero {
                     display: grid;
-                    grid-template-columns: 1.1fr 0.9fr;
-                    gap: 24px;
-                    min-height: 240px;
+                    grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+                    gap: 18px;
+                    align-items: stretch;
                 }
 
-                .hero-main-card {
-                    background: var(--surface);
+                .hero-panel,
+                .spotlight-card,
+                .feature-card {
                     border: 1px solid var(--border);
-                    border-radius: 12px;
-                    padding: 36px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: flex-start;
+                    background: rgba(22, 27, 34, 0.9);
+                    box-shadow: var(--shadow);
+                }
+
+                .hero-panel {
                     position: relative;
                     overflow: hidden;
-                    cursor: pointer;
-                }
-
-                .hero-main-card h3 {
-                    font-size: 1.4rem;
-                    font-weight: 700;
-                    color: #fff;
-                    margin-bottom: 12px;
-                }
-
-                .hero-main-sub {
-                    font-size: 0.95rem;
-                    color: var(--text-secondary);
-                    line-height: 1.5;
-                    max-width: 440px;
-                    margin-bottom: 32px;
-                }
-
-                .hero-main-bottom {
+                    min-height: 340px;
+                    border-radius: 20px;
+                    padding: 34px;
                     display: flex;
-                    align-items: center;
-                    margin-top: auto;
+                    flex-direction: column;
+                    justify-content: space-between;
                 }
 
-                .hero-cta {
+                .hero-panel::before {
+                    content: '';
+                    position: absolute;
+                    width: 340px;
+                    height: 340px;
+                    right: -120px;
+                    top: -130px;
+                    border-radius: 50%;
+                    background: rgba(212, 168, 67, 0.14);
+                    filter: blur(4px);
+                }
+
+                .hero-panel::after {
+                    content: '';
+                    position: absolute;
+                    inset: auto 28px 24px auto;
+                    width: 180px;
+                    height: 180px;
+                    background:
+                        linear-gradient(135deg, rgba(212, 168, 67, 0.18), transparent 60%),
+                        radial-gradient(circle, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+                    background-size: auto, 18px 18px;
+                    opacity: 0.45;
+                    border-radius: 24px;
+                    transform: rotate(10deg);
+                }
+
+                .hero-copy,
+                .hero-actions {
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .eyebrow {
                     display: inline-flex;
                     align-items: center;
                     gap: 8px;
-                    padding: 10px 24px;
-                    background: var(--primary);
-                    color: #000;
-                    border: none;
-                    border-radius: 30px;
-                    font-size: 0.9rem;
-                    font-weight: 600;
+                    width: fit-content;
+                    padding: 6px 10px;
+                    border-radius: 999px;
+                    border: 1px solid rgba(212, 168, 67, 0.16);
+                    background: rgba(212, 168, 67, 0.08);
+                    color: var(--primary-light);
+                    font-size: 0.74rem;
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                }
+
+                .hero-title {
+                    max-width: 620px;
+                    margin: 18px 0 12px;
+                    font-size: clamp(2rem, 4vw, 3.15rem);
+                    line-height: 0.98;
+                    letter-spacing: -0.08em;
+                    font-weight: 800;
+                }
+
+                .hero-title span {
+                    color: var(--primary-light);
+                }
+
+                .hero-description {
+                    max-width: 560px;
+                    color: var(--text-secondary);
+                    font-size: 0.98rem;
+                    line-height: 1.7;
+                }
+
+                .hero-actions {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    margin-top: 28px;
+                }
+
+                .home-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    min-height: 42px;
+                    padding: 0 16px;
+                    border-radius: 999px;
+                    border: 1px solid transparent;
+                    font-size: 0.84rem;
+                    font-weight: 700;
                     cursor: pointer;
-                    font-family: inherit;
+                    transition: all var(--transition);
                 }
 
-                .hero-bot-graphic {
-                    width: 200px; height: 200px;
-                    position: absolute;
-                    bottom: -40px; right: 0px;
-                    opacity: 0.03;
-                    display: flex; align-items: center; justify-content: center;
-                    font-size: 10rem;
-                    color: #fff;
-                    pointer-events: none;
+                .home-btn-primary {
+                    color: #111;
+                    background: var(--primary-light);
                 }
 
-                /* Right stack */
-                .hero-side-stack {
+                .home-btn-primary:hover {
+                    background: #f1d994;
+                }
+
+                .home-btn-secondary {
+                    color: var(--text);
+                    background: rgba(255, 255, 255, 0.03);
+                    border-color: var(--border);
+                }
+
+                .home-btn-secondary:hover {
+                    border-color: rgba(212, 168, 67, 0.35);
+                    background: rgba(212, 168, 67, 0.08);
+                }
+
+                .hero-rail {
+                    display: grid;
+                    gap: 18px;
+                }
+
+                .spotlight-card {
+                    border-radius: 20px;
+                    padding: 22px;
                     display: flex;
                     flex-direction: column;
-                    gap: 24px;
-                }
-
-                .hero-side-card {
-                    flex: 1;
-                    background: var(--surface);
-                    border: 1px solid var(--border);
-                    border-radius: 12px;
-                    padding: 24px;
-                    display: flex;
-                    align-items: flex-start;
-                    gap: 16px;
+                    justify-content: space-between;
                     cursor: pointer;
+                    transition: transform var(--transition), border-color var(--transition), background var(--transition);
                 }
 
-                .hero-side-icon {
-                    font-size: 1.25rem;
-                    flex-shrink: 0;
-                    margin-top: 2px;
+                .spotlight-card:hover,
+                .feature-card:hover {
+                    transform: translateY(-2px);
+                    border-color: rgba(212, 168, 67, 0.28);
+                    background: var(--surface-hover);
                 }
 
-                .hero-side-text h3 {
-                    font-size: 1rem;
-                    font-weight: 600;
-                    color: #fff;
-                    margin-bottom: 6px;
-                }
-
-                .hero-side-text p {
-                    font-size: 0.85rem;
-                    color: var(--text-secondary);
-                    line-height: 1.4;
-                }
-
-                /* ===== TOOLKIT SECTION ===== */
-                .toolkit-label {
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    letter-spacing: 1.5px;
-                    color: var(--text-muted);
-                    margin-bottom: 20px;
-                }
-
-                .toolkit-grid {
-                    display: grid;
-                    grid-template-columns: repeat(4, 1fr);
-                    gap: 24px;
-                }
-
-                .toolkit-card {
-                    background: var(--surface);
-                    border: 1px solid var(--border);
-                    border-radius: 12px;
-                    padding: 20px;
+                .spotlight-top {
                     display: flex;
                     align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                }
+
+                .spotlight-icon,
+                .feature-icon {
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 14px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(255, 255, 255, 0.035);
+                    font-size: 1.05rem;
+                }
+
+                .spotlight-card h3 {
+                    margin-top: 18px;
+                    font-size: 1.05rem;
+                    font-weight: 700;
+                }
+
+                .spotlight-card p {
+                    margin-top: 7px;
+                    color: var(--text-secondary);
+                    font-size: 0.84rem;
+                    line-height: 1.55;
+                }
+
+                .spotlight-link {
+                    color: var(--primary-light);
+                    font-size: 0.78rem;
+                    font-weight: 700;
+                }
+
+                .feature-section {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                }
+
+                .section-head {
+                    display: flex;
+                    align-items: end;
+                    justify-content: space-between;
                     gap: 16px;
-                    cursor: pointer;
                 }
 
-                .toolkit-icon {
-                    width: 48px; height: 48px;
-                    border-radius: 8px;
-                    background: var(--bg-primary);
-                    display: flex; align-items: center; justify-content: center;
-                    font-size: 1.15rem;
-                    flex-shrink: 0;
+                .section-head h2 {
+                    font-size: 1rem;
+                    font-weight: 700;
+                    letter-spacing: -0.02em;
                 }
 
-                .toolkit-text {
-                    flex: 1;
-                    min-width: 0;
-                }
-
-                .toolkit-text h3 {
-                    font-size: 0.95rem;
-                    font-weight: 600;
-                    color: #fff;
-                    margin-bottom: 4px;
-                }
-
-                .toolkit-text p {
-                    font-size: 0.8rem;
+                .section-head p {
                     color: var(--text-muted);
-                    line-height: 1.35;
+                    font-size: 0.8rem;
                 }
 
-                /* Icon colors */
-                .color-yellow { color: #facc15; }
-                .color-green { color: #4ade80; }
-                .color-blue { color: #38bdf8; }
-                .color-purple { color: #a78bfa; }
-                .color-pink { color: #f472b6; }
-                .color-orange { color: #fb923c; }
-
-                /* ===== RESPONSIVE ===== */
-                @media (max-width: 1024px) {
-                    .dash-wrapper { padding: 32px; gap: 24px; }
-                    .toolkit-grid { grid-template-columns: repeat(3, 1fr); }
+                .feature-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                    gap: 14px;
                 }
 
-                @media (max-width: 900px) {
-                    .dash-hero-section { grid-template-columns: 1fr; min-height: auto; }
-                    .hero-side-stack { flex-direction: row; }
-                    .toolkit-grid { grid-template-columns: repeat(2, 1fr); }
+                .feature-card {
+                    min-height: 150px;
+                    border-radius: 18px;
+                    padding: 18px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                    cursor: pointer;
+                    transition: transform var(--transition), border-color var(--transition), background var(--transition);
                 }
 
-                @media (max-width: 600px) {
-                    .dash-wrapper { padding: 20px 16px; gap: 20px; }
-                    .hero-side-stack { flex-direction: column; }
-                    .hero-main-title { font-size: 1.6rem; }
-                    .toolkit-grid { grid-template-columns: 1fr; }
+                .feature-card h3 {
+                    font-size: 0.94rem;
+                    font-weight: 700;
                 }
 
-                /* Entry animations */
-                @keyframes dashFadeUp {
-                    from { opacity: 0; transform: translateY(14px); }
+                .feature-card p {
+                    color: var(--text-secondary);
+                    font-size: 0.8rem;
+                    line-height: 1.5;
+                }
+
+                .feature-meta {
+                    margin-top: auto;
+                    color: var(--text-muted);
+                    font-size: 0.73rem;
+                }
+
+                .tone-gold { color: #facc15; }
+                .tone-green { color: #4ade80; }
+                .tone-blue { color: #38bdf8; }
+                .tone-purple { color: #a78bfa; }
+                .tone-pink { color: #f472b6; }
+                .tone-orange { color: #fb923c; }
+
+                @keyframes homeFadeUp {
+                    from { opacity: 0; transform: translateY(12px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
-                .dash-animate {
+
+                .home-enter {
                     opacity: 0;
-                    animation: dashFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    animation: homeFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                }
+
+                @media (max-width: 1080px) {
+                    .home-shell { padding: 30px 24px 34px; }
+                    .home-hero { grid-template-columns: 1fr; }
+                    .hero-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+                    .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+                }
+
+                @media (max-width: 700px) {
+                    .home-shell { padding: 20px 16px 24px; gap: 20px; }
+                    .hero-panel { min-height: 300px; padding: 24px; }
+                    .hero-title { font-size: 1.9rem; }
+                    .hero-description { font-size: 0.9rem; }
+                    .hero-rail,
+                    .feature-grid { grid-template-columns: 1fr; }
+                    .section-head {
+                        align-items: flex-start;
+                        flex-direction: column;
+                        gap: 4px;
+                    }
                 }
             </style>
 
-            <div class="dash-wrapper">
-                <div class="dash-animate">
-                    <div class="hero-top-text">
-                        <h1 class="hero-main-title">Accelerate Your Workflow. <span class="gold">Build Smarter.</span></h1>
-                        <span class="lead-text">All-in-one platform for developers</span>
-                    </div>
-                </div>
-
-                <!-- HERO SECTION -->
-                <div class="dash-hero-section dash-animate" style="animation-delay: 0.05s;">
-                    <!-- Main AI Hub Card -->
-                    <div class="hero-main-card" data-page="ask-ai">
-                        <div>
-                            <h3>AI Hub</h3>
-                            <p class="hero-main-sub">
-                                Chat with AI, design app architectures, explore tech stacks, and debug errors — all in one place.
+            <div class="home-shell">
+                <section class="home-hero home-enter">
+                    <div class="hero-panel">
+                        <div class="hero-copy">
+                            <div class="eyebrow">
+                                <i class="fa-solid fa-bolt"></i>
+                                Developer command center
+                            </div>
+                            <h1 class="hero-title">Build faster with one <span>clean workspace.</span></h1>
+                            <p class="hero-description">
+                                TrivoXa brings AI help, code tools, docs, package research, and repository exploration into one calm place, so your attention stays on the work instead of the switching.
                             </p>
                         </div>
-                        <div class="hero-main-bottom">
-                            <button class="hero-cta" onclick="event.stopPropagation(); Router.navigate('ask-ai');">
-                                <i class="fa-solid fa-arrow-right"></i> Open AI Hub
+
+                        <div class="hero-actions">
+                            <button class="home-btn home-btn-primary" onclick="Router.navigate('ask-ai');">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                Start with AI Hub
+                            </button>
+                            <button class="home-btn home-btn-secondary" onclick="Router.navigate('workspace');">
+                                <i class="fa-solid fa-laptop-code"></i>
+                                Open Workspace
                             </button>
                         </div>
-                        <div class="hero-bot-graphic"><i class="fa-solid fa-robot"></i></div>
                     </div>
 
-                    <!-- Right Side Stack -->
-                    <div class="hero-side-stack">
-                        <div class="hero-side-card" data-page="ask-ai">
-                            <div class="hero-side-icon color-yellow">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <div class="hero-rail">
+                        <article class="spotlight-card" data-page="code-git-explorer">
+                            <div class="spotlight-top">
+                                <div class="spotlight-icon tone-green">
+                                    <i class="fa-brands fa-github"></i>
+                                </div>
+                                <span class="spotlight-link">Explore</span>
                             </div>
-                            <div class="hero-side-text">
-                                <h3>Code Generator</h3>
-                                <p>Generate framework components with AI and run them live.</p>
+                            <div>
+                                <h3>See a repo before you read it.</h3>
+                                <p>Turn GitHub projects into a navigable 3D structure and find the shape of the codebase quickly.</p>
                             </div>
-                        </div>
-                        <div class="hero-side-card" data-page="code-git-explorer">
-                            <div class="hero-side-icon color-green">
-                                <i class="fa-brands fa-github"></i>
-                            </div>
-                            <div class="hero-side-text">
-                                <h3>GitHub Explorer</h3>
-                                <p>Visualize any repository as an interactive 3D graph.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        </article>
 
-                <!-- TOOLKIT SECTION -->
-                <div class="dash-animate" style="animation-delay: 0.15s;">
-                    <p class="toolkit-label">TOOLKIT</p>
-                    
-                    <div class="toolkit-grid">
-                        <div class="toolkit-card" data-page="workspace">
-                            <div class="toolkit-icon color-yellow">
-                                <i class="fa-solid fa-laptop-code"></i>
+                        <article class="spotlight-card" data-page="package-scout">
+                            <div class="spotlight-top">
+                                <div class="spotlight-icon tone-purple">
+                                    <i class="fa-solid fa-box-open"></i>
+                                </div>
+                                <span class="spotlight-link">Research</span>
                             </div>
-                            <div class="toolkit-text">
+                            <div>
+                                <h3>Choose packages with context.</h3>
+                                <p>Compare npm libraries with live signals before adding another dependency to the stack.</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="feature-section home-enter" style="animation-delay: 0.08s;">
+                    <div class="section-head">
+                        <h2>Everything in reach</h2>
+                        <p>Jump into the tool that fits the next move.</p>
+                    </div>
+
+                    <div class="feature-grid">
+                        <article class="feature-card" data-page="workspace">
+                            <div class="feature-icon tone-gold"><i class="fa-solid fa-laptop-code"></i></div>
+                            <div>
                                 <h3>My Workspace</h3>
-                                <p>Save, edit & run code snippets</p>
+                                <p>Save, edit, and run your code snippets in one place.</p>
                             </div>
-                        </div>
+                            <div class="feature-meta">Create and iterate</div>
+                        </article>
 
-                        <div class="toolkit-card" data-page="commands">
-                            <div class="toolkit-icon color-green">
-                                <i class="fa-solid fa-terminal"></i>
-                            </div>
-                            <div class="toolkit-text">
+                        <article class="feature-card" data-page="commands">
+                            <div class="feature-icon tone-green"><i class="fa-solid fa-terminal"></i></div>
+                            <div>
                                 <h3>Commands</h3>
-                                <p>Git, npm, Docker reference</p>
+                                <p>Keep Git, npm, and Docker references close while you work.</p>
                             </div>
-                        </div>
+                            <div class="feature-meta">Recall faster</div>
+                        </article>
 
-                        <div class="toolkit-card" data-page="free-apis">
-                            <div class="toolkit-icon color-blue">
-                                <i class="fa-solid fa-cloud"></i>
-                            </div>
-                            <div class="toolkit-text">
+                        <article class="feature-card" data-page="free-apis">
+                            <div class="feature-icon tone-blue"><i class="fa-solid fa-cloud"></i></div>
+                            <div>
                                 <h3>Free APIs</h3>
-                                <p>120+ robust public endpoints</p>
+                                <p>Browse 120+ public endpoints for experiments and prototypes.</p>
                             </div>
-                        </div>
+                            <div class="feature-meta">Discover inputs</div>
+                        </article>
 
-                        <div class="toolkit-card" data-page="package-scout">
-                            <div class="toolkit-icon color-purple">
-                                <i class="fa-solid fa-box-open"></i>
-                            </div>
-                            <div class="toolkit-text">
-                                <h3>Package Scout</h3>
-                                <p>Real-time NPM insights & analytics</p>
-                            </div>
-                        </div>
-
-                        <div class="toolkit-card" data-page="tools-vault">
-                            <div class="toolkit-icon color-purple">
-                                <i class="fa-solid fa-screwdriver-wrench"></i>
-                            </div>
-                            <div class="toolkit-text">
+                        <article class="feature-card" data-page="tools-vault">
+                            <div class="feature-icon tone-purple"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                            <div>
                                 <h3>Tools Vault</h3>
-                                <p>100+ modern framework boilerplates</p>
+                                <p>Start from curated boilerplates instead of blank files.</p>
                             </div>
-                        </div>
+                            <div class="feature-meta">Move sooner</div>
+                        </article>
 
-                        <div class="toolkit-card" data-page="code-git-explorer">
-                            <div class="toolkit-icon color-pink">
-                                <i class="fa-brands fa-github"></i>
-                            </div>
-                            <div class="toolkit-text">
-                                <h3>GitHub Explorer</h3>
-                                <p>Interactive 3D structural mapping</p>
-                            </div>
-                        </div>
-
-                        <div class="toolkit-card" data-page="docs">
-                            <div class="toolkit-icon color-orange">
-                                <i class="fa-solid fa-book-bookmark"></i>
-                            </div>
-                            <div class="toolkit-text">
+                        <article class="feature-card" data-page="docs">
+                            <div class="feature-icon tone-orange"><i class="fa-solid fa-book-bookmark"></i></div>
+                            <div>
                                 <h3>Developer Docs</h3>
-                                <p>Instantly search MDN API Docs</p>
+                                <p>Search MDN references without leaving the flow.</p>
                             </div>
-                        </div>
+                            <div class="feature-meta">Stay precise</div>
+                        </article>
+
+                        <article class="feature-card" data-page="ask-ai">
+                            <div class="feature-icon tone-pink"><i class="fa-solid fa-robot"></i></div>
+                            <div>
+                                <h3>AI Hub</h3>
+                                <p>Generate code, plan architecture, and debug roadblocks.</p>
+                            </div>
+                            <div class="feature-meta">Think with leverage</div>
+                        </article>
+
+                        <article class="feature-card" data-page="package-scout">
+                            <div class="feature-icon tone-purple"><i class="fa-solid fa-chart-line"></i></div>
+                            <div>
+                                <h3>Package Scout</h3>
+                                <p>Read adoption signals before bringing a library aboard.</p>
+                            </div>
+                            <div class="feature-meta">Choose wisely</div>
+                        </article>
+
+                        <article class="feature-card" data-page="code-git-explorer">
+                            <div class="feature-icon tone-green"><i class="fa-solid fa-diagram-project"></i></div>
+                            <div>
+                                <h3>GitHub Explorer</h3>
+                                <p>Map repository structure and orient yourself in seconds.</p>
+                            </div>
+                            <div class="feature-meta">See the system</div>
+                        </article>
                     </div>
-                </div>
+                </section>
             </div>`;
 
         this.bindEvents(content);
     },
 
     bindEvents(content) {
-        // Navigation clicks
         content.querySelectorAll('[data-page]').forEach(el => {
             el.addEventListener('click', () => Router.navigate(el.dataset.page));
         });
 
-        // Onboarding Check
         if (!localStorage.getItem('vdt_first_time')) {
             setTimeout(() => {
                 Toast.show('Welcome to TrivoXa! Explore the developer tools below or use Ctrl+K to search.', 'info', 6000);
