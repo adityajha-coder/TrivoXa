@@ -11,7 +11,7 @@ const DashboardPage = {
                             <div class="hero-eyebrow">Developer toolkit for focused building</div>
                             <h1 class="hero-title">Everything a modern developer needs, <span>in one workspace.</span></h1>
                             <p class="hero-copy">
-                                TrivoXa is a browser-based developer platform that brings AI assistance, code execution, technical references, package research, public APIs, and repository exploration into one connected experience. If you are visiting for the first time, this page will show you exactly what the platform does and how it can help you work faster with less context switching.
+                                TrivoXa is a browser based developer platform that brings AI assistance, code execution, technical references, package research, public APIs, and repository exploration into one connected experience. If you are visiting for the first time, this page will show you exactly what the platform does and how it can help you work faster with less context switching.
                             </p>
                             <div class="hero-actions">
                                 <button class="hero-btn hero-btn-primary" onclick="Router.navigate('ask-ai');">
@@ -89,46 +89,6 @@ const DashboardPage = {
                                     <h3>Research tools</h3>
                                     <p>Evaluate npm packages, browse public APIs, and inspect repositories with more confidence.</p>
                                 </div>
-                            </div>
-
-                            <div class="overview-system">
-                                <div class="overview-map">
-                                    <div class="overview-map-head">
-                                        <h3>How the platform is organized</h3>
-                                        <span>one connected workflow</span>
-                                    </div>
-                                    <div class="overview-flow">
-                                        <div class="overview-flow-row">
-                                            <strong>Think</strong>
-                                            <p>Use AI Hub to clarify requirements, compare approaches, generate scaffolds, and debug uncertainty early.</p>
-                                        </div>
-                                        <div class="overview-flow-row">
-                                            <strong>Build</strong>
-                                            <p>Move into Workspace, Commands, and Tools Vault when the idea is ready to become working implementation.</p>
-                                        </div>
-                                        <div class="overview-flow-row">
-                                            <strong>Verify</strong>
-                                            <p>Use Docs, Package Scout, Free APIs, and GitHub Explorer to validate the ecosystem around the code.</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <aside class="overview-aside">
-                                    <div>
-                                        <h3>Why it feels faster</h3>
-                                        <p>Because the surrounding work of development lives near the code instead of being scattered across separate tools and browser tabs.</p>
-                                    </div>
-                                    <div class="overview-stack">
-                                        <span class="overview-chip">AI</span>
-                                        <span class="overview-chip">Snippets</span>
-                                        <span class="overview-chip">Docs</span>
-                                        <span class="overview-chip">APIs</span>
-                                        <span class="overview-chip">Packages</span>
-                                        <span class="overview-chip">Repos</span>
-                                    </div>
-                                </aside>
-                            </div>
-                        </div>
                     </section>
 
                     <section class="home-section home-reveal" style="animation-delay: 0.12s;">
@@ -136,7 +96,7 @@ const DashboardPage = {
                         <div class="section-content">
                             <h2>How the platform fits into real development work.</h2>
                             <p>
-                                A first-time user should understand not only what the tools are, but when they matter. TrivoXa is organized around the natural rhythm of building software: think clearly, implement efficiently, then validate the technical choices around the work.
+                                A first time user should understand not only what the tools are, but when they matter. TrivoXa is organized around the natural rhythm of building software: think clearly, implement efficiently, then validate the technical choices around the work.
                             </p>
 
                             <div class="journey-list">
