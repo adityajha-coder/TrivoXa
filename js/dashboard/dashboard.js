@@ -1,461 +1,267 @@
 const DashboardPage = {
     render() {
-        Navbar.renderTopbar('Dashboard');
+        Navbar.renderTopbar('Home');
         const content = document.getElementById('page-content');
 
         content.innerHTML = `
-            <style>
-                #page-content {
-                    height: calc(100vh - 56px);
-                    display: flex;
-                    flex-direction: column;
-                    overflow-y: auto;
-                    overflow-x: hidden;
-                    padding: 0;
-                    background:
-                        radial-gradient(circle at top left, rgba(212, 168, 67, 0.12), transparent 30%),
-                        radial-gradient(circle at 82% 0%, rgba(56, 189, 248, 0.08), transparent 28%),
-                        var(--bg-primary);
-                }
-
-                .home-shell {
-                    width: min(1240px, 100%);
-                    margin: 0 auto;
-                    padding: 34px 40px 42px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 26px;
-                }
-
-                .home-hero {
-                    display: grid;
-                    grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
-                    gap: 18px;
-                    align-items: stretch;
-                }
-
-                .hero-panel,
-                .spotlight-card,
-                .feature-card {
-                    border: 1px solid var(--border);
-                    background: rgba(22, 27, 34, 0.9);
-                    box-shadow: var(--shadow);
-                }
-
-                .hero-panel {
-                    position: relative;
-                    overflow: hidden;
-                    min-height: 340px;
-                    border-radius: 20px;
-                    padding: 34px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                }
-
-                .hero-panel::before {
-                    content: '';
-                    position: absolute;
-                    width: 340px;
-                    height: 340px;
-                    right: -120px;
-                    top: -130px;
-                    border-radius: 50%;
-                    background: rgba(212, 168, 67, 0.14);
-                    filter: blur(4px);
-                }
-
-                .hero-panel::after {
-                    content: '';
-                    position: absolute;
-                    inset: auto 28px 24px auto;
-                    width: 180px;
-                    height: 180px;
-                    background:
-                        linear-gradient(135deg, rgba(212, 168, 67, 0.18), transparent 60%),
-                        radial-gradient(circle, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
-                    background-size: auto, 18px 18px;
-                    opacity: 0.45;
-                    border-radius: 24px;
-                    transform: rotate(10deg);
-                }
-
-                .hero-copy,
-                .hero-actions {
-                    position: relative;
-                    z-index: 1;
-                }
-
-                .eyebrow {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 8px;
-                    width: fit-content;
-                    padding: 6px 10px;
-                    border-radius: 999px;
-                    border: 1px solid rgba(212, 168, 67, 0.16);
-                    background: rgba(212, 168, 67, 0.08);
-                    color: var(--primary-light);
-                    font-size: 0.74rem;
-                    font-weight: 700;
-                    letter-spacing: 0.08em;
-                    text-transform: uppercase;
-                }
-
-                .hero-title {
-                    max-width: 620px;
-                    margin: 18px 0 12px;
-                    font-size: clamp(2rem, 4vw, 3.15rem);
-                    line-height: 0.98;
-                    letter-spacing: -0.08em;
-                    font-weight: 800;
-                }
-
-                .hero-title span {
-                    color: var(--primary-light);
-                }
-
-                .hero-description {
-                    max-width: 560px;
-                    color: var(--text-secondary);
-                    font-size: 0.98rem;
-                    line-height: 1.7;
-                }
-
-                .hero-actions {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
-                    margin-top: 28px;
-                }
-
-                .home-btn {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
-                    min-height: 42px;
-                    padding: 0 16px;
-                    border-radius: 999px;
-                    border: 1px solid transparent;
-                    font-size: 0.84rem;
-                    font-weight: 700;
-                    cursor: pointer;
-                    transition: all var(--transition);
-                }
-
-                .home-btn-primary {
-                    color: #111;
-                    background: var(--primary-light);
-                }
-
-                .home-btn-primary:hover {
-                    background: #f1d994;
-                }
-
-                .home-btn-secondary {
-                    color: var(--text);
-                    background: rgba(255, 255, 255, 0.03);
-                    border-color: var(--border);
-                }
-
-                .home-btn-secondary:hover {
-                    border-color: rgba(212, 168, 67, 0.35);
-                    background: rgba(212, 168, 67, 0.08);
-                }
-
-                .hero-rail {
-                    display: grid;
-                    gap: 18px;
-                }
-
-                .spotlight-card {
-                    border-radius: 20px;
-                    padding: 22px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    cursor: pointer;
-                    transition: transform var(--transition), border-color var(--transition), background var(--transition);
-                }
-
-                .spotlight-card:hover,
-                .feature-card:hover {
-                    transform: translateY(-2px);
-                    border-color: rgba(212, 168, 67, 0.28);
-                    background: var(--surface-hover);
-                }
-
-                .spotlight-top {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    gap: 12px;
-                }
-
-                .spotlight-icon,
-                .feature-icon {
-                    width: 44px;
-                    height: 44px;
-                    border-radius: 14px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: rgba(255, 255, 255, 0.035);
-                    font-size: 1.05rem;
-                }
-
-                .spotlight-card h3 {
-                    margin-top: 18px;
-                    font-size: 1.05rem;
-                    font-weight: 700;
-                }
-
-                .spotlight-card p {
-                    margin-top: 7px;
-                    color: var(--text-secondary);
-                    font-size: 0.84rem;
-                    line-height: 1.55;
-                }
-
-                .spotlight-link {
-                    color: var(--primary-light);
-                    font-size: 0.78rem;
-                    font-weight: 700;
-                }
-
-                .feature-section {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 14px;
-                }
-
-                .section-head {
-                    display: flex;
-                    align-items: end;
-                    justify-content: space-between;
-                    gap: 16px;
-                }
-
-                .section-head h2 {
-                    font-size: 1rem;
-                    font-weight: 700;
-                    letter-spacing: -0.02em;
-                }
-
-                .section-head p {
-                    color: var(--text-muted);
-                    font-size: 0.8rem;
-                }
-
-                .feature-grid {
-                    display: grid;
-                    grid-template-columns: repeat(4, minmax(0, 1fr));
-                    gap: 14px;
-                }
-
-                .feature-card {
-                    min-height: 150px;
-                    border-radius: 18px;
-                    padding: 18px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 14px;
-                    cursor: pointer;
-                    transition: transform var(--transition), border-color var(--transition), background var(--transition);
-                }
-
-                .feature-card h3 {
-                    font-size: 0.94rem;
-                    font-weight: 700;
-                }
-
-                .feature-card p {
-                    color: var(--text-secondary);
-                    font-size: 0.8rem;
-                    line-height: 1.5;
-                }
-
-                .feature-meta {
-                    margin-top: auto;
-                    color: var(--text-muted);
-                    font-size: 0.73rem;
-                }
-
-                .tone-gold { color: #facc15; }
-                .tone-green { color: #4ade80; }
-                .tone-blue { color: #38bdf8; }
-                .tone-purple { color: #a78bfa; }
-                .tone-pink { color: #f472b6; }
-                .tone-orange { color: #fb923c; }
-
-                @keyframes homeFadeUp {
-                    from { opacity: 0; transform: translateY(12px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-
-                .home-enter {
-                    opacity: 0;
-                    animation: homeFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-                }
-
-                @media (max-width: 1080px) {
-                    .home-shell { padding: 30px 24px 34px; }
-                    .home-hero { grid-template-columns: 1fr; }
-                    .hero-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-                    .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-                }
-
-                @media (max-width: 700px) {
-                    .home-shell { padding: 20px 16px 24px; gap: 20px; }
-                    .hero-panel { min-height: 300px; padding: 24px; }
-                    .hero-title { font-size: 1.9rem; }
-                    .hero-description { font-size: 0.9rem; }
-                    .hero-rail,
-                    .feature-grid { grid-template-columns: 1fr; }
-                    .section-head {
-                        align-items: flex-start;
-                        flex-direction: column;
-                        gap: 4px;
-                    }
-                }
-            </style>
-
-            <div class="home-shell">
-                <section class="home-hero home-enter">
-                    <div class="hero-panel">
-                        <div class="hero-copy">
-                            <div class="eyebrow">
-                                <i class="fa-solid fa-bolt"></i>
-                                Developer command center
-                            </div>
-                            <h1 class="hero-title">Build faster with one <span>clean workspace.</span></h1>
-                            <p class="hero-description">
-                                TrivoXa brings AI help, code tools, docs, package research, and repository exploration into one calm place, so your attention stays on the work instead of the switching.
+            <div class="home-page">
+                <div class="home-shell">
+                    <section class="home-hero home-reveal">
+                        <div>
+                            <div class="hero-eyebrow">Developer toolkit for focused building</div>
+                            <h1 class="hero-title">Everything a modern developer needs, <span>in one workspace.</span></h1>
+                            <p class="hero-copy">
+                                TrivoXa is a browser-based developer platform that brings AI assistance, code execution, technical references, package research, public APIs, and repository exploration into one connected experience. If you are visiting for the first time, this page will show you exactly what the platform does and how it can help you work faster with less context switching.
                             </p>
+                            <div class="hero-actions">
+                                <button class="hero-btn hero-btn-primary" onclick="Router.navigate('ask-ai');">
+                                    Explore AI Hub
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                                <button class="hero-btn hero-btn-secondary" onclick="document.getElementById('overview').scrollIntoView({ behavior: 'smooth' });">
+                                    See what is inside
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="hero-actions">
-                            <button class="home-btn home-btn-primary" onclick="Router.navigate('ask-ai');">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                                Start with AI Hub
-                            </button>
-                            <button class="home-btn home-btn-secondary" onclick="Router.navigate('workspace');">
-                                <i class="fa-solid fa-laptop-code"></i>
-                                Open Workspace
-                            </button>
+                        <aside class="hero-visual" aria-label="Platform summary">
+                            <div class="visual-metric"><span>9</span> integrated modules</div>
+                            <div class="visual-flow">
+                                <div class="visual-flow-row">
+                                    <strong>Plan</strong>
+                                    <p>AI chat, architecture help, and stack exploration.</p>
+                                </div>
+                                <div class="visual-flow-row">
+                                    <strong>Build</strong>
+                                    <p>Workspace, snippets, commands, and boilerplates.</p>
+                                </div>
+                                <div class="visual-flow-row">
+                                    <strong>Verify</strong>
+                                    <p>Docs, packages, APIs, and GitHub structure analysis.</p>
+                                </div>
+                            </div>
+                        </aside>
+                    </section>
+
+                    <section class="home-band home-reveal" style="animation-delay: 0.04s;">
+                        <div class="band-grid">
+                            <div class="band-item">
+                                <strong>AI assisted</strong>
+                                <span>Generate, debug, compare, and plan with built-in AI tools.</span>
+                            </div>
+                            <div class="band-item">
+                                <strong>Browser based</strong>
+                                <span>No heavy setup required to explore the platform and its tools.</span>
+                            </div>
+                            <div class="band-item">
+                                <strong>Multi purpose</strong>
+                                <span>From code snippets to repo analysis, one product covers the workflow.</span>
+                            </div>
+                            <div class="band-item">
+                                <strong>Built for flow</strong>
+                                <span>Reduce tab switching and keep technical context close.</span>
+                            </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="hero-rail">
-                        <article class="spotlight-card" data-page="code-git-explorer">
-                            <div class="spotlight-top">
-                                <div class="spotlight-icon tone-green">
-                                    <i class="fa-brands fa-github"></i>
+                    <section class="home-section home-reveal" id="overview" style="animation-delay: 0.08s;">
+                        <div class="section-label">01 / Overview</div>
+                        <div class="section-content">
+                            <h2>What is TrivoXa?</h2>
+                            <p>
+                                TrivoXa is an all-in-one toolkit for developers who want fewer fragmented tools and a clearer working environment. Instead of moving between separate sites for AI help, snippets, docs, APIs, package checks, and GitHub inspection, the platform keeps those capabilities together in one interface.
+                            </p>
+
+                            <div class="feature-grid">
+                                <div class="feature-item">
+                                    <h3>AI Hub</h3>
+                                    <p>Ask questions, generate code, explore architecture, compare tech stacks, and debug problems.</p>
                                 </div>
-                                <span class="spotlight-link">Explore</span>
-                            </div>
-                            <div>
-                                <h3>See a repo before you read it.</h3>
-                                <p>Turn GitHub projects into a navigable 3D structure and find the shape of the codebase quickly.</p>
-                            </div>
-                        </article>
-
-                        <article class="spotlight-card" data-page="package-scout">
-                            <div class="spotlight-top">
-                                <div class="spotlight-icon tone-purple">
-                                    <i class="fa-solid fa-box-open"></i>
+                                <div class="feature-item">
+                                    <h3>Workspace</h3>
+                                    <p>Create, save, edit, and run code snippets in a focused environment.</p>
                                 </div>
-                                <span class="spotlight-link">Research</span>
+                                <div class="feature-item">
+                                    <h3>Developer references</h3>
+                                    <p>Use commands and docs when you need precise answers without leaving the flow.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <h3>Research tools</h3>
+                                    <p>Evaluate npm packages, browse public APIs, and inspect repositories with more confidence.</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3>Choose packages with context.</h3>
-                                <p>Compare npm libraries with live signals before adding another dependency to the stack.</p>
-                            </div>
-                        </article>
-                    </div>
-                </section>
 
-                <section class="feature-section home-enter" style="animation-delay: 0.08s;">
-                    <div class="section-head">
-                        <h2>Everything in reach</h2>
-                        <p>Jump into the tool that fits the next move.</p>
-                    </div>
+                            <div class="overview-system">
+                                <div class="overview-map">
+                                    <div class="overview-map-head">
+                                        <h3>How the platform is organized</h3>
+                                        <span>one connected workflow</span>
+                                    </div>
+                                    <div class="overview-flow">
+                                        <div class="overview-flow-row">
+                                            <strong>Think</strong>
+                                            <p>Use AI Hub to clarify requirements, compare approaches, generate scaffolds, and debug uncertainty early.</p>
+                                        </div>
+                                        <div class="overview-flow-row">
+                                            <strong>Build</strong>
+                                            <p>Move into Workspace, Commands, and Tools Vault when the idea is ready to become working implementation.</p>
+                                        </div>
+                                        <div class="overview-flow-row">
+                                            <strong>Verify</strong>
+                                            <p>Use Docs, Package Scout, Free APIs, and GitHub Explorer to validate the ecosystem around the code.</p>
+                                        </div>
+                                    </div>
+                                </div>
 
-                    <div class="feature-grid">
-                        <article class="feature-card" data-page="workspace">
-                            <div class="feature-icon tone-gold"><i class="fa-solid fa-laptop-code"></i></div>
-                            <div>
-                                <h3>My Workspace</h3>
-                                <p>Save, edit, and run your code snippets in one place.</p>
+                                <aside class="overview-aside">
+                                    <div>
+                                        <h3>Why it feels faster</h3>
+                                        <p>Because the surrounding work of development lives near the code instead of being scattered across separate tools and browser tabs.</p>
+                                    </div>
+                                    <div class="overview-stack">
+                                        <span class="overview-chip">AI</span>
+                                        <span class="overview-chip">Snippets</span>
+                                        <span class="overview-chip">Docs</span>
+                                        <span class="overview-chip">APIs</span>
+                                        <span class="overview-chip">Packages</span>
+                                        <span class="overview-chip">Repos</span>
+                                    </div>
+                                </aside>
                             </div>
-                            <div class="feature-meta">Create and iterate</div>
-                        </article>
+                        </div>
+                    </section>
 
-                        <article class="feature-card" data-page="commands">
-                            <div class="feature-icon tone-green"><i class="fa-solid fa-terminal"></i></div>
-                            <div>
-                                <h3>Commands</h3>
-                                <p>Keep Git, npm, and Docker references close while you work.</p>
-                            </div>
-                            <div class="feature-meta">Recall faster</div>
-                        </article>
+                    <section class="home-section home-reveal" style="animation-delay: 0.12s;">
+                        <div class="section-label">02 / Workflow</div>
+                        <div class="section-content">
+                            <h2>How the platform fits into real development work.</h2>
+                            <p>
+                                A first-time user should understand not only what the tools are, but when they matter. TrivoXa is organized around the natural rhythm of building software: think clearly, implement efficiently, then validate the technical choices around the work.
+                            </p>
 
-                        <article class="feature-card" data-page="free-apis">
-                            <div class="feature-icon tone-blue"><i class="fa-solid fa-cloud"></i></div>
-                            <div>
-                                <h3>Free APIs</h3>
-                                <p>Browse 120+ public endpoints for experiments and prototypes.</p>
+                            <div class="journey-list">
+                                <div class="journey-row">
+                                    <div class="journey-index">01</div>
+                                    <h3>Think</h3>
+                                    <p>Use AI Hub to explore the problem, generate approaches, compare stacks, or unblock a bug before committing to a direction.</p>
+                                </div>
+                                <div class="journey-row">
+                                    <div class="journey-index">02</div>
+                                    <h3>Build</h3>
+                                    <p>Move into Workspace, reference Commands, and reach for Tools Vault when you need a faster starting point.</p>
+                                </div>
+                                <div class="journey-row">
+                                    <div class="journey-index">03</div>
+                                    <h3>Verify</h3>
+                                    <p>Check docs, evaluate dependencies with Package Scout, browse Free APIs, and understand repo structure with GitHub Explorer.</p>
+                                </div>
                             </div>
-                            <div class="feature-meta">Discover inputs</div>
-                        </article>
+                        </div>
+                    </section>
 
-                        <article class="feature-card" data-page="tools-vault">
-                            <div class="feature-icon tone-purple"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                            <div>
-                                <h3>Tools Vault</h3>
-                                <p>Start from curated boilerplates instead of blank files.</p>
-                            </div>
-                            <div class="feature-meta">Move sooner</div>
-                        </article>
+                    <section class="home-section home-reveal" style="animation-delay: 0.16s;">
+                        <div class="section-label">03 / Modules</div>
+                        <div class="section-content">
+                            <h2>Everything inside the platform, explained plainly.</h2>
+                            <p>
+                                Each section exists for a different kind of developer need. Together they form a compact operating system for learning, building, and researching.
+                            </p>
 
-                        <article class="feature-card" data-page="docs">
-                            <div class="feature-icon tone-orange"><i class="fa-solid fa-book-bookmark"></i></div>
-                            <div>
-                                <h3>Developer Docs</h3>
-                                <p>Search MDN references without leaving the flow.</p>
+                            <div class="feature-grid">
+                                <div class="feature-item">
+                                    <h3>AI Hub</h3>
+                                    <p>Conversational help, architecture generation, code creation, and stack guidance.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <h3>Workspace</h3>
+                                    <p>A place to save reusable snippets and keep hands-on coding work organized.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <h3>Docs</h3>
+                                    <p>Quick access to technical references when implementation details matter.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <h3>Commands</h3>
+                                    <p>Searchable Git, npm, Docker, and CLI references for fast recall.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <h3>Tools Vault</h3>
+                                    <p>Curated boilerplates, utilities, and useful developer resources.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <h3>Free APIs</h3>
+                                    <p>A browsable directory of public endpoints for prototypes and integrations.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <h3>Package Scout</h3>
+                                    <p>Live npm package information to help compare dependencies more intelligently.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <h3>GitHub Explorer</h3>
+                                    <p>Visualize repository structure and understand unfamiliar codebases faster.</p>
+                                </div>
                             </div>
-                            <div class="feature-meta">Stay precise</div>
-                        </article>
+                        </div>
+                    </section>
 
-                        <article class="feature-card" data-page="ask-ai">
-                            <div class="feature-icon tone-pink"><i class="fa-solid fa-robot"></i></div>
-                            <div>
-                                <h3>AI Hub</h3>
-                                <p>Generate code, plan architecture, and debug roadblocks.</p>
-                            </div>
-                            <div class="feature-meta">Think with leverage</div>
-                        </article>
+                    <section class="home-section home-reveal" style="animation-delay: 0.2s;">
+                        <div class="section-label">04 / Who it helps</div>
+                        <div class="section-content">
+                            <h2>Useful whether you are learning, shipping, or evaluating.</h2>
+                            <p>
+                                The homepage should answer the quiet question every visitor has: “Is this for someone like me?” TrivoXa is designed to be approachable for newer developers while still useful for experienced builders who value speed and concentration.
+                            </p>
 
-                        <article class="feature-card" data-page="package-scout">
-                            <div class="feature-icon tone-purple"><i class="fa-solid fa-chart-line"></i></div>
-                            <div>
-                                <h3>Package Scout</h3>
-                                <p>Read adoption signals before bringing a library aboard.</p>
+                            <div class="audience-grid">
+                                <div class="audience-item">
+                                    <h3>Students and beginners</h3>
+                                    <p>Learn faster with commands, docs, AI explanations, examples, and a safer place to experiment.</p>
+                                </div>
+                                <div class="audience-item">
+                                    <h3>Independent developers</h3>
+                                    <p>Move from idea to implementation with fewer scattered tools and less overhead.</p>
+                                </div>
+                                <div class="audience-item">
+                                    <h3>Teams and reviewers</h3>
+                                    <p>Inspect packages, APIs, and repositories more quickly before making technical decisions.</p>
+                                </div>
                             </div>
-                            <div class="feature-meta">Choose wisely</div>
-                        </article>
+                        </div>
+                    </section>
 
-                        <article class="feature-card" data-page="code-git-explorer">
-                            <div class="feature-icon tone-green"><i class="fa-solid fa-diagram-project"></i></div>
-                            <div>
-                                <h3>GitHub Explorer</h3>
-                                <p>Map repository structure and orient yourself in seconds.</p>
+                    <section class="faq-section home-reveal" style="animation-delay: 0.24s;">
+                        <div class="faq-header">
+                            <span>05 / FAQ</span>
+                            <h2>Questions realted to TrivoXa.</h2>
+                        </div>
+
+                        <div class="faq-row">
+                            <h3>Do I need to sign up to understand the platform?</h3>
+                            <p>No. The homepage is designed to explain the product before you commit. Some features may require authentication, but the value of the platform should be clear before that point.</p>
+                        </div>
+                        <div class="faq-row">
+                            <h3>What makes TrivoXa different from using separate tools?</h3>
+                            <p>The value is not that each tool is impossible to find elsewhere; it is that the common parts of development are brought into one coherent workflow, which saves attention and time.</p>
+                        </div>
+                        <div class="faq-row">
+                            <h3>Is this only for AI-related work?</h3>
+                            <p>No. AI is one part of the product. TrivoXa also includes practical engineering utilities such as commands, docs, snippets, package research, APIs, and repo exploration.</p>
+                        </div>
+                        <div class="faq-row">
+                            <h3>Where should I begin after landing here?</h3>
+                            <p>If you want to explore the platform, start with AI Hub or Workspace. If you already know what you need, the top navigation lets you jump directly into any module.</p>
+                        </div>
+
+                        <div class="signup-panel">
+                            <h3>Create an account when you are ready to keep your work.</h3>
+                            <p>Sign up to persist snippets, keep your AI history, and turn TrivoXa from a useful toolkit into your personal development workspace.</p>
+                            <div class="signup-actions">
+                                <button class="hero-btn hero-btn-primary" onclick="DashboardPage.openSignup();">Create free account</button>
+                                <button class="hero-btn hero-btn-secondary" onclick="DashboardPage.openSignin();">Sign in</button>
                             </div>
-                            <div class="feature-meta">See the system</div>
-                        </article>
-                    </div>
-                </section>
+                        </div>
+                    </section>
+                </div>
             </div>`;
 
         this.bindEvents(content);
@@ -471,6 +277,23 @@ const DashboardPage = {
                 Toast.show('Welcome to TrivoXa! Explore the developer tools below or use Ctrl+K to search.', 'info', 6000);
                 localStorage.setItem('vdt_first_time', 'true');
             }, 1000);
+        }
+    }
+    ,
+
+    openSignin() {
+        const signInButton = document.getElementById('btn-auth-in');
+        if (signInButton) signInButton.click();
+    },
+
+    openSignup() {
+        const signInButton = document.getElementById('btn-auth-in');
+        if (signInButton) signInButton.click();
+
+        const title = document.getElementById('auth-title');
+        const toggleLink = document.getElementById('auth-toggle-link');
+        if (title && toggleLink && title.textContent === 'Sign In') {
+            toggleLink.click();
         }
     }
 };
