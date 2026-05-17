@@ -179,7 +179,7 @@ const WorkspacePage = {
 
                         let contentHtml = '';
                         if (s.itemType === 'blueprint') {
-                            contentHtml = `<pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">${Helpers.escapeHtml(s.code)}</pre>`;
+                            contentHtml = `<pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted); white-space: pre-wrap; word-break: break-word;">${Helpers.escapeHtml(s.code)}</pre>`;
                         } else if (s.itemType === 'api') {
                             contentHtml = `<div style="font-family:var(--font-mono); font-size:13px; color:var(--success);"><i class="fa-solid fa-link" style="margin-right:6px;"></i>${Helpers.escapeHtml(s.code)}</div>`;
                         } else if (s.itemType === 'command') {
@@ -187,7 +187,7 @@ const WorkspacePage = {
                         } else if (s.itemType === 'tool') {
                             contentHtml = `<a href="${Helpers.escapeHtml(s.code)}" target="_blank" style="color:var(--primary-light); font-weight:600; text-decoration:none;"><i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:6px;"></i>Open Link</a>`;
                         } else {
-                            contentHtml = `<pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">${Helpers.escapeHtml(s.code)}</pre>`;
+                            contentHtml = `<pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted); white-space: pre-wrap; word-break: break-word;">${Helpers.escapeHtml(s.code)}</pre>`;
                         }
 
                         const typeIcons = { 'text': 'fa-file-lines', 'api': 'fa-server', 'command': 'fa-terminal', 'tool': 'fa-wrench', 'blueprint': 'fa-folder-tree' };
@@ -387,6 +387,13 @@ const WorkspacePage = {
                     } else {
                         itemType = 'blueprint';
                     }
+                } else if (historyItem.module === 'chat') {
+                    // Extract plain text from the HTML chat response
+                    const htmlWithNewlines = content.replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>|<\/li>|<\/div>/gi, '\n');
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = htmlWithNewlines;
+                    content = (tempDiv.innerText || tempDiv.textContent).trim();
+                    itemType = 'text';
                 }
 
                 document.getElementById('snip-code').value = content;
@@ -515,4 +522,3 @@ const WorkspacePage = {
 };
 
 Object.assign(WorkspacePage, WorkspaceDB);
-
