@@ -54,6 +54,11 @@ const Router = {
             const page = location.hash.replace('#', '') || 'dashboard';
             this.navigate(page);
         });
+        
+        window.addEventListener('auth_changed', () => {
+            this._domCache = {};
+        });
+
         const page = location.hash.replace('#', '') || 'dashboard';
         this.navigate(page);
     },
