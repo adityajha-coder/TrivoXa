@@ -50,6 +50,41 @@
     ]
   },
   {
+    "cat": "Coding Assistants",
+    "items": [
+      {
+        "name": "Claude Code",
+        "desc": "Anthropic's agentic command-line tool for writing code and managing terminal tasks",
+        "url": "https://docs.anthropic.com/en/docs/agents-and-tools/claude-code"
+      },
+      {
+        "name": "GitHub Copilot CLI",
+        "desc": "Write shell commands using natural language inside your terminal",
+        "url": "https://github.com/github/copilot-cli"
+      },
+      {
+        "name": "Gemini CLI",
+        "desc": "Access Google's Gemini models directly from your command-line terminal",
+        "url": "https://github.com/google/generative-ai-cli"
+      },
+      {
+        "name": "OpenAI Codex",
+        "desc": "AI system by OpenAI that translates natural language to code",
+        "url": "https://openai.com/blog/openai-codex"
+      },
+      {
+        "name": "Aider",
+        "desc": "AI pair programming tool in your terminal to edit local files directly",
+        "url": "https://aider.chat"
+      },
+      {
+        "name": "Continue",
+        "desc": "Open-source autopilot extension for custom IDE integrations (VS Code, JetBrains)",
+        "url": "https://github.com/continuedev/continue"
+      }
+    ]
+  },
+  {
     "cat": "Frontend & UI",
     "items": [
       {

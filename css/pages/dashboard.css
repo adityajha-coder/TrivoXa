@@ -548,6 +548,42 @@
   gap: 48px;
 }
 
+.footer-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.footer-report-text {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+.footer-email-link {
+  color: var(--primary-light);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  text-decoration: none;
+  transition: all var(--transition);
+}
+
+.footer-email-link:hover {
+  color: #f0d58d; 
+}
+
+.footer-email-link i {
+  font-size: 0.95rem;
+}
+
 .footer-links-group {
   display: flex;
   flex-direction: column;

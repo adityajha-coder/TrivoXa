@@ -4,11 +4,7 @@ const Navbar = {
     { id: "workspace", icon: "fa-solid fa-laptop-code", label: "Workspace" },
     { id: "ask-ai", icon: "fa-solid fa-robot", label: "Ask AI" },
     { id: "docs", icon: "fa-solid fa-book-open-reader", label: "Docs" },
-    {
-      id: "tools-vault",
-      icon: "fa-solid fa-screwdriver-wrench",
-      label: "Tools",
-    },
+    { id: "tools-vault", icon: "fa-solid fa-screwdriver-wrench", label: "Tools"},
     { id: "commands", icon: "fa-solid fa-terminal", label: "Commands" },
     { id: "free-apis", icon: "fa-solid fa-plug", label: "APIs" },
     { id: "package-scout", icon: "fa-solid fa-box-open", label: "Packages" },

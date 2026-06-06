@@ -1,5 +1,509 @@
 [
   {
+    "name": "Hacker News API",
+    "desc": "Official Firebase-based API for Hacker News. Access top stories, new posts, comments, and user profiles in real time.",
+    "url": "https://github.com/HackerNews/API",
+    "category": "Development",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "StackExchange API",
+    "desc": "Query StackOverflow and all StackExchange sites. Search questions, answers, tags, users, and reputation data.",
+    "url": "https://api.stackexchange.com",
+    "category": "Development",
+    "auth": "OAuth",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "httpbin",
+    "desc": "A simple HTTP request and response testing service. Test headers, status codes, redirects, auth, and request inspection.",
+    "url": "https://httpbin.org",
+    "category": "Testing",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "npm Registry API",
+    "desc": "Query the npm package registry directly. Get package metadata, versions, downloads, dependencies, and maintainer info.",
+    "url": "https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md",
+    "category": "Development",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Shields.io",
+    "desc": "Generate custom status badges for your GitHub repos, npm packages, CI builds, and any other metadata as SVG images.",
+    "url": "https://shields.io",
+    "category": "Development",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "YouTube Data API",
+    "desc": "Search videos, retrieve channel stats, manage playlists, and access YouTube content metadata programmatically.",
+    "url": "https://developers.google.com/youtube/v3",
+    "category": "Entertainment",
+    "auth": "API Key",
+    "cors": true,
+    "pricing": "Freemium"
+  },
+  {
+    "name": "Telegram Bot API",
+    "desc": "Build bots for Telegram. Send messages, manage groups, handle inline queries, and process payments.",
+    "url": "https://core.telegram.org/bots/api",
+    "category": "Communication",
+    "auth": "API Key",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Slack Web API",
+    "desc": "Build integrations for Slack workspaces. Send messages, manage channels, upload files, and respond to events.",
+    "url": "https://api.slack.com",
+    "category": "Communication",
+    "auth": "OAuth",
+    "cors": false,
+    "pricing": "Freemium"
+  },
+  {
+    "name": "Cloudinary",
+    "desc": "Image and video management API. Upload, transform, optimize, and deliver media assets with on-the-fly URL transforms.",
+    "url": "https://cloudinary.com/documentation",
+    "category": "Photos",
+    "auth": "API Key",
+    "cors": true,
+    "pricing": "Freemium"
+  },
+  {
+    "name": "Resend",
+    "desc": "Modern email API for developers. Send transactional emails with React-based templates and high deliverability.",
+    "url": "https://resend.com/docs",
+    "category": "Communication",
+    "auth": "API Key",
+    "cors": false,
+    "pricing": "Freemium"
+  },
+  {
+    "name": "Upstash Redis REST API",
+    "desc": "Serverless Redis database with a simple HTTP/REST interface. Ideal for edge functions and serverless deployments.",
+    "url": "https://docs.upstash.com/redis/features/restapi",
+    "category": "Development",
+    "auth": "API Key",
+    "cors": true,
+    "pricing": "Freemium"
+  },
+  {
+    "name": "Clearbit Logo API",
+    "desc": "Retrieve any company's logo by domain name. Returns high-quality PNG logos for use in dashboards and apps.",
+    "url": "https://clearbit.com/logo",
+    "category": "Business",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "OpenGraph.io",
+    "desc": "Extract Open Graph metadata, title, description, and preview images from any URL for link preview cards.",
+    "url": "https://www.opengraph.io",
+    "category": "Development",
+    "auth": "API Key",
+    "cors": true,
+    "pricing": "Freemium"
+  },
+  {
+    "name": "Country State City API",
+    "desc": "A comprehensive database of countries, states, and cities. Useful for address forms and location dropdowns.",
+    "url": "https://countrystatecity.in",
+    "category": "Data",
+    "auth": "API Key",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "cdnjs API",
+    "desc": "Search and discover open-source JavaScript libraries hosted on cdnjs. Get versions, file lists, and CDN URLs.",
+    "url": "https://cdnjs.com/api",
+    "category": "Development",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Crontab Guru API",
+    "desc": "Parse and validate cron expressions. Returns human-readable descriptions of cron schedules for debugging.",
+    "url": "https://crontab.guru",
+    "category": "Development",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "LibreTranslate",
+    "desc": "Free, open-source machine translation API. Translate text between dozens of languages without vendor lock-in.",
+    "url": "https://libretranslate.com",
+    "category": "Data",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Open Meteo",
+    "desc": "Free weather forecast API with no API key required. Hourly and daily forecasts, historical data, and geocoding.",
+    "url": "https://open-meteo.com",
+    "category": "Weather",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Fake Store API",
+    "desc": "A free REST API providing fake e-commerce product data. Perfect for building shopping cart UIs and prototypes.",
+    "url": "https://fakestoreapi.com",
+    "category": "Testing",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "EmailJS",
+    "desc": "Send emails directly from client-side JavaScript without any server code. Supports templates and attachments.",
+    "url": "https://www.emailjs.com/docs/",
+    "category": "Communication",
+    "auth": "API Key",
+    "cors": true,
+    "pricing": "Freemium"
+  },
+  {
+    "name": "The One API",
+    "desc": "The Lord of the Rings database. Get data about books, movies, characters, quotes, and chapters.",
+    "url": "https://the-one-api.dev",
+    "category": "Entertainment",
+    "auth": "API Key",
+    "cors": true,
+    "pricing": "Freemium"
+  },
+  {
+    "name": "Dog CEO API",
+    "desc": "The internet's biggest collection of open-source dog pictures. Fetch random images by breed or sub-breed.",
+    "url": "https://dog.ceo/dog-api/",
+    "category": "Animals",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "HTTP Cat",
+    "desc": "Get HTTP status codes represented as images of cats. Ideal for developer error page customization.",
+    "url": "https://http.cat",
+    "category": "Development",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Nationalize.io",
+    "desc": "Predict the nationality of a person based on their first name using statistical data analysis.",
+    "url": "https://nationalize.io",
+    "category": "Data",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Genderize.io",
+    "desc": "Predict the gender of a person based on their first name using global name statistics.",
+    "url": "https://genderize.io",
+    "category": "Data",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Studio Ghibli API",
+    "desc": "Access resources from the Studio Ghibli films: characters, species, locations, and vehicles.",
+    "url": "https://ghibliapi.vercel.app",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Bacon Ipsum",
+    "desc": "A meatier Lorem Ipsum text generator API for developer layouts and design prototypes.",
+    "url": "https://baconipsum.com/json-api/",
+    "category": "Testing",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "CoinDesk Bitcoin Price Index",
+    "desc": "Real-time and historical Bitcoin price index data in USD, EUR, and GBP.",
+    "url": "https://www.coindesk.com/coindesk-api",
+    "category": "Finance",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Animechan",
+    "desc": "Get random or filtered anime quotes from characters, series, or specific quotes.",
+    "url": "https://animechan.xyz",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Nager.Date",
+    "desc": "Worldwide public holidays query API. Get holiday calendars for more than 100 countries.",
+    "url": "https://date.nager.at",
+    "category": "Data",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "World Universities API",
+    "desc": "Search and retrieve a comprehensive JSON list of universities around the world by country name.",
+    "url": "http://universities.hipolabs.com",
+    "category": "Data",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "QuickChart",
+    "desc": "Generate static charts and graphs (bar, line, pie, radar) as PNG or SVG image URLs on the fly.",
+    "url": "https://quickchart.io",
+    "category": "Development",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Useless Facts",
+    "desc": "Get random, verified, completely useless facts in English or German.",
+    "url": "https://uselessfacts.jsph.pl",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Evil Insult Generator",
+    "desc": "Generate clever, funny, and sometimes mean insults in multiple languages.",
+    "url": "https://evilinsult.com/api/",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Zippopotam.us",
+    "desc": "Postal code location info API. Get country, state, city, and coordinates from a zip code.",
+    "url": "https://www.zippopotam.us",
+    "category": "Data",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Advice Slip",
+    "desc": "Get random or searched pieces of advice as simple JSON slips.",
+    "url": "https://adviceslip.com",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "SuperHero API",
+    "desc": "A database of all superheroes and villains from all comic universes with power stats, appearance, and biography.",
+    "url": "https://superheroapi.com",
+    "category": "Entertainment",
+    "auth": "API Key",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Lyrics.ovh",
+    "desc": "A simple API to retrieve lyrics of millions of songs by artist name and song title.",
+    "url": "https://lyrics.ovh",
+    "category": "Music",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "GeoJS",
+    "desc": "A free, fast, and CORS-friendly IP geolocation API returning country, city, and ISP info in JSON format.",
+    "url": "https://www.geojs.io",
+    "category": "Data",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "TacoFancy API",
+    "desc": "A community-driven taco recipe API. Fetch random, detailed taco recipes including fillings, shells, and salsas.",
+    "url": "https://taco-randomizer.herokuapp.com/",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Imgflip API",
+    "desc": "Retrieve a list of popular blank meme templates and generate customized memes programmatically.",
+    "url": "https://imgflip.com/api",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Marvel API",
+    "desc": "Access the vast Marvel Comics database, containing characters, comic series, stories, and creators.",
+    "url": "https://developer.marvel.com",
+    "category": "Entertainment",
+    "auth": "API Key",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Cataas",
+    "desc": "Cat as a service. Fetch random cat pictures, GIFs, or customize them with custom text overlays.",
+    "url": "https://cataas.com",
+    "category": "Animals",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Lorem Picsum",
+    "desc": "The Lorem Ipsum for photos. Quick and easy placeholder images of any size.",
+    "url": "https://picsum.photos",
+    "category": "Photos",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Coinbase API",
+    "desc": "Read-only access to cryptocurrency market data, prices, and conversion rates across multiple trading pairs.",
+    "url": "https://developers.coinbase.com",
+    "category": "Finance",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "ZenQuotes",
+    "desc": "Inspirational quote API. Fetch random quotes, quotes of the day, or search quote indices.",
+    "url": "https://zenquotes.io",
+    "category": "Data",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Jikan API",
+    "desc": "The most active open-source Jikan API for MyAnimeList. Access anime, manga, character profiles, and search indices.",
+    "url": "https://jikan.moe",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "The Rick and Morty API",
+    "desc": "REST and GraphQL API to access characters, locations, and episodes from the Rick and Morty television show.",
+    "url": "https://rickandmortyapi.com",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Star Wars API",
+    "desc": "The Star Wars API (SWAPI) provides all the Star Wars data: planets, spaceships, films, and species.",
+    "url": "https://swapi.dev",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Deck of Cards API",
+    "desc": "Simulate card games by shuffling, dealing, and managing multiple decks of playing cards via simple JSON endpoints.",
+    "url": "https://deckofcardsapi.com",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Harry Potter API",
+    "desc": "A comprehensive database of spells, characters, houses, and wand details from the Wizarding World.",
+    "url": "https://hp-api.onrender.com",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Robohash",
+    "desc": "Generate unique, high-quality robot, monster, or kitten avatar images based on any user text input dynamically.",
+    "url": "https://robohash.org",
+    "category": "Photos",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "DiceBear",
+    "desc": "An avatar library for designers and developers. Generate customizable profile avatars dynamically via URL parameters.",
+    "url": "https://www.dicebear.com",
+    "category": "Development",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "ipify",
+    "desc": "A simple public IP address API that works fast and returns your client IPv4 or IPv6 address in plain text or JSON.",
+    "url": "https://www.ipify.org",
+    "category": "Data",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Chuck Norris Facts",
+    "desc": "A free JSON API for curated Chuck Norris jokes, facts, and category lists.",
+    "url": "https://api.chucknorris.io",
+    "category": "Entertainment",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
+    "name": "Open Food Facts",
+    "desc": "A collaborative, free and open database of food products from around the world, with ingredients, allergens, and nutrition facts.",
+    "url": "https://world.openfoodfacts.org/data",
+    "category": "Data",
+    "auth": "None",
+    "cors": true,
+    "pricing": "Free"
+  },
+  {
     "name": "JSONPlaceholder",
     "desc": "Free fake REST API for testing and prototyping. Provides posts, comments, users, and more.",
     "url": "https://jsonplaceholder.typicode.com",
