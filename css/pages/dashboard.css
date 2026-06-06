@@ -507,6 +507,110 @@
   }
 }
 
+/* Footer & Quick Links styling */
+.home-footer {
+  margin-top: 64px;
+  padding-top: 48px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-brand {
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.footer-tagline {
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  opacity: 0.7;
+}
+
+.footer-right {
+  display: flex;
+  gap: 48px;
+}
+
+.footer-links-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footer-links-group h4 {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--primary-light);
+}
+
+.footer-socials {
+  display: flex;
+  gap: 16px;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.social-link i {
+  font-size: 1.1rem;
+}
+
+.social-link.linkedin:hover {
+  background: rgba(10, 102, 194, 0.1);
+  border-color: #0a66c2;
+  color: #0a66c2;
+  box-shadow: 0 0 12px rgba(10, 102, 194, 0.2);
+}
+
+.social-link.github:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text);
+  color: var(--text);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+}
+
+.footer-bottom {
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  opacity: 0.6;
+}
+
 @media (max-width: 1024px) {
   .home-shell {
     width: min(100% - 32px, 1240px);
@@ -572,5 +676,22 @@
   .journey-row {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .footer-right {
+    justify-content: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
   }
 }
