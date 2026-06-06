@@ -1,23 +1,30 @@
 const Navbar = {
-    navItems: [
-        { id: 'dashboard', icon: 'fa-solid fa-house', label: 'Home' },
-        { id: 'workspace', icon: 'fa-solid fa-laptop-code', label: 'Workspace' },
-        { id: 'ask-ai', icon: 'fa-solid fa-robot', label: 'Ask AI' },
-        { id: 'docs', icon: 'fa-solid fa-book-open-reader', label: 'Docs' },
-        { id: 'tools-vault', icon: 'fa-solid fa-screwdriver-wrench', label: 'Tools' },
-        { id: 'commands', icon: 'fa-solid fa-terminal', label: 'Commands' },
-        { id: 'free-apis', icon: 'fa-solid fa-plug', label: 'APIs' },
-        { id: 'package-scout', icon: 'fa-solid fa-box-open', label: 'Packages' },
-        { id: 'code-git-explorer', icon: 'fa-brands fa-github', label: 'Explorer' }
-    ],
+  navItems: [
+    { id: "dashboard", icon: "fa-solid fa-house", label: "Home" },
+    { id: "workspace", icon: "fa-solid fa-laptop-code", label: "Workspace" },
+    { id: "ask-ai", icon: "fa-solid fa-robot", label: "Ask AI" },
+    { id: "docs", icon: "fa-solid fa-book-open-reader", label: "Docs" },
+    {
+      id: "tools-vault",
+      icon: "fa-solid fa-screwdriver-wrench",
+      label: "Tools",
+    },
+    { id: "commands", icon: "fa-solid fa-terminal", label: "Commands" },
+    { id: "free-apis", icon: "fa-solid fa-plug", label: "APIs" },
+    { id: "package-scout", icon: "fa-solid fa-box-open", label: "Packages" },
+    { id: "code-git-explorer", icon: "fa-brands fa-github", label: "Explorer" },
+  ],
 
-    render() {
-        const topnav = document.getElementById('topnav');
-        const linksHtml = this.navItems.map(item =>
-            `<button class="topnav-link" data-page="${item.id}" id="nav-${item.id}"><i class="${item.icon}"></i><span>${item.label}</span></button>`
-        ).join('');
+  render() {
+    const topnav = document.getElementById("topnav");
+    const linksHtml = this.navItems
+      .map(
+        (item) =>
+          `<button class="topnav-link" data-page="${item.id}" id="nav-${item.id}"><i class="${item.icon}"></i><span>${item.label}</span></button>`,
+      )
+      .join("");
 
-        topnav.innerHTML = `
+    topnav.innerHTML = `
             <div class="topnav-left">
                 <div class="topnav-brand" data-page="dashboard">
                     <img src="public/favicon.svg" alt="TrivoXa" class="topnav-logo" />
@@ -55,57 +62,69 @@ const Navbar = {
                 <button class="menu-toggle" id="menu-toggle" style="margin-left: 4px;"><i class="fa-solid fa-bars"></i></button>
             </div>`;
 
-        // Prevent duplicates on re-render
-        const existingMenu = document.getElementById('mobile-menu');
-        if (existingMenu) existingMenu.remove();
+    // Prevent duplicates on re-render
+    const existingMenu = document.getElementById("mobile-menu");
+    if (existingMenu) existingMenu.remove();
 
-        const mobileMenu = document.createElement('div');
-        mobileMenu.id = 'mobile-menu';
-        mobileMenu.className = 'mobile-menu';
-        mobileMenu.innerHTML = this.navItems.map(item =>
-            `<button class="topnav-link" data-page="${item.id}"><i class="${item.icon}"></i><span>${item.label}</span></button>`
-        ).join('');
-        document.body.appendChild(mobileMenu);
+    const mobileMenu = document.createElement("div");
+    mobileMenu.id = "mobile-menu";
+    mobileMenu.className = "mobile-menu";
+    mobileMenu.innerHTML = this.navItems
+      .map(
+        (item) =>
+          `<button class="topnav-link" data-page="${item.id}"><i class="${item.icon}"></i><span>${item.label}</span></button>`,
+      )
+      .join("");
+    document.body.appendChild(mobileMenu);
 
-        topnav.querySelectorAll('[data-page]').forEach(el => {
-            el.addEventListener('click', () => Router.navigate(el.dataset.page));
-        });
+    topnav.querySelectorAll("[data-page]").forEach((el) => {
+      el.addEventListener("click", () => Router.navigate(el.dataset.page));
+    });
 
-        mobileMenu.querySelectorAll('[data-page]').forEach(el => {
-            el.addEventListener('click', () => {
-                Router.navigate(el.dataset.page);
-                this.closeMobile();
-            });
-        });
+    mobileMenu.querySelectorAll("[data-page]").forEach((el) => {
+      el.addEventListener("click", () => {
+        Router.navigate(el.dataset.page);
+        this.closeMobile();
+      });
+    });
 
-        document.querySelector('.topnav-brand').addEventListener('click', () => Router.navigate('dashboard'));
+    document
+      .querySelector(".topnav-brand")
+      .addEventListener("click", () => Router.navigate("dashboard"));
 
-        document.getElementById('menu-toggle').addEventListener('click', () => {
-            mobileMenu.classList.toggle('open');
-            document.getElementById('mobile-overlay').classList.toggle('active');
-        });
+    document.getElementById("menu-toggle").addEventListener("click", () => {
+      mobileMenu.classList.toggle("open");
+      document.getElementById("mobile-overlay").classList.toggle("active");
+    });
 
-        document.getElementById('btn-fullscreen').addEventListener('click', () => {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-            else document.exitFullscreen();
-        });
+    document.getElementById("btn-fullscreen").addEventListener("click", () => {
+      if (!document.fullscreenElement)
+        document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    });
 
-        // Initialize auth modal (extracted to authModal.js)
-        AuthModal.init();
+    // Initialize auth modal (extracted to authModal.js)
+    AuthModal.init();
 
-        document.getElementById('mobile-overlay').addEventListener('click', () => this.closeMobile());
-    },
+    document
+      .getElementById("mobile-overlay")
+      .addEventListener("click", () => this.closeMobile());
+  },
 
-    setActive(page) {
-        document.querySelectorAll('.topnav-link').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll(`[data-page="${page}"]`).forEach(el => el.classList.add('active'));
-    },
+  setActive(page) {
+    document
+      .querySelectorAll(".topnav-link")
+      .forEach((el) => el.classList.remove("active"));
+    document
+      .querySelectorAll(`[data-page="${page}"]`)
+      .forEach((el) => el.classList.add("active"));
+  },
 
-    closeMobile() {
-        const mm = document.getElementById('mobile-menu');
-        if (mm) mm.classList.remove('open');
-        document.getElementById('mobile-overlay').classList.remove('active');
-    },
+  closeMobile() {
+    const mm = document.getElementById("mobile-menu");
+    if (mm) mm.classList.remove("open");
+    document.getElementById("mobile-overlay").classList.remove("active");
+  },
 
-    renderTopbar(title) { }
+  renderTopbar(title) {},
 };

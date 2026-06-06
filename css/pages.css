@@ -1,12 +1,11 @@
-/* ===== Shared Page Styles ===== */
-/* Section-specific styles are in css/pages/ subdirectory */
+/* Section-specific styles are in css/pages/subdirectory */
 
 @import url('pages/dashboard.css');
 @import url('pages/ai.css');
 @import url('pages/git-explorer.css');
 @import url('pages/tools.css');
 
-/* ===== Common Page Header & Entry ===== */
+/* Common Page Header & Entry */
 .page-header {
     margin-bottom: 24px;
 }

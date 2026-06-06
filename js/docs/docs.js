@@ -1,24 +1,41 @@
 const DocsPage = {
-    docSuggestions: [
-        "Python List Comprehensions", "React useEffect Hook", "Docker Compose Basics",
-        "Rust Ownership Model", "Git Rebase vs Merge", "SQL JOIN Types",
-        "Java Streams", "C++ Smart Pointers", "CSS Grid Layout", "Node.js Event Loop",
-        "Go Goroutines", "MongoDB Aggregation", "Bash Scripting Basics",
-        "JavaScript Promises", "TypeScript Generics", "REST API Design",
-        "GraphQL Queries", "Kubernetes Pods", "Redis Caching", "WebSocket Protocol"
-    ],
+  docSuggestions: [
+    "Python List Comprehensions",
+    "React useEffect Hook",
+    "Docker Compose Basics",
+    "Rust Ownership Model",
+    "Git Rebase vs Merge",
+    "SQL JOIN Types",
+    "Java Streams",
+    "C++ Smart Pointers",
+    "CSS Grid Layout",
+    "Node.js Event Loop",
+    "Go Goroutines",
+    "MongoDB Aggregation",
+    "Bash Scripting Basics",
+    "JavaScript Promises",
+    "TypeScript Generics",
+    "REST API Design",
+    "GraphQL Queries",
+    "Kubernetes Pods",
+    "Redis Caching",
+    "WebSocket Protocol",
+  ],
 
-    docsCache: {},
-    docsHistory: [],
+  docsCache: {},
+  docsHistory: [],
 
-    render() {
-        Navbar.renderTopbar('Developer Documentation');
-        const content = document.getElementById('page-content');
-        
-        const randomSuggestionsHtml = this.docSuggestions.sort(() => 0.5 - Math.random()).slice(0, 6)
-            .map(s => `<button class="ai-suggest-chip" data-q="${s}">${s}</button>`).join('');
+  render() {
+    Navbar.renderTopbar("Developer Documentation");
+    const content = document.getElementById("page-content");
 
-        content.innerHTML = `
+    const randomSuggestionsHtml = this.docSuggestions
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 6)
+      .map((s) => `<button class="ai-suggest-chip" data-q="${s}">${s}</button>`)
+      .join("");
+
+    content.innerHTML = `
             <div class="page-enter">
                 <div class="page-header">
                     <h1>Developer <span class="text-gradient">Docs</span></h1>
@@ -63,135 +80,154 @@ const DocsPage = {
             </div>
         `;
 
-        this.bindEvents();
-        // Load history, but wait a tick for auth to potentially initialize if not already
-        setTimeout(() => this.loadHistory(), 800);
+    this.bindEvents();
+    // Load history, but wait a tick for auth to potentially initialize if not already
+    setTimeout(() => this.loadHistory(), 800);
 
-        // Reactive Data Syncing
-        if (!this._authBound) {
-            window.addEventListener('auth_changed', () => {
-                if (document.getElementById('docs-history-wrapper')) {
-                    this.loadHistory();
-                }
-            });
-            this._authBound = true;
+    // Reactive Data Syncing
+    if (!this._authBound) {
+      window.addEventListener("auth_changed", () => {
+        if (document.getElementById("docs-history-wrapper")) {
+          this.loadHistory();
         }
-    },
+      });
+      this._authBound = true;
+    }
+  },
 
-    bindEvents() {
-        const btn = document.getElementById('docs-search-btn');
-        const input = document.getElementById('docs-search-input');
-        const suggestionsArea = document.getElementById('docs-suggestions');
-        
-        if (!btn || !input) {
-            console.warn('[Docs] Missing search elements - skipping binding');
-            return;
+  bindEvents() {
+    const btn = document.getElementById("docs-search-btn");
+    const input = document.getElementById("docs-search-input");
+    const suggestionsArea = document.getElementById("docs-suggestions");
+
+    if (!btn || !input) {
+      console.warn("[Docs] Missing search elements - skipping binding");
+      return;
+    }
+
+    btn.addEventListener("click", () => {
+      // Auth gate
+      if (!API.requireAuth()) return;
+      this.searchDocs(input.value);
+    });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        // Auth gate
+        if (!API.requireAuth()) return;
+        this.searchDocs(input.value);
+      }
+    });
+
+    if (suggestionsArea) {
+      suggestionsArea.addEventListener("click", (e) => {
+        if (e.target.classList.contains("ai-suggest-chip")) {
+          // Auth gate
+          if (!API.requireAuth()) return;
+          input.value = e.target.dataset.q;
+          this.searchDocs(input.value);
         }
-        
-        btn.addEventListener('click', () => {
-            // Auth gate
-            if (!API.requireAuth()) return;
-            this.searchDocs(input.value);
+      });
+    }
+  },
+
+  async loadHistory() {
+    if (API.getAuthToken()) {
+      try {
+        this.docsHistory = await API.fetchAPI("/api/docs-history");
+      } catch (e) {
+        console.error("[Docs] Failed to load history from DB:", e);
+        this.docsHistory = JSON.parse(
+          localStorage.getItem("docs_history") || "[]",
+        );
+      }
+    } else {
+      this.docsHistory = JSON.parse(
+        localStorage.getItem("docs_history") || "[]",
+      );
+    }
+    this.renderHistory();
+  },
+
+  async saveHistory(query) {
+    if (!query) return;
+    // Check duplicates
+    if (
+      this.docsHistory.some(
+        (h) => h.query.toLowerCase() === query.toLowerCase(),
+      )
+    )
+      return;
+
+    const item = {
+      id: "doc_" + Date.now().toString(36),
+      query,
+      timestamp: Date.now(),
+    };
+    this.docsHistory.unshift(item);
+    if (this.docsHistory.length > 15) this.docsHistory.pop();
+
+    this.renderHistory();
+
+    if (API.getAuthToken()) {
+      try {
+        const saved = await API.fetchAPI("/api/docs-history", "POST", {
+          query,
         });
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                // Auth gate
-                if (!API.requireAuth()) return;
-                this.searchDocs(input.value);
-            }
-        });
+        item.id = saved._id;
+      } catch (e) {
+        console.error("[Docs] Failed to save history to DB:", e);
+      }
+    } else {
+      localStorage.setItem("docs_history", JSON.stringify(this.docsHistory));
+    }
+  },
 
-        if (suggestionsArea) {
-            suggestionsArea.addEventListener('click', (e) => {
-                if(e.target.classList.contains('ai-suggest-chip')) {
-                    // Auth gate
-                    if (!API.requireAuth()) return;
-                    input.value = e.target.dataset.q;
-                    this.searchDocs(input.value);
-                }
-            });
-        }
-    },
+  async deleteHistory(id) {
+    this.docsHistory = this.docsHistory.filter((h) => h.id !== id);
+    this.renderHistory();
 
-    async loadHistory() {
-        if (API.getAuthToken()) {
-            try {
-                this.docsHistory = await API.fetchAPI('/api/docs-history');
-            } catch(e) {
-                console.error('[Docs] Failed to load history from DB:', e);
-                this.docsHistory = JSON.parse(localStorage.getItem('docs_history') || '[]');
-            }
-        } else {
-            this.docsHistory = JSON.parse(localStorage.getItem('docs_history') || '[]');
-        }
-        this.renderHistory();
-    },
+    if (API.getAuthToken()) {
+      try {
+        await API.fetchAPI(`/api/docs-history/${id}`, "DELETE");
+      } catch (e) {}
+    } else {
+      localStorage.setItem("docs_history", JSON.stringify(this.docsHistory));
+    }
+  },
 
-    async saveHistory(query) {
-        if (!query) return;
-        // Check duplicates
-        if (this.docsHistory.some(h => h.query.toLowerCase() === query.toLowerCase())) return;
-        
-        const item = { id: 'doc_' + Date.now().toString(36), query, timestamp: Date.now() };
-        this.docsHistory.unshift(item);
-        if (this.docsHistory.length > 15) this.docsHistory.pop();
-        
-        this.renderHistory();
+  async clearAllHistory() {
+    if (!confirm("Clear all search history?")) return;
+    this.docsHistory = [];
+    this.renderHistory();
 
-        if (API.getAuthToken()) {
-            try {
-                const saved = await API.fetchAPI('/api/docs-history', 'POST', { query });
-                item.id = saved._id;
-            } catch(e) {
-                console.error('[Docs] Failed to save history to DB:', e);
-            }
-        } else {
-            localStorage.setItem('docs_history', JSON.stringify(this.docsHistory));
-        }
-    },
+    if (API.getAuthToken()) {
+      try {
+        await API.fetchAPI("/api/docs-history", "DELETE");
+      } catch (e) {}
+    } else {
+      localStorage.removeItem("docs_history");
+    }
+  },
 
-    async deleteHistory(id) {
-        this.docsHistory = this.docsHistory.filter(h => h.id !== id);
-        this.renderHistory();
+  renderHistory() {
+    const wrapper = document.getElementById("docs-history-wrapper");
+    const grid = document.getElementById("docs-history-grid");
+    const empty = document.getElementById("docs-empty");
+    if (!wrapper || !grid) return;
 
-        if (API.getAuthToken()) {
-            try { await API.fetchAPI(`/api/docs-history/${id}`, 'DELETE'); } catch(e) {}
-        } else {
-            localStorage.setItem('docs_history', JSON.stringify(this.docsHistory));
-        }
-    },
-    
-    async clearAllHistory() {
-        if(!confirm('Clear all search history?')) return;
-        this.docsHistory = [];
-        this.renderHistory();
-        
-        if (API.getAuthToken()) {
-            try { 
-                await API.fetchAPI('/api/docs-history', 'DELETE');
-            } catch(e) {}
-        } else {
-            localStorage.removeItem('docs_history');
-        }
-    },
+    if (this.docsHistory.length === 0) {
+      wrapper.style.display = "none";
+      if (empty) empty.style.display = "block";
+      return;
+    }
 
-    renderHistory() {
-        const wrapper = document.getElementById('docs-history-wrapper');
-        const grid = document.getElementById('docs-history-grid');
-        const empty = document.getElementById('docs-empty');
-        if(!wrapper || !grid) return;
+    wrapper.style.display = "block";
+    if (empty) empty.style.display = "none"; // hide the standard empty state
 
-        if (this.docsHistory.length === 0) {
-            wrapper.style.display = 'none';
-            if (empty) empty.style.display = 'block';
-            return;
-        }
-
-        wrapper.style.display = 'block';
-        if (empty) empty.style.display = 'none'; // hide the standard empty state
-        
-        grid.innerHTML = this.docsHistory.map((h, i) => 
-            `<div class="glass-card-static doc-history-card" data-idx="${i}" style="min-width: 260px; max-width: 260px; flex: 0 0 auto; padding: 16px; cursor: pointer; transition: all 0.2s;">
+    grid.innerHTML = this.docsHistory
+      .map(
+        (h, i) =>
+          `<div class="glass-card-static doc-history-card" data-idx="${i}" style="min-width: 260px; max-width: 260px; flex: 0 0 auto; padding: 16px; cursor: pointer; transition: all 0.2s;">
                 <div class="flex-between mb-xs" style="align-items:flex-start;">
                     <h4 style="font-size:0.95rem; font-weight:600; text-overflow:ellipsis; overflow:hidden; max-width:80%;" title="${Helpers.escapeHtml(h.query)}">
                         <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted); font-size:0.8rem; margin-right:6px;"></i> ${Helpers.escapeHtml(h.query)}
@@ -201,94 +237,106 @@ const DocsPage = {
                     </button>
                 </div>
                 <div class="text-xs text-muted"><i class="fa-regular fa-clock"></i> ${new Date(h.timestamp).toLocaleString()}</div>
-            </div>`
-        ).join('');
+            </div>`,
+      )
+      .join("");
 
-        // Bind clicks to replay search
-        grid.querySelectorAll('.doc-history-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const idx = card.dataset.idx;
-                const h = this.docsHistory[idx];
-                const input = document.getElementById('docs-search-input');
-                if (input && h) {
-                    input.value = h.query;
-                    this.searchDocs(h.query);
-                }
-            });
-        });
-
-        // Bind delete
-        grid.querySelectorAll('.delete-doc-history').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation(); // prevent clicking the card
-                this.deleteHistory(e.currentTarget.dataset.id);
-            });
-        });
-
-        const clearBtn = document.getElementById('clear-docs-history');
-        if (clearBtn && !clearBtn.dataset.bound) {
-            clearBtn.dataset.bound = 'true';
-            clearBtn.addEventListener('click', () => this.clearAllHistory());
+    // Bind clicks to replay search
+    grid.querySelectorAll(".doc-history-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        const idx = card.dataset.idx;
+        const h = this.docsHistory[idx];
+        const input = document.getElementById("docs-search-input");
+        if (input && h) {
+          input.value = h.query;
+          this.searchDocs(h.query);
         }
-    },
+      });
+    });
 
-    _renderDocs(docs) {
-        document.getElementById('docs-loading').style.display = 'none';
-        document.getElementById('docs-results-area').style.display = 'block';
+    // Bind delete
+    grid.querySelectorAll(".delete-doc-history").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation(); // prevent clicking the card
+        this.deleteHistory(e.currentTarget.dataset.id);
+      });
+    });
 
-        if (!Array.isArray(docs) || docs.length === 0) {
-            document.getElementById('docs-results-grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--text-muted);"><i class="fa-regular fa-face-frown mb-sm" style="font-size:1.5rem;"></i><br>Failed to retrieve documentation.</div>';
-            return;
-        }
+    const clearBtn = document.getElementById("clear-docs-history");
+    if (clearBtn && !clearBtn.dataset.bound) {
+      clearBtn.dataset.bound = "true";
+      clearBtn.addEventListener("click", () => this.clearAllHistory());
+    }
+  },
 
-        document.getElementById('docs-results-grid').innerHTML = docs.map((doc, idx) => {
-            const title = doc.title || doc.name || doc.concept || 'Documentation';
-            const summary = doc.summary || doc.description || doc.content || doc.explanation || '';
-            const tags = doc.tags || doc.keywords || [];
+  _renderDocs(docs) {
+    document.getElementById("docs-loading").style.display = "none";
+    document.getElementById("docs-results-area").style.display = "block";
 
-            const formattedSummary = Helpers.escapeHtml(summary)
-                .replace(/\\n/g, '<br>')
-                .replace(/\n/g, '<br>')
-                .replace(/`([^`]+)`/g, '<code style="background:rgba(88,166,255,0.1);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.8em;color:var(--primary-light);">$1</code>');
+    if (!Array.isArray(docs) || docs.length === 0) {
+      document.getElementById("docs-results-grid").innerHTML =
+        '<div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--text-muted);"><i class="fa-regular fa-face-frown mb-sm" style="font-size:1.5rem;"></i><br>Failed to retrieve documentation.</div>';
+      return;
+    }
 
-            return `
+    document.getElementById("docs-results-grid").innerHTML = docs
+      .map((doc, idx) => {
+        const title = doc.title || doc.name || doc.concept || "Documentation";
+        const summary =
+          doc.summary ||
+          doc.description ||
+          doc.content ||
+          doc.explanation ||
+          "";
+        const tags = doc.tags || doc.keywords || [];
+
+        const formattedSummary = Helpers.escapeHtml(summary)
+          .replace(/\\n/g, "<br>")
+          .replace(/\n/g, "<br>")
+          .replace(
+            /`([^`]+)`/g,
+            '<code style="background:rgba(88,166,255,0.1);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.8em;color:var(--primary-light);">$1</code>',
+          );
+
+        return `
                 <div class="glass-card" style="animation:slideUp 0.3s ease ${idx * 0.05}s both; display:flex; flex-direction:column;">
                     <div style="flex:1;">
                         <h4 style="font-size:1.05rem; font-weight:600; margin-bottom:8px; color:var(--primary-light);">
                             ${Helpers.escapeHtml(title)}
                         </h4>
                         <div style="margin-bottom:12px; display:flex; flex-wrap:wrap; gap:6px;">
-                            ${tags.map(tag => `<span class="tag tag-primary"><i class="fa-solid fa-code"></i> ${Helpers.escapeHtml(tag)}</span>`).join('')}
+                            ${tags.map((tag) => `<span class="tag tag-primary"><i class="fa-solid fa-code"></i> ${Helpers.escapeHtml(tag)}</span>`).join("")}
                         </div>
                         <div class="text-sm text-secondary" style="line-height:1.7; white-space:pre-line;">
                             ${formattedSummary || '<span class="text-muted">No summary available.</span>'}
                         </div>
                     </div>
                 </div>`;
-        }).join('');
-    },
+      })
+      .join("");
+  },
 
-    async searchDocs(query, retryCount = 0) {
-        query = query.trim();
-        if (!query) return Toast.show('Please enter a search term', 'warning');
+  async searchDocs(query, retryCount = 0) {
+    query = query.trim();
+    if (!query) return Toast.show("Please enter a search term", "warning");
 
-        document.getElementById('docs-empty').style.display = 'none';
-        document.getElementById('docs-results-area').style.display = 'none';
-        document.getElementById('docs-loading').style.display = 'block';
+    document.getElementById("docs-empty").style.display = "none";
+    document.getElementById("docs-results-area").style.display = "none";
+    document.getElementById("docs-loading").style.display = "block";
 
-        const btn = document.getElementById('docs-search-btn');
-        btn.disabled = true;
+    const btn = document.getElementById("docs-search-btn");
+    btn.disabled = true;
 
-        const cacheKey = query.toLowerCase();
-        if (this.docsCache[cacheKey]) {
-            setTimeout(() => {
-                this._renderDocs(this.docsCache[cacheKey]);
-                btn.disabled = false;
-            }, 200);
-            return;
-        }
+    const cacheKey = query.toLowerCase();
+    if (this.docsCache[cacheKey]) {
+      setTimeout(() => {
+        this._renderDocs(this.docsCache[cacheKey]);
+        btn.disabled = false;
+      }, 200);
+      return;
+    }
 
-        const systemPrompt = `You are a documentation API. You MUST return ONLY a valid JSON array with exactly 3 documentation objects. No markdown, no explanation, no code fences.
+    const systemPrompt = `You are a documentation API. You MUST return ONLY a valid JSON array with exactly 3 documentation objects. No markdown, no explanation, no code fences.
 
 Each object must have these exact keys:
 - "title": a descriptive title string
@@ -300,121 +348,144 @@ Example format:
 
 IMPORTANT: Return ONLY the JSON array. Start your response with [ and end with ]. No other text.`;
 
-        try {
-            let text = '';
-            try {
-                const res = await API.callGroqChat([
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: query }
-                ], 'llama-3.1-8b-instant', 0.3);
+    try {
+      let text = "";
+      try {
+        const res = await API.callGroqChat(
+          [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: query },
+          ],
+          "llama-3.1-8b-instant",
+          0.3,
+        );
 
-                text = res.choices?.[0]?.message?.content || "";
-            } catch(e) {
-                console.error('[Docs Search Error]', e.message);
-                throw e;
-            }
-            
-            // Robust JSON extraction
-            let parsed = this._parseJsonResponse(text);
+        text = res.choices?.[0]?.message?.content || "";
+      } catch (e) {
+        console.error("[Docs Search Error]", e.message);
+        throw e;
+      }
 
-            // Retry once if parsing failed
-            if (!parsed && retryCount < 1) {
-                console.warn('[Docs] First parse failed, retrying...');
-                btn.disabled = false;
-                document.getElementById('docs-loading').style.display = 'none';
-                return this.searchDocs(query + ' ', 1);
-            }
+      // Robust JSON extraction
+      let parsed = this._parseJsonResponse(text);
 
-            if (!parsed || (Array.isArray(parsed) && parsed.length === 0)) {
-                document.getElementById('docs-loading').style.display = 'none';
-                document.getElementById('docs-results-area').style.display = 'block';
-                document.getElementById('docs-results-grid').innerHTML = `
+      // Retry once if parsing failed
+      if (!parsed && retryCount < 1) {
+        console.warn("[Docs] First parse failed, retrying...");
+        btn.disabled = false;
+        document.getElementById("docs-loading").style.display = "none";
+        return this.searchDocs(query + " ", 1);
+      }
+
+      if (!parsed || (Array.isArray(parsed) && parsed.length === 0)) {
+        document.getElementById("docs-loading").style.display = "none";
+        document.getElementById("docs-results-area").style.display = "block";
+        document.getElementById("docs-results-grid").innerHTML = `
                     <div class="glass-card" style="grid-column:1/-1; text-align:center; padding:30px;">
                         <i class="fa-solid fa-robot" style="font-size:2rem; color:var(--primary); margin-bottom:12px;"></i>
                         <h4 style="color:var(--text-secondary); margin-bottom:8px;">AI response couldn't be parsed</h4>
                         <p class="text-muted text-sm">The AI returned a non-standard format. Please try again or use a different search term.</p>
                     </div>`;
-                return;
-            }
+        return;
+      }
 
-            let docs = Array.isArray(parsed) ? parsed : [parsed];
+      let docs = Array.isArray(parsed) ? parsed : [parsed];
 
-            const validDocs = docs.filter(d => d && typeof d === 'object').map(d => ({
-                title: d.title || d.name || d.concept || query,
-                tags: Array.isArray(d.tags || d.keywords) ? (d.tags || d.keywords) : [],
-                summary: d.summary || d.description || d.content || d.explanation || d.details || ''
-            }));
+      const validDocs = docs
+        .filter((d) => d && typeof d === "object")
+        .map((d) => ({
+          title: d.title || d.name || d.concept || query,
+          tags: Array.isArray(d.tags || d.keywords) ? d.tags || d.keywords : [],
+          summary:
+            d.summary ||
+            d.description ||
+            d.content ||
+            d.explanation ||
+            d.details ||
+            "",
+        }));
 
-            const finalDocs = validDocs.length > 0 ? validDocs : docs;
-            
-            this.docsCache[cacheKey] = finalDocs;
-            this._renderDocs(finalDocs);
-            this.saveHistory(query);
+      const finalDocs = validDocs.length > 0 ? validDocs : docs;
 
-        } catch(err) {
-            console.error('Docs search error:', err);
-            document.getElementById('docs-loading').style.display = 'none';
-            document.getElementById('docs-empty').style.display = 'block';
-            Toast.show('Failed to fetch documentation. Please try again.', 'error');
-        } finally {
-            btn.disabled = false;
-        }
-    },
-
-    _parseJsonResponse(text) {
-        if (!text || !text.trim()) return null;
-
-        // Step 1: Strip markdown code fences
-        text = text.replace(/```(?:json)?\s*/gi, '').replace(/```\s*/g, '').trim();
-
-        // Step 2: Try direct parse
-        try { return JSON.parse(text); } catch(e) {}
-
-        // Step 3: Extract JSON array between first [ and last ]
-        const arrStart = text.indexOf('[');
-        const arrEnd = text.lastIndexOf(']');
-        if (arrStart !== -1 && arrEnd > arrStart) {
-            let chunk = text.substring(arrStart, arrEnd + 1);
-            // Clean control characters and trailing commas
-            chunk = chunk.replace(/[\x00-\x1F\x7F]/g, ' ')
-                         .replace(/,\s*]/g, ']')
-                         .replace(/,\s*}/g, '}');
-            try { return JSON.parse(chunk); } catch(e) {}
-
-            // Step 3b: Try fixing common LLM issues (unescaped quotes in strings)
-            try {
-                // Replace unescaped newlines inside strings
-                chunk = chunk.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
-                return JSON.parse(chunk);
-            } catch(e) {}
-        }
-
-        // Step 4: Extract JSON object  
-        const objStart = text.indexOf('{');
-        const objEnd = text.lastIndexOf('}');
-        if (objStart !== -1 && objEnd > objStart) {
-            let chunk = text.substring(objStart, objEnd + 1);
-            chunk = chunk.replace(/[\x00-\x1F\x7F]/g, ' ')
-                         .replace(/,\s*}/g, '}')
-                         .replace(/,\s*]/g, ']');
-            try {
-                const obj = JSON.parse(chunk);
-                // If the object contains an array value, use that
-                const arrayVal = Object.values(obj).find(v => Array.isArray(v));
-                return arrayVal || [obj];
-            } catch(e) {}
-        }
-
-        // Step 5: Extract individual JSON objects via regex
-        const jsonObjects = [];
-        const regex = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
-        let match;
-        while ((match = regex.exec(text)) !== null) {
-            try {
-                const cleaned = match[0].replace(/[\x00-\x1F\x7F]/g, ' ');
-                jsonObjects.push(JSON.parse(cleaned));
-            } catch(e) {}
-        }
-        return jsonObjects.length > 0 ? jsonObjects : null;
+      this.docsCache[cacheKey] = finalDocs;
+      this._renderDocs(finalDocs);
+      this.saveHistory(query);
+    } catch (err) {
+      console.error("Docs search error:", err);
+      document.getElementById("docs-loading").style.display = "none";
+      document.getElementById("docs-empty").style.display = "block";
+      Toast.show("Failed to fetch documentation. Please try again.", "error");
+    } finally {
+      btn.disabled = false;
     }
+  },
+
+  _parseJsonResponse(text) {
+    if (!text || !text.trim()) return null;
+
+    // Step 1: Strip markdown code fences
+    text = text
+      .replace(/```(?:json)?\s*/gi, "")
+      .replace(/```\s*/g, "")
+      .trim();
+
+    // Step 2: Try direct parse
+    try {
+      return JSON.parse(text);
+    } catch (e) {}
+
+    // Step 3: Extract JSON array between first [ and last ]
+    const arrStart = text.indexOf("[");
+    const arrEnd = text.lastIndexOf("]");
+    if (arrStart !== -1 && arrEnd > arrStart) {
+      let chunk = text.substring(arrStart, arrEnd + 1);
+      // Clean control characters and trailing commas
+      chunk = chunk
+        .replace(/[\x00-\x1F\x7F]/g, " ")
+        .replace(/,\s*]/g, "]")
+        .replace(/,\s*}/g, "}");
+      try {
+        return JSON.parse(chunk);
+      } catch (e) {}
+
+      // Step 3b: Try fixing common LLM issues (unescaped quotes in strings)
+      try {
+        // Replace unescaped newlines inside strings
+        chunk = chunk
+          .replace(/\n/g, "\\n")
+          .replace(/\r/g, "\\r")
+          .replace(/\t/g, "\\t");
+        return JSON.parse(chunk);
+      } catch (e) {}
+    }
+
+    // Step 4: Extract JSON object
+    const objStart = text.indexOf("{");
+    const objEnd = text.lastIndexOf("}");
+    if (objStart !== -1 && objEnd > objStart) {
+      let chunk = text.substring(objStart, objEnd + 1);
+      chunk = chunk
+        .replace(/[\x00-\x1F\x7F]/g, " ")
+        .replace(/,\s*}/g, "}")
+        .replace(/,\s*]/g, "]");
+      try {
+        const obj = JSON.parse(chunk);
+        // If the object contains an array value, use that
+        const arrayVal = Object.values(obj).find((v) => Array.isArray(v));
+        return arrayVal || [obj];
+      } catch (e) {}
+    }
+
+    // Step 5: Extract individual JSON objects via regex
+    const jsonObjects = [];
+    const regex = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      try {
+        const cleaned = match[0].replace(/[\x00-\x1F\x7F]/g, " ");
+        jsonObjects.push(JSON.parse(cleaned));
+      } catch (e) {}
+    }
+    return jsonObjects.length > 0 ? jsonObjects : null;
+  },
 };

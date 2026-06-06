@@ -1,9 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
-    Navbar.render();
-    Router.init();
+document.addEventListener("DOMContentLoaded", () => {
+  Navbar.render();
+  Router.init();
 
-    // register service worker + handle updates
-    if ('serviceWorker' in navigator) {
+  // register service worker + handle updates
+  if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register('/public/sw.js', { scope: '/' })
             .then(reg => {
                 // check for updates every 5 min
