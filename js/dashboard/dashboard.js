@@ -1,15 +1,14 @@
 const DashboardPage = {
-    render() {
-        Navbar.renderTopbar('Home');
-        const content = document.getElementById('page-content');
+  render() {
+    Navbar.renderTopbar("Home");
+    const content = document.getElementById("page-content");
 
-        content.innerHTML = `
+    content.innerHTML = `
             <div class="home-page">
                 <div class="home-shell">
                     <section class="home-hero home-reveal">
-                        <div>
-                            <div class="hero-eyebrow">Developer toolkit for focused building</div>
-                            <h1 class="hero-title">Accelerate Your Workflow. <br><span>Build Smarter.</span></br></h1>
+                        <div class="hero-content">
+                            <h1 class="hero-title">Accelerate Your Workflow. <br><span>Build Smarter.</span></h1>
                             <p class="hero-copy">
                                 TrivoXa is a browser based developer platform that brings AI assistance, code execution, technical references, package research, public APIs, and repository exploration into one connected experience. If you are visiting for the first time, this page will show you exactly what the platform does and how it can help you work faster with less context switching.
                             </p>
@@ -23,47 +22,7 @@ const DashboardPage = {
                                 </button>
                             </div>
                         </div>
-
-                        <aside class="hero-visual" aria-label="Platform summary">
-                            <div class="visual-metric"><span>9</span> integrated modules</div>
-                            <div class="visual-flow">
-                                <div class="visual-flow-row">
-                                    <strong>Plan</strong>
-                                    <p>AI chat, architecture help, and stack exploration.</p>
-                                </div>
-                                <div class="visual-flow-row">
-                                    <strong>Build</strong>
-                                    <p>Workspace, snippets, commands, and boilerplates.</p>
-                                </div>
-                                <div class="visual-flow-row">
-                                    <strong>Verify</strong>
-                                    <p>Docs, packages, APIs, and GitHub structure analysis.</p>
-                                </div>
-                            </div>
-                        </aside>
                     </section>
-
-                    <section class="home-band home-reveal" style="animation-delay: 0.04s;">
-                        <div class="band-grid">
-                            <div class="band-item">
-                                <strong>AI assisted</strong>
-                                <span>Generate, debug, compare, and plan with built-in AI tools.</span>
-                            </div>
-                            <div class="band-item">
-                                <strong>Browser based</strong>
-                                <span>No heavy setup required to explore the platform and its tools.</span>
-                            </div>
-                            <div class="band-item">
-                                <strong>Multi purpose</strong>
-                                <span>From code snippets to repo analysis, one product covers the workflow.</span>
-                            </div>
-                            <div class="band-item">
-                                <strong>Built for flow</strong>
-                                <span>Reduce tab switching and keep technical context close.</span>
-                            </div>
-                        </div>
-                    </section>
-
                     <section class="home-section home-reveal" id="overview" style="animation-delay: 0.08s;">
                         <div class="section-label">01 / Overview</div>
                         <div class="section-content">
@@ -71,23 +30,6 @@ const DashboardPage = {
                             <p>
                                 TrivoXa is an all-in-one toolkit for developers who want fewer fragmented tools and a clearer working environment. Instead of moving between separate sites for AI help, snippets, docs, APIs, package checks, and GitHub inspection, the platform keeps those capabilities together in one interface.
                             </p>
-
-                            <div class="feature-grid">
-                                <div class="feature-item">
-                                    <h3>AI Hub</h3>
-                                    <p>Ask questions, generate code, explore architecture, compare tech stacks, and debug problems.</p>
-                                </div>
-                                <div class="feature-item">
-                                    <h3>Workspace</h3>
-                                    <p>Create, save, edit, and run code snippets in a focused environment.</p>
-                                </div>
-                                <div class="feature-item">
-                                    <h3>Developer references</h3>
-                                    <p>Use commands and docs when you need precise answers without leaving the flow.</p>
-                                </div>
-                                <div class="feature-item">
-                                    <h3>Research tools</h3>
-                                    <p>Evaluate npm packages, browse public APIs, and inspect repositories with more confidence.</p>
                                 </div>
                     </section>
 
@@ -122,7 +64,7 @@ const DashboardPage = {
                     <section class="home-section home-reveal" style="animation-delay: 0.16s;">
                         <div class="section-label">03 / Modules</div>
                         <div class="section-content">
-                            <h2>Everything inside the platform, explained plainly.</h2>
+                            <h2>TrivoXa features you should know.</h2>
                             <p>
                                 Each section exists for a different kind of developer need. Together they form a compact operating system for learning, building, and researching.
                             </p>
@@ -192,24 +134,52 @@ const DashboardPage = {
                     <section class="faq-section home-reveal" style="animation-delay: 0.24s;">
                         <div class="faq-header">
                             <span>05 / FAQ</span>
-                            <h2>Questions realted to TrivoXa.</h2>
+                            <h2>Questions related to TrivoXa.</h2>
                         </div>
 
                         <div class="faq-row">
-                            <h3>Do I need to sign up to understand the platform?</h3>
-                            <p>No. The homepage is designed to explain the product before you commit. Some features may require authentication, but the value of the platform should be clear before that point.</p>
+                            <div class="faq-question-container">
+                                <h3>Do I need to sign up to understand the platform?</h3>
+                                <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>No. The homepage is designed to explain the product before you commit. Some features may require authentication, but the value of the platform should be clear before that point.</p>
+                                </div>
+                            </div>
                         </div>
                         <div class="faq-row">
-                            <h3>What makes TrivoXa different from using separate tools?</h3>
-                            <p>The value is not that each tool is impossible to find elsewhere; it is that the common parts of development are brought into one coherent workflow, which saves attention and time.</p>
+                            <div class="faq-question-container">
+                                <h3>What makes TrivoXa different from using separate tools?</h3>
+                                <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>The value is not that each tool is impossible to find elsewhere; it is that the common parts of development are brought into one coherent workflow, which saves attention and time.</p>
+                                </div>
+                            </div>
                         </div>
                         <div class="faq-row">
-                            <h3>Is this only for AI-related work?</h3>
-                            <p>No. AI is one part of the product. TrivoXa also includes practical engineering utilities such as commands, docs, snippets, package research, APIs, and repo exploration.</p>
+                            <div class="faq-question-container">
+                                <h3>Is this only for AI-related work?</h3>
+                                <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>No. AI is one part of the product. TrivoXa also includes practical engineering utilities such as commands, docs, snippets, package research, APIs, and repo exploration.</p>
+                                </div>
+                            </div>
                         </div>
                         <div class="faq-row">
-                            <h3>Where should I begin after landing here?</h3>
-                            <p>If you want to explore the platform, start with AI Hub or Workspace. If you already know what you need, the top navigation lets you jump directly into any module.</p>
+                            <div class="faq-question-container">
+                                <h3>Where should I begin after landing here?</h3>
+                                <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>If you want to explore the platform, start with AI Hub or Workspace. If you already know what you need, the top navigation lets you jump directly into any module.</p>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="signup-panel">
@@ -220,41 +190,90 @@ const DashboardPage = {
                             </div>
                         </div>
                     </section>
+
+                    <footer class="home-footer home-reveal" style="animation-delay: 0.28s;">
+                        <div class="footer-content">
+                            <div class="footer-left">
+                                <span class="footer-brand">TrivoXa</span>
+                                <p class="footer-tagline">Go from zero to shipping</p>
+                            </div>
+                            <div class="footer-center">
+                                <p class="footer-report-text">For issue reporting you can mail me at:</p>
+                                <a href="mailto:developer.adityajha@gmail.com" class="footer-email-link">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <span>developer.adityajha@gmail.com</span>
+                                </a>
+                            </div>
+                            <div class="footer-right">
+                                <div class="footer-links-group">
+                                    <h4>Connect with me</h4>
+                                    <div class="footer-socials">
+                                        <a href="https://www.linkedin.com/in/aditya-jha-8534a1305/" target="_blank" rel="noopener noreferrer" class="social-link linkedin">
+                                            <i class="fa-brands fa-linkedin"></i>
+                                            <span>LinkedIn</span>
+                                        </a>
+                                        <a href="https://github.com/adityajha-coder" target="_blank" rel="noopener noreferrer" class="social-link github">
+                                            <i class="fa-brands fa-github"></i>
+                                            <span>GitHub</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer-bottom">
+                            <p>&copy; 2026 TrivoXa. All rights reserved.</p>
+                        </div>
+                    </footer>
                 </div>
             </div>`;
 
-        this.bindEvents(content);
-    },
+    this.bindEvents(content);
+  },
 
-    bindEvents(content) {
-        content.querySelectorAll('[data-page]').forEach(el => {
-            el.addEventListener('click', () => Router.navigate(el.dataset.page));
+  bindEvents(content) {
+    content.querySelectorAll("[data-page]").forEach((el) => {
+      el.addEventListener("click", () => Router.navigate(el.dataset.page));
+    });
+
+    // FAQ Accordion toggles
+    content.querySelectorAll(".faq-row").forEach((row) => {
+      row.addEventListener("click", () => {
+        const isActive = row.classList.contains("active");
+        content.querySelectorAll(".faq-row").forEach((otherRow) => {
+          otherRow.classList.remove("active");
         });
-
-        if (!localStorage.getItem('vdt_first_time')) {
-            setTimeout(() => {
-                Toast.show('Welcome to TrivoXa! Explore the developer tools below or use Ctrl+K to search.', 'info', 6000);
-                localStorage.setItem('vdt_first_time', 'true');
-            }, 1000);
+        if (!isActive) {
+          row.classList.add("active");
         }
+      });
+    });
+
+    if (!localStorage.getItem("vdt_first_time")) {
+      setTimeout(() => {
+        Toast.show(
+          "Welcome to TrivoXa! Explore the developer tools below or use Ctrl+K to search.",
+          "info",
+          6000,
+        );
+        localStorage.setItem("vdt_first_time", "true");
+      }, 1000);
     }
-    ,
+  },
+  openSignin() {
+    const signInButton = document.getElementById("btn-auth-in");
+    if (signInButton) signInButton.click();
+  },
 
-    openSignin() {
-        const signInButton = document.getElementById('btn-auth-in');
-        if (signInButton) signInButton.click();
-    },
+  openSignup() {
+    const signInButton = document.getElementById("btn-auth-in");
+    if (signInButton) signInButton.click();
 
-    openSignup() {
-        const signInButton = document.getElementById('btn-auth-in');
-        if (signInButton) signInButton.click();
-
-        const title = document.getElementById('auth-title');
-        const toggleLink = document.getElementById('auth-toggle-link');
-        if (title && toggleLink && title.textContent === 'Sign In') {
-            toggleLink.click();
-        }
+    const title = document.getElementById("auth-title");
+    const toggleLink = document.getElementById("auth-toggle-link");
+    if (title && toggleLink && title.textContent === "Sign In") {
+      toggleLink.click();
     }
+  },
 };
 
 window.DashboardPage = DashboardPage;

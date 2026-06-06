@@ -1,29 +1,29 @@
 const FreeApisPage = {
-    apis: [],
-    categories: [],
-    activeCategory: 'All',
-    activePricing: 'All',
-    searchQuery: '',
-    _loaded: false,
+  apis: [],
+  categories: [],
+  activeCategory: "All",
+  activePricing: "All",
+  searchQuery: "",
+  _loaded: false,
 
-    async loadData() {
-        if (this._loaded) return;
-        try {
-            const res = await fetch('/data/apis.json');
-            this.apis = await res.json();
-            this._loaded = true;
-        } catch (e) {
-            console.error('[FreeApis] Failed to load data:', e);
-            this.apis = [];
-        }
-    },
+  async loadData() {
+    if (this._loaded) return;
+    try {
+      const res = await fetch("/data/apis.json");
+      this.apis = await res.json();
+      this._loaded = true;
+    } catch (e) {
+      console.error("[FreeApis] Failed to load data:", e);
+      this.apis = [];
+    }
+  },
 
-    async render() {
-        Navbar.renderTopbar('APIs');
-        const content = document.getElementById('page-content');
+  async render() {
+    Navbar.renderTopbar("APIs");
+    const content = document.getElementById("page-content");
 
-        // Show loading state
-        content.innerHTML = `
+    // Show loading state
+    content.innerHTML = `
             <div class="page-enter">
                 <div class="page-header">
                     <h1>Public <span class="text-gradient">APIs</span></h1>
@@ -35,10 +35,13 @@ const FreeApisPage = {
                 </div>
             </div>`;
 
-        await this.loadData();
+    await this.loadData();
 
-        this.categories = ['All', ...new Set(this.apis.map(a => a.category))].sort();
-        content.innerHTML = `
+    this.categories = [
+      "All",
+      ...new Set(this.apis.map((a) => a.category)),
+    ].sort();
+    content.innerHTML = `
             <div class="page-enter">
                 <div class="page-header">
                     <h1>Public <span class="text-gradient">APIs</span></h1>
@@ -67,95 +70,137 @@ const FreeApisPage = {
                 <div class="grid-3" id="api-grid"></div>
             </div>`;
 
-        this.renderCategoryFilter();
-        this.renderApiGrid();
-        this.bindEvents();
+    this.renderCategoryFilter();
+    this.renderApiGrid();
+    this.bindEvents();
+    // TODO: Re-enable auth gate after completion
+    this._applyAuthGate();
+
+    if (!this._authBound) {
+      window.addEventListener("auth_changed", () => {
         // TODO: Re-enable auth gate after completion
         this._applyAuthGate();
+      });
+      this._authBound = true;
+    }
+  },
 
-        if (!this._authBound) {
-            window.addEventListener('auth_changed', () => {
-                // TODO: Re-enable auth gate after completion
-                this._applyAuthGate();
-            });
-            this._authBound = true;
-        }
-    },
+  _applyAuthGate() {
+    const existing = document.getElementById("api-auth-gate");
+    if (existing) existing.remove();
+    const grid = document.getElementById("api-grid");
+    if (API.getAuthToken()) {
+      if (grid) {
+        grid.style.maxHeight = "";
+        grid.style.overflow = "";
+        grid.style.position = "";
+      }
+      const search = document.getElementById("api-search");
+      if (search) {
+        search.disabled = false;
+        search.style.opacity = "";
+      }
+      const catFilter = document.getElementById("api-category-filter");
+      if (catFilter) {
+        catFilter.disabled = false;
+        catFilter.style.opacity = "";
+      }
+      const priceFilter = document.getElementById("api-pricing-filter");
+      if (priceFilter) {
+        priceFilter.disabled = false;
+        priceFilter.style.opacity = "";
+      }
+      return;
+    }
+    if (grid) {
+      grid.style.maxHeight = "500px";
+      grid.style.overflow = "hidden";
+      grid.style.position = "relative";
+      const gate = document.createElement("div");
+      gate.id = "api-auth-gate";
+      gate.style.cssText =
+        "position:absolute; bottom:0; left:0; right:0; height:200px; background:linear-gradient(transparent, rgba(0,0,0,0.95)); display:flex; align-items:flex-end; justify-content:center; padding-bottom:20px; z-index:10;";
+      gate.innerHTML = `<div style="text-align:center; padding:16px 24px; background:rgba(20,20,20,0.9); border:1px solid var(--border); border-radius:var(--radius); backdrop-filter:blur(8px);"><i class="fa-solid fa-lock" style="font-size:1.4rem; color:var(--primary-light); margin-bottom:8px; display:block;"></i><p style="font-size:0.9rem; font-weight:600; color:var(--text); margin-bottom:6px;">Sign in to explore all APIs</p><p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;">Create a free account to unlock full access</p><button class="btn btn-primary btn-sm" id="api-gate-login" style="min-width:120px;"><i class="fa-solid fa-right-to-bracket" style="margin-right:6px;"></i>Sign In</button></div>`;
+      grid.appendChild(gate);
+      document
+        .getElementById("api-gate-login")
+        ?.addEventListener("click", () => {
+          API.requireAuth();
+        });
+    }
+    const search = document.getElementById("api-search");
+    if (search) {
+      search.disabled = true;
+      search.style.opacity = "0.4";
+    }
+    const catFilter = document.getElementById("api-category-filter");
+    if (catFilter) {
+      catFilter.disabled = true;
+      catFilter.style.opacity = "0.4";
+    }
+    const priceFilter = document.getElementById("api-pricing-filter");
+    if (priceFilter) {
+      priceFilter.disabled = true;
+      priceFilter.style.opacity = "0.4";
+    }
+  },
 
-    _applyAuthGate() {
-        const existing = document.getElementById('api-auth-gate');
-        if (existing) existing.remove();
-        const grid = document.getElementById('api-grid');
-        if (API.getAuthToken()) {
-            if (grid) { grid.style.maxHeight = ''; grid.style.overflow = ''; grid.style.position = ''; }
-            const search = document.getElementById('api-search');
-            if (search) { search.disabled = false; search.style.opacity = ''; }
-            const catFilter = document.getElementById('api-category-filter');
-            if (catFilter) { catFilter.disabled = false; catFilter.style.opacity = ''; }
-            const priceFilter = document.getElementById('api-pricing-filter');
-            if (priceFilter) { priceFilter.disabled = false; priceFilter.style.opacity = ''; }
-            return;
-        }
-        if (grid) {
-            grid.style.maxHeight = '500px'; grid.style.overflow = 'hidden'; grid.style.position = 'relative';
-            const gate = document.createElement('div');
-            gate.id = 'api-auth-gate';
-            gate.style.cssText = 'position:absolute; bottom:0; left:0; right:0; height:200px; background:linear-gradient(transparent, rgba(0,0,0,0.95)); display:flex; align-items:flex-end; justify-content:center; padding-bottom:20px; z-index:10;';
-            gate.innerHTML = `<div style="text-align:center; padding:16px 24px; background:rgba(20,20,20,0.9); border:1px solid var(--border); border-radius:var(--radius); backdrop-filter:blur(8px);"><i class="fa-solid fa-lock" style="font-size:1.4rem; color:var(--primary-light); margin-bottom:8px; display:block;"></i><p style="font-size:0.9rem; font-weight:600; color:var(--text); margin-bottom:6px;">Sign in to explore all APIs</p><p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;">Create a free account to unlock full access</p><button class="btn btn-primary btn-sm" id="api-gate-login" style="min-width:120px;"><i class="fa-solid fa-right-to-bracket" style="margin-right:6px;"></i>Sign In</button></div>`;
-            grid.appendChild(gate);
-            document.getElementById('api-gate-login')?.addEventListener('click', () => { API.requireAuth(); });
-        }
-        const search = document.getElementById('api-search');
-        if (search) { search.disabled = true; search.style.opacity = '0.4'; }
-        const catFilter = document.getElementById('api-category-filter');
-        if (catFilter) { catFilter.disabled = true; catFilter.style.opacity = '0.4'; }
-        const priceFilter = document.getElementById('api-pricing-filter');
-        if (priceFilter) { priceFilter.disabled = true; priceFilter.style.opacity = '0.4'; }
-    },
+  renderCategoryFilter() {
+    const sel = document.getElementById("api-category-filter");
+    if (!sel) return;
+    sel.innerHTML = this.categories
+      .map(
+        (cat) =>
+          `<option value="${cat}" ${cat === this.activeCategory ? "selected" : ""} style="background:#000; color:#fff;">${cat}</option>`,
+      )
+      .join("");
+  },
 
-    renderCategoryFilter() {
-        const sel = document.getElementById('api-category-filter');
-        if(!sel) return;
-        sel.innerHTML = this.categories.map(cat =>
-            `<option value="${cat}" ${cat === this.activeCategory ? 'selected' : ''} style="background:#000; color:#fff;">${cat}</option>`
-        ).join('');
-    },
+  renderApiGrid() {
+    const grid = document.getElementById("api-grid");
+    let filtered = this.apis;
 
-    renderApiGrid() {
-        const grid = document.getElementById('api-grid');
-        let filtered = this.apis;
+    if (this.activeCategory !== "All") {
+      filtered = filtered.filter((a) => a.category === this.activeCategory);
+    }
+    if (this.activePricing && this.activePricing !== "All") {
+      filtered = filtered.filter((a) => a.pricing === this.activePricing);
+    }
+    if (this.searchQuery) {
+      const q = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (a) =>
+          a.name.toLowerCase().includes(q) ||
+          a.desc.toLowerCase().includes(q) ||
+          a.category.toLowerCase().includes(q),
+      );
+    }
 
-        if (this.activeCategory !== 'All') {
-            filtered = filtered.filter(a => a.category === this.activeCategory);
-        }
-        if (this.activePricing && this.activePricing !== 'All') {
-            filtered = filtered.filter(a => a.pricing === this.activePricing);
-        }
-        if (this.searchQuery) {
-            const q = this.searchQuery.toLowerCase();
-            filtered = filtered.filter(a =>
-                a.name.toLowerCase().includes(q) ||
-                a.desc.toLowerCase().includes(q) ||
-                a.category.toLowerCase().includes(q)
-            );
-        }
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><i class="fa-solid fa-search"></i><h3>No APIs found</h3><p>Try adjusting your search or category filter.</p></div>`;
+      return;
+    }
 
-        if (filtered.length === 0) {
-            grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><i class="fa-solid fa-search"></i><h3>No APIs found</h3><p>Try adjusting your search or category filter.</p></div>`;
-            return;
-        }
+    const authColors = {
+      None: "tag-success",
+      "API Key": "tag-warning",
+      OAuth: "tag-accent",
+    };
+    const priceColors = {
+      Free: "tag-success",
+      Freemium: "tag-primary",
+      Paid: "tag-error",
+    };
 
-        
-        const authColors = { 'None': 'tag-success', 'API Key': 'tag-warning', 'OAuth': 'tag-accent' };
-        const priceColors = { 'Free': 'tag-success', 'Freemium': 'tag-primary', 'Paid': 'tag-error' };
-
-        grid.innerHTML = filtered.map(api => `
+    grid.innerHTML = filtered
+      .map(
+        (api) => `
             <div class="glass-card api-card">
                 <div class="api-header">
                     <h3 style="margin-bottom:0;">${api.name}</h3>
                     <div class="flex-gap" style="align-items:center;">
-                        <span class="tag ${priceColors[api.pricing] || 'tag-primary'}">${api.pricing}</span>
-                        <span class="tag ${authColors[api.auth] || 'tag-primary'}">${api.auth}</span>
+                        <span class="tag ${priceColors[api.pricing] || "tag-primary"}">${api.pricing}</span>
+                        <span class="tag ${authColors[api.auth] || "tag-primary"}">${api.auth}</span>
                     </div>
                 </div>
                 <p class="api-desc">${api.desc}</p>
@@ -166,34 +211,37 @@ const FreeApisPage = {
                 <a href="${api.url}" target="_blank" rel="noopener" class="api-link">
                     Visit API Docs <i class="fa-solid fa-arrow-up-right-from-square"></i>
                 </a>
-            </div>`).join('');
-    },
+            </div>`,
+      )
+      .join("");
+  },
 
-    bindEvents() {
-        const catFilter = document.getElementById('api-category-filter');
-        if(catFilter) {
-            catFilter.addEventListener('change', (e) => {
-                this.activeCategory = e.target.value;
-                this.renderApiGrid();
-            });
-        }
-        
-        const priceFilter = document.getElementById('api-pricing-filter');
-        if(priceFilter) {
-            priceFilter.addEventListener('change', (e) => {
-                this.activePricing = e.target.value;
-                this.renderApiGrid();
-            });
-        }
-
-        const searchInput = document.getElementById('api-search');
-        if(searchInput) {
-            searchInput.addEventListener('input', Helpers.debounce((e) => {
-                this.searchQuery = e.target.value;
-                this.renderApiGrid();
-            }, 200));
-        }
-
-
+  bindEvents() {
+    const catFilter = document.getElementById("api-category-filter");
+    if (catFilter) {
+      catFilter.addEventListener("change", (e) => {
+        this.activeCategory = e.target.value;
+        this.renderApiGrid();
+      });
     }
+
+    const priceFilter = document.getElementById("api-pricing-filter");
+    if (priceFilter) {
+      priceFilter.addEventListener("change", (e) => {
+        this.activePricing = e.target.value;
+        this.renderApiGrid();
+      });
+    }
+
+    const searchInput = document.getElementById("api-search");
+    if (searchInput) {
+      searchInput.addEventListener(
+        "input",
+        Helpers.debounce((e) => {
+          this.searchQuery = e.target.value;
+          this.renderApiGrid();
+        }, 200),
+      );
+    }
+  },
 };
