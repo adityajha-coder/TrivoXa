@@ -23,28 +23,6 @@ const DashboardPage = {
                             </div>
                         </div>
                     </section>
-
-                    <section class="home-band home-reveal" style="animation-delay: 0.04s;">
-                        <div class="band-grid">
-                            <div class="band-item">
-                                <strong>AI assisted</strong>
-                                <span>Generate, debug, compare, and plan with built-in AI tools.</span>
-                            </div>
-                            <div class="band-item">
-                                <strong>Browser based</strong>
-                                <span>No heavy setup required to explore the platform and its tools.</span>
-                            </div>
-                            <div class="band-item">
-                                <strong>Multi purpose</strong>
-                                <span>From code snippets to repo analysis, one product covers the workflow.</span>
-                            </div>
-                            <div class="band-item">
-                                <strong>Built for flow</strong>
-                                <span>Reduce tab switching and keep technical context close.</span>
-                            </div>
-                        </div>
-                    </section>
-
                     <section class="home-section home-reveal" id="overview" style="animation-delay: 0.08s;">
                         <div class="section-label">01 / Overview</div>
                         <div class="section-content">
