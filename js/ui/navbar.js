@@ -69,13 +69,27 @@ const Navbar = {
     const mobileMenu = document.createElement("div");
     mobileMenu.id = "mobile-menu";
     mobileMenu.className = "mobile-menu";
-    mobileMenu.innerHTML = this.navItems
-      .map(
-        (item) =>
-          `<button class="topnav-link" data-page="${item.id}"><i class="${item.icon}"></i><span>${item.label}</span></button>`,
-      )
-      .join("");
+    mobileMenu.innerHTML = `
+      <div class="mobile-menu-header">
+        <button class="mobile-menu-close" id="mobile-menu-close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="mobile-menu-links">
+        ${this.navItems
+          .map(
+            (item) =>
+              `<button class="topnav-link" data-page="${item.id}"><i class="${item.icon}"></i><span>${item.label}</span></button>`,
+          )
+          .join("")}
+      </div>
+    `;
     document.body.appendChild(mobileMenu);
+
+    const closeBtn = mobileMenu.querySelector("#mobile-menu-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => this.closeMobile());
+    }
 
     topnav.querySelectorAll("[data-page]").forEach((el) => {
       el.addEventListener("click", () => Router.navigate(el.dataset.page));

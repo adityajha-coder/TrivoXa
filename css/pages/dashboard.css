@@ -534,16 +534,29 @@
     padding-top: 18px;
   }
 
+  .home-hero {
+    min-height: auto;
+    padding: 36px 0 48px;
+  }
+
   .hero-title {
-    font-size: 2rem;
+    font-size: 2.1rem;
+    line-height: 1.2;
+    max-width: 100%;
   }
 
   .hero-copy {
-    font-size: 0.92rem;
+    font-size: 0.94rem;
+    max-width: 100%;
+    margin-top: 16px;
+    line-height: 1.7;
   }
 
   .hero-actions {
     flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+    margin: 24px auto 0;
   }
 
   .hero-btn {
