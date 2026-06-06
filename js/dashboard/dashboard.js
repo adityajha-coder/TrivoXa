@@ -232,6 +232,13 @@ const DashboardPage = {
                                             <span>GitHub</span>
                                         </a>
                                     </div>
+                                    <p style="margin: 14px 0 0 0; font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6; opacity: 0.85;">
+                                        For issue reporting you can mail me at:
+                                    </p>
+                                    <a href="mailto:developer.adityajha@gmail.com" class="footer-link" style="color: var(--primary-light); display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; font-weight: 600; font-family: var(--font-mono); font-size: 0.84rem; transition: color 0.2s;">
+                                        <i class="fa-solid fa-envelope" style="font-size: 0.95rem;"></i>
+                                        <span>developer.adityajha@gmail.com</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
