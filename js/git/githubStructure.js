@@ -97,7 +97,7 @@ const GithubStructureMixin = {
 
     const maxFileSize = Math.max(...files.map((f) => f.size || 0), 1);
 
-    // root node - blue so it pops
+    // root node - blue
     nodes.push({
       id: "root",
       name: "Project Root",
@@ -189,5 +189,4 @@ const GithubStructureMixin = {
     }, 100);
   },
 
-  // cleanup() is consolidated in CodeGitExplorerPage to avoid Object.assign collisions
 };

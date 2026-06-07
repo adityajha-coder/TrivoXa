@@ -181,13 +181,10 @@ const CodeGitExplorerPage = {
                 </div>
             </div>`;
     this.bindEvents();
-    // TODO: Re-enable auth gate after completion
     this._applyAuthGate();
 
-    // React to login/logout
     if (!this._authBound) {
       window.addEventListener("auth_changed", () => {
-        // TODO: Re-enable auth gate after completion
         this._applyAuthGate();
       });
       this._authBound = true;
@@ -542,7 +539,6 @@ Keep it concise (under 200 words). Do not use code blocks.`;
   },
 
   cleanup() {
-    // --- Structure (ForceGraph3D) cleanup ---
     if (this._resizeHandler) {
       window.removeEventListener("resize", this._resizeHandler);
       this._resizeHandler = null;
@@ -554,7 +550,6 @@ Keep it concise (under 200 words). Do not use code blocks.`;
       this.forceGraph = null;
     }
 
-    // --- Git 3D (Three.js) cleanup ---
     if (this.animationId) cancelAnimationFrame(this.animationId);
     if (this.renderer) {
       this.renderer.dispose();
@@ -577,13 +572,11 @@ Keep it concise (under 200 words). Do not use code blocks.`;
     this.gitNodes = [];
   },
 
-  // Pause all animation loops without destroying objects (used when caching the page)
   _pause3D() {
     if (this.animationId) { cancelAnimationFrame(this.animationId); this.animationId = null; }
     if (this.gitAnimId) { cancelAnimationFrame(this.gitAnimId); this.gitAnimId = null; }
   },
 
-  // Re-attach animation loops when restoring from cache
   _reattach3D() {
     if (this.renderer && this.scene && this.camera && !this.animationId) {
       this.animate();
@@ -596,7 +589,6 @@ Keep it concise (under 200 words). Do not use code blocks.`;
 
 (function () {
   const ownMethods = {};
-  // Save CodeGitExplorerPage's
   ['cleanup', '_pause3D', '_reattach3D'].forEach(m => {
     if (CodeGitExplorerPage[m]) ownMethods[m] = CodeGitExplorerPage[m];
   });
