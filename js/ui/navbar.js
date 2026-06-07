@@ -30,8 +30,7 @@ const Navbar = {
                 <nav class="topnav-links">${linksHtml}</nav>
             </div>
             <div class="topnav-right">
-                <!-- Support Button -->
-                <a href="https://rzp.io/rzp/ijBIiWa" target="_blank" class="topnav-btn" id="btn-support" title="Support this project" style="color: #facc15; text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 0 12px; font-size: 0.8rem; font-weight: 600; width: auto; border: 1px solid rgba(250, 204, 21, 0.2); background: rgba(250, 204, 21, 0.05);">
+                <a href="https://payments.cashfree.com/forms/trivoxa" target="_blank" class="topnav-btn" id="btn-support" title="Support this project" style="color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 0 12px; font-size: 0.8rem; font-weight: 600; width: auto; border: 1px solid rgba(212, 168, 67, 0.2); background: rgba(212, 168, 67, 0.05);">
                     <i class="fa-solid fa-mug-hot"></i> <span class="hide-mobile">Support</span>
                 </a>
 
