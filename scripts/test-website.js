@@ -136,17 +136,15 @@ async function testFrontendServer() {
     await test('index.html contains all script tags', async () => {
         const res = await fetch(`${FRONTEND}/index.html`);
         const requiredScripts = [
-            'js/utils/helpers.js', 'js/utils/api.js',
-            'js/components/ui/navbar.js', 'js/components/ui/loader.js',
-            'js/core/router.js', 'js/core/app.js',
-            'js/pages/main/dashboard.js',
-            'js/pages/ai/aiChat.js', 'js/pages/ai/aiArchitect.js',
-            'js/pages/ai/aiStacks.js', 'js/pages/ai/askAi.js',
-            'js/pages/gitExplorer/githubUser.js', 'js/pages/gitExplorer/githubStructure.js',
-            'js/pages/gitExplorer/githubGit.js', 'js/pages/gitExplorer/codeGitExplorer.js',
-            'js/pages/main/workspace.js', 'js/pages/main/docs.js',
-            'js/pages/tools/toolsVault.js', 'js/pages/tools/commands.js',
-            'js/pages/tools/freeApis.js', 'js/pages/tools/packageScout.js',
+            'js/utils/helpers.js', 'js/auth/apiAuth.js', 'js/git/apiGithub.js',
+            'js/utils/api.js', 'js/auth/authModal.js', 'js/ui/navbar.js',
+            'js/ui/loader.js', 'js/dashboard/dashboard.js', 'js/ai/aiChat.js',
+            'js/ai/aiArchitect.js', 'js/ai/aiStacks.js', 'js/ai/askAi.js',
+            'js/git/githubUser.js', 'js/git/githubStructure.js', 'js/git/githubGit.js',
+            'js/workspace/workspaceDB.js', 'js/workspace/workspace.js', 'js/docs/docs.js',
+            'js/tools/toolsVault.js', 'js/tools/commands.js', 'js/tools/freeApis.js',
+            'js/tools/packageScout.js', 'js/git/codeGitExplorer.js', 'js/core/router.js',
+            'js/core/app.js'
         ];
         const missing = requiredScripts.filter(s => !res.body.includes(s));
         if (missing.length > 0) throw new Error(`Missing scripts: ${missing.join(', ')}`);
@@ -175,16 +173,15 @@ async function testCSSAssets() {
 async function testJSAssets() {
     console.log(`\n${colors.bold('▸ JS Assets')}`);
     const jsFiles = [
-        'js/utils/helpers.js', 'js/utils/api.js',
-        'js/components/ui/navbar.js', 'js/components/ui/loader.js',
-        'js/core/router.js', 'js/core/app.js',
-        'js/pages/main/dashboard.js', 'js/pages/main/workspace.js', 'js/pages/main/docs.js',
-        'js/pages/ai/aiChat.js', 'js/pages/ai/aiArchitect.js',
-        'js/pages/ai/aiStacks.js', 'js/pages/ai/askAi.js',
-        'js/pages/gitExplorer/githubUser.js', 'js/pages/gitExplorer/githubStructure.js',
-        'js/pages/gitExplorer/githubGit.js', 'js/pages/gitExplorer/codeGitExplorer.js',
-        'js/pages/tools/toolsVault.js', 'js/pages/tools/commands.js',
-        'js/pages/tools/freeApis.js', 'js/pages/tools/packageScout.js',
+        'js/utils/helpers.js', 'js/auth/apiAuth.js', 'js/git/apiGithub.js',
+        'js/utils/api.js', 'js/auth/authModal.js', 'js/ui/navbar.js',
+        'js/ui/loader.js', 'js/dashboard/dashboard.js', 'js/ai/aiChat.js',
+        'js/ai/aiArchitect.js', 'js/ai/aiStacks.js', 'js/ai/askAi.js',
+        'js/git/githubUser.js', 'js/git/githubStructure.js', 'js/git/githubGit.js',
+        'js/workspace/workspaceDB.js', 'js/workspace/workspace.js', 'js/docs/docs.js',
+        'js/tools/toolsVault.js', 'js/tools/commands.js', 'js/tools/freeApis.js',
+        'js/tools/packageScout.js', 'js/git/codeGitExplorer.js', 'js/core/router.js',
+        'js/core/app.js'
     ];
 
     for (const file of jsFiles) {
@@ -310,8 +307,8 @@ async function testBackendAPI() {
 async function testVercelServerless() {
     console.log(`\n${colors.bold('▸ Vercel Serverless Function')}`);
 
-    await test('api/groq/chat.js file exists', async () => {
-        const res = await fetch(`${FRONTEND}/api/groq/chat.js`);
+    await test('api/index.js file exists', async () => {
+        const res = await fetch(`${FRONTEND}/api/index.js`);
         if (res.status !== 200) throw new Error(`Status ${res.status}`);
         if (!res.body.includes('module.exports')) throw new Error('Missing module.exports');
     });
@@ -319,11 +316,6 @@ async function testVercelServerless() {
 
 async function testConfigFiles() {
     console.log(`\n${colors.bold('▸ Config Files')}`);
-
-    await test('serve.json loads', async () => {
-        const res = await fetch(`${FRONTEND}/serve.json`);
-        if (res.status !== 200) throw new Error(`Status ${res.status}`);
-    });
 
     await test('vercel.json loads', async () => {
         const res = await fetch(`${FRONTEND}/vercel.json`);

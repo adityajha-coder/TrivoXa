@@ -13,12 +13,13 @@ const Router = {
 
     _currentPage: null,
     _domCache: {},
-    _cacheable: new Set(['workspace']),
+    _cacheable: new Set(['workspace', 'code-git-explorer']),
 
     navigate(page) {
+        if (this._currentPage === page) return;
+
         const pageContent = document.getElementById('page-content');
 
-        // Cache current page DOM if it's cacheable
         if (this._currentPage && this._cacheable.has(this._currentPage)) {
             const frag = document.createDocumentFragment();
             while (pageContent.firstChild) {
@@ -28,15 +29,20 @@ const Router = {
         }
 
         this.cleanupPage();
-        location.hash = page;
         this._currentPage = page;
+        location.hash = page;
 
-        // Restore from cache if available
+        // restore from cache
         if (this._cacheable.has(page) && this._domCache[page]) {
             pageContent.innerHTML = '';
             pageContent.appendChild(this._domCache[page]);
-            Navbar.renderTopbar(page === 'workspace' ? 'My Workspace' : page);
+            const pageLabel = { 'workspace': 'My Workspace', 'code-git-explorer': 'Code & Git Explorer' };
+            Navbar.renderTopbar(pageLabel[page] || page);
             Navbar.setActive(page);
+            // reattach 3D animation
+            if (page === 'code-git-explorer' && typeof CodeGitExplorerPage !== 'undefined') {
+                CodeGitExplorerPage._reattach3D();
+            }
             return;
         }
 
@@ -64,6 +70,10 @@ const Router = {
     },
 
     cleanupPage() {
-        if (typeof CodeGitExplorerPage !== 'undefined' && CodeGitExplorerPage.cleanup) CodeGitExplorerPage.cleanup();
+        if (this._currentPage !== 'code-git-explorer') {
+            if (typeof CodeGitExplorerPage !== 'undefined' && CodeGitExplorerPage.cleanup) CodeGitExplorerPage.cleanup();
+        } else if (typeof CodeGitExplorerPage !== 'undefined') {
+            CodeGitExplorerPage._pause3D();
+        }
     }
 };

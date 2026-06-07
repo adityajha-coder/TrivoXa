@@ -3,7 +3,7 @@ const GithubUserMixin = {
     try {
       const [user, repos, events] = await Promise.all([
         API.getUserInfo(username),
-        API.getUserRepos(username, "updated", 12),
+        API.getUserRepos(username, "updated", 30),
         API.getUserEvents(username, 20),
       ]);
       document.getElementById("explorer-empty").style.display = "none";
@@ -45,14 +45,8 @@ const GithubUserMixin = {
   },
 
   renderRepos(repos) {
-    const langCount = {};
-    repos.forEach((r) => {
-      if (r.language) langCount[r.language] = (langCount[r.language] || 0) + 1;
-    });
-    const topLangs = Object.entries(langCount)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
-    document.getElementById("gh-repos-area").innerHTML = `
+    //Render repos 
+    const reposHTML = `
             <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-book" style="color:var(--primary-light);margin-right:6px;"></i>Recent Repositories</h3>
             <div class="grid-2 mb-lg">
                 ${repos
@@ -74,22 +68,61 @@ const GithubUserMixin = {
                   )
                   .join("")}
             </div>
-            ${
-              topLangs.length
-                ? `
-            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-chart-pie" style="color:var(--primary-light);margin-right:6px;"></i>Languages</h3>
-            <div class="glass-card-static" style="padding:18px;">
-                <div style="display:flex;flex-direction:column;gap:10px;">
-                    ${topLangs
-                      .map(([lang, count]) => {
-                        const pct = Math.round((count / repos.length) * 100);
-                        return `<div><div class="flex-between mb-sm"><div class="flex-gap"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${Helpers.getLanguageColor(lang)};"></span><span class="text-sm">${lang}</span></div><span class="text-xs text-muted">${pct}%</span></div><div class="pkg-score"><div class="pkg-score-fill" style="width:${pct}%;background:${Helpers.getLanguageColor(lang)};"></div></div></div>`;
-                      })
-                      .join("")}
+            <div id="gh-langs-area">
+                <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-chart-pie" style="color:var(--primary-light);margin-right:6px;"></i>Languages</h3>
+                <div class="glass-card-static" style="padding:18px;">
+                    <div class="flex-gap" style="justify-content:center;padding:12px;">
+                        <div class="loader-spinner" style="width:16px;height:16px;border-width:2px;"></div>
+                        <span class="text-xs text-muted">Analyzing language data...</span>
+                    </div>
                 </div>
-            </div>`
-                : ""
-            }`;
+            </div>`;
+    document.getElementById("gh-repos-area").innerHTML = reposHTML;
+    this._fetchLanguageBreakdown(repos);
+  },  _fetchLanguageBreakdown(repos) {
+    const langsArea = document.getElementById("gh-langs-area");
+    if (!langsArea) return;
+
+    // Aggregate languages from all repos
+    const langCount = {};
+    let totalWithLanguage = 0;
+
+    repos.forEach((r) => {
+      if (r.language) {
+        langCount[r.language] = (langCount[r.language] || 0) + 1;
+        totalWithLanguage++;
+      }
+    });
+
+    const topLangs = Object.entries(langCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8);
+
+    if (totalWithLanguage === 0) {
+      langsArea.innerHTML = "";
+      return;
+    }
+
+    langsArea.innerHTML = `
+          <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-chart-pie" style="color:var(--primary-light);margin-right:6px;"></i>Languages</h3>
+          <div class="glass-card-static" style="padding:18px;">
+              <div style="display:flex;height:8px;border-radius:6px;overflow:hidden;margin-bottom:14px;background:rgba(255,255,255,0.05);">
+                  ${topLangs
+                    .map(([lang, count]) => {
+                      const pct = ((count / totalWithLanguage) * 100).toFixed(1);
+                      return `<div style="width:${pct}%;background:${Helpers.getLanguageColor(lang)};transition:width 0.6s ease;" title="${lang}: ${count} ${count === 1 ? 'repo' : 'repos'} (${pct}%)"></div>`;
+                    })
+                    .join("")}
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:12px 18px;">
+                  ${topLangs
+                    .map(([lang, count]) => {
+                      const pct = ((count / totalWithLanguage) * 100).toFixed(1);
+                      return `<div class="flex-gap" style="align-items:center;gap:6px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${Helpers.getLanguageColor(lang)};"></span><span class="text-sm" style="font-weight:500;">${lang}</span><span class="text-xs text-muted">${count} ${count === 1 ? 'repo' : 'repos'} (${pct}%)</span></div>`;
+                    })
+                    .join("")}
+              </div>
+          </div>`;
   },
 
   renderEvents(events) {
