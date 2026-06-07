@@ -55,6 +55,10 @@ const ApiGithub = {
         return this.fetchGitHub(`/users/${username}/repos?sort=${sort}&per_page=${perPage}`);
     },
 
+    async getRepoLanguages(owner, repo) {
+        return this.fetchGitHub(`/repos/${owner}/${repo}/languages`);
+    },
+
     async getUserEvents(username, perPage = 30) {
         return this.fetchGitHub(`/users/${username}/events/public?per_page=${perPage}`);
     },

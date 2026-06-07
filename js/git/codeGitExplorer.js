@@ -576,21 +576,36 @@ Keep it concise (under 200 words). Do not use code blocks.`;
     this.nodes = [];
     this.gitNodes = [];
   },
+
+  // Pause all animation loops without destroying objects (used when caching the page)
+  _pause3D() {
+    if (this.animationId) { cancelAnimationFrame(this.animationId); this.animationId = null; }
+    if (this.gitAnimId) { cancelAnimationFrame(this.gitAnimId); this.gitAnimId = null; }
+  },
+
+  // Re-attach animation loops when restoring from cache
+  _reattach3D() {
+    if (this.renderer && this.scene && this.camera && !this.animationId) {
+      this.animate();
+    }
+    if (this.gitRenderer && this.gitScene && this.gitCamera && !this.gitAnimId) {
+      this.animateGit();
+    }
+  },
 };
 
-// Merge mixins FIRST, then spread CodeGitExplorerPage's own methods back on top
-// so its cleanup() (the consolidated one) always wins over mixin cleanup() methods.
 (function () {
   const ownMethods = {};
-  // Save CodeGitExplorerPage's own cleanup before mixins overwrite it
-  if (CodeGitExplorerPage.cleanup)
-    ownMethods.cleanup = CodeGitExplorerPage.cleanup;
+  // Save CodeGitExplorerPage's
+  ['cleanup', '_pause3D', '_reattach3D'].forEach(m => {
+    if (CodeGitExplorerPage[m]) ownMethods[m] = CodeGitExplorerPage[m];
+  });
   Object.assign(
     CodeGitExplorerPage,
     GithubUserMixin,
     GithubStructureMixin,
     GithubGitMixin,
   );
-  // Restore the consolidated cleanup
+  // Restore
   Object.assign(CodeGitExplorerPage, ownMethods);
 })();
