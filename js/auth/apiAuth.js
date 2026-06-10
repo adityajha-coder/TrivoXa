@@ -107,6 +107,10 @@ const ApiAuth = {
     return data;
   },
 
+  async revealPassword(email) {
+    return this.fetchAPI("/api/auth/reveal-password", "POST", { email });
+  },
+
   async fetchAPI(endpoint, method = "GET", body = null) {
     const token = this.getAuthToken();
     const headers = { "Content-Type": "application/json" };

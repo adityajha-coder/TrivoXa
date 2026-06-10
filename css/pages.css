@@ -32,3 +32,17 @@
         font-size: 1.3rem;
     }
 }
+
+/* Git Explorer overrides for Light Mode */
+:root.light-mode .three-canvas-wrap,
+:root.light-mode .git-3d-cmd-wrap {
+  background: var(--bg-primary);
+}
+
+:root.light-mode .git-3d-overlay {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+:root.light-mode .commit-detail-card {
+  background: rgba(0, 0, 0, 0.02);
+}

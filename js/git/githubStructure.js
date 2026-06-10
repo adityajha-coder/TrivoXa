@@ -139,39 +139,84 @@ const GithubStructureMixin = {
 
     setTimeout(() => {
       try {
-        this.forceGraph = ForceGraph3D()(el)
-          .width(w)
-          .height(h)
-          .backgroundColor("#000000")
-          .graphData({ nodes, links })
-          .nodeLabel("name")
-          .nodeColor((n) => n.color)
-          .nodeRelSize(3)
-          .nodeVal("val")
-          .linkColor(() => "rgba(212, 168, 67, 0.45)")
-          .linkWidth(1.2)
-          .linkOpacity(0.6)
-          .linkDirectionalParticles(3)
-          .linkDirectionalParticleWidth(2.5)
-          .linkDirectionalParticleColor(() => "rgba(240, 197, 109, 0.9)")
-          .linkDirectionalParticleSpeed(() => 0.004 + Math.random() * 0.004)
-          .onNodeClick((node) => {
-            const dist = Math.hypot(node.x, node.y, node.z) || 1;
-            const ratio = 1 + 40 / dist;
-            this.forceGraph.cameraPosition(
-              { x: node.x * ratio, y: node.y * ratio, z: node.z * ratio },
-              node,
-              2000,
-            );
-          });
+        const currentTheme = localStorage.getItem("theme") || "dark";
+        const layout = localStorage.getItem("trivoxa_graph_layout") || "3d";
+        const particles = localStorage.getItem("trivoxa_graph_particles") || "on";
 
-        document.getElementById("structure-reset").onclick = () => {
-          this.forceGraph.cameraPosition(
-            { x: 0, y: 0, z: 250 },
-            { x: 0, y: 0, z: 0 },
-            1000,
-          );
-        };
+        // Update title header text
+        const headerTitle = el.previousElementSibling?.querySelector("span");
+        if (headerTitle) {
+          headerTitle.innerHTML = `<i class="fa-solid fa-diagram-project" style="color:var(--primary-light);margin-right:5px;"></i> ${layout === "2d" ? "2D Map" : "3D Map"}`;
+        }
+
+        if (layout === "2d") {
+          this.forceGraph = ForceGraph()(el)
+            .width(w)
+            .height(h)
+            .backgroundColor(currentTheme === "light" ? "#f6f8fa" : "#000000")
+            .graphData({ nodes, links })
+            .nodeLabel("name")
+            .nodeColor((n) => n.color)
+            .nodeRelSize(5)
+            .nodeVal("val")
+            .linkColor(() => "rgba(212, 168, 67, 0.45)")
+            .linkWidth(1.2)
+            .linkOpacity(0.6)
+            .onNodeClick((node) => {
+              this.forceGraph.centerAt(node.x, node.y, 1000);
+              this.forceGraph.zoom(3, 1000);
+            });
+
+          document.getElementById("structure-reset").onclick = () => {
+            if (this.forceGraph.zoomToFit) {
+              this.forceGraph.zoomToFit(1000, 10);
+            } else {
+              this.forceGraph.centerAt(0, 0, 1000);
+              this.forceGraph.zoom(1, 1000);
+            }
+          };
+        } else {
+          this.forceGraph = ForceGraph3D()(el)
+            .width(w)
+            .height(h)
+            .backgroundColor(currentTheme === "light" ? "#f6f8fa" : "#000000")
+            .graphData({ nodes, links })
+            .nodeLabel("name")
+            .nodeColor((n) => n.color)
+            .nodeRelSize(3)
+            .nodeVal("val")
+            .linkColor(() => "rgba(212, 168, 67, 0.45)")
+            .linkWidth(1.2)
+            .linkOpacity(0.6)
+            .onNodeClick((node) => {
+              const dist = Math.hypot(node.x, node.y, node.z) || 1;
+              const ratio = 1 + 40 / dist;
+              this.forceGraph.cameraPosition(
+                { x: node.x * ratio, y: node.y * ratio, z: node.z * ratio },
+                node,
+                2000,
+              );
+            });
+
+          document.getElementById("structure-reset").onclick = () => {
+            this.forceGraph.cameraPosition(
+              { x: 0, y: 0, z: 250 },
+              { x: 0, y: 0, z: 0 },
+              1000,
+            );
+          };
+        }
+
+        // Apply directional particles if enabled
+        if (particles === "on") {
+          this.forceGraph
+            .linkDirectionalParticles(3)
+            .linkDirectionalParticleWidth(2.5)
+            .linkDirectionalParticleColor(() => "rgba(240, 197, 109, 0.9)")
+            .linkDirectionalParticleSpeed(() => 0.004 + Math.random() * 0.004);
+        } else {
+          this.forceGraph.linkDirectionalParticles(0);
+        }
 
         const onResize = () => {
           const r = el.getBoundingClientRect();
@@ -183,8 +228,39 @@ const GithubStructureMixin = {
           setTimeout(onResize, 200),
         );
         this._resizeHandler = onResize;
+
+        const themeListener = (e) => {
+          if (this.forceGraph) {
+            this.forceGraph.backgroundColor(e.detail.theme === "light" ? "#f6f8fa" : "#000000");
+          }
+        };
+        window.addEventListener("theme_changed", themeListener);
+        this._themeListener = themeListener;
+
+        // Reactive Listeners for settings change
+        const layoutListener = (e) => {
+          this.init3DStructure(files);
+        };
+        window.addEventListener("graph_layout_changed", layoutListener);
+        this._layoutListener = layoutListener;
+
+        const particlesListener = (e) => {
+          if (this.forceGraph) {
+            if (e.detail.state === "on") {
+              this.forceGraph
+                .linkDirectionalParticles(3)
+                .linkDirectionalParticleWidth(2.5)
+                .linkDirectionalParticleColor(() => "rgba(240, 197, 109, 0.9)")
+                .linkDirectionalParticleSpeed(() => 0.004 + Math.random() * 0.004);
+            } else {
+              this.forceGraph.linkDirectionalParticles(0);
+            }
+          }
+        };
+        window.addEventListener("graph_particles_changed", particlesListener);
+        this._particlesListener = particlesListener;
       } catch (err) {
-        console.error("3D Graph Error:", err);
+        console.error("Graph Error:", err);
       }
     }, 100);
   },

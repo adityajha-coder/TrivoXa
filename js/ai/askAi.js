@@ -133,15 +133,12 @@ const AskAiPage = {
   ],
   async getAirforceModel(fallbackModelStr = null) {
     // Use Groq API models
-    const activeModel = fallbackModelStr || this.currentAiModel || "mixtral";
+    const activeModel = fallbackModelStr || localStorage.getItem("trivoxa_ai_model") || "mixtral";
     const modelMap = {
-      mixtral: "llama-3.1-8b-instant",
-      llama: "llama-3.1-8b-instant",
-      gemma: "llama-3.1-8b-instant",
-      claude: "llama-3.1-8b-instant",
-      openai: "llama-3.1-8b-instant",
-      mistral: "llama-3.1-8b-instant",
-      llama: "llama2-70b-4096",
+      mixtral: "mixtral-8x7b-32768",
+      llama2: "llama2-70b-4096",
+      gemma: "gemma-7b-it",
+      llama: "llama2-70b-4096"
     };
     return modelMap[activeModel] || "llama-3.1-8b-instant";
   },
@@ -190,14 +187,6 @@ const AskAiPage = {
                         <p>Chat with AI, design project architectures, analyze code, and explore curated tech stacks.</p>
                     </div>
                     <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                        <div class="form-group" style="min-width: 160px;">
-                            <label class="text-xs text-muted mb-xs" style="display:block;">Groq Model</label>
-                            <select id="ai-model-select" class="input-field" style="padding: 8px 12px; font-size: 0.85rem; height:auto; background: #000; color: #fff; appearance: none; -webkit-appearance: none; cursor: pointer;">
-                                <option value="mixtral" selected>Mixtral 8x7B (Recommended)</option>
-                                <option value="llama2">Llama 2 70B</option>
-                                <option value="gemma">Gemma 7B</option>
-                            </select>
-                        </div>
                         <div class="form-group" style="min-width: 200px; display:none;">
                             <label class="text-xs text-muted mb-xs" style="display:block;">Groq API Key</label>
                             <input type="text" id="ai-api-key" class="input-field" placeholder="gsk_..." value="${localStorage.getItem("trivoxa_groq_key") || this.apiKey}" autocomplete="off" data-form-type="other" data-lpignore="true" style="padding: 8px 12px; font-size: 0.85rem; height:auto; -webkit-text-security: disc; -moz-text-security: disc; text-security: disc;">
@@ -396,7 +385,6 @@ const AskAiPage = {
             </style>
         `;
 
-    this.bindModelSelect();
     this.bindTabs();
     this.bindChat();
     this.bindArchitect();
@@ -564,28 +552,7 @@ const AskAiPage = {
     }
   },
 
-  bindModelSelect() {
-    const sel = document.getElementById("ai-model-select");
-    const keyInput = document.getElementById("ai-api-key");
-    if (sel) {
-      sel.addEventListener("change", (e) => {
-        this.currentAiModel = e.target.value;
-        localStorage.setItem("trivoxa_ai_model", this.currentAiModel);
-        Toast.show(
-          "Groq Model switched to " +
-            e.target.options[e.target.selectedIndex].text,
-          "info",
-        );
-      });
-    }
-    if (keyInput) {
-      keyInput.addEventListener("input", (e) => {
-        localStorage.setItem("trivoxa_groq_key", e.target.value);
-        API.setGroqApiKey(e.target.value);
-        Toast.show("Groq API Key updated", "success");
-      });
-    }
-  },
+
 
   bindTabs() {
     const aiHubTabs = document.getElementById("ai-hub-tabs");

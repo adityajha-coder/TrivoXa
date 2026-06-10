@@ -119,6 +119,14 @@ const AiArchitectMixin = {
       "flatFiles: flat path keys with actual file content strings.",
     ].join("\n");
 
+    const modelPref = localStorage.getItem("trivoxa_ai_model") || "mixtral";
+    const modelMap = {
+      mixtral: "llama-3.1-8b-instant",
+      llama2: "llama2-70b-4096",
+      gemma: "gemma-7b-it"
+    };
+    const activeModel = modelMap[modelPref] || "llama-3.1-8b-instant";
+
     const res = await API.callGroqChat(
       [
         { role: "system", content: systemMsg },
@@ -127,7 +135,7 @@ const AiArchitectMixin = {
           content: "Generate project architecture for: " + prompt,
         },
       ],
-      "llama-3.1-8b-instant",
+      activeModel,
       0.7,
     );
 

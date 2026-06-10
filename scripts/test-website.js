@@ -137,7 +137,7 @@ async function testFrontendServer() {
         const res = await fetch(`${FRONTEND}/index.html`);
         const requiredScripts = [
             'js/utils/helpers.js', 'js/auth/apiAuth.js', 'js/git/apiGithub.js',
-            'js/utils/api.js', 'js/auth/authModal.js', 'js/ui/navbar.js',
+            'js/utils/api.js', 'js/auth/authModal.js', 'js/ui/settingsModal.js', 'js/ui/navbar.js',
             'js/ui/loader.js', 'js/dashboard/dashboard.js', 'js/ai/aiChat.js',
             'js/ai/aiArchitect.js', 'js/ai/aiStacks.js', 'js/ai/askAi.js',
             'js/git/githubUser.js', 'js/git/githubStructure.js', 'js/git/githubGit.js',
@@ -174,7 +174,7 @@ async function testJSAssets() {
     console.log(`\n${colors.bold('▸ JS Assets')}`);
     const jsFiles = [
         'js/utils/helpers.js', 'js/auth/apiAuth.js', 'js/git/apiGithub.js',
-        'js/utils/api.js', 'js/auth/authModal.js', 'js/ui/navbar.js',
+        'js/utils/api.js', 'js/auth/authModal.js', 'js/ui/settingsModal.js', 'js/ui/navbar.js',
         'js/ui/loader.js', 'js/dashboard/dashboard.js', 'js/ai/aiChat.js',
         'js/ai/aiArchitect.js', 'js/ai/aiStacks.js', 'js/ai/askAi.js',
         'js/git/githubUser.js', 'js/git/githubStructure.js', 'js/git/githubGit.js',

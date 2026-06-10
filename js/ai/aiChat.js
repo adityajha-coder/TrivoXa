@@ -182,9 +182,17 @@ const AiChatMixin = {
           );
         }
 
+        const modelPref = localStorage.getItem("trivoxa_ai_model") || "mixtral";
+        const modelMap = {
+          mixtral: "llama-3.1-8b-instant",
+          llama2: "llama2-70b-4096",
+          gemma: "gemma-7b-it"
+        };
+        const activeModel = modelMap[modelPref] || "llama-3.1-8b-instant";
+
         const res = await API.callGroqChat(
           [{ role: "system", content: sysPrompt }, ...this.chatHistory],
-          "llama-3.1-8b-instant",
+          activeModel,
           0.7,
         );
 

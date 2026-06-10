@@ -93,15 +93,15 @@ const GithubGitMixin = {
     const w = container.clientWidth || 800,
       h = container.clientHeight || 400;
     const aspect = h === 0 ? 1 : w / h;
+    const currentTheme = localStorage.getItem("theme") || "dark";
     this.gitScene = new THREE.Scene();
-    this.gitScene.background = new THREE.Color(0x000000);
+    this.gitScene.background = new THREE.Color(currentTheme === "light" ? 0xf6f8fa : 0x000000);
     this.gitCamera = new THREE.PerspectiveCamera(50, aspect, 0.1, 500);
     this.gitCamera.position.set(5, 10, 30);
     this.gitRenderer = new THREE.WebGLRenderer({ antialias: true });
     this.gitRenderer.setSize(w, h);
     this.gitRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
-    // Add resize listener to prevent "ratio error" on orientation change
     const resizeHandler = () => {
       const nw = container.clientWidth,
         nh = container.clientHeight;
@@ -112,8 +112,15 @@ const GithubGitMixin = {
       }
     };
     window.addEventListener("resize", resizeHandler);
-    // Store for cleanup
     this._gitResizeHandler = resizeHandler;
+
+    const gitThemeListener = (e) => {
+      if (this.gitScene) {
+        this.gitScene.background.setHex(e.detail.theme === "light" ? 0xf6f8fa : 0x000000);
+      }
+    };
+    window.addEventListener("theme_changed", gitThemeListener);
+    this._gitThemeListener = gitThemeListener;
     container.innerHTML = "";
     container.appendChild(this.gitRenderer.domElement);
     this.gitControls = new THREE.OrbitControls(
@@ -230,10 +237,13 @@ const GithubGitMixin = {
   animateGit() {
     this.gitAnimId = requestAnimationFrame(() => this.animateGit());
     this.gitControls.update();
-    const t = Date.now() * 0.001;
-    this.gitNodes.forEach((n, i) => {
-      n.position.y += Math.sin(t + i * 0.3) * 0.0015;
-    });
+    const particles = localStorage.getItem("trivoxa_graph_particles") || "on";
+    if (particles === "on") {
+      const t = Date.now() * 0.001;
+      this.gitNodes.forEach((n, i) => {
+        n.position.y += Math.sin(t + i * 0.3) * 0.0015;
+      });
+    }
     this.gitRenderer.render(this.gitScene, this.gitCamera);
   },
 

@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function() {
+        if (localStorage.getItem('theme') === 'light') {
+          document.documentElement.classList.add('light-mode');
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
@@ -63,12 +70,14 @@
     <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
     <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://unpkg.com/3d-force-graph@1.71.3/dist/3d-force-graph.min.js"></script>
+    <script src="https://unpkg.com/force-graph@1.43.0/dist/force-graph.min.js"></script>
 
     <script src="js/utils/helpers.js"></script>
     <script src="js/auth/apiAuth.js"></script>
     <script src="js/git/apiGithub.js"></script>
     <script src="js/utils/api.js"></script>
     <script src="js/auth/authModal.js"></script>
+    <script src="js/ui/settingsModal.js"></script>
     <script src="js/ui/navbar.js"></script>
     <script src="js/ui/loader.js"></script>
     <script src="js/dashboard/dashboard.js"></script>
