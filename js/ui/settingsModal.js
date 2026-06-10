@@ -219,42 +219,42 @@ const SettingsModal = {
         );
       });
 
-      // // Bind 3D Graph layout
-      // const layout3dBtn = settingsModal.querySelector("#layout-3d-btn");
-      // const layout2dBtn = settingsModal.querySelector("#layout-2d-btn");
+      // Bind 3D Graph layout
+      const layout3dBtn = settingsModal.querySelector("#layout-3d-btn");
+      const layout2dBtn = settingsModal.querySelector("#layout-2d-btn");
 
-      // const setLayout = (layout) => {
-      //   localStorage.setItem("trivoxa_graph_layout", layout);
-      //   if (layout === "3d") {
-      //     layout3dBtn.classList.add("active");
-      //     layout2dBtn.classList.remove("active");
-      //     layout3dBtn.style.borderColor = "var(--primary)";
-      //     layout3dBtn.querySelector("i").style.color = "var(--primary)";
-      //     layout2dBtn.style.borderColor = "var(--border)";
-      //     layout2dBtn.querySelector("i").style.color = "var(--text-muted)";
-      //   } else {
-      //     layout2dBtn.classList.add("active");
-      //     layout3dBtn.classList.remove("active");
-      //     layout2dBtn.style.borderColor = "var(--primary)";
-      //     layout2dBtn.querySelector("i").style.color = "var(--primary)";
-      //     layout3dBtn.style.borderColor = "var(--border)";
-      //     layout3dBtn.querySelector("i").style.color = "var(--text-muted)";
-      //   }
-      //   Toast.show("Graph layout preference set to " + (layout === "3d" ? "3D" : "2D"), "success");
-      //   window.dispatchEvent(new CustomEvent("graph_layout_changed", { detail: { layout } }));
-      // };
+      const setLayout = (layout) => {
+        localStorage.setItem("trivoxa_graph_layout", layout);
+        if (layout === "3d") {
+          layout3dBtn.classList.add("active");
+          layout2dBtn.classList.remove("active");
+          layout3dBtn.style.borderColor = "var(--primary)";
+          layout3dBtn.querySelector("i").style.color = "var(--primary)";
+          layout2dBtn.style.borderColor = "var(--border)";
+          layout2dBtn.querySelector("i").style.color = "var(--text-muted)";
+        } else {
+          layout2dBtn.classList.add("active");
+          layout3dBtn.classList.remove("active");
+          layout2dBtn.style.borderColor = "var(--primary)";
+          layout2dBtn.querySelector("i").style.color = "var(--primary)";
+          layout3dBtn.style.borderColor = "var(--border)";
+          layout3dBtn.querySelector("i").style.color = "var(--text-muted)";
+        }
+        Toast.show("Graph layout preference set to " + (layout === "3d" ? "3D" : "2D"), "success");
+        window.dispatchEvent(new CustomEvent("graph_layout_changed", { detail: { layout } }));
+      };
 
-      // layout3dBtn.addEventListener("click", () => setLayout("3d"));
-      // layout2dBtn.addEventListener("click", () => setLayout("2d"));
+      layout3dBtn.addEventListener("click", () => setLayout("3d"));
+      layout2dBtn.addEventListener("click", () => setLayout("2d"));
 
-      // // Bind Particles Toggle
-      // const particlesToggle = settingsModal.querySelector("#setting-particles-toggle");
-      // particlesToggle.addEventListener("change", (e) => {
-      //   const state = e.target.checked ? "on" : "off";
-      //   localStorage.setItem("trivoxa_graph_particles", state);
-      //   Toast.show("Dynamic particles turned " + state, "success");
-      //   window.dispatchEvent(new CustomEvent("graph_particles_changed", { detail: { particles: state } }));
-      // });
+      // Bind Particles Toggle
+      const particlesToggle = settingsModal.querySelector("#setting-particles-toggle");
+      particlesToggle.addEventListener("change", (e) => {
+        const state = e.target.checked ? "on" : "off";
+        localStorage.setItem("trivoxa_graph_particles", state);
+        Toast.show("Dynamic particles turned " + state, "success");
+        window.dispatchEvent(new CustomEvent("graph_particles_changed", { detail: { particles: state } }));
+      });
 
       // Bind Reveal Password (if logged in)
       if (currentUser) {
