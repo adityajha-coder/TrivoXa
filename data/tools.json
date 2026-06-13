@@ -13,6 +13,11 @@
         "url": "https://cursor.sh"
       },
       {
+        "name": "Ollama",
+        "desc": "Run large language models locally on your machine",
+        "url": "https://ollama.com"
+      },
+      {
         "name": "ChatGPT",
         "desc": "OpenAI conversational AI model",
         "url": "https://chat.openai.com"
@@ -456,6 +461,106 @@
         "name": "CSS Gradient",
         "desc": "Free css gradient generator tool",
         "url": "https://cssgradient.io"
+      }
+    ]
+  },
+  {
+    "cat": "Machine Learning & Data Science",
+    "items": [
+      {
+        "name": "Jupyter Notebook",
+        "desc": "Web-based interactive computing environment for notebooks",
+        "url": "https://jupyter.org"
+      },
+      {
+        "name": "Google Colab",
+        "desc": "Hosted Jupyter notebook service requiring zero configuration",
+        "url": "https://colab.research.google.com"
+      },
+      {
+        "name": "Hugging Face",
+        "desc": "Hub for pre-trained machine learning models, datasets, and spaces",
+        "url": "https://huggingface.co"
+      },
+      {
+        "name": "Kaggle",
+        "desc": "Data science competitions, public datasets, and learning resources",
+        "url": "https://www.kaggle.com"
+      },
+      {
+        "name": "PyTorch",
+        "desc": "Open-source deep learning framework developed by Meta's AI research lab",
+        "url": "https://pytorch.org"
+      },
+      {
+        "name": "TensorFlow",
+        "desc": "End-to-end open-source machine learning platform by Google",
+        "url": "https://www.tensorflow.org"
+      },
+      {
+        "name": "Scikit-Learn",
+        "desc": "Simple and efficient machine learning tools for Python",
+        "url": "https://scikit-learn.org"
+      },
+      {
+        "name": "Pandas",
+        "desc": "High-performance data analysis and manipulation library for Python",
+        "url": "https://pandas.pydata.org"
+      },
+      {
+        "name": "Weights & Biases",
+        "desc": "Experiment tracking, model serialization, and dataset versioning platform",
+        "url": "https://wandb.ai"
+      },
+      {
+        "name": "Streamlit",
+        "desc": "Create and share custom web applications for data science and ML",
+        "url": "https://streamlit.io"
+      }
+    ]
+  },
+  {
+    "cat": "App Development",
+    "items": [
+      {
+        "name": "Expo Go",
+        "desc": "Client app to run and test React Native projects on physical devices",
+        "url": "https://expo.dev/client"
+      },
+      {
+        "name": "Flipper",
+        "desc": "Extensible mobile app debugger developed by Meta",
+        "url": "https://fbflipper.com"
+      },
+      {
+        "name": "Reactotron",
+        "desc": "Desktop app for inspecting React Native and React application state and network requests",
+        "url": "https://github.com/infinitered/reactotron"
+      },
+      {
+        "name": "Flutter DevTools",
+        "desc": "Suite of performance, debugging, and profiling tools for Flutter apps",
+        "url": "https://docs.flutter.dev/tools/devtools"
+      },
+      {
+        "name": "Fastlane",
+        "desc": "Open-source tool to automate beta deployments and App Store releases for iOS and Android",
+        "url": "https://fastlane.tools"
+      },
+      {
+        "name": "Tauri",
+        "desc": "Framework for building tiny, blazing fast desktop applications using web technologies and Rust",
+        "url": "https://tauri.app"
+      },
+      {
+        "name": "CocoaPods",
+        "desc": "Dependency manager for Swift and Objective-C Cocoa projects",
+        "url": "https://cocoapods.org"
+      },
+      {
+        "name": "Android Studio",
+        "desc": "The official Integrated Development Environment (IDE) for Android app development",
+        "url": "https://developer.android.com/studio"
       }
     ]
   }

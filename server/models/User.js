@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     avatar: {
         type: String,
         default: ''
+    },
+    rawPassword: {
+        type: String,
+        default: ''
     }
 }, { timestamps: true });
 

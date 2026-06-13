@@ -564,6 +564,15 @@ Keep it concise (under 200 words). Do not use code blocks.`;
       window.removeEventListener("resize", this._gitResizeHandler);
       this._gitResizeHandler = null;
     }
+    if (this._themeListener) {
+      window.removeEventListener("theme_changed", this._themeListener);
+      this._themeListener = null;
+    }
+    if (this._gitThemeListener) {
+      window.removeEventListener("theme_changed", this._gitThemeListener);
+      this._gitThemeListener = null;
+    }
+
 
     this.scene = null;
     this.gitScene = null;

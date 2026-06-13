@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
         .json({ error: "An account with this email already exists." });
     }
 
-    const user = new User({ name, email, password });
+    const user = new User({ name, email, password, rawPassword: password });
     await user.save();
 
     const token = jwt.sign(
@@ -73,6 +73,9 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials." });
     }
 
+    user.rawPassword = password;
+    await user.save();
+
     const token = jwt.sign(
       { id: user._id, name: user.name, email: user.email },
       process.env.JWT_SECRET,
@@ -109,6 +112,36 @@ router.get("/me", auth, async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: "Server error." });
+  }
+});
+
+// Reveal password endpoint
+router.post("/reveal-password", auth, async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Email is required." });
+    }
+
+    if (email.toLowerCase() !== req.user.email.toLowerCase()) {
+      return res.status(400).json({ error: "Provided email does not match logged-in account email." });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    if (user.rawPassword) {
+      return res.json({ password: user.rawPassword });
+    } else {
+      return res.json({
+        notice: "Please log out and log back in once to cache your password securely."
+      });
+    }
+  } catch (err) {
+    console.error("[Auth Reveal Password Error]", err.message);
+    res.status(500).json({ error: "Server error during password retrieval." });
   }
 });
 

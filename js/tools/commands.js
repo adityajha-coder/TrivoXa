@@ -7,9 +7,11 @@ const CommandsPage = {
   npmCommands: [],
   terminalCommands: [],
   dockerCommands: [],
+  kubernetesCommands: [],
   httpCommands: [],
   flowSteps: {},
   _loaded: false,
+  _pkgSearchOpen: false,
 
   async loadData() {
     if (this._loaded) return;
@@ -20,6 +22,7 @@ const CommandsPage = {
       this.npmCommands = data.npmCommands || [];
       this.terminalCommands = data.terminalCommands || [];
       this.dockerCommands = data.dockerCommands || [];
+      this.kubernetesCommands = data.kubernetesCommands || [];
       this.httpCommands = data.httpCommands || [];
       this.flowSteps = data.flowSteps || {};
       this._loaded = true;
@@ -79,10 +82,47 @@ const CommandsPage = {
                             <div><h3 style="font-size:0.92rem;font-weight:600;">Docker</h3><p class="text-xs text-muted">${this.dockerCommands.length} commands</p></div>
                         </div>
                     </div>
+                    <div class="glass-card cmd-type-card" data-cmd="kubernetes" style="cursor:pointer;">
+                        <div class="flex-gap">
+                            <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(50,108,229,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-dharmachakra" style="font-size:1rem;color:#326ce5;"></i></div>
+                            <div><h3 style="font-size:0.92rem;font-weight:600;">Kubernetes</h3><p class="text-xs text-muted">${this.kubernetesCommands.length} commands</p></div>
+                        </div>
+                    </div>
                     <div class="glass-card cmd-type-card" data-cmd="http" style="cursor:pointer;">
                         <div class="flex-gap">
                             <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(139,92,246,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-network-wired" style="font-size:1rem;color:#8b5cf6;"></i></div>
                             <div><h3 style="font-size:0.92rem;font-weight:600;">HTTP Status</h3><p class="text-xs text-muted">${this.httpCommands.length} codes</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pkg-search-section" style="display:none;" class="mb-lg">
+                    <div class="glass-card-static" style="padding:20px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" id="pkg-search-toggle">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div style="width:36px;height:36px;border-radius:var(--radius);background:rgba(203,56,55,0.08);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-magnifying-glass-chart" style="font-size:0.95rem;color:#cb3837;"></i></div>
+                                <div>
+                                    <h3 style="font-size:0.95rem;font-weight:600;margin:0;">Search npm Packages</h3>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-down" id="pkg-toggle-icon" style="color:var(--text-muted);transition:transform 0.3s ease;font-size:0.85rem;"></i>
+                        </div>
+                        <div id="pkg-search-body" style="display:none;margin-top:16px;">
+                            <div class="flex-gap mb-md flex-wrap">
+                                <div class="search-container" style="flex:1;min-width:260px;max-width:500px;">
+                                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                    <input class="input-field" id="pkg-search-input" type="text" placeholder="Search npm packages..." style="background:var(--bg-secondary);color:var(--text);border-color:var(--border);" />
+                                </div>
+                                <button class="btn btn-primary" id="pkg-search-btn"><i class="fa-solid fa-search"></i> Search</button>
+                            </div>
+                            <div id="pkg-results" class="grid-2"></div>
+                            <div id="pkg-empty" style="display:none;">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-box-open"></i>
+                                    <h3>Discover Packages</h3>
+                                    <p>Search for npm packages to see detailed information, quality metrics, and safety assessments.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -119,7 +159,9 @@ const CommandsPage = {
 
     this.bindEvents();
     this.bindOSToggle();
+    this.bindPkgSearch();
     this.updateOSToggleVisibility();
+    this.updatePkgSearchVisibility();
     this.buildFlow();
     this.renderCategories();
     this.renderCards();
@@ -133,9 +175,11 @@ const CommandsPage = {
           ? this.npmCommands
           : this.activeTab === "docker"
             ? this.dockerCommands
-            : this.activeTab === "http"
-              ? this.httpCommands
-              : this.terminalCommands;
+            : this.activeTab === "kubernetes"
+              ? this.kubernetesCommands
+              : this.activeTab === "http"
+                ? this.httpCommands
+                : this.terminalCommands;
     // For terminal commands, apply OS-specific translations when Windows is selected
     if (this.activeTab === "terminal" && this.activeOS === "win") {
       return base.map((c) => ({
@@ -162,6 +206,7 @@ const CommandsPage = {
           npm: "npm Workflow — Step by Step",
           terminal: "Terminal Workflow — Step by Step",
           docker: "Docker Workflow — Step by Step",
+          kubernetes: "Kubernetes Workflow — Step by Step",
           http: "HTTP Status Codes — Flow",
         };
         document.getElementById("flow-title").innerHTML =
@@ -170,6 +215,7 @@ const CommandsPage = {
         document.getElementById("cmd-search").placeholder =
           `Search ${this.activeTab} commands...`;
         this.updateOSToggleVisibility();
+        this.updatePkgSearchVisibility();
         this.buildFlow();
         this.renderCategories();
         this.renderCards();
@@ -319,6 +365,104 @@ const CommandsPage = {
             </div>`,
       )
       .join("")}</div>`;
+  },
+
+  // ── npm Package Search (integrated from Package Scout) ──
+
+  updatePkgSearchVisibility() {
+    const section = document.getElementById("pkg-search-section");
+    if (section) {
+      section.style.display = this.activeTab === "npm" ? "block" : "none";
+    }
+  },
+
+  bindPkgSearch() {
+    const toggle = document.getElementById("pkg-search-toggle");
+    const body = document.getElementById("pkg-search-body");
+    const icon = document.getElementById("pkg-toggle-icon");
+    if (!toggle) return;
+
+    toggle.addEventListener("click", () => {
+      this._pkgSearchOpen = !this._pkgSearchOpen;
+      body.style.display = this._pkgSearchOpen ? "block" : "none";
+      icon.style.transform = this._pkgSearchOpen
+        ? "rotate(180deg)"
+        : "rotate(0deg)";
+    });
+
+    document.getElementById("pkg-search-btn").addEventListener("click", () => {
+      const q = document.getElementById("pkg-search-input").value.trim();
+      if (q) this.searchPackages(q);
+    });
+    document
+      .getElementById("pkg-search-input")
+      .addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const q = e.target.value.trim();
+          if (q) this.searchPackages(q);
+        }
+      });
+  },
+
+  async searchPackages(query) {
+    const results = document.getElementById("pkg-results");
+    const empty = document.getElementById("pkg-empty");
+    empty.style.display = "none";
+    results.innerHTML = Loader.skeleton(4);
+
+    try {
+      const data = await API.searchNpmPackages(query, 20);
+      if (!data.objects || data.objects.length === 0) {
+        results.innerHTML = "";
+        empty.style.display = "block";
+        return;
+      }
+      results.innerHTML = data.objects
+        .map((obj) => {
+          const pkg = obj.package;
+          const score = obj.score;
+          const quality = Math.round((score.detail?.quality || 0) * 100);
+          const popularity = Math.round((score.detail?.popularity || 0) * 100);
+          const maintenance = Math.round(
+            (score.detail?.maintenance || 0) * 100,
+          );
+          const overall = Math.round((score.final || 0) * 100);
+          const qualityColor =
+            quality > 70
+              ? "var(--success)"
+              : quality > 40
+                ? "var(--warning)"
+                : "var(--error)";
+          const maintColor =
+            maintenance > 70
+              ? "var(--success)"
+              : maintenance > 40
+                ? "var(--warning)"
+                : "var(--error)";
+          const isOutdated =
+            pkg.date &&
+            new Date() - new Date(pkg.date) > 365 * 24 * 60 * 60 * 1000;
+          const warnings = [];
+          if (isOutdated) warnings.push("Potentially outdated");
+          if (quality < 40) warnings.push("Low quality score");
+          if (maintenance < 30) warnings.push("Poor maintenance");
+          return `
+            <div class="glass-card pkg-card">
+                <div class="pkg-header">
+                    <a href="https://www.npmjs.com/package/${pkg.name}" target="_blank" rel="noopener" class="pkg-name">${pkg.name}</a>
+                    <span class="pkg-version">${pkg.version || ""}</span>
+                </div>
+                <p class="pkg-desc">${Helpers.escapeHtml(pkg.description || "No description available.")}</p>
+                ${warnings.length > 0 ? `<div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag tag-warning" style="font-size:0.7rem;"><i class="fa-solid fa-triangle-exclamation"></i> ${warnings.join(" · ")}</span></div>` : ""}
+                ${pkg.links?.npm ? `<a href="${pkg.links.npm}" target="_blank" rel="noopener" class="api-link mt-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> npm</a>` : ""}
+            </div>`;
+        })
+        .join("");
+    } catch (err) {
+      Toast.show("Failed to search packages: " + err.message, "error");
+      results.innerHTML = "";
+      empty.style.display = "block";
+    }
   },
 
   copyCmd(text, btn) {

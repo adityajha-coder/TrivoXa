@@ -7,7 +7,6 @@ const Navbar = {
     { id: "tools-vault", icon: "fa-solid fa-screwdriver-wrench", label: "Tools"},
     { id: "commands", icon: "fa-solid fa-terminal", label: "Commands" },
     { id: "free-apis", icon: "fa-solid fa-plug", label: "APIs" },
-    { id: "package-scout", icon: "fa-solid fa-box-open", label: "Packages" },
     { id: "code-git-explorer", icon: "fa-brands fa-github", label: "Explorer" },
   ],
 
@@ -35,6 +34,7 @@ const Navbar = {
                 </a>
 
                 <button class="topnav-btn" id="btn-fullscreen" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
+                <button class="topnav-btn" id="btn-settings" title="Settings"><i class="fa-solid fa-gear"></i></button>
                 
                 <div class="topnav-divider hide-mobile" style="height: 20px; margin: 0 4px;"></div>
                 
@@ -114,6 +114,9 @@ const Navbar = {
 
     // Initialize auth modal (extracted to authModal.js)
     AuthModal.init();
+
+    // Initialize settings modal
+    SettingsModal.init();
 
     document
       .getElementById("mobile-overlay")

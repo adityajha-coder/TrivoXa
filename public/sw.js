@@ -12,29 +12,37 @@ const STATIC_ASSETS = [
   "/css/pages.css",
   "/css/animations.css",
   "/js/utils/helpers.js",
+  "/js/auth/apiAuth.js",
+  "/js/git/apiGithub.js",
   "/js/utils/api.js",
+  "/js/auth/authModal.js",
+  "/js/ui/settingsModal.js",
   "/js/ui/navbar.js",
-  "/js/components/ui/loader.js",
+  "/js/ui/loader.js",
   "/js/dashboard/dashboard.js",
-  "/js/pages/main/workspace.js",
-  "/js/pages/main/docs.js",
-  "/js/pages/tools/toolsVault.js",
-  "/js/pages/tools/commands.js",
-  "/js/pages/tools/freeApis.js",
-  "/js/pages/tools/packageScout.js",
-  "/js/pages/ai/aiChat.js",
-  "/js/pages/ai/aiArchitect.js",
-  "/js/pages/ai/aiStacks.js",
-  "/js/pages/ai/askAi.js",
-  "/js/pages/gitExplorer/githubUser.js",
-  "/js/pages/gitExplorer/githubStructure.js",
-  "/js/pages/gitExplorer/githubGit.js",
-  "/js/pages/gitExplorer/codeGitExplorer.js",
+  "/js/ai/aiChat.js",
+  "/js/ai/aiArchitect.js",
+  "/js/ai/aiStacks.js",
+  "/js/ai/askAi.js",
+  "/js/git/githubUser.js",
+  "/js/git/githubStructure.js",
+  "/js/git/githubGit.js",
+  "/js/workspace/workspaceDB.js",
+  "/js/workspace/workspace.js",
+  "/js/docs/docs.js",
+  "/js/tools/toolsVault.js",
+  "/js/tools/commands.js",
+  "/js/tools/freeApis.js",
+  "/js/git/codeGitExplorer.js",
   "/js/core/router.js",
   "/js/core/app.js",
+  "/data/apis.json",
+  "/data/commands.json",
+  "/data/tools.json",
+  "/data/extensions.json",
 ];
 
-// API responses worth caching for offline use
+// API responses caching for offline use
 const API_CACHE = "vertex-api-v1";
 
 self.addEventListener("install", (event) => {
@@ -64,10 +72,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = event.request.url;
 
-  // skip our local proxy calls — don't cache AI responses
+  // skip our local proxy calls
   if (url.includes("/api/")) return;
 
-  // GitHub and npm API calls: network-first, cache fallback
+  // GitHub and npm API calls
   if (url.includes("api.github.com") || url.includes("registry.npmjs.org")) {
     event.respondWith(
       fetch(event.request)
@@ -83,7 +91,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // CDN libraries (three.js, monaco, fontawesome, etc): cache-first
+  // CDN libraries
   if (
     url.includes("cdnjs.cloudflare.com") ||
     url.includes("unpkg.com") ||
@@ -106,7 +114,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // static assets: cache first, then network
   event.respondWith(
     caches
       .match(event.request)

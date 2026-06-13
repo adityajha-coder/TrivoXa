@@ -139,10 +139,12 @@ const GithubStructureMixin = {
 
     setTimeout(() => {
       try {
+        const currentTheme = localStorage.getItem("theme") || "dark";
+
         this.forceGraph = ForceGraph3D()(el)
           .width(w)
           .height(h)
-          .backgroundColor("#000000")
+          .backgroundColor(currentTheme === "light" ? "#f6f8fa" : "#000000")
           .graphData({ nodes, links })
           .nodeLabel("name")
           .nodeColor((n) => n.color)
@@ -151,10 +153,6 @@ const GithubStructureMixin = {
           .linkColor(() => "rgba(212, 168, 67, 0.45)")
           .linkWidth(1.2)
           .linkOpacity(0.6)
-          .linkDirectionalParticles(3)
-          .linkDirectionalParticleWidth(2.5)
-          .linkDirectionalParticleColor(() => "rgba(240, 197, 109, 0.9)")
-          .linkDirectionalParticleSpeed(() => 0.004 + Math.random() * 0.004)
           .onNodeClick((node) => {
             const dist = Math.hypot(node.x, node.y, node.z) || 1;
             const ratio = 1 + 40 / dist;
@@ -173,6 +171,13 @@ const GithubStructureMixin = {
           );
         };
 
+        // Apply directional particles
+        this.forceGraph
+          .linkDirectionalParticles(3)
+          .linkDirectionalParticleWidth(2.5)
+          .linkDirectionalParticleColor(() => "rgba(240, 197, 109, 0.9)")
+          .linkDirectionalParticleSpeed(() => 0.004 + Math.random() * 0.004);
+
         const onResize = () => {
           const r = el.getBoundingClientRect();
           if (r.width && r.height)
@@ -183,8 +188,16 @@ const GithubStructureMixin = {
           setTimeout(onResize, 200),
         );
         this._resizeHandler = onResize;
+
+        const themeListener = (e) => {
+          if (this.forceGraph) {
+            this.forceGraph.backgroundColor(e.detail.theme === "light" ? "#f6f8fa" : "#000000");
+          }
+        };
+        window.addEventListener("theme_changed", themeListener);
+        this._themeListener = themeListener;
       } catch (err) {
-        console.error("3D Graph Error:", err);
+        console.error("Graph Error:", err);
       }
     }, 100);
   },

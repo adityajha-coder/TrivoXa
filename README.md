@@ -240,7 +240,7 @@ Spatial visualization of repository architectures using WebGL rendering.
 >
 > Bundle size comparisons
 >
-> Git, Docker, Linux cheat sheets
+> Git, Docker, Kubernetes, Linux cheat sheets
 >
 > Coding assistant directory
 
@@ -255,9 +255,9 @@ A consolidated suite of essential tools designed to eliminate tab switching duri
 
 **Free APIs Directory** indexes over 100 public REST endpoints across categories, with built in sandbox testing to preview response structures directly in the interface.
 
-**Tools Vault** catalogs framework boilerplates, technical libraries, coding assistants (Claude Code, Copilot CLI, Gemini CLI, Codex, Aider, Continue), and VS Code extensions.
+**Tools Vault** catalogs framework boilerplates, technical libraries, coding assistants (Claude Code, Copilot CLI, Gemini CLI, Codex, Aider, Continue), VS Code extensions, machine learning/data science libraries, and app development utilities.
 
-**Commands Library** provides searchable CLI references for Git, NPM, Docker, Linux, and Terminal operations with copy to clipboard support.
+**Commands Library** provides searchable CLI references for Git, NPM, Docker, Kubernetes, Linux, and Terminal operations with copy to clipboard support.
 
 **Docs Search** connects to technical documentation sources with persistent search history tracking.
 
@@ -336,8 +336,8 @@ trivoxa/
 │
 ├── data/
 │   ├── apis.json           # 100+ public API endpoint catalog
-│   ├── commands.json       # Git, NPM, Terminal, Docker CLI reference
-│   ├── tools.json          # Developer tools and assistant directory
+│   ├── commands.json       # Git, NPM, Terminal, Docker, Kubernetes CLI reference
+│   ├── tools.json          # Developer tools, ML, and App Dev assistant directory
 │   └── extensions.json     # VS Code extension recommendations
 │
 ├── public/                 # Favicon, manifest, icons, service worker
