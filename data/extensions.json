@@ -708,5 +708,50 @@
         "id": "uctakeoff.vscode-counter"
       }
     ]
+  },
+  {
+    "cat": "Machine Learning & Data Science",
+    "items": [
+      {
+        "name": "Jupyter",
+        "desc": "Full Jupyter Notebook support inside VS Code editor workspace",
+        "id": "ms-toolsai.jupyter"
+      },
+      {
+        "name": "Jupyter Keymap",
+        "desc": "Common Jupyter Notebook keybindings and shortcut configurations",
+        "id": "ms-toolsai.jupyter-keymap"
+      },
+      {
+        "name": "Jupyter Notebook Renderers",
+        "desc": "Renderers for data frames, plots, images, and other HTML outputs in notebooks",
+        "id": "ms-toolsai.jupyter-renderers"
+      },
+      {
+        "name": "Data Wrangler",
+        "desc": "Code-centric data cleaning and profiling tool integrated with notebooks",
+        "id": "ms-toolsai.datawrangler"
+      },
+      {
+        "name": "TensorBoard",
+        "desc": "Visualize machine learning models, training graphs, metrics, and profiles",
+        "id": "ms-toolsai.tensorboard"
+      },
+      {
+        "name": "DVC (Data Version Control)",
+        "desc": "Track machine learning pipelines, dataset versions, and model registry artifacts",
+        "id": "Iterative.dvc"
+      },
+      {
+        "name": "Kubeflow Pipelines",
+        "desc": "Manage, deploy, and inspect KubeFlow pipelines inside VS Code",
+        "id": "canonical.kubeflow"
+      },
+      {
+        "name": "Python Indent",
+        "desc": "Ensure proper indentation for Python code scripts when writing DS/ML logic",
+        "id": "KevinRose.vsc-python-indent"
+      }
+    ]
   }
 ]

@@ -180,9 +180,9 @@ button {
   --success: #1a7f37;
   --warning: #9a6700;
   --error: #cf222e;
-  --text: #24292f;
-  --text-secondary: #57606a;
-  --text-muted: #6e7781;
+  --text: #000000;
+  --text-secondary: #000000;
+  --text-muted: #000000;
   --border: #d0d7de;
   --border-light: #eaeef2;
   --shadow: 0 8px 24px rgba(140, 149, 159, 0.12);

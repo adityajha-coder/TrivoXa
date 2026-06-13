@@ -62,10 +62,10 @@ const ToolsVaultPage = {
                         <div class="search-container glass-card" style="width:100%; max-width:700px; display:flex; gap:10px; padding:10px; align-items:center;">
                             <div style="position:relative; flex:1;">
                                 <i class="fa-solid fa-magnifying-glass search-icon" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;"></i>
-                                <input class="input-field" id="tv-search" type="text" placeholder="Search tools..." style="width:100%; padding-left:40px; border:none; background:rgba(255,255,255,0.05);" />
+                                <input class="input-field" id="tv-search" type="text" placeholder="Search tools..." style="width:100%; padding-left:40px; background:var(--bg-secondary); color:var(--text); border:1px solid var(--border); border-radius:var(--radius);" />
                             </div>
-                            <select class="input-field" id="tv-category-filter" style="width:220px; padding:0 12px; height:42px; cursor:pointer; background:rgba(255,255,255,0.05); color:#fff; border:none; font-size: 0.85rem;">
-                                ${allCats.map((cat) => `<option value="${cat}" ${cat === this.activeCategory ? "selected" : ""} style="background:#000; color:#fff;">${cat}</option>`).join("")}
+                            <select class="input-field" id="tv-category-filter" style="width:220px; padding:0 12px; height:42px; cursor:pointer; background:var(--bg-secondary); color:var(--text); border:1px solid var(--border); border-radius:var(--radius); font-size: 0.85rem;">
+                                ${allCats.map((cat) => `<option value="${cat}" ${cat === this.activeCategory ? "selected" : ""} style="background:var(--bg-secondary); color:var(--text);">${cat}</option>`).join("")}
                             </select>
                         </div>
                     </div>
@@ -78,11 +78,11 @@ const ToolsVaultPage = {
                         <div class="search-container glass-card" style="width:100%; max-width:700px; display:flex; gap:10px; padding:10px; align-items:center;">
                             <div style="position:relative; flex:1;">
                                 <i class="fa-solid fa-magnifying-glass search-icon" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;"></i>
-                                <input class="input-field" id="tv-ext-search" type="text" placeholder="Search extensions..." style="width:100%; padding-left:40px; border:none; background:rgba(255,255,255,0.05);" />
+                                <input class="input-field" id="tv-ext-search" type="text" placeholder="Search extensions..." style="width:100%; padding-left:40px; background:var(--bg-secondary); color:var(--text); border:1px solid var(--border); border-radius:var(--radius);" />
                             </div>
-                            <select class="input-field" id="tv-ext-category-filter" style="width:220px; padding:0 12px; height:42px; cursor:pointer; background:rgba(255,255,255,0.05); color:#fff; border:none; font-size:0.85rem;">
-                                <option value="All" style="background:#000; color:#fff;">All</option>
-                                ${this.vsCodeExtensions.map((g) => `<option value="${g.cat}" style="background:#000; color:#fff;">${g.cat}</option>`).join("")}
+                            <select class="input-field" id="tv-ext-category-filter" style="width:220px; padding:0 12px; height:42px; cursor:pointer; background:var(--bg-secondary); color:var(--text); border:1px solid var(--border); border-radius:var(--radius); font-size:0.85rem;">
+                                <option value="All" style="background:var(--bg-secondary); color:var(--text);">All</option>
+                                ${this.vsCodeExtensions.map((g) => `<option value="${g.cat}" style="background:var(--bg-secondary); color:var(--text);">${g.cat}</option>`).join("")}
                             </select>
                         </div>
                     </div>

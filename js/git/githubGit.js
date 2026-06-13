@@ -237,13 +237,10 @@ const GithubGitMixin = {
   animateGit() {
     this.gitAnimId = requestAnimationFrame(() => this.animateGit());
     this.gitControls.update();
-    const particles = localStorage.getItem("trivoxa_graph_particles") || "on";
-    if (particles === "on") {
-      const t = Date.now() * 0.001;
-      this.gitNodes.forEach((n, i) => {
-        n.position.y += Math.sin(t + i * 0.3) * 0.0015;
-      });
-    }
+    const t = Date.now() * 0.001;
+    this.gitNodes.forEach((n, i) => {
+      n.position.y += Math.sin(t + i * 0.3) * 0.0015;
+    });
     this.gitRenderer.render(this.gitScene, this.gitCamera);
   },
 

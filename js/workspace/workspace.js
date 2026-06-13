@@ -34,17 +34,17 @@ const WorkspacePage = {
                         
                         <div class="mb-sm" style="position: relative;">
                             <i class="fa-solid fa-list-ul" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
-                            <select id="ws-item-source-select" class="input-field" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm); appearance: none; background: rgba(0,0,0,0.3) !important;">
-                                <option value="custom" style="background:#111; color:#fff;">Custom Text / Code</option>
-                                <option value="api" style="background:#111; color:#fff;">Select from Free APIs</option>
-                                <option value="tool" style="background:#111; color:#fff;">Select from Tools Vault</option>
-                                <option value="history" style="background:#111; color:#fff;">Select from AI History</option>
+                            <select id="ws-item-source-select" class="input-field" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm); appearance: none; background: var(--bg-secondary) !important; color: var(--text); border: 1px solid var(--border);">
+                                <option value="custom" style="background:var(--bg-secondary); color:var(--text);">Custom Text / Code</option>
+                                <option value="api" style="background:var(--bg-secondary); color:var(--text);">Select from Free APIs</option>
+                                <option value="tool" style="background:var(--bg-secondary); color:var(--text);">Select from Tools Vault</option>
+                                <option value="history" style="background:var(--bg-secondary); color:var(--text);">Select from AI History</option>
                             </select>
                         </div>
 
                         <div id="ws-preset-selector-container" class="mb-sm" style="display:none; position: relative;">
                             <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
-                            <select id="ws-preset-select" class="input-field" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm); appearance: none; background: rgba(0,0,0,0.3) !important;">
+                            <select id="ws-preset-select" class="input-field" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm); appearance: none; background: var(--bg-secondary) !important; color: var(--text); border: 1px solid var(--border);">
                                 <option value="">Loading...</option>
                             </select>
                         </div>
@@ -55,7 +55,7 @@ const WorkspacePage = {
                             <input type="text" id="snip-tags" class="input-field" placeholder="Tags (comma separated)" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm);">
                         </div>
                         <input type="hidden" id="snip-item-type" value="text">
-                        <textarea id="snip-code" class="input-field" placeholder="Write your note, link, or snippet here..." style="width:100%; height:120px; resize:vertical; border-radius: var(--radius-sm); margin-bottom: 12px; font-family:var(--font-mono); font-size:13px; background:rgba(0,0,0,0.3); border:1px solid var(--border); color:var(--text); padding:12px;"></textarea>
+                        <textarea id="snip-code" class="input-field" placeholder="Write your note, link, or snippet here..." style="width:100%; height:120px; resize:vertical; border-radius: var(--radius-sm); margin-bottom: 12px; font-family:var(--font-mono); font-size:13px; background:var(--bg-secondary); border:1px solid var(--border); color:var(--text); padding:12px;"></textarea>
                         <button id="save-snip-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save to Folder</button>
                     </div>
                     
@@ -403,11 +403,11 @@ const WorkspacePage = {
               this._cachedApis = await res.json();
             }
             presetSelect.innerHTML =
-              '<option value="" style="background:#111; color:#fff;">-- Select an API --</option>' +
+              '<option value="" style="background:var(--bg-secondary); color:var(--text);">-- Select an API --</option>' +
               this._cachedApis
                 .map(
                   (a, i) =>
-                    `<option value="${i}" style="background:#111; color:#fff;">${a.name} (${a.category})</option>`,
+                    `<option value="${i}" style="background:var(--bg-secondary); color:var(--text);">${a.name} (${a.category})</option>`,
                 )
                 .join("");
           } else if (source === "tool") {
@@ -423,11 +423,11 @@ const WorkspacePage = {
               );
             }
             presetSelect.innerHTML =
-              '<option value="" style="background:#111; color:#fff;">-- Select a Tool --</option>' +
+              '<option value="" style="background:var(--bg-secondary); color:var(--text);">-- Select a Tool --</option>' +
               this._flatTools
                 .map(
                   (t, i) =>
-                    `<option value="${i}" style="background:#111; color:#fff;">${t.name} (${t.category})</option>`,
+                    `<option value="${i}" style="background:var(--bg-secondary); color:var(--text);">${t.name} (${t.category})</option>`,
                 )
                 .join("");
           } else if (source === "history") {
@@ -453,10 +453,10 @@ const WorkspacePage = {
 
             if (!this._cachedHistory || this._cachedHistory.length === 0) {
               presetSelect.innerHTML =
-                '<option value="" style="background:#111; color:#fff;">-- No AI History Found --</option>';
+                '<option value="" style="background:var(--bg-secondary); color:var(--text);">-- No AI History Found --</option>';
             } else {
               presetSelect.innerHTML =
-                '<option value="" style="background:#111; color:#fff;">-- Select from AI History --</option>' +
+                '<option value="" style="background:var(--bg-secondary); color:var(--text);">-- Select from AI History --</option>' +
                 this._cachedHistory
                   .map((h, i) => {
                     const shortPrompt =
@@ -465,7 +465,7 @@ const WorkspacePage = {
                         : h.prompt;
                     const moduleIcon =
                       h.module === "architect" ? "Architecture" : "Chat";
-                    return `<option value="${i}" style="background:#111; color:#fff;">[${moduleIcon}] ${shortPrompt}</option>`;
+                    return `<option value="${i}" style="background:var(--bg-secondary); color:var(--text);">[${moduleIcon}] ${shortPrompt}</option>`;
                   })
                   .join("");
             }

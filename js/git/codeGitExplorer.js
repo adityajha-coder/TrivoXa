@@ -572,14 +572,7 @@ Keep it concise (under 200 words). Do not use code blocks.`;
       window.removeEventListener("theme_changed", this._gitThemeListener);
       this._gitThemeListener = null;
     }
-    if (this._layoutListener) {
-      window.removeEventListener("graph_layout_changed", this._layoutListener);
-      this._layoutListener = null;
-    }
-    if (this._particlesListener) {
-      window.removeEventListener("graph_particles_changed", this._particlesListener);
-      this._particlesListener = null;
-    }
+
 
     this.scene = null;
     this.gitScene = null;

@@ -13,6 +13,11 @@
         "url": "https://cursor.sh"
       },
       {
+        "name": "Ollama",
+        "desc": "Run large language models locally on your machine",
+        "url": "https://ollama.com"
+      },
+      {
         "name": "ChatGPT",
         "desc": "OpenAI conversational AI model",
         "url": "https://chat.openai.com"
@@ -456,6 +461,61 @@
         "name": "CSS Gradient",
         "desc": "Free css gradient generator tool",
         "url": "https://cssgradient.io"
+      }
+    ]
+  },
+  {
+    "cat": "Machine Learning & Data Science",
+    "items": [
+      {
+        "name": "Jupyter Notebook",
+        "desc": "Web-based interactive computing environment for notebooks",
+        "url": "https://jupyter.org"
+      },
+      {
+        "name": "Google Colab",
+        "desc": "Hosted Jupyter notebook service requiring zero configuration",
+        "url": "https://colab.research.google.com"
+      },
+      {
+        "name": "Hugging Face",
+        "desc": "Hub for pre-trained machine learning models, datasets, and spaces",
+        "url": "https://huggingface.co"
+      },
+      {
+        "name": "Kaggle",
+        "desc": "Data science competitions, public datasets, and learning resources",
+        "url": "https://www.kaggle.com"
+      },
+      {
+        "name": "PyTorch",
+        "desc": "Open-source deep learning framework developed by Meta's AI research lab",
+        "url": "https://pytorch.org"
+      },
+      {
+        "name": "TensorFlow",
+        "desc": "End-to-end open-source machine learning platform by Google",
+        "url": "https://www.tensorflow.org"
+      },
+      {
+        "name": "Scikit-Learn",
+        "desc": "Simple and efficient machine learning tools for Python",
+        "url": "https://scikit-learn.org"
+      },
+      {
+        "name": "Pandas",
+        "desc": "High-performance data analysis and manipulation library for Python",
+        "url": "https://pandas.pydata.org"
+      },
+      {
+        "name": "Weights & Biases",
+        "desc": "Experiment tracking, model serialization, and dataset versioning platform",
+        "url": "https://wandb.ai"
+      },
+      {
+        "name": "Streamlit",
+        "desc": "Create and share custom web applications for data science and ML",
+        "url": "https://streamlit.io"
       }
     ]
   }

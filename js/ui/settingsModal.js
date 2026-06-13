@@ -17,10 +17,6 @@ const SettingsModal = {
       const currentTheme = localStorage.getItem("theme") || "dark";
       const currentModel =
         localStorage.getItem("trivoxa_ai_model") || "mixtral";
-      const currentLayout =
-        localStorage.getItem("trivoxa_graph_layout") || "3d";
-      const currentParticles =
-        localStorage.getItem("trivoxa_graph_particles") || "on";
       const currentUser = API.getUser();
 
       settingsModal.innerHTML = `
@@ -119,35 +115,6 @@ const SettingsModal = {
                     </div>
                 </div>
 
-                <!-- 3D Graph Performance -->
-                <div>
-                    <h3 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:600; color:var(--text); text-transform:uppercase; letter-spacing:0.05em;">3D Graph Performance</h3>
-                    <div style="display:flex; flex-direction:column; gap:12px;">
-                        <!-- Layout Type -->
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                            <div id="layout-3d-btn" class="layout-card ${currentLayout === "3d" ? "active" : ""}" style="cursor:pointer; padding:12px; border:2px solid ${currentLayout === "3d" ? "var(--primary)" : "var(--border)"}; border-radius:var(--radius-lg); background:var(--bg-secondary); text-align:center; transition: all var(--transition);">
-                                <i class="fa-solid fa-cube" style="font-size:1.3rem; color:${currentLayout === "3d" ? "var(--primary)" : "var(--text-muted)"}; margin-bottom:6px; display:block;"></i>
-                                <span style="font-size:0.8rem; font-weight:600; color:var(--text);">3D Map (Default)</span>
-                            </div>
-                            <div id="layout-2d-btn" class="layout-card ${currentLayout === "2d" ? "active" : ""}" style="cursor:pointer; padding:12px; border:2px solid ${currentLayout === "2d" ? "var(--primary)" : "var(--border)"}; border-radius:var(--radius-lg); background:var(--bg-secondary); text-align:center; transition: all var(--transition);">
-                                <i class="fa-solid fa-table-cells" style="font-size:1.3rem; color:${currentLayout === "2d" ? "var(--primary)" : "var(--text-muted)"}; margin-bottom:6px; display:block;"></i>
-                                <span style="font-size:0.8rem; font-weight:600; color:var(--text);">2D Map (Eco)</span>
-                            </div>
-                        </div>
-
-                        <!-- Particles Switch -->
-                        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-md);">
-                            <div>
-                                <span style="font-size:0.85rem; font-weight:600; color:var(--text); display:block;">Dynamic Particles</span>
-                                <span style="font-size:0.7rem; color:var(--text-secondary);">Animated node links (high load)</span>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="setting-particles-toggle" ${currentParticles === "on" ? "checked" : ""}>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Security Section (Only rendered when logged in) -->
                 ${
@@ -219,42 +186,6 @@ const SettingsModal = {
         );
       });
 
-      // Bind 3D Graph layout
-      const layout3dBtn = settingsModal.querySelector("#layout-3d-btn");
-      const layout2dBtn = settingsModal.querySelector("#layout-2d-btn");
-
-      const setLayout = (layout) => {
-        localStorage.setItem("trivoxa_graph_layout", layout);
-        if (layout === "3d") {
-          layout3dBtn.classList.add("active");
-          layout2dBtn.classList.remove("active");
-          layout3dBtn.style.borderColor = "var(--primary)";
-          layout3dBtn.querySelector("i").style.color = "var(--primary)";
-          layout2dBtn.style.borderColor = "var(--border)";
-          layout2dBtn.querySelector("i").style.color = "var(--text-muted)";
-        } else {
-          layout2dBtn.classList.add("active");
-          layout3dBtn.classList.remove("active");
-          layout2dBtn.style.borderColor = "var(--primary)";
-          layout2dBtn.querySelector("i").style.color = "var(--primary)";
-          layout3dBtn.style.borderColor = "var(--border)";
-          layout3dBtn.querySelector("i").style.color = "var(--text-muted)";
-        }
-        Toast.show("Graph layout preference set to " + (layout === "3d" ? "3D" : "2D"), "success");
-        window.dispatchEvent(new CustomEvent("graph_layout_changed", { detail: { layout } }));
-      };
-
-      layout3dBtn.addEventListener("click", () => setLayout("3d"));
-      layout2dBtn.addEventListener("click", () => setLayout("2d"));
-
-      // Bind Particles Toggle
-      const particlesToggle = settingsModal.querySelector("#setting-particles-toggle");
-      particlesToggle.addEventListener("change", (e) => {
-        const state = e.target.checked ? "on" : "off";
-        localStorage.setItem("trivoxa_graph_particles", state);
-        Toast.show("Dynamic particles turned " + state, "success");
-        window.dispatchEvent(new CustomEvent("graph_particles_changed", { detail: { particles: state } }));
-      });
 
       // Bind Reveal Password (if logged in)
       if (currentUser) {
@@ -287,10 +218,34 @@ const SettingsModal = {
             const data = await API.revealPassword(email);
             resultDiv.style.display = "block";
             if (data.password) {
+              const maskedPwd = "•".repeat(data.password.length);
               resultDiv.style.background = "rgba(46, 160, 67, 0.1)";
               resultDiv.style.border = "1px solid var(--success)";
               resultDiv.style.color = "var(--success)";
-              resultDiv.innerHTML = `<strong>Password:</strong> <span style="user-select:all;">${Helpers.escapeHtml(data.password)}</span>`;
+              resultDiv.innerHTML = `
+                <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+                  <strong>Password:</strong>
+                  <span id="pwd-display-text" style="font-family:var(--font-mono); user-select:all;">${maskedPwd}</span>
+                  <button id="btn-toggle-pwd-visibility" class="btn btn-ghost btn-xs" style="padding: 2px 6px; color: var(--text-secondary); border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+              `;
+
+              let isVisible = false;
+              const toggleBtn = resultDiv.querySelector("#btn-toggle-pwd-visibility");
+              const displaySpan = resultDiv.querySelector("#pwd-display-text");
+
+              toggleBtn.addEventListener("click", () => {
+                isVisible = !isVisible;
+                if (isVisible) {
+                  displaySpan.textContent = data.password;
+                  toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+                } else {
+                  displaySpan.textContent = maskedPwd;
+                  toggleBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+                }
+              });
               Toast.show("Password retrieved successfully", "success");
             } else if (data.notice) {
               resultDiv.style.background = "rgba(210, 153, 34, 0.1)";
