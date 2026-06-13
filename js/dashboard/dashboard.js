@@ -55,7 +55,7 @@ const DashboardPage = {
                                 <div class="journey-row">
                                     <div class="journey-index">03</div>
                                     <h3>Verify</h3>
-                                    <p>Check docs, evaluate dependencies with Package Scout, browse Free APIs, and understand repo structure with GitHub Explorer.</p>
+                                    <p>Check docs, evaluate dependencies in Commands, browse Free APIs, and understand repo structure with GitHub Explorer.</p>
                                 </div>
                             </div>
                         </div>
@@ -93,10 +93,6 @@ const DashboardPage = {
                                 <div class="feature-item">
                                     <h3>Free APIs</h3>
                                     <p>A browsable directory of public endpoints for prototypes and integrations.</p>
-                                </div>
-                                <div class="feature-item">
-                                    <h3>Package Scout</h3>
-                                    <p>Live npm package information to help compare dependencies more intelligently.</p>
                                 </div>
                                 <div class="feature-item">
                                     <h3>GitHub Explorer</h3>

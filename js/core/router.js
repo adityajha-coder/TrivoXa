@@ -7,7 +7,6 @@ const Router = {
         'tools-vault': () => ToolsVaultPage.render(),
         'docs': () => DocsPage.render(),
         'code-git-explorer': () => CodeGitExplorerPage.render(),
-        'package-scout': () => PackageScoutPage.render(),
         'free-apis': () => FreeApisPage.render()
     },
 

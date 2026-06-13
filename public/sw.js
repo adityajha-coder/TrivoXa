@@ -21,7 +21,6 @@ const STATIC_ASSETS = [
   "/js/pages/tools/toolsVault.js",
   "/js/pages/tools/commands.js",
   "/js/pages/tools/freeApis.js",
-  "/js/pages/tools/packageScout.js",
   "/js/pages/ai/aiChat.js",
   "/js/pages/ai/aiArchitect.js",
   "/js/pages/ai/aiStacks.js",

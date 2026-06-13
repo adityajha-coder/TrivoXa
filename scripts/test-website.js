@@ -143,7 +143,7 @@ async function testFrontendServer() {
             'js/git/githubUser.js', 'js/git/githubStructure.js', 'js/git/githubGit.js',
             'js/workspace/workspaceDB.js', 'js/workspace/workspace.js', 'js/docs/docs.js',
             'js/tools/toolsVault.js', 'js/tools/commands.js', 'js/tools/freeApis.js',
-            'js/tools/packageScout.js', 'js/git/codeGitExplorer.js', 'js/core/router.js',
+            'js/git/codeGitExplorer.js', 'js/core/router.js',
             'js/core/app.js'
         ];
         const missing = requiredScripts.filter(s => !res.body.includes(s));
@@ -180,7 +180,7 @@ async function testJSAssets() {
         'js/git/githubUser.js', 'js/git/githubStructure.js', 'js/git/githubGit.js',
         'js/workspace/workspaceDB.js', 'js/workspace/workspace.js', 'js/docs/docs.js',
         'js/tools/toolsVault.js', 'js/tools/commands.js', 'js/tools/freeApis.js',
-        'js/tools/packageScout.js', 'js/git/codeGitExplorer.js', 'js/core/router.js',
+        'js/git/codeGitExplorer.js', 'js/core/router.js',
         'js/core/app.js'
     ];
 
