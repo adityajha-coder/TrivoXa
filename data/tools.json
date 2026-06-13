@@ -518,5 +518,50 @@
         "url": "https://streamlit.io"
       }
     ]
+  },
+  {
+    "cat": "App Development",
+    "items": [
+      {
+        "name": "Expo Go",
+        "desc": "Client app to run and test React Native projects on physical devices",
+        "url": "https://expo.dev/client"
+      },
+      {
+        "name": "Flipper",
+        "desc": "Extensible mobile app debugger developed by Meta",
+        "url": "https://fbflipper.com"
+      },
+      {
+        "name": "Reactotron",
+        "desc": "Desktop app for inspecting React Native and React application state and network requests",
+        "url": "https://github.com/infinitered/reactotron"
+      },
+      {
+        "name": "Flutter DevTools",
+        "desc": "Suite of performance, debugging, and profiling tools for Flutter apps",
+        "url": "https://docs.flutter.dev/tools/devtools"
+      },
+      {
+        "name": "Fastlane",
+        "desc": "Open-source tool to automate beta deployments and App Store releases for iOS and Android",
+        "url": "https://fastlane.tools"
+      },
+      {
+        "name": "Tauri",
+        "desc": "Framework for building tiny, blazing fast desktop applications using web technologies and Rust",
+        "url": "https://tauri.app"
+      },
+      {
+        "name": "CocoaPods",
+        "desc": "Dependency manager for Swift and Objective-C Cocoa projects",
+        "url": "https://cocoapods.org"
+      },
+      {
+        "name": "Android Studio",
+        "desc": "The official Integrated Development Environment (IDE) for Android app development",
+        "url": "https://developer.android.com/studio"
+      }
+    ]
   }
 ]

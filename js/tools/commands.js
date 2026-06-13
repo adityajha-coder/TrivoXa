@@ -7,6 +7,7 @@ const CommandsPage = {
   npmCommands: [],
   terminalCommands: [],
   dockerCommands: [],
+  kubernetesCommands: [],
   httpCommands: [],
   flowSteps: {},
   _loaded: false,
@@ -21,6 +22,7 @@ const CommandsPage = {
       this.npmCommands = data.npmCommands || [];
       this.terminalCommands = data.terminalCommands || [];
       this.dockerCommands = data.dockerCommands || [];
+      this.kubernetesCommands = data.kubernetesCommands || [];
       this.httpCommands = data.httpCommands || [];
       this.flowSteps = data.flowSteps || {};
       this._loaded = true;
@@ -78,6 +80,12 @@ const CommandsPage = {
                         <div class="flex-gap">
                             <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(36,150,237,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-docker" style="font-size:1rem;color:#2496ed;"></i></div>
                             <div><h3 style="font-size:0.92rem;font-weight:600;">Docker</h3><p class="text-xs text-muted">${this.dockerCommands.length} commands</p></div>
+                        </div>
+                    </div>
+                    <div class="glass-card cmd-type-card" data-cmd="kubernetes" style="cursor:pointer;">
+                        <div class="flex-gap">
+                            <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(50,108,229,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-dharmachakra" style="font-size:1rem;color:#326ce5;"></i></div>
+                            <div><h3 style="font-size:0.92rem;font-weight:600;">Kubernetes</h3><p class="text-xs text-muted">${this.kubernetesCommands.length} commands</p></div>
                         </div>
                     </div>
                     <div class="glass-card cmd-type-card" data-cmd="http" style="cursor:pointer;">
@@ -167,9 +175,11 @@ const CommandsPage = {
           ? this.npmCommands
           : this.activeTab === "docker"
             ? this.dockerCommands
-            : this.activeTab === "http"
-              ? this.httpCommands
-              : this.terminalCommands;
+            : this.activeTab === "kubernetes"
+              ? this.kubernetesCommands
+              : this.activeTab === "http"
+                ? this.httpCommands
+                : this.terminalCommands;
     // For terminal commands, apply OS-specific translations when Windows is selected
     if (this.activeTab === "terminal" && this.activeOS === "win") {
       return base.map((c) => ({
@@ -196,6 +206,7 @@ const CommandsPage = {
           npm: "npm Workflow — Step by Step",
           terminal: "Terminal Workflow — Step by Step",
           docker: "Docker Workflow — Step by Step",
+          kubernetes: "Kubernetes Workflow — Step by Step",
           http: "HTTP Status Codes — Flow",
         };
         document.getElementById("flow-title").innerHTML =
@@ -374,19 +385,23 @@ const CommandsPage = {
     toggle.addEventListener("click", () => {
       this._pkgSearchOpen = !this._pkgSearchOpen;
       body.style.display = this._pkgSearchOpen ? "block" : "none";
-      icon.style.transform = this._pkgSearchOpen ? "rotate(180deg)" : "rotate(0deg)";
+      icon.style.transform = this._pkgSearchOpen
+        ? "rotate(180deg)"
+        : "rotate(0deg)";
     });
 
     document.getElementById("pkg-search-btn").addEventListener("click", () => {
       const q = document.getElementById("pkg-search-input").value.trim();
       if (q) this.searchPackages(q);
     });
-    document.getElementById("pkg-search-input").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        const q = e.target.value.trim();
-        if (q) this.searchPackages(q);
-      }
-    });
+    document
+      .getElementById("pkg-search-input")
+      .addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const q = e.target.value.trim();
+          if (q) this.searchPackages(q);
+        }
+      });
   },
 
   async searchPackages(query) {
@@ -408,11 +423,25 @@ const CommandsPage = {
           const score = obj.score;
           const quality = Math.round((score.detail?.quality || 0) * 100);
           const popularity = Math.round((score.detail?.popularity || 0) * 100);
-          const maintenance = Math.round((score.detail?.maintenance || 0) * 100);
+          const maintenance = Math.round(
+            (score.detail?.maintenance || 0) * 100,
+          );
           const overall = Math.round((score.final || 0) * 100);
-          const qualityColor = quality > 70 ? "var(--success)" : quality > 40 ? "var(--warning)" : "var(--error)";
-          const maintColor = maintenance > 70 ? "var(--success)" : maintenance > 40 ? "var(--warning)" : "var(--error)";
-          const isOutdated = pkg.date && new Date() - new Date(pkg.date) > 365 * 24 * 60 * 60 * 1000;
+          const qualityColor =
+            quality > 70
+              ? "var(--success)"
+              : quality > 40
+                ? "var(--warning)"
+                : "var(--error)";
+          const maintColor =
+            maintenance > 70
+              ? "var(--success)"
+              : maintenance > 40
+                ? "var(--warning)"
+                : "var(--error)";
+          const isOutdated =
+            pkg.date &&
+            new Date() - new Date(pkg.date) > 365 * 24 * 60 * 60 * 1000;
           const warnings = [];
           if (isOutdated) warnings.push("Potentially outdated");
           if (quality < 40) warnings.push("Low quality score");

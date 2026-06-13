@@ -61,7 +61,7 @@
 .topnav-links {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 6px;
   overflow-x: auto;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
@@ -73,10 +73,10 @@
 .topnav-link {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 8px;
+  gap: 6px;
+  padding: 6px 12px;
   border-radius: var(--radius-sm);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-secondary);
   cursor: pointer;
@@ -304,7 +304,7 @@
   border-left: 3px solid var(--primary);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1120px) {
   .topnav-links {
     display: none;
   }

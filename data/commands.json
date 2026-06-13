@@ -991,10 +991,52 @@
       "step": 1
     },
     {
+      "cmd": "docker images",
+      "desc": "List all locally available images.",
+      "example": "docker images",
+      "cat": "Images",
+      "step": 1
+    },
+    {
+      "cmd": "docker search",
+      "desc": "Search Docker Hub for images.",
+      "example": "docker search nginx",
+      "cat": "Images",
+      "step": 1
+    },
+    {
       "cmd": "docker build",
       "desc": "Build an image from a Dockerfile.",
       "example": "docker build -t myapp .",
-      "cat": "Images",
+      "cat": "Build",
+      "step": 2
+    },
+    {
+      "cmd": "docker build --no-cache",
+      "desc": "Build an image without using cache layers.",
+      "example": "docker build --no-cache -t myapp .",
+      "cat": "Build",
+      "step": 2
+    },
+    {
+      "cmd": "docker tag",
+      "desc": "Create a tag for an image to push to a registry.",
+      "example": "docker tag myapp:latest myrepo/myapp:v1.0",
+      "cat": "Build",
+      "step": 2
+    },
+    {
+      "cmd": "docker push",
+      "desc": "Push an image to a remote registry.",
+      "example": "docker push myrepo/myapp:v1.0",
+      "cat": "Build",
+      "step": 2
+    },
+    {
+      "cmd": "docker history",
+      "desc": "Show the history of layers in an image.",
+      "example": "docker history myapp",
+      "cat": "Build",
       "step": 2
     },
     {
@@ -1005,23 +1047,100 @@
       "step": 3
     },
     {
+      "cmd": "docker run -it",
+      "desc": "Run a container interactively with a terminal.",
+      "example": "docker run -it ubuntu /bin/bash",
+      "cat": "Containers",
+      "step": 3
+    },
+    {
+      "cmd": "docker run --rm",
+      "desc": "Run a container that auto-removes after exit.",
+      "example": "docker run --rm alpine echo hello",
+      "cat": "Containers",
+      "step": 3
+    },
+    {
+      "cmd": "docker run -v",
+      "desc": "Run a container with a volume mount.",
+      "example": "docker run -v /host/path:/container/path myapp",
+      "cat": "Containers",
+      "step": 3
+    },
+    {
+      "cmd": "docker run --env",
+      "desc": "Run a container with environment variables.",
+      "example": "docker run --env DB_HOST=localhost myapp",
+      "cat": "Containers",
+      "step": 3
+    },
+    {
+      "cmd": "docker run --name",
+      "desc": "Run a container with a custom name.",
+      "example": "docker run --name my-nginx -d nginx",
+      "cat": "Containers",
+      "step": 3
+    },
+    {
       "cmd": "docker ps",
       "desc": "List running containers.",
       "example": "docker ps -a",
-      "cat": "Containers",
+      "cat": "Manage",
       "step": 4
     },
     {
       "cmd": "docker stop",
       "desc": "Stop one or more running containers.",
       "example": "docker stop <container_id>",
-      "cat": "Containers",
+      "cat": "Manage",
+      "step": 4
+    },
+    {
+      "cmd": "docker start",
+      "desc": "Start a stopped container.",
+      "example": "docker start <container_id>",
+      "cat": "Manage",
+      "step": 4
+    },
+    {
+      "cmd": "docker restart",
+      "desc": "Restart a running or stopped container.",
+      "example": "docker restart <container_id>",
+      "cat": "Manage",
+      "step": 4
+    },
+    {
+      "cmd": "docker exec",
+      "desc": "Run a command in a running container.",
+      "example": "docker exec -it <container> /bin/bash",
+      "cat": "Manage",
+      "step": 4
+    },
+    {
+      "cmd": "docker cp",
+      "desc": "Copy files between container and local filesystem.",
+      "example": "docker cp <container>:/app/log.txt ./log.txt",
+      "cat": "Manage",
+      "step": 4
+    },
+    {
+      "cmd": "docker rename",
+      "desc": "Rename an existing container.",
+      "example": "docker rename old_name new_name",
+      "cat": "Manage",
       "step": 4
     },
     {
       "cmd": "docker rm",
-      "desc": "Remove one or more containers.",
+      "desc": "Remove one or more stopped containers.",
       "example": "docker rm <container_id>",
+      "cat": "Cleanup",
+      "step": 5
+    },
+    {
+      "cmd": "docker rm -f",
+      "desc": "Force remove a running container.",
+      "example": "docker rm -f <container_id>",
       "cat": "Cleanup",
       "step": 5
     },
@@ -1033,11 +1152,25 @@
       "step": 5
     },
     {
-      "cmd": "docker exec",
-      "desc": "Run a command in a running container.",
-      "example": "docker exec -it <container> /bin/bash",
-      "cat": "Containers",
-      "step": 4
+      "cmd": "docker system prune",
+      "desc": "Remove all unused containers, networks, images, and cache.",
+      "example": "docker system prune -a --volumes",
+      "cat": "Cleanup",
+      "step": 5
+    },
+    {
+      "cmd": "docker container prune",
+      "desc": "Remove all stopped containers.",
+      "example": "docker container prune",
+      "cat": "Cleanup",
+      "step": 5
+    },
+    {
+      "cmd": "docker image prune",
+      "desc": "Remove unused and dangling images.",
+      "example": "docker image prune -a",
+      "cat": "Cleanup",
+      "step": 5
     },
     {
       "cmd": "docker logs",
@@ -1047,11 +1180,482 @@
       "step": 6
     },
     {
+      "cmd": "docker logs --tail",
+      "desc": "Show only the last N lines of container logs.",
+      "example": "docker logs --tail 50 <container>",
+      "cat": "Inspect",
+      "step": 6
+    },
+    {
+      "cmd": "docker inspect",
+      "desc": "Return detailed JSON info about a container or image.",
+      "example": "docker inspect <container>",
+      "cat": "Inspect",
+      "step": 6
+    },
+    {
+      "cmd": "docker stats",
+      "desc": "Display live CPU, memory, and network usage of containers.",
+      "example": "docker stats",
+      "cat": "Inspect",
+      "step": 6
+    },
+    {
+      "cmd": "docker top",
+      "desc": "Display running processes inside a container.",
+      "example": "docker top <container>",
+      "cat": "Inspect",
+      "step": 6
+    },
+    {
+      "cmd": "docker diff",
+      "desc": "Show file changes in a container's filesystem.",
+      "example": "docker diff <container>",
+      "cat": "Inspect",
+      "step": 6
+    },
+    {
+      "cmd": "docker port",
+      "desc": "List port mappings for a container.",
+      "example": "docker port <container>",
+      "cat": "Inspect",
+      "step": 6
+    },
+    {
+      "cmd": "docker volume create",
+      "desc": "Create a named volume for persistent data.",
+      "example": "docker volume create my-data",
+      "cat": "Volumes",
+      "step": 7
+    },
+    {
+      "cmd": "docker volume ls",
+      "desc": "List all volumes.",
+      "example": "docker volume ls",
+      "cat": "Volumes",
+      "step": 7
+    },
+    {
+      "cmd": "docker volume inspect",
+      "desc": "Display detailed information about a volume.",
+      "example": "docker volume inspect my-data",
+      "cat": "Volumes",
+      "step": 7
+    },
+    {
+      "cmd": "docker volume rm",
+      "desc": "Remove a volume.",
+      "example": "docker volume rm my-data",
+      "cat": "Volumes",
+      "step": 7
+    },
+    {
+      "cmd": "docker volume prune",
+      "desc": "Remove all unused volumes.",
+      "example": "docker volume prune",
+      "cat": "Volumes",
+      "step": 7
+    },
+    {
+      "cmd": "docker network create",
+      "desc": "Create a custom network for container communication.",
+      "example": "docker network create my-network",
+      "cat": "Networks",
+      "step": 8
+    },
+    {
+      "cmd": "docker network ls",
+      "desc": "List all Docker networks.",
+      "example": "docker network ls",
+      "cat": "Networks",
+      "step": 8
+    },
+    {
+      "cmd": "docker network connect",
+      "desc": "Connect a container to a network.",
+      "example": "docker network connect my-network <container>",
+      "cat": "Networks",
+      "step": 8
+    },
+    {
+      "cmd": "docker network disconnect",
+      "desc": "Disconnect a container from a network.",
+      "example": "docker network disconnect my-network <container>",
+      "cat": "Networks",
+      "step": 8
+    },
+    {
+      "cmd": "docker network inspect",
+      "desc": "Display detailed info about a network.",
+      "example": "docker network inspect bridge",
+      "cat": "Networks",
+      "step": 8
+    },
+    {
       "cmd": "docker compose up",
       "desc": "Create and start containers defined in compose file.",
       "example": "docker compose up -d",
       "cat": "Compose",
+      "step": 9
+    },
+    {
+      "cmd": "docker compose down",
+      "desc": "Stop and remove containers, networks from compose.",
+      "example": "docker compose down --volumes",
+      "cat": "Compose",
+      "step": 9
+    },
+    {
+      "cmd": "docker compose build",
+      "desc": "Build or rebuild services defined in compose file.",
+      "example": "docker compose build --no-cache",
+      "cat": "Compose",
+      "step": 9
+    },
+    {
+      "cmd": "docker compose logs",
+      "desc": "View output from compose services.",
+      "example": "docker compose logs -f web",
+      "cat": "Compose",
+      "step": 9
+    },
+    {
+      "cmd": "docker compose ps",
+      "desc": "List containers managed by compose.",
+      "example": "docker compose ps",
+      "cat": "Compose",
+      "step": 9
+    },
+    {
+      "cmd": "docker compose exec",
+      "desc": "Run a command in a running compose service.",
+      "example": "docker compose exec web sh",
+      "cat": "Compose",
+      "step": 9
+    },
+    {
+      "cmd": "docker compose pull",
+      "desc": "Pull latest images for all compose services.",
+      "example": "docker compose pull",
+      "cat": "Compose",
+      "step": 9
+    },
+    {
+      "cmd": "docker login",
+      "desc": "Log in to a Docker registry.",
+      "example": "docker login -u myuser",
+      "cat": "Build",
+      "step": 2
+    },
+    {
+      "cmd": "docker save",
+      "desc": "Save an image to a tar archive.",
+      "example": "docker save myapp > myapp.tar",
+      "cat": "Images",
+      "step": 1
+    },
+    {
+      "cmd": "docker load",
+      "desc": "Load an image from a tar archive.",
+      "example": "docker load < myapp.tar",
+      "cat": "Images",
+      "step": 1
+    },
+    {
+      "cmd": "docker commit",
+      "desc": "Create a new image from a container's changes.",
+      "example": "docker commit <container> myapp:snapshot",
+      "cat": "Build",
+      "step": 2
+    },
+    {
+      "cmd": "docker system df",
+      "desc": "Show Docker disk usage breakdown.",
+      "example": "docker system df -v",
+      "cat": "Cleanup",
+      "step": 5
+    }
+  ],
+  "kubernetesCommands": [
+    {
+      "cmd": "kubectl cluster-info",
+      "desc": "Display addresses of the control plane and cluster services.",
+      "example": "kubectl cluster-info",
+      "cat": "Setup",
+      "step": 1
+    },
+    {
+      "cmd": "kubectl config get-contexts",
+      "desc": "List all available cluster contexts.",
+      "example": "kubectl config get-contexts",
+      "cat": "Setup",
+      "step": 1
+    },
+    {
+      "cmd": "kubectl config use-context",
+      "desc": "Switch to a different cluster context.",
+      "example": "kubectl config use-context production",
+      "cat": "Setup",
+      "step": 1
+    },
+    {
+      "cmd": "kubectl get nodes",
+      "desc": "List all nodes in the cluster with their status.",
+      "example": "kubectl get nodes -o wide",
+      "cat": "Setup",
+      "step": 1
+    },
+    {
+      "cmd": "kubectl create namespace",
+      "desc": "Create a new namespace for resource isolation.",
+      "example": "kubectl create namespace staging",
+      "cat": "Setup",
+      "step": 1
+    },
+    {
+      "cmd": "kubectl apply -f",
+      "desc": "Apply a configuration file to create or update resources.",
+      "example": "kubectl apply -f deployment.yaml",
+      "cat": "Deploy",
+      "step": 2
+    },
+    {
+      "cmd": "kubectl create deployment",
+      "desc": "Create a new deployment from a container image.",
+      "example": "kubectl create deployment nginx --image=nginx:latest",
+      "cat": "Deploy",
+      "step": 2
+    },
+    {
+      "cmd": "kubectl set image",
+      "desc": "Update the image of an existing deployment.",
+      "example": "kubectl set image deployment/myapp myapp=myapp:v2",
+      "cat": "Deploy",
+      "step": 2
+    },
+    {
+      "cmd": "kubectl rollout status",
+      "desc": "Watch the status of a rolling deployment update.",
+      "example": "kubectl rollout status deployment/myapp",
+      "cat": "Deploy",
+      "step": 2
+    },
+    {
+      "cmd": "kubectl rollout undo",
+      "desc": "Roll back a deployment to a previous revision.",
+      "example": "kubectl rollout undo deployment/myapp",
+      "cat": "Deploy",
+      "step": 2
+    },
+    {
+      "cmd": "kubectl get pods",
+      "desc": "List all pods in the current namespace.",
+      "example": "kubectl get pods -o wide",
+      "cat": "Inspect",
+      "step": 3
+    },
+    {
+      "cmd": "kubectl get deployments",
+      "desc": "List all deployments and their replica status.",
+      "example": "kubectl get deployments",
+      "cat": "Inspect",
+      "step": 3
+    },
+    {
+      "cmd": "kubectl get services",
+      "desc": "List all services and their cluster IPs.",
+      "example": "kubectl get svc",
+      "cat": "Inspect",
+      "step": 3
+    },
+    {
+      "cmd": "kubectl get all",
+      "desc": "Show all resources in the current namespace.",
+      "example": "kubectl get all -n production",
+      "cat": "Inspect",
+      "step": 3
+    },
+    {
+      "cmd": "kubectl describe pod",
+      "desc": "Show detailed information about a specific pod.",
+      "example": "kubectl describe pod myapp-abc123",
+      "cat": "Inspect",
+      "step": 3
+    },
+    {
+      "cmd": "kubectl logs",
+      "desc": "Print the logs for a container in a pod.",
+      "example": "kubectl logs -f myapp-abc123",
+      "cat": "Debug",
+      "step": 4
+    },
+    {
+      "cmd": "kubectl logs --previous",
+      "desc": "Print logs from a previous crashed container instance.",
+      "example": "kubectl logs myapp-abc123 --previous",
+      "cat": "Debug",
+      "step": 4
+    },
+    {
+      "cmd": "kubectl exec -it",
+      "desc": "Open an interactive shell inside a running pod.",
+      "example": "kubectl exec -it myapp-abc123 -- /bin/sh",
+      "cat": "Debug",
+      "step": 4
+    },
+    {
+      "cmd": "kubectl port-forward",
+      "desc": "Forward a local port to a port on a pod.",
+      "example": "kubectl port-forward pod/myapp-abc123 8080:80",
+      "cat": "Debug",
+      "step": 4
+    },
+    {
+      "cmd": "kubectl top pods",
+      "desc": "Display CPU and memory usage of pods.",
+      "example": "kubectl top pods -n production",
+      "cat": "Debug",
+      "step": 4
+    },
+    {
+      "cmd": "kubectl top nodes",
+      "desc": "Display CPU and memory usage of nodes.",
+      "example": "kubectl top nodes",
+      "cat": "Debug",
+      "step": 4
+    },
+    {
+      "cmd": "kubectl scale deployment",
+      "desc": "Scale the number of replicas for a deployment.",
+      "example": "kubectl scale deployment/myapp --replicas=5",
+      "cat": "Scale",
+      "step": 5
+    },
+    {
+      "cmd": "kubectl autoscale",
+      "desc": "Create a Horizontal Pod Autoscaler.",
+      "example": "kubectl autoscale deployment/myapp --min=2 --max=10 --cpu-percent=80",
+      "cat": "Scale",
+      "step": 5
+    },
+    {
+      "cmd": "kubectl expose deployment",
+      "desc": "Expose a deployment as a Kubernetes service.",
+      "example": "kubectl expose deployment/myapp --port=80 --type=LoadBalancer",
+      "cat": "Network",
+      "step": 6
+    },
+    {
+      "cmd": "kubectl get ingress",
+      "desc": "List all Ingress resources for external access.",
+      "example": "kubectl get ingress -A",
+      "cat": "Network",
+      "step": 6
+    },
+    {
+      "cmd": "kubectl get endpoints",
+      "desc": "Show endpoints that a service routes traffic to.",
+      "example": "kubectl get endpoints myapp-svc",
+      "cat": "Network",
+      "step": 6
+    },
+    {
+      "cmd": "kubectl create configmap",
+      "desc": "Create a ConfigMap from literal values or files.",
+      "example": "kubectl create configmap app-config --from-file=config.yaml",
+      "cat": "Config",
       "step": 7
+    },
+    {
+      "cmd": "kubectl create secret",
+      "desc": "Create a Secret for sensitive data like passwords.",
+      "example": "kubectl create secret generic db-creds --from-literal=password=s3cret",
+      "cat": "Config",
+      "step": 7
+    },
+    {
+      "cmd": "kubectl get configmaps",
+      "desc": "List all ConfigMaps in the current namespace.",
+      "example": "kubectl get configmaps",
+      "cat": "Config",
+      "step": 7
+    },
+    {
+      "cmd": "kubectl get secrets",
+      "desc": "List all Secrets in the current namespace.",
+      "example": "kubectl get secrets",
+      "cat": "Config",
+      "step": 7
+    },
+    {
+      "cmd": "kubectl delete pod",
+      "desc": "Delete a pod (it will be recreated by its controller).",
+      "example": "kubectl delete pod myapp-abc123",
+      "cat": "Cleanup",
+      "step": 8
+    },
+    {
+      "cmd": "kubectl delete deployment",
+      "desc": "Delete a deployment and all its managed pods.",
+      "example": "kubectl delete deployment myapp",
+      "cat": "Cleanup",
+      "step": 8
+    },
+    {
+      "cmd": "kubectl delete -f",
+      "desc": "Delete all resources defined in a YAML file.",
+      "example": "kubectl delete -f deployment.yaml",
+      "cat": "Cleanup",
+      "step": 8
+    },
+    {
+      "cmd": "kubectl delete namespace",
+      "desc": "Delete a namespace and all resources inside it.",
+      "example": "kubectl delete namespace staging",
+      "cat": "Cleanup",
+      "step": 8
+    },
+    {
+      "cmd": "kubectl get events",
+      "desc": "Show cluster events for troubleshooting issues.",
+      "example": "kubectl get events --sort-by=.metadata.creationTimestamp",
+      "cat": "Debug",
+      "step": 4
+    },
+    {
+      "cmd": "kubectl rollout history",
+      "desc": "View the revision history of a deployment.",
+      "example": "kubectl rollout history deployment/myapp",
+      "cat": "Deploy",
+      "step": 2
+    },
+    {
+      "cmd": "kubectl label",
+      "desc": "Add or update labels on a resource.",
+      "example": "kubectl label pods myapp-abc123 env=production",
+      "cat": "Config",
+      "step": 7
+    },
+    {
+      "cmd": "kubectl annotate",
+      "desc": "Add or update annotations on a resource.",
+      "example": "kubectl annotate deployment myapp description='Main app'",
+      "cat": "Config",
+      "step": 7
+    },
+    {
+      "cmd": "kubectl cordon",
+      "desc": "Mark a node as unschedulable for maintenance.",
+      "example": "kubectl cordon node-1",
+      "cat": "Scale",
+      "step": 5
+    },
+    {
+      "cmd": "kubectl drain",
+      "desc": "Safely evict all pods from a node before maintenance.",
+      "example": "kubectl drain node-1 --ignore-daemonsets",
+      "cat": "Scale",
+      "step": 5
     }
   ],
   "httpCommands": [
@@ -1354,9 +1958,71 @@
       },
       {
         "id": 7,
+        "label": "Volumes",
+        "icon": "fa-solid fa-hard-drive",
+        "color": "var(--primary-light)"
+      },
+      {
+        "id": 8,
+        "label": "Networks",
+        "icon": "fa-solid fa-network-wired",
+        "color": "#3ecf6e"
+      },
+      {
+        "id": 9,
         "label": "Compose",
         "icon": "fa-solid fa-layer-group",
         "color": "#ec4899"
+      }
+    ],
+    "kubernetes": [
+      {
+        "id": 1,
+        "label": "Setup",
+        "icon": "fa-solid fa-gear",
+        "color": "var(--primary)"
+      },
+      {
+        "id": 2,
+        "label": "Deploy",
+        "icon": "fa-solid fa-rocket",
+        "color": "var(--success)"
+      },
+      {
+        "id": 3,
+        "label": "Inspect",
+        "icon": "fa-solid fa-magnifying-glass",
+        "color": "var(--accent)"
+      },
+      {
+        "id": 4,
+        "label": "Debug",
+        "icon": "fa-solid fa-bug",
+        "color": "#06b6d4"
+      },
+      {
+        "id": 5,
+        "label": "Scale",
+        "icon": "fa-solid fa-arrows-up-down",
+        "color": "#8b5cf6"
+      },
+      {
+        "id": 6,
+        "label": "Network",
+        "icon": "fa-solid fa-network-wired",
+        "color": "#ec4899"
+      },
+      {
+        "id": 7,
+        "label": "Config",
+        "icon": "fa-solid fa-sliders",
+        "color": "var(--warning)"
+      },
+      {
+        "id": 8,
+        "label": "Cleanup",
+        "icon": "fa-solid fa-trash-can",
+        "color": "var(--error)"
       }
     ],
     "http": [
