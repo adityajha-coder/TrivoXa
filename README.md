@@ -1,47 +1,44 @@
 <div align="center">
-  <img src="public/favicon.svg" alt="TrivoXa Logo" width="100" height="100">
-  <br><br>
+  <img src="public/favicon.svg" alt="TrivoXa Logo" width="88" height="88">
 
-<pre align="center">
-  ████████╗██████╗ ██╗██╗   ██╗ ██████╗ ██╗  ██╗ █████╗ 
-  ╚══██╔══╝██╔══██╗██║██║   ██║██╔═══██╗╚██╗██╔╝██╔══██╗
-     ██║   ██████╔╝██║██║   ██║██║   ██║ ╚███╔╝ ███████║
-     ██║   ██╔══██╗██║╚██╗ ██╔╝██║   ██║ ██╔██╗ ██╔══██║
-     ██║   ██║  ██║██║ ╚████╔╝ ╚██████╔╝██╔╝ ██╗██║  ██║
-     ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
-</pre>
+  # TrivoXa
 
-  <h3>A Unified, High Performance Workspace for Modern Engineers</h3>
+  **A unified, high-performance workspace for modern engineers**
 
-<a href="https://makeapullrequest.com"><img src="https://img.shields.io/badge/PRs-welcome-white?style=flat-square" alt="PRs Welcome"></a>
-<a href="#"><img src="https://img.shields.io/badge/platform-Web%20·%20PWA-white?style=flat-square" alt="Platform"></a>
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-blue?style=flat-square)](https://makeapullrequest.com)
+  [![Platform](https://img.shields.io/badge/platform-Web%20%C2%B7%20PWA-lightgrey?style=flat-square)](#)
 
-  <br>
-  <sub>Express proxy backend · MongoDB persistence · Groq AI inference</sub>
+  <sub>Express backend · MongoDB persistence · Groq AI inference</sub>
 </div>
 
 <br>
 
-<table>
-<tr>
-<td>
+TrivoXa is a browser-based developer toolkit that consolidates scattered utilities into a single, cohesive workspace. It combines AI-powered project scaffolding, 3D repository visualization, package analysis, API testing, and a personal developer workspace into one focused interface.
 
-**TrivoXa** is a browser based developer toolkit that consolidates scattered utilities into a single, cohesive workspace. It combines AI powered project scaffolding, 3D repository visualization, package analysis, API testing, and a personal developer workspace into one monochrome interface engineered for deep work.
-
-No heavy setup. No framework dependencies on the frontend. Just open it and start building.
-
-</td>
-</tr>
-</table>
+No heavy setup, no frontend framework dependencies — just open it and start building.
 
 <br>
 
-## System Architecture
+## Table of Contents
+
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Modules](#modules)
+- [API Reference](#api-reference)
+- [Project Layout](#project-layout)
+- [Getting Started](#getting-started)
+- [Developer Workflow](#developer-workflow)
+- [Security Model](#security-model)
+- [Contributing](#contributing)
+
+<br>
+
+## Architecture
 
 ```mermaid
 graph LR
     subgraph Frontend ["Client · SPA"]
-        A["Router.js"] --> B["Dashboard"]
+        A["Router"] --> B["Dashboard"]
         A --> C["AI Hub"]
         A --> D["GitHub Explorer"]
         A --> E["Dev Utilities"]
@@ -54,7 +51,7 @@ graph LR
         I["API Routes"]
     end
 
-    subgraph Data ["Storage + APIs"]
+    subgraph Data ["Storage & APIs"]
         J[("MongoDB")]
         K["Groq Cloud"]
         L["GitHub API"]
@@ -70,24 +67,19 @@ graph LR
 
 <br>
 
-<table>
-<tr>
-<td width="50%">
+## Tech Stack
 
-### Frontend Engine
+**Frontend**
 
 | Component    | Implementation                              |
 | :----------- | :------------------------------------------ |
 | Language     | Vanilla JS (ES6+ modules)                   |
 | Styling      | Custom CSS design system with CSS variables |
-| Routing      | Custom SPA router with history API          |
-| 3D Rendering | Three.js + 3D Force Graph (lazy loaded)     |
+| Routing      | Custom SPA router using the History API     |
+| 3D Rendering | Three.js + 3D Force Graph (lazy-loaded)     |
 | Offline      | PWA with service worker caching             |
 
-</td>
-<td width="50%">
-
-### Backend Infrastructure
+**Backend**
 
 | Component | Implementation                        |
 | :-------- | :------------------------------------ |
@@ -97,173 +89,63 @@ graph LR
 | AI Layer  | Groq Cloud (Llama 3.1 models)         |
 | Security  | CORS, rate limiting, input validation |
 
-</td>
-</tr>
-</table>
+**External Services**
+
+Groq Cloud (Llama 3.1) · GitHub REST API · NPM Registry API · MongoDB Atlas
+
+**Deployment**
+
+Vercel — serverless functions + static hosting
 
 <br>
 
 ## Modules
 
-<br>
+### 01 · AI Hub
 
-<table>
-<tr>
-<td width="65%">
+An intelligent development environment backed by Groq's high-speed inference.
 
-### `01` AI Hub
-
-An intelligent development environment backed by Groq's high speed inference.
-
-**AI Chat** provides a stateful, context aware assistant for debugging errors, refactoring code, designing schemas, and discussing architectural decisions.
-
-**AI Architect** accepts high level project descriptions and generates complete directory structures paired with executable terminal scaffolding scripts.
-
-**AI Stacks** evaluates technology combinations for targeted builds, analyzing compatibility, performance, and ecosystem maturity.
+- **AI Chat** — a stateful, context-aware assistant for debugging errors, refactoring code, designing schemas, and discussing architectural decisions.
+- **AI Architect** — accepts high-level project descriptions and generates complete directory structures with executable scaffolding scripts.
+- **AI Stacks** — evaluates technology combinations, analyzing compatibility, performance, and ecosystem maturity.
 
 ```bash
-# Output from AI Architect
+# Example output from AI Architect
 mkdir -p project/{backend/routes,frontend/components,shared}
 cd project && npm init -y && npm i express mongoose dotenv
 ```
 
-</td>
-<td width="35%" valign="top">
+*Best for: scaffolding new projects, debugging runtime errors, comparing tech-stack tradeoffs, generating schemas, and prototyping APIs.*
 
-<br>
-
-> **Use when you need to:**
->
-> Scaffold a new project from scratch
->
-> Debug a complex runtime error
->
-> Compare tech stack tradeoffs
->
-> Generate database schemas
->
-> Prototype an API design
-
-</td>
-</tr>
-</table>
-
-<br>
-
-<table>
-<tr>
-<td width="35%" valign="top">
-
-<br>
-
-> **Workspace stores:**
->
-> Project folders with hierarchy
->
-> Bookmarked APIs and tools
->
-> AI chat conversation exports
->
-> CLI command references
->
-> Code snippets and notes
-
-</td>
-<td width="65%">
-
-### `02` My Workspace
+### 02 · My Workspace
 
 A centralized productivity layer to organize project resources and reduce context switching.
 
-**Project Folders** let you create custom directory structures in the browser to group notes, endpoints, tool bookmarks, and command references by project.
+- **Project Folders** — create custom directory structures in the browser to group notes, endpoints, tool bookmarks, and command references by project.
+- **Resource Bookmarks** — connect directly to the Free APIs index, Tools Vault, and AI Chat history; save any resource to your active folder in one click.
+- **Quick Notes** — rich text and code block storage alongside your bookmarks, keeping documentation and planning in one place.
 
-**Resource Bookmarks** connect directly to the Free APIs index, Tools Vault, and AI Chat history. Save any resource to your active project folder with a single click.
+*Workspace stores: project folders, bookmarked APIs and tools, AI chat exports, CLI references, and code snippets.*
 
-**Quick Notes** support rich text and code block storage alongside your bookmarks, keeping documentation and planning materials in one place.
+### 03 · GitHub Explorer
 
-</td>
-</tr>
-</table>
+Spatial visualization of repository architecture using WebGL rendering.
 
-<br>
+- **3D Repo Visualizer** — renders any public GitHub repository as a force-directed graph. Directories become clusters, files become nodes, and depth relationships become visible spatial connections. Built on Three.js and 3D Force Graph, both loaded on demand.
+- **Git Insights** — surfaces repository metrics, language distribution, and configuration details in one view.
+- **User Explorer** — search GitHub profiles to analyze contributor patterns, repository ownership, and public activity.
 
-<table>
-<tr>
-<td width="65%">
+*Best for: onboarding to unfamiliar codebases, auditing structure, understanding dependency graphs, and reviewing contributor activity.*
 
-### `03` GitHub Explorer
+### 04 · Developer Utilities
 
-Spatial visualization of repository architectures using WebGL rendering.
+A consolidated suite of essential tools to eliminate tab-switching during development.
 
-**3D Repo Visualizer** renders any public GitHub repository as a force directed graph. Directories become clusters, files become nodes, and depth relationships become visible spatial connections. Built on `Three.js` and `3D Force Graph`, both loaded on demand.
-
-**Git Insights** surfaces repository metrics, language distribution, and configuration details in a unified view.
-
-**User Explorer** lets you search GitHub profiles to analyze contributor patterns, repository ownership, and public activity.
-
-</td>
-<td width="35%" valign="top">
-
-<br>
-
-> **Designed for:**
->
-> Onboarding to unfamiliar codebases
->
-> Auditing repository structure
->
-> Understanding dependency graphs
->
-> Reviewing contributor activity
->
-> Comparing project architectures
-
-</td>
-</tr>
-</table>
-
-<br>
-
-<table>
-<tr>
-<td width="35%" valign="top">
-
-<br>
-
-> **Includes:**
->
-> 100+ public REST endpoints
->
-> Live response previews
->
-> NPM download velocity charts
->
-> Bundle size comparisons
->
-> Git, Docker, Kubernetes, Linux cheat sheets
->
-> Coding assistant directory
-
-</td>
-<td width="65%">
-
-### `04` Developer Utilities
-
-A consolidated suite of essential tools designed to eliminate tab switching during development.
-
-**Package Scout** performs deep analysis on NPM packages, surfacing download trends, bundle overhead, dependency trees, and maintenance indicators before you add them to your project.
-
-**Free APIs Directory** indexes over 100 public REST endpoints across categories, with built in sandbox testing to preview response structures directly in the interface.
-
-**Tools Vault** catalogs framework boilerplates, technical libraries, coding assistants (Claude Code, Copilot CLI, Gemini CLI, Codex, Aider, Continue), VS Code extensions, machine learning/data science libraries, and app development utilities.
-
-**Commands Library** provides searchable CLI references for Git, NPM, Docker, Kubernetes, Linux, and Terminal operations with copy to clipboard support.
-
-**Docs Search** connects to technical documentation sources with persistent search history tracking.
-
-</td>
-</tr>
-</table>
+- **Package Scout** — deep analysis on NPM packages: download trends, bundle overhead, dependency trees, and maintenance indicators.
+- **Free APIs Directory** — indexes 100+ public REST endpoints with built-in sandbox testing to preview response structures.
+- **Tools Vault** — catalogs framework boilerplates, libraries, coding assistants (Claude Code, Copilot CLI, Gemini CLI, Codex, Aider, Continue), VS Code extensions, and ML/data-science and app-dev utilities.
+- **Commands Library** — searchable CLI references for Git, NPM, Docker, Kubernetes, Linux, and Terminal, with copy-to-clipboard support.
+- **Docs Search** — connects to technical documentation sources with persistent search history.
 
 <br>
 
@@ -271,30 +153,22 @@ A consolidated suite of essential tools designed to eliminate tab switching duri
 
 All protected routes require a `Bearer <token>` header. Rate limits are enforced per IP.
 
-```
-                                    ┌─────────────────────────────────────┐
-                                    │         AUTHENTICATION              │
-                                    └─────────────────────────────────────┘
-```
+**Authentication**
 
-| Route                | Method | Auth   | Rate Limit      | Description                       |
-| :------------------- | :----- | :----- | :-------------- | :-------------------------------- |
-| `/api/auth/register` | `POST` | Public | 10 req / 15 min | Create account, receive JWT       |
-| `/api/auth/login`    | `POST` | Public | 10 req / 15 min | Validate credentials, receive JWT |
-| `/api/auth/me`       | `GET`  | JWT    | Global          | Retrieve current session data     |
+| Route                 | Method | Auth   | Rate Limit       | Description                        |
+| :--------------------- | :----- | :----- | :---------------- | :---------------------------------- |
+| `/api/auth/register`   | POST   | Public | 10 req / 15 min   | Create account, receive JWT         |
+| `/api/auth/login`      | POST   | Public | 10 req / 15 min   | Validate credentials, receive JWT   |
+| `/api/auth/me`         | GET    | JWT    | Global             | Retrieve current session data       |
 
-```
-                                    ┌─────────────────────────────────────┐
-                                    │         AI & WORKSPACE              │
-                                    └─────────────────────────────────────┘
-```
+**AI & Workspace**
 
-| Route               | Method                | Auth | Rate Limit      | Description                        |
-| :------------------ | :-------------------- | :--- | :-------------- | :--------------------------------- |
-| `/api/groq/chat`    | `POST`                | JWT  | 20 req / 15 min | Stream AI response from Groq       |
-| `/api/ai-history`   | `GET` `POST` `DELETE` | JWT  | Global          | Manage saved AI conversations      |
-| `/api/snippets`     | `GET` `POST` `DELETE` | JWT  | Global          | CRUD for workspace code snippets   |
-| `/api/docs-history` | `GET` `POST` `DELETE` | JWT  | Global          | Track documentation search queries |
+| Route                | Method                 | Auth | Rate Limit       | Description                         |
+| :-------------------- | :--------------------- | :--- | :---------------- | :------------------------------------ |
+| `/api/groq/chat`      | POST                    | JWT  | 20 req / 15 min   | Stream AI response from Groq          |
+| `/api/ai-history`     | GET · POST · DELETE    | JWT  | Global             | Manage saved AI conversations         |
+| `/api/snippets`       | GET · POST · DELETE    | JWT  | Global             | CRUD for workspace code snippets      |
+| `/api/docs-history`   | GET · POST · DELETE    | JWT  | Global             | Track documentation search queries    |
 
 <br>
 
@@ -303,199 +177,114 @@ All protected routes require a `Bearer <token>` header. Rate limits are enforced
 ```
 trivoxa/
 │
-├── api/                    # Serverless function entry points (Vercel)
+├── api/                     # Serverless function entry points (Vercel)
 ├── server/
-│   ├── config/             # Database connection configuration
+│   ├── config/              # Database connection configuration
 │   ├── middleware/          # JWT auth verification middleware
-│   ├── models/             # Mongoose schemas (User, Snippet, History)
-│   └── routes/             # Express route handlers
-│       ├── auth.js         #   Registration, login, session
-│       ├── groq.js         #   Groq AI proxy with streaming
-│       ├── snippets.js     #   Workspace snippet CRUD
-│       ├── aiHistory.js    #   AI conversation persistence
-│       └── docsHistory.js  #   Documentation search tracking
+│   ├── models/              # Mongoose schemas (User, Snippet, History)
+│   └── routes/               # Express route handlers
+│       ├── auth.js          #   Registration, login, session
+│       ├── groq.js          #   Groq AI proxy with streaming
+│       ├── snippets.js      #   Workspace snippet CRUD
+│       ├── aiHistory.js     #   AI conversation persistence
+│       └── docsHistory.js   #   Documentation search tracking
 │
 ├── js/
-│   ├── core/               # SPA router engine and boot system
-│   ├── ai/                 # AI Chat, Architect, Stacks interfaces
-│   ├── auth/               # Login/register modals and JWT management
-│   ├── dashboard/          # Landing page and primary workspace UI
-│   ├── docs/               # Documentation search engine
-│   ├── git/                # 3D repository explorer (Three.js)
-│   ├── tools/              # Package Scout, APIs, Tools Vault, Commands
-│   ├── workspace/          # Folder trees, notes, snippet management
-│   ├── ui/                 # Navbar, layouts, loading states
-│   └── utils/              # Fetch wrappers, DOM helpers, formatters
+│   ├── core/                # SPA router engine and boot system
+│   ├── ai/                  # AI Chat, Architect, Stacks interfaces
+│   ├── auth/                # Login/register modals and JWT management
+│   ├── dashboard/           # Landing page and primary workspace UI
+│   ├── docs/                # Documentation search engine
+│   ├── git/                 # 3D repository explorer (Three.js)
+│   ├── tools/                # Package Scout, APIs, Tools Vault, Commands
+│   ├── workspace/            # Folder trees, notes, snippet management
+│   ├── ui/                   # Navbar, layouts, loading states
+│   └── utils/                # Fetch wrappers, DOM helpers, formatters
 │
 ├── css/
-│   ├── base.css            # Reset, typography, CSS custom properties
-│   ├── layout.css          # Grid systems, responsive breakpoints
-│   ├── components.css      # Reusable UI component styles
-│   ├── pages.css           # Page specific module styles (imports)
-│   └── animations.css      # Keyframes and transition definitions
+│   ├── base.css              # Reset, typography, CSS custom properties
+│   ├── layout.css            # Grid systems, responsive breakpoints
+│   ├── components.css        # Reusable UI component styles
+│   ├── pages.css             # Page-specific module styles (imports)
+│   └── animations.css        # Keyframes and transition definitions
 │
 ├── data/
-│   ├── apis.json           # 100+ public API endpoint catalog
-│   ├── commands.json       # Git, NPM, Terminal, Docker, Kubernetes CLI reference
-│   ├── tools.json          # Developer tools, ML, and App Dev assistant directory
-│   └── extensions.json     # VS Code extension recommendations
+│   ├── apis.json             # 100+ public API endpoint catalog
+│   ├── commands.json         # Git, NPM, Terminal, Docker, Kubernetes CLI reference
+│   ├── tools.json             # Developer tools, ML, and app-dev assistant directory
+│   └── extensions.json       # VS Code extension recommendations
 │
-├── public/                 # Favicon, manifest, icons, service worker
-├── scripts/                # Setup and diagnostic test scripts
-├── index.html              # SPA shell and entry point
-├── package.json            # Dependencies and npm scripts
-└── vercel.json             # Serverless deployment configuration
+├── public/                   # Favicon, manifest, icons, service worker
+├── scripts/                  # Setup and diagnostic test scripts
+├── index.html                 # SPA shell and entry point
+├── package.json               # Dependencies and npm scripts
+└── vercel.json                 # Serverless deployment configuration
 ```
 
 <br>
 
-## Setup
+## Getting Started
 
-<details>
-<summary><b>Prerequisites</b></summary>
-<br>
+### Prerequisites
 
-| Requirement  | Version | Purpose                    |
-| :----------- | :------ | :------------------------- |
-| Node.js      | v18+    | Runtime for backend server |
-| MongoDB      | v6+     | Data persistence layer     |
-| Groq API Key | Current | AI inference access        |
+| Requirement   | Version | Purpose                    |
+| :------------- | :------ | :-------------------------- |
+| Node.js        | v18+    | Runtime for backend server   |
+| MongoDB        | v6+     | Data persistence layer       |
+| Groq API Key   | Current | AI inference access          |
 
-Get a Groq API key at [console.groq.com](https://console.groq.com)
+Get a Groq API key at [console.groq.com](https://console.groq.com).
 
-</details>
+### Running
 
-<details>
-<summary><b>Running</b></summary>
-<br>
-
-| Command             | What it does                                            |
-| :------------------ | :------------------------------------------------------ |
-| `npm run both`      | Start frontend (`:8080`) and backend (`:3001`) together |
-| `npm run dev`       | Start frontend server only                              |
-| `npm run proxy`     | Start backend proxy server only                         |
-| `npm run proxy:dev` | Start backend with nodemon auto reload                  |
-| `npm run test:api`  | Validate Groq API connectivity                          |
-| `npm run test:site` | Verify application route health                         |
-
-</details>
+| Command              | What it does                                              |
+| :-------------------- | :----------------------------------------------------------|
+| `npm run both`        | Start frontend (`:8080`) and backend (`:3001`) together     |
+| `npm run dev`         | Start the frontend server only                               |
+| `npm run proxy`       | Start the backend proxy server only                          |
+| `npm run proxy:dev`   | Start the backend with nodemon auto-reload                   |
+| `npm run test:api`    | Validate Groq API connectivity                                |
+| `npm run test:site`   | Verify application route health                               |
 
 <br>
 
 ## Developer Workflow
 
-> This walkthrough shows how all modules connect during a real project build.
+A typical project build moves through all four modules in sequence:
 
-```
- STEP 1                    STEP 2                    STEP 3
- ┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
- │                  │      │                  │      │                  │
- │   AI Stacks      │ ───▶ │   AI Architect   │ ───▶ │   My Workspace   │
- │   Compare tech   │      │   Generate dirs   │      │   Organize refs   │
- │   combinations   │      │   + shell script  │      │   + bookmarks    │
- │                  │      │                  │      │                  │
- └──────────────────┘      └──────────────────┘      └──────────────────┘
-                                                              │
- STEP 6                    STEP 5                    STEP 4    │
- ┌──────────────────┐      ┌──────────────────┐      ┌────────▼─────────┐
- │                  │      │                  │      │                  │
- │   AI Chat        │ ◀─── │   Free APIs      │ ◀─── │   Package Scout  │
- │   Debug errors   │      │   Test endpoints  │      │   Audit bundles  │
- │   + refactor     │      │   + preview JSON  │      │   + downloads   │
- │                  │      │                  │      │                  │
- └──────────────────┘      └──────────────────┘      └──────────────────┘
-```
-
-**Step 1** — Open AI Stacks to evaluate technology combinations for your project. Select a stack optimized for your performance and scalability requirements.
-
-**Step 2** — Move to AI Architect. Describe your project goals in plain language. The system generates a complete folder structure and a terminal command to scaffold it locally.
-
-**Step 3** — Create a project folder in My Workspace. Bookmark the recommended tools, stack templates, and relevant CLI commands.
-
-**Step 4** — Use Package Scout to compare candidate NPM packages. Check bundle sizes, download velocity, and dependency overhead before installing.
-
-**Step 5** — Browse the Free APIs Directory for testing endpoints. Execute sandbox requests to preview response structures, then bookmark useful endpoints to your workspace folder.
-
-**Step 6** — During development, use AI Chat to debug errors, discuss optimization strategies, and get code explanations.
+1. **AI Stacks** — compare technology combinations and select a stack suited to your performance and scalability requirements.
+2. **AI Architect** — describe your project in plain language; the system generates a folder structure and a terminal script to scaffold it locally.
+3. **My Workspace** — create a project folder and bookmark the recommended tools, stack templates, and CLI commands.
+4. **Package Scout** — compare candidate NPM packages by bundle size, download velocity, and dependency overhead before installing.
+5. **Free APIs Directory** — browse and test endpoints in the sandbox, then bookmark useful ones to your workspace folder.
+6. **AI Chat** — debug errors, discuss optimization strategies, and get code explanations as development continues.
 
 <br>
 
 ## Security Model
 
-<table>
-<tr>
-<td width="50%">
+**Authentication flow**
 
-### Authentication
+1. Client sends credentials to `POST /api/auth/register` or `/api/auth/login`.
+2. Server hashes the password with bcryptjs and stores the record in MongoDB.
+3. Server returns a signed JWT to the client.
+4. Subsequent requests include `Authorization: Bearer <token>`; the server verifies the JWT before returning protected data.
 
-```
-Client                     Server
-  │                          │
-  ├── POST /auth/register ──▶│
-  │                          ├── Hash password (bcryptjs)
-  │                          ├── Store in MongoDB
-  │◀── JWT token ────────────┤
-  │                          │
-  ├── GET /auth/me ─────────▶│
-  │   Authorization: Bearer  ├── Verify JWT
-  │◀── User profile ─────────┤
-```
+**Rate limiting**
 
-</td>
-<td width="50%">
+| Endpoint Group          | Limit         | Window      |
+| :------------------------ | :------------- | :------------ |
+| Global (all routes)       | 100 requests   | 15 minutes     |
+| Auth (login/register)     | 10 requests    | 15 minutes     |
+| AI (Groq proxy)            | 20 requests    | 15 minutes     |
 
-### Rate Limiting
-
-| Endpoint Group        | Limit        | Window     |
-| :-------------------- | :----------- | :--------- |
-| Global (all routes)   | 100 requests | 15 minutes |
-| Auth (login/register) | 10 requests  | 15 minutes |
-| AI (Groq proxy)       | 20 requests  | 15 minutes |
-
-CORS is restricted to known origins. The Groq API key is never exposed to the client. All AI requests are proxied through the Express backend.
-
-</td>
-</tr>
-</table>
-
-<br>
-
-## Tech Stack
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  FRONTEND                                                           │
-│                                                                     │
-│  Vanilla JavaScript (ES6+)  ·  Custom CSS Design System             │
-│  Custom SPA Router          ·  Service Worker (PWA)                  │
-│  Three.js + 3D Force Graph  ·  FontAwesome Icons                    │
-│                                                                     │
-├─────────────────────────────────────────────────────────────────────┤
-│  BACKEND                                                            │
-│                                                                     │
-│  Node.js    ·  Express       ·  Mongoose ODM                        │
-│  bcryptjs   ·  jsonwebtoken  ·  express-rate-limit                  │
-│  dotenv     ·  axios         ·  body-parser · cors                  │
-│                                                                     │
-├─────────────────────────────────────────────────────────────────────┤
-│  EXTERNAL SERVICES                                                  │
-│                                                                     │
-│  MongoDB Atlas   ·  Groq Cloud (Llama 3.1)                          │
-│  GitHub REST API ·  NPM Registry API                                │
-│                                                                     │
-├─────────────────────────────────────────────────────────────────────┤
-│  DEPLOYMENT                                                         │
-│                                                                     │
-│  Vercel (Serverless Functions + Static Hosting)                     │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
+CORS is restricted to known origins. The Groq API key is never exposed to the client — all AI requests are proxied through the Express backend.
 
 <br>
 
 ## Contributing
 
-Contributions are welcome. Fork the repository, create a feature branch, and submit a pull request.
+Contributions are welcome. Fork the repository, create a feature branch, and open a pull request.
 
 ```bash
 git checkout -b feature/your-feature
