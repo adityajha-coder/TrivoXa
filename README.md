@@ -6,16 +6,12 @@
   **A unified, high-performance workspace for modern engineers**
 
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-blue?style=flat-square)](https://makeapullrequest.com)
-  [![Platform](https://img.shields.io/badge/platform-Web%20%C2%B7%20PWA-lightgrey?style=flat-square)](#)
 
-  <sub>Express backend · MongoDB persistence · Groq AI inference</sub>
 </div>
 
 <br>
 
-TrivoXa is a browser-based developer toolkit that consolidates scattered utilities into a single, cohesive workspace. It combines AI-powered project scaffolding, 3D repository visualization, package analysis, API testing, and a personal developer workspace into one focused interface.
-
-No heavy setup, no frontend framework dependencies — just open it and start building.
+TrivoXa is a browser based developer toolkit that consolidates scattered utilities into a single, cohesive workspace. It combines AI powered project scaffolding, 3D repository visualization, package analysis, API testing, and a personal developer workspace into one monochrome interface engineered for deep work.
 
 <br>
 
