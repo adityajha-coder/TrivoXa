@@ -23,7 +23,7 @@
 .topnav-left {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
 .topnav-brand {
@@ -61,7 +61,7 @@
 .topnav-links {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   overflow-x: auto;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
@@ -73,10 +73,10 @@
 .topnav-link {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 4px;
+  padding: 6px 10px;
   border-radius: var(--radius-sm);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-secondary);
   cursor: pointer;
@@ -305,6 +305,9 @@
 }
 
 @media (max-width: 1120px) {
+  #topnav {
+    padding: 0 16px;
+  }
   .topnav-links {
     display: none;
   }

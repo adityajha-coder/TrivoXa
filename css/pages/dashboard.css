@@ -59,6 +59,8 @@
 
 .hero-title span {
   color: var(--primary-light);
+  font-family: 'Satisfy';
+  font-weight: 500;
 }
 
 .hero-copy {

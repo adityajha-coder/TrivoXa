@@ -4,7 +4,7 @@ const Navbar = {
     { id: "workspace", icon: "fa-solid fa-laptop-code", label: "Workspace" },
     { id: "ask-ai", icon: "fa-solid fa-robot", label: "Ask AI" },
     { id: "docs", icon: "fa-solid fa-book-open-reader", label: "Docs" },
-    { id: "tools-vault", icon: "fa-solid fa-screwdriver-wrench", label: "Tools"},
+    { id: "tools-vault", icon: "fa-solid fa-screwdriver-wrench", label: "Tools" },
     { id: "commands", icon: "fa-solid fa-terminal", label: "Commands" },
     { id: "free-apis", icon: "fa-solid fa-plug", label: "APIs" },
     { id: "code-git-explorer", icon: "fa-brands fa-github", label: "Explorer" },
@@ -29,12 +29,12 @@ const Navbar = {
                 <nav class="topnav-links">${linksHtml}</nav>
             </div>
             <div class="topnav-right">
-                <a href="https://payments.cashfree.com/forms/trivoxa" target="_blank" class="topnav-btn" id="btn-support" title="Support this project" style="color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 0 12px; font-size: 0.8rem; font-weight: 600; width: auto; border: 1px solid rgba(212, 168, 67, 0.2); background: rgba(212, 168, 67, 0.05);">
+                <a href="https://payments.cashfree.com/forms/trivoxa" target="_blank" class="topnav-btn hide-mobile" id="btn-support" title="Support this project" style="color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 0 12px; font-size: 0.8rem; font-weight: 600; width: auto; border: 1px solid rgba(212, 168, 67, 0.2); background: rgba(212, 168, 67, 0.05);">
                     <i class="fa-solid fa-mug-hot"></i> <span class="hide-mobile">Support</span>
                 </a>
 
                 <button class="topnav-btn" id="btn-fullscreen" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
-                <button class="topnav-btn" id="btn-settings" title="Settings"><i class="fa-solid fa-gear"></i></button>
+                <button class="topnav-btn hide-mobile" id="btn-settings" title="Settings"><i class="fa-solid fa-gear"></i></button>
                 
                 <div class="topnav-divider hide-mobile" style="height: 20px; margin: 0 4px;"></div>
                 
@@ -77,6 +77,14 @@ const Navbar = {
               `<button class="topnav-link" data-page="${item.id}"><i class="${item.icon}"></i><span>${item.label}</span></button>`,
           )
           .join("")}
+        <div style="margin: 16px 0; border-top: 1px solid var(--border-light); padding-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+          <a href="https://payments.cashfree.com/forms/trivoxa" target="_blank" class="topnav-link" style="color: var(--primary);">
+            <i class="fa-solid fa-mug-hot"></i><span>Support Project</span>
+          </a>
+          <button class="topnav-link" id="mobile-btn-settings">
+            <i class="fa-solid fa-gear"></i><span>Settings</span>
+          </button>
+        </div>
       </div>
     `;
     document.body.appendChild(mobileMenu);
@@ -84,6 +92,15 @@ const Navbar = {
     const closeBtn = mobileMenu.querySelector("#mobile-menu-close");
     if (closeBtn) {
       closeBtn.addEventListener("click", () => this.closeMobile());
+    }
+
+    const mobileSettingsBtn = mobileMenu.querySelector("#mobile-btn-settings");
+    if (mobileSettingsBtn) {
+      mobileSettingsBtn.addEventListener("click", () => {
+        this.closeMobile();
+        const settingsButton = document.getElementById("btn-settings");
+        if (settingsButton) settingsButton.click();
+      });
     }
 
     topnav.querySelectorAll("[data-page]").forEach((el) => {
