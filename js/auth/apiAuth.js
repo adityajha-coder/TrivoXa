@@ -131,7 +131,14 @@ const ApiAuth = {
       );
     }
 
-    if (!res.ok) throw new Error(data.error || "API Request failed");
+    if (!res.ok) {
+      if (res.status === 401) {
+        this.logout();
+        this.requireAuth();
+        throw new Error("Session expired. Please log in again.");
+      }
+      throw new Error(data.error || "API Request failed");
+    }
     return data;
   },
 };

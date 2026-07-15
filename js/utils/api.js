@@ -45,6 +45,12 @@ const API = {
             });
 
             if (!res.ok) {
+                if (res.status === 401) {
+                    ApiAuth.logout();
+                    ApiAuth.requireAuth();
+                    throw new Error("Session expired. Please log in again.");
+                }
+
                 const errorText = await res.text();
                 let errorMsg = `Proxy error: ${res.status} ${res.statusText}`;
 
