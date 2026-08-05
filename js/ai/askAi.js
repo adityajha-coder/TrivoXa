@@ -181,71 +181,64 @@ const AskAiPage = {
 
     content.innerHTML = `
             <div class="page-enter">
-                <div class="page-header flex-between" style="align-items:flex-start; flex-wrap:wrap; gap:16px;">
+                <div class="page-header flex-between mb-lg" style="align-items:center; flex-wrap:wrap; gap:16px;">
                     <div>
                         <h1>AI <span class="text-gradient">Hub</span></h1>
                         <p>Chat with AI, design project architectures, analyze code, and explore curated tech stacks.</p>
                     </div>
-                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                        <div class="form-group" style="min-width: 200px; display:none;">
-                            <label class="text-xs text-muted mb-xs" style="display:block;">Groq API Key</label>
-                            <input type="text" id="ai-api-key" class="input-field" placeholder="gsk_..." value="${localStorage.getItem("trivoxa_groq_key") || this.apiKey}" autocomplete="off" data-form-type="other" data-lpignore="true" style="padding: 8px 12px; font-size: 0.85rem; height:auto; -webkit-text-security: disc; -moz-text-security: disc; text-security: disc;">
-                        </div>
+                    <div class="tabs" id="ai-hub-tabs" style="margin-bottom:0;">
+                        <button class="tab-item active" data-tab="chat"><i class="fa-solid fa-comments" style="margin-right:6px;"></i>AI Chat</button>
+                        <button class="tab-item" data-tab="architect"><i class="fa-solid fa-code-merge" style="margin-right:6px;"></i>Architect</button>
+                        <button class="tab-item" data-tab="history"><i class="fa-solid fa-clock-rotate-left" style="margin-right:6px;"></i>History</button>
                     </div>
                 </div>
 
-                <div class="tabs mb-lg" id="ai-hub-tabs">
-                    <button class="tab-item active" data-tab="chat"><i class="fa-solid fa-comments" style="margin-right:6px;"></i>AI Chat</button>
-                    <button class="tab-item" data-tab="architect"><i class="fa-solid fa-code-merge" style="margin-right:6px;"></i>Architect</button>
-                    <button class="tab-item" data-tab="history"><i class="fa-solid fa-clock-rotate-left" style="margin-right:6px;"></i>History</button>
-                </div>
-
-                <!-- ===== TAB 1: AI CHAT ===== -->
+                <!-- ===== TAB 1: AI CHAT (ChatGPT Style) ===== -->
                 <div id="ai-tab-chat">
-                    <div class="glass-card-static ai-chat-section mb-lg">
-                        <div class="ai-chat-header">
+                    <div class="chat-container-chatgpt mb-lg">
+                        <!-- ChatGPT Header & Model Switcher -->
+                        <div class="chat-header-chatgpt">
+                            <div class="flex-gap" style="align-items:center;">
+                                <div class="ai-bot-avatar" style="width:30px;height:30px;padding:0;overflow:hidden;"><img src="public/favicon.svg" alt="TrivoXa" style="width:100%;height:100%;object-fit:contain;border-radius:50%;" /></div>
+                                <select class="chat-model-select" id="ai-model-select">
+                                    <option value="mixtral">Llama 3.1 8B (Fast & Smart)</option>
+                                    <option value="llama2">Llama 2 70B (Deep Explanations)</option>
+                                    <option value="gemma">Gemma 7B (Lightweight)</option>
+                                    <option value="mixtral-large">Mixtral 8x7B (Reasoning & Code)</option>
+                                </select>
+                            </div>
                             <div class="flex-gap">
-                                <div class="ai-bot-avatar"><i class="fa-solid fa-robot"></i></div>
-                                <div>
-                                    <h3 style="font-size:0.95rem;font-weight:600;">TrivoXa AI Assistant</h3>
-                                    <span class="text-xs text-muted">Ask anything — code help, tool recommendations, or explanations</span>
-                                </div>
+                                <button class="btn btn-ghost btn-xs" id="ai-new-chat" title="New Chat"><i class="fa-solid fa-plus"></i> <span class="hide-mobile">New Chat</span></button>
+                                <button class="btn btn-ghost btn-xs" id="ai-clear-chat" title="Clear chat"><i class="fa-solid fa-trash-can"></i></button>
                             </div>
-                            <button class="btn btn-ghost btn-xs" id="ai-clear-chat" title="Clear chat"><i class="fa-solid fa-broom"></i></button>
                         </div>
-                        <div class="ai-bot-messages" id="ai-bot-messages" style="min-height:200px;max-height:500px;">
+
+                        <!-- Chat Messages Container -->
+                        <div class="chat-messages-chatgpt" id="ai-bot-messages">
                             <div class="ai-msg bot-msg">
-                                <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
-                                <div class="msg-bubble">Hi! I'm your TrivoXa AI assistant. I can:<br>
-                                    <strong>1.</strong> Recommend tools for any project idea<br>
-                                    <strong>2.</strong> Explain code like you're a beginner<br>
-                                    <strong>3.</strong> Debug errors and suggest fixes<br>
-                                    <strong>4.</strong> Answer any programming question<br><br>
-                                    Try asking something or click a quick action below! 👇
+                                <div class="msg-avatar" style="padding:0;overflow:hidden;"><img src="public/favicon.svg" alt="TrivoXa" style="width:100%;height:100%;object-fit:contain;border-radius:50%;" /></div>
+                                <div class="msg-content-wrapper">
+                                    <div class="msg-bubble">
+                                        Hello! I'm your TrivoXa AI assistant. How can I help you today?
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="ai-bot-input-area" style="flex-direction: column; align-items: flex-end; gap: 8px;">
-                            <textarea class="input-field" id="ai-bot-input" placeholder="</> Ask any concept..." style="width: 100%; min-height: 60px; resize: vertical; padding-right: 12px; font-family: inherit; line-height: 1.5; "></textarea>
-                            <div class="flex-between" style="width: 100%;">
-                                <div class="flex-gap">
-                                    <button class="btn btn-ghost btn-sm" id="ai-bot-explain" style="color:var(--primary-light);">
-                                        <i class="fa-solid fa-graduation-cap"></i> Explain Code
-                                    </button>
-                                    <button class="btn btn-ghost btn-sm" id="ai-bot-debug" style="color:var(--error);">
-                                        <i class="fa-solid fa-bug"></i> Debug Error
-                                    </button>
+
+                        <!-- ChatGPT Bottom Input Box -->
+                        <div class="chat-input-container-chatgpt">
+                            <div class="cg-input-wrapper">
+                                <textarea class="cg-textarea" id="ai-bot-input" placeholder="Message TrivoXa AI..." rows="1"></textarea>
+                                <div class="cg-input-bottom">
+                                    <div class="cg-pills-row">
+                                        <button class="cg-pill-btn" id="ai-bot-explain"><i class="fa-solid fa-graduation-cap"></i> Explain Code</button>
+                                        <button class="cg-pill-btn" id="ai-bot-debug"><i class="fa-solid fa-bug"></i> Debug Error</button>
+                                        <button class="cg-pill-btn" id="ai-bot-arch-pill"><i class="fa-solid fa-sitemap"></i> Architecture</button>
+                                    </div>
+                                    <button class="cg-send-btn" id="ai-bot-send" title="Send message"><i class="fa-solid fa-arrow-up"></i></button>
                                 </div>
-                                <button class="btn btn-primary" id="ai-bot-send" style="min-width: 45px;"><i class="fa-solid fa-paper-plane"></i></button>
                             </div>
-                        </div>
-                        <div class="ai-bot-suggestions">
-                            <button class="ai-suggest-chip" data-q="I want to build a weather app">🌤 Weather App</button>
-                            <button class="ai-suggest-chip" data-q="I want to build a portfolio website">💼 Portfolio</button>
-                            <button class="ai-suggest-chip" data-q="I want to build a chat application">💬 Chat App</button>
-                            <button class="ai-suggest-chip" data-q="I want to build an e-commerce store">🛒 E-commerce</button>
-                            <button class="ai-suggest-chip" data-q="What is the difference between REST and GraphQL?">🔗 REST vs GraphQL</button>
-                            <button class="ai-suggest-chip" data-q="How do I use Git branches?">🌿 Git Branching</button>
+                            <div class="cg-disclaimer">TrivoXa AI can make mistakes. Verify code before deploying.</div>
                         </div>
                     </div>
                 </div>
