@@ -8,8 +8,7 @@ const connectDB = async () => {
         console.log(`  MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.error(`  MongoDB Connection Error: ${error.message}`);
-        console.error(`\n  Make sure MONGO_URI is set in your .env file.`);
-        console.error(`  Example: MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/trivoxa\n`);
+        console.error(`\n  Make sure MONGO_URI is set in file.`);
         throw error;
     }
 };
