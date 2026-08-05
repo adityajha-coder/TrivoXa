@@ -288,20 +288,42 @@
   font-weight: 700;
 }
 
-.feature-item {
-  padding-top: 18px;
+.modules-list {
+  margin-top: 30px;
+}
+
+.module-row {
+  display: grid;
+  grid-template-columns: 48px 180px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  padding: 20px 0;
   border-top: 1px solid var(--glass-border);
 }
 
-.feature-item h3 {
-  font-size: 1rem;
-  margin-bottom: 8px;
+.module-row:last-child {
+  border-bottom: 1px solid var(--glass-border);
 }
 
-.feature-item p {
+.module-index {
+  color: var(--primary-light);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.module-title {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.module-desc {
   color: var(--text-secondary);
   font-size: 0.89rem;
   line-height: 1.75;
+  margin: 0;
 }
 
 .journey-list {
@@ -479,6 +501,9 @@
   border: 1px solid var(--glass-border);
   border-radius: 22px;
   background: var(--surface);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .signup-panel h3 {
@@ -496,8 +521,8 @@
 .signup-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
-  margin-top: 18px;
 }
 
 .home-reveal {
@@ -738,9 +763,10 @@
     grid-template-columns: 1fr;
   }
 
-  .journey-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
+  .journey-row,
+  .module-row {
+    grid-template-columns: 36px 1fr;
+    gap: 10px;
   }
 
   .footer-content {

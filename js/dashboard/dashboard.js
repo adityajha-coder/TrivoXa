@@ -13,12 +13,9 @@ const DashboardPage = {
                                 TrivoXa is a browser based developer platform that brings AI assistance, code execution, technical references, package research, public APIs, and repository exploration into one connected experience. If you are visiting for the first time, this page will show you exactly what the platform does and how it can help you work faster with less context switching.
                             </p>
                             <div class="hero-actions">
-                                <button class="hero-btn hero-btn-primary" onclick="Router.navigate('ask-ai');">
-                                    Explore AI Hub
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                </button>
-                                <button class="hero-btn hero-btn-secondary" onclick="document.getElementById('overview').scrollIntoView({ behavior: 'smooth' });">
+                                <button class="hero-btn hero-btn-primary" onclick="document.getElementById('overview').scrollIntoView({ behavior: 'smooth' });">
                                     See what is inside
+                                    
                                 </button>
                             </div>
                         </div>
@@ -69,34 +66,41 @@ const DashboardPage = {
                                 Each section exists for a different kind of developer need. Together they form a compact operating system for learning, building, and researching.
                             </p>
 
-                            <div class="feature-grid">
-                                <div class="feature-item">
-                                    <h3>AI Hub</h3>
-                                    <p>Conversational help, architecture generation, code creation, and stack guidance.</p>
+                            <div class="modules-list">
+                                <div class="module-row">
+                                    <span class="module-index">01</span>
+                                    <h3 class="module-title">AI Hub</h3>
+                                    <p class="module-desc">Conversational help, architecture generation, code creation, and stack guidance.</p>
                                 </div>
-                                <div class="feature-item">
-                                    <h3>Workspace</h3>
-                                    <p>A place to save reusable snippets and keep hands-on coding work organized.</p>
+                                <div class="module-row">
+                                    <span class="module-index">02</span>
+                                    <h3 class="module-title">Workspace</h3>
+                                    <p class="module-desc">A place to save reusable snippets and keep hands on coding work organized.</p>
                                 </div>
-                                <div class="feature-item">
-                                    <h3>Docs</h3>
-                                    <p>Quick access to technical references when implementation details matter.</p>
+                                <div class="module-row">
+                                    <span class="module-index">03</span>
+                                    <h3 class="module-title">Docs</h3>
+                                    <p class="module-desc">Quick access to technical references when implementation details matter.</p>
                                 </div>
-                                <div class="feature-item">
-                                    <h3>Commands</h3>
-                                    <p>Searchable Git, npm, Docker, and CLI references for fast recall.</p>
+                                <div class="module-row">
+                                    <span class="module-index">04</span>
+                                    <h3 class="module-title">Commands</h3>
+                                    <p class="module-desc">Searchable Git, linux, npm, Docker, and CLI references for fast recall.</p>
                                 </div>
-                                <div class="feature-item">
-                                    <h3>Tools Vault</h3>
-                                    <p>Curated boilerplates, utilities, and useful developer resources.</p>
+                                <div class="module-row">
+                                    <span class="module-index">05</span>
+                                    <h3 class="module-title">Tools Vault</h3>
+                                    <p class="module-desc">Curated utilities, and useful developer resources.</p>
                                 </div>
-                                <div class="feature-item">
-                                    <h3>Free APIs</h3>
-                                    <p>A browsable directory of public endpoints for prototypes and integrations.</p>
+                                <div class="module-row">
+                                    <span class="module-index">06</span>
+                                    <h3 class="module-title">Free APIs</h3>
+                                    <p class="module-desc">A browsable directory of public endpoints for prototypes and integrations.</p>
                                 </div>
-                                <div class="feature-item">
-                                    <h3>GitHub Explorer</h3>
-                                    <p>Visualize repository structure and understand unfamiliar codebases faster.</p>
+                                <div class="module-row">
+                                    <span class="module-index">07</span>
+                                    <h3 class="module-title">GitHub Explorer</h3>
+                                    <p class="module-desc">Visualize repository structure and understand unfamiliar codebases faster.</p>
                                 </div>
                             </div>
                         </div>
@@ -179,10 +183,8 @@ const DashboardPage = {
                         </div>
 
                         <div class="signup-panel">
-                            <h3>Ready to build with TrivoXa?</h3>                           
                             <div class="signup-actions">
                                 <button class="hero-btn hero-btn-primary" onclick="DashboardPage.openSignup();">Create free account</button>
-                                <button class="hero-btn hero-btn-secondary" onclick="DashboardPage.openSignin();">Sign in</button>
                             </div>
                         </div>
                     </section>

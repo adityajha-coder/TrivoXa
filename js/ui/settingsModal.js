@@ -15,8 +15,6 @@ const SettingsModal = {
 
     const renderModalContent = () => {
       const currentTheme = localStorage.getItem("theme") || "dark";
-      const currentModel =
-        localStorage.getItem("trivoxa_ai_model") || "mixtral";
       const currentUser = API.getUser();
 
       settingsModal.innerHTML = `
@@ -103,19 +101,6 @@ const SettingsModal = {
                     </div>
                 </div>
 
-                <!-- AI Model Selection -->
-                <div>
-                    <h3 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:600; color:var(--text); text-transform:uppercase; letter-spacing:0.05em;">AI Model Preference</h3>
-                    <div class="form-group" style="margin-bottom:0;">
-                        <select id="setting-ai-model" class="input-field" style="width:100%; padding:10px 12px; border-radius:var(--radius-md); background:var(--bg-secondary); border:1px solid var(--border); color:var(--text); cursor:pointer;">
-                            <option value="mixtral" ${currentModel === "mixtral" ? "selected" : ""}>Mixtral 8x7B (Recommended)</option>
-                            <option value="llama2" ${currentModel === "llama2" ? "selected" : ""}>Llama 2 70B</option>
-                            <option value="gemma" ${currentModel === "gemma" ? "selected" : ""}>Gemma 7B</option>
-                        </select>
-                    </div>
-                </div>
-
-
                 <!-- Security Section (Only rendered when logged in) -->
                 ${
                   currentUser
@@ -175,18 +160,6 @@ const SettingsModal = {
       darkBtn.addEventListener("click", () => setTheme("dark"));
       lightBtn.addEventListener("click", () => setTheme("light"));
 
-      // Bind AI Model selection
-      const modelSelect = settingsModal.querySelector("#setting-ai-model");
-      modelSelect.addEventListener("change", (e) => {
-        localStorage.setItem("trivoxa_ai_model", e.target.value);
-        Toast.show(
-          "AI model preference saved: " +
-            e.target.options[e.target.selectedIndex].text,
-          "success",
-        );
-      });
-
-
       // Bind Reveal Password (if logged in)
       if (currentUser) {
         const emailInput = settingsModal.querySelector("#setting-reveal-email");
@@ -201,70 +174,35 @@ const SettingsModal = {
           }
 
           if (email.toLowerCase() !== currentUser.email.toLowerCase()) {
-            resultDiv.style.display = "block";
-            resultDiv.style.background = "rgba(248, 81, 73, 0.1)";
-            resultDiv.style.border = "1px solid var(--error)";
-            resultDiv.style.color = "var(--error)";
-            resultDiv.textContent =
-              "Provided email does not match logged-in account email.";
+            Toast.show("Email does not match logged in user", "error");
             return;
           }
 
-          btnReveal.disabled = true;
-          btnReveal.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-          resultDiv.style.display = "none";
-
           try {
-            const data = await API.revealPassword(email);
+            btnReveal.disabled = true;
+            btnReveal.textContent = "Checking...";
+            const res = await API.fetchAPI("/api/auth/reveal-password", "POST", { email });
             resultDiv.style.display = "block";
-            if (data.password) {
-              const maskedPwd = "•".repeat(data.password.length);
-              resultDiv.style.background = "rgba(46, 160, 67, 0.1)";
+            if (res.password) {
+              resultDiv.style.background = "rgba(46, 160, 67, 0.15)";
               resultDiv.style.border = "1px solid var(--success)";
               resultDiv.style.color = "var(--success)";
-              resultDiv.innerHTML = `
-                <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
-                  <strong>Password:</strong>
-                  <span id="pwd-display-text" style="font-family:var(--font-mono); user-select:all;">${maskedPwd}</span>
-                  <button id="btn-toggle-pwd-visibility" class="btn btn-ghost btn-xs" style="padding: 2px 6px; color: var(--text-secondary); border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
-                    <i class="fa-solid fa-eye"></i>
-                  </button>
-                </div>
-              `;
-
-              let isVisible = false;
-              const toggleBtn = resultDiv.querySelector("#btn-toggle-pwd-visibility");
-              const displaySpan = resultDiv.querySelector("#pwd-display-text");
-
-              toggleBtn.addEventListener("click", () => {
-                isVisible = !isVisible;
-                if (isVisible) {
-                  displaySpan.textContent = data.password;
-                  toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
-                } else {
-                  displaySpan.textContent = maskedPwd;
-                  toggleBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
-                }
-              });
-              Toast.show("Password retrieved successfully", "success");
-            } else if (data.notice) {
-              resultDiv.style.background = "rgba(210, 153, 34, 0.1)";
-              resultDiv.style.border = "1px solid var(--warning)";
-              resultDiv.style.color = "var(--warning)";
-              resultDiv.textContent = data.notice;
+              resultDiv.innerHTML = `Your Password: <strong>${Helpers.escapeHtml(res.password)}</strong>`;
             } else {
-              throw new Error("Password could not be revealed");
+              resultDiv.style.background = "rgba(248, 81, 73, 0.15)";
+              resultDiv.style.border = "1px solid var(--error)";
+              resultDiv.style.color = "var(--error)";
+              resultDiv.textContent = res.message || "Password not found in local cache";
             }
           } catch (err) {
             resultDiv.style.display = "block";
-            resultDiv.style.background = "rgba(248, 81, 73, 0.1)";
+            resultDiv.style.background = "rgba(248, 81, 73, 0.15)";
             resultDiv.style.border = "1px solid var(--error)";
             resultDiv.style.color = "var(--error)";
-            resultDiv.textContent = err.message || "Failed to reveal password.";
-            Toast.show(err.message || "Reveal password failed", "error");
+            resultDiv.textContent = err.message || "Failed to retrieve password";
           } finally {
             btnReveal.disabled = false;
-            btnReveal.innerHTML = "Reveal";
+            btnReveal.textContent = "Reveal";
           }
         });
       }
@@ -287,7 +225,6 @@ const SettingsModal = {
 
     btnSettings.addEventListener("click", openModal);
 
-    // Background click
     settingsModal.addEventListener("click", (e) => {
       if (e.target === settingsModal) closeModal();
     });
