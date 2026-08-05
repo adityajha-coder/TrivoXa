@@ -2050,6 +2050,466 @@
         "icon": "fa-solid fa-server",
         "color": "var(--error)"
       }
+    ],
+    "linux": [
+      {
+        "id": 1,
+        "label": "System",
+        "icon": "fa-solid fa-microchip",
+        "color": "var(--primary)"
+      },
+      {
+        "id": 2,
+        "label": "Files",
+        "icon": "fa-solid fa-folder-tree",
+        "color": "var(--accent)"
+      },
+      {
+        "id": 3,
+        "label": "Permissions",
+        "icon": "fa-solid fa-user-shield",
+        "color": "var(--warning)"
+      },
+      {
+        "id": 4,
+        "label": "Processes",
+        "icon": "fa-solid fa-chart-pie",
+        "color": "#06b6d4"
+      },
+      {
+        "id": 5,
+        "label": "Networking",
+        "icon": "fa-solid fa-network-wired",
+        "color": "#8b5cf6"
+      },
+      {
+        "id": 6,
+        "label": "Packages",
+        "icon": "fa-solid fa-box",
+        "color": "var(--success)"
+      }
     ]
-  }
+  },
+  "linuxCommands": [
+    {
+      "cmd": "uname -a",
+      "desc": "Print complete system and Linux kernel information.",
+      "example": "uname -a",
+      "cat": "System",
+      "step": 1
+    },
+    {
+      "cmd": "uptime",
+      "desc": "Display system running time, active users, and load average.",
+      "example": "uptime",
+      "cat": "System",
+      "step": 1
+    },
+    {
+      "cmd": "whoami",
+      "desc": "Print the current effective user name.",
+      "example": "whoami",
+      "cat": "System",
+      "step": 1
+    },
+    {
+      "cmd": "hostname -I",
+      "desc": "Display all network IP addresses assigned to system interfaces.",
+      "example": "hostname -I",
+      "cat": "System",
+      "step": 1
+    },
+    {
+      "cmd": "lscpu",
+      "desc": "Gather and display detailed CPU architecture info.",
+      "example": "lscpu",
+      "cat": "System",
+      "step": 1
+    },
+    {
+      "cmd": "lsblk",
+      "desc": "List information about all available block storage devices.",
+      "example": "lsblk",
+      "cat": "System",
+      "step": 1
+    },
+    {
+      "cmd": "ls -la",
+      "desc": "List directory contents with detailed permissions, ownership, and hidden files.",
+      "example": "ls -la /var/log",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "find <path> -name \"<name>\"",
+      "desc": "Search for files and directories by name recursively.",
+      "example": "find /var/www -name \"*.js\"",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "grep -rnw '<path>' -e '<string>'",
+      "desc": "Search for a string recursively in all files with line numbers.",
+      "example": "grep -rnw '/etc/nginx' -e 'proxy_pass'",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "cat <file>",
+      "desc": "Concatenate and print file contents to standard output.",
+      "example": "cat /etc/os-release",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "head -n <lines> <file>",
+      "desc": "Output the first part of a file.",
+      "example": "head -n 20 /var/log/syslog",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "tail -f <file>",
+      "desc": "Output appended data as a file grows, ideal for live log tracking.",
+      "example": "tail -f /var/log/nginx/error.log",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "cp -r <src> <dest>",
+      "desc": "Copy files and directories recursively.",
+      "example": "cp -r /app/src /app/src_backup",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "mv <src> <dest>",
+      "desc": "Move or rename files and directories.",
+      "example": "mv config.old.json config.json",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "rm -rf <dir>",
+      "desc": "Remove files or directories recursively without prompting.",
+      "example": "rm -rf ./dist",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "tar -czvf <name.tar.gz> <dir>",
+      "desc": "Compress a directory into a gzip-compressed archive tarball.",
+      "example": "tar -czvf backup.tar.gz /var/www/html",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "tar -xzvf <archive.tar.gz>",
+      "desc": "Extract a gzip-compressed tar archive.",
+      "example": "tar -xzvf backup.tar.gz",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "chmod <permissions> <file>",
+      "desc": "Change file access permissions (numeric or symbolic).",
+      "example": "chmod 755 /var/www/script.sh",
+      "cat": "Permissions",
+      "step": 3
+    },
+    {
+      "cmd": "chmod +x <script.sh>",
+      "desc": "Make a script file executable.",
+      "example": "chmod +x ./deploy.sh",
+      "cat": "Permissions",
+      "step": 3
+    },
+    {
+      "cmd": "chown <user>:<group> <file>",
+      "desc": "Change file owner and group ownership.",
+      "example": "chown -R www-data:www-data /var/www/html",
+      "cat": "Permissions",
+      "step": 3
+    },
+    {
+      "cmd": "sudo <command>",
+      "desc": "Execute a command with superuser / root security privileges.",
+      "example": "sudo systemctl restart nginx",
+      "cat": "Permissions",
+      "step": 3
+    },
+    {
+      "cmd": "top / htop",
+      "desc": "Interactive real-time process viewer and system resource monitor.",
+      "example": "htop",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "ps aux",
+      "desc": "Display snapshot of all currently running processes.",
+      "example": "ps aux | grep node",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "free -h",
+      "desc": "Display total, used, and available RAM memory in human-readable units.",
+      "example": "free -h",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "df -h",
+      "desc": "Show disk space usage statistics for mounted filesystems.",
+      "example": "df -h",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "du -sh <dir>",
+      "desc": "Display total disk usage summary for a directory.",
+      "example": "du -sh /var/log/*",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "kill -9 <PID>",
+      "desc": "Force terminate a running process using its Process ID (PID).",
+      "example": "kill -9 12345",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "pkill -f <name>",
+      "desc": "Kill processes matching a specific process name pattern.",
+      "example": "pkill -f node",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "systemctl status <service>",
+      "desc": "Inspect status of a systemd background service daemon.",
+      "example": "systemctl status nginx",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "systemctl restart <service>",
+      "desc": "Restart a systemd service daemon immediately.",
+      "example": "sudo systemctl restart docker",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "journalctl -u <service> -f",
+      "desc": "Follow live system logs generated by a systemd service.",
+      "example": "journalctl -u docker -f",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "curl -I <url>",
+      "desc": "Fetch HTTP response headers for a URL via CLI.",
+      "example": "curl -I https://api.github.com",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "wget <url>",
+      "desc": "Non-interactive network downloader to download files from HTTP/FTP.",
+      "example": "wget https://example.com/file.zip",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "ss -tulnp / netstat",
+      "desc": "Display open network sockets and listening TCP/UDP ports.",
+      "example": "sudo ss -tulnp",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "ping -c 4 <host>",
+      "desc": "Send ICMP ECHO_REQUEST packets to network hosts.",
+      "example": "ping -c 4 8.8.8.8",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "ssh <user>@<host>",
+      "desc": "Connect securely to a remote Linux server console.",
+      "example": "ssh root@192.168.1.100",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "scp <file> <user>@<host>:<path>",
+      "desc": "Secure copy files between hosts over SSH protocol.",
+      "example": "scp build.tar.gz root@server:/var/www",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "rsync -avz <src> <dest>",
+      "desc": "Fast and versatile file synchronization tool over network.",
+      "example": "rsync -avz ./dist/ root@server:/var/www/html/",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "sudo apt update && sudo apt upgrade -y",
+      "desc": "Update package repository lists and upgrade installed packages.",
+      "example": "sudo apt update && sudo apt upgrade -y",
+      "cat": "Packages",
+      "step": 6
+    },
+    {
+      "cmd": "sudo apt install <package>",
+      "desc": "Install a software package using Debian/Ubuntu apt package manager.",
+      "example": "sudo apt install -y nginx git curl",
+      "cat": "Packages",
+      "step": 6
+    },
+    {
+      "cmd": "lsof -i :<port>",
+      "desc": "Find which process PID is currently occupying or listening on a port.",
+      "example": "lsof -i :8080",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "nc -zv <host> <port>",
+      "desc": "Test TCP/UDP port connectivity and listening status on remote host.",
+      "example": "nc -zv localhost 5432",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "dig <domain>",
+      "desc": "Query DNS name servers for domain name IP records.",
+      "example": "dig github.com +short",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "nslookup <domain>",
+      "desc": "Query internet name servers interactively for IP resolution.",
+      "example": "nslookup google.com",
+      "cat": "Networking",
+      "step": 5
+    },
+    {
+      "cmd": "awk '{print $1}' <file>",
+      "desc": "Pattern scanning and processing language to extract specific text columns.",
+      "example": "ps aux | awk '{print $1, $2, $11}'",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "sed -i 's/<old>/<new>/g' <file>",
+      "desc": "Stream editor for inline text replacement in files.",
+      "example": "sed -i 's/http:/https:/g' config.env",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "sort <file> | uniq -c",
+      "desc": "Sort lines and output count of unique line occurrences.",
+      "example": "cat access.log | sort | uniq -c | sort -nr",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "wc -l <file>",
+      "desc": "Count total lines, words, and byte counts in a file.",
+      "example": "wc -l server.js",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "tree -L <depth>",
+      "desc": "Display directory contents in a clean visual tree format up to specified depth.",
+      "example": "tree -L 2 -I 'node_modules|.git'",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "ln -s <target> <link>",
+      "desc": "Create a symbolic link (symlink) pointing to a target file or directory.",
+      "example": "ln -s /etc/nginx/sites-available/app /etc/nginx/sites-enabled/",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "tee <file>",
+      "desc": "Read standard input and write output to both terminal display and file.",
+      "example": "npm run build | tee build.log",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "diff -u <file1> <file2>",
+      "desc": "Compare two files line by line and show unified differences.",
+      "example": "diff -u .env.example .env",
+      "cat": "Files",
+      "step": 2
+    },
+    {
+      "cmd": "nohup <command> &",
+      "desc": "Run a command in background immune to terminal hangups.",
+      "example": "nohup node server.js > app.log 2>&1 &",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "crontab -e",
+      "desc": "Edit scheduled recurring background tasks for current user.",
+      "example": "crontab -e",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "watch -n <sec> <command>",
+      "desc": "Execute a command periodically and display full-screen live updates.",
+      "example": "watch -n 2 'free -h'",
+      "cat": "Processes",
+      "step": 4
+    },
+    {
+      "cmd": "export <VAR>=<value>",
+      "desc": "Set environment variables in current shell session.",
+      "example": "export NODE_ENV=production",
+      "cat": "System",
+      "step": 1
+    },
+    {
+      "cmd": "env",
+      "desc": "Display all active shell environment variables.",
+      "example": "env | grep NODE",
+      "cat": "System",
+      "step": 1
+    },
+    {
+      "cmd": "alias <name>='<command>'",
+      "desc": "Create custom terminal command shortcuts.",
+      "example": "alias gs='git status'",
+      "cat": "System",
+      "step": 1
+    },
+    {
+      "cmd": "which <command>",
+      "desc": "Locate and print full binary path of an executable command.",
+      "example": "which node",
+      "cat": "System",
+      "step": 1
+    },
+    {
+      "cmd": "history | grep <query>",
+      "desc": "Search previous terminal command execution history.",
+      "example": "history | grep docker",
+      "cat": "System",
+      "step": 1
+    }
+  ]
 }
