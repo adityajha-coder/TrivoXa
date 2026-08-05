@@ -6,6 +6,7 @@ const CommandsPage = {
   gitCommands: [],
   npmCommands: [],
   terminalCommands: [],
+  linuxCommands: [],
   dockerCommands: [],
   kubernetesCommands: [],
   httpCommands: [],
@@ -21,6 +22,7 @@ const CommandsPage = {
       this.gitCommands = data.gitCommands || [];
       this.npmCommands = data.npmCommands || [];
       this.terminalCommands = data.terminalCommands || [];
+      this.linuxCommands = data.linuxCommands || [];
       this.dockerCommands = data.dockerCommands || [];
       this.kubernetesCommands = data.kubernetesCommands || [];
       this.httpCommands = data.httpCommands || [];
@@ -40,7 +42,7 @@ const CommandsPage = {
             <div class="page-enter">
                 <div class="page-header">
                     <h1>Command <span class="text-gradient">Reference</span></h1>
-                    <p>Master Git, npm, and terminal commands with step-by-step workflows and searchable reference.</p>
+                    <p>Master Git, npm, Linux, and terminal commands with step-by-step workflows and searchable reference.</p>
                 </div>
                 <div style="text-align:center; padding:60px 0;">
                     <div class="spinner" style="margin:0 auto 16px; width:40px; height:40px; border:4px solid rgba(212,168,67,0.1); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
@@ -54,7 +56,7 @@ const CommandsPage = {
             <div class="page-enter">
                 <div class="page-header">
                     <h1>Command <span class="text-gradient">Reference</span></h1>
-                    <p>Master Git, npm, and terminal commands with step-by-step workflows and searchable reference.</p>
+                    <p>Master Git, npm, Linux, and terminal commands with step-by-step workflows and searchable reference.</p>
                 </div>
 
                 <div class="grid-3 mb-lg">
@@ -68,6 +70,12 @@ const CommandsPage = {
                         <div class="flex-gap">
                             <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(203,56,55,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-npm" style="font-size:1.3rem;color:#cb3837;"></i></div>
                             <div><h3 style="font-size:0.92rem;font-weight:600;">npm</h3><p class="text-xs text-muted">${this.npmCommands.length} commands</p></div>
+                        </div>
+                    </div>
+                    <div class="glass-card cmd-type-card" data-cmd="linux" style="cursor:pointer;">
+                        <div class="flex-gap">
+                            <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(243,156,18,0.08);display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-linux" style="font-size:1.2rem;color:#f39c12;"></i></div>
+                            <div><h3 style="font-size:0.92rem;font-weight:600;">Linux</h3><p class="text-xs text-muted">${this.linuxCommands.length} commands</p></div>
                         </div>
                     </div>
                     <div class="glass-card cmd-type-card" data-cmd="terminal" style="cursor:pointer;">
@@ -173,13 +181,15 @@ const CommandsPage = {
         ? this.gitCommands
         : this.activeTab === "npm"
           ? this.npmCommands
-          : this.activeTab === "docker"
-            ? this.dockerCommands
-            : this.activeTab === "kubernetes"
-              ? this.kubernetesCommands
-              : this.activeTab === "http"
-                ? this.httpCommands
-                : this.terminalCommands;
+          : this.activeTab === "linux"
+            ? this.linuxCommands
+            : this.activeTab === "docker"
+              ? this.dockerCommands
+              : this.activeTab === "kubernetes"
+                ? this.kubernetesCommands
+                : this.activeTab === "http"
+                  ? this.httpCommands
+                  : this.terminalCommands;
     // For terminal commands, apply OS-specific translations when Windows is selected
     if (this.activeTab === "terminal" && this.activeOS === "win") {
       return base.map((c) => ({
@@ -204,6 +214,7 @@ const CommandsPage = {
         const titles = {
           git: "Git Workflow — Step by Step",
           npm: "npm Workflow — Step by Step",
+          linux: "Linux CLI — Step by Step Workflow",
           terminal: "Terminal Workflow — Step by Step",
           docker: "Docker Workflow — Step by Step",
           kubernetes: "Kubernetes Workflow — Step by Step",

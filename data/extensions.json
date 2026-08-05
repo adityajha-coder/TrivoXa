@@ -216,6 +216,21 @@
         "name": "Peacock",
         "desc": "Color your workspace for multi-project setups",
         "id": "johnpapa.vscode-peacock"
+      },
+      {
+        "name": "Gruvbox Material",
+        "desc": "Gruvbox theme with a material color palette",
+        "id": "sainnhe.gruvbox-material"
+      },
+      {
+        "name": "Rosé Pine",
+        "desc": "Minimalist, soothing pastel palette for developers",
+        "id": "mvllow.rose-pine"
+      },
+      {
+        "name": "SynthWave '84",
+        "desc": "Retro 80s neon synthwave styling with optional glow effects",
+        "id": "RobbOwen.synthwave-84"
       }
     ]
   },
@@ -388,11 +403,6 @@
         "id": "ms-vscode.vscode-node-azure-pack"
       },
       {
-        "name": "Remote Containers",
-        "desc": "Develop inside Docker containers",
-        "id": "ms-vscode-remote.remote-containers"
-      },
-      {
         "name": "Nginx Configuration",
         "desc": "Syntax highlighting for Nginx config files",
         "id": "william-voyek.vscode-nginx"
@@ -436,6 +446,11 @@
         "name": "Playwright Test",
         "desc": "Run Playwright e2e tests within VS Code",
         "id": "ms-playwright.playwright"
+      },
+      {
+        "name": "Coverage Gutters",
+        "desc": "Display test coverage status inline using colors in gutters",
+        "id": "ryanluker.vscode-coverage-gutters"
       }
     ]
   },
@@ -486,6 +501,21 @@
         "name": "BlackBox AI",
         "desc": "AI-powered code autocomplete, search, and chat",
         "id": "Blackboxapp.blackbox"
+      },
+      {
+        "name": "Supermaven",
+        "desc": "Super-fast AI code completion agent for inline assistance",
+        "id": "supermaven.supermaven"
+      },
+      {
+        "name": "Gemini Code Assist",
+        "desc": "AI pair programmer and assistant powered by Google Gemini",
+        "id": "google.gemini-code-assist"
+      },
+      {
+        "name": "Phind",
+        "desc": "Phind AI copilot inside the VS Code editor panel",
+        "id": "phind.phind-vscode"
       }
     ]
   },
@@ -751,6 +781,31 @@
         "name": "Python Indent",
         "desc": "Ensure proper indentation for Python code scripts when writing DS/ML logic",
         "id": "KevinRose.vsc-python-indent"
+      }
+    ]
+  },
+  {
+    "cat": "Security & Validation",
+    "items": [
+      {
+        "name": "Snyk Security",
+        "desc": "Find and fix security vulnerabilities and code quality bugs",
+        "id": "snyk-security.snyk-vulnerability-scanner"
+      },
+      {
+        "name": "SonarLint",
+        "desc": "Real-time code quality and bug checking inside VS Code",
+        "id": "SonarSource.sonarlint-vscode"
+      },
+      {
+        "name": "Trivy Vulnerability Scanner",
+        "desc": "Scan config files and open dependencies for security hazards",
+        "id": "aquasecurity.trivy-vulnerability-scanner"
+      },
+      {
+        "name": "Dotenv Vault",
+        "desc": "Manage, encrypt, and sync environment variables from the editor",
+        "id": "dotenv-org.dotenv-vault-vscode"
       }
     ]
   }
