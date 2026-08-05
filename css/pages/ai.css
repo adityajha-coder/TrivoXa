@@ -404,35 +404,36 @@
    ========================================================= */
 :root.light-mode .chat-container-chatgpt {
   background: #ffffff;
-  border-color: #d0d7de;
-  box-shadow: 0 4px 24px rgba(140, 149, 159, 0.15);
+  border-color: #e8e8e3;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border-radius: 20px;
 }
 
 :root.light-mode .chat-header-chatgpt {
-  background: #f6f8fa;
-  border-bottom-color: #d0d7de;
+  background: #ebf1f6;
+  border-bottom-color: #e1e7ed;
 }
 
 :root.light-mode .chat-model-select {
   background: #ffffff;
-  color: #24292f;
-  border-color: #d0d7de;
+  color: #1e293b;
+  border-color: #d0dbe7;
 }
 
 :root.light-mode .chat-model-select option {
   background: #ffffff;
-  color: #24292f;
+  color: #1e293b;
 }
 
 :root.light-mode .bot-msg .msg-bubble {
-  background: #f6f8fa;
-  color: #24292f;
-  border-color: #d0d7de;
+  background: #f6f6f4;
+  color: #1e293b;
+  border-color: #e8e8e3;
 }
 
 :root.light-mode .user-msg .msg-bubble {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: #ebf1f6;
+  color: #1e293b;
   border-color: #cbd5e1;
 }
 
@@ -443,48 +444,48 @@
 }
 
 :root.light-mode .cg-code-block {
-  background: #f6f8fa;
-  border-color: #d0d7de;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
 }
 
 :root.light-mode .cg-code-header {
-  background: #eaeef2;
-  border-bottom-color: #d0d7de;
-  color: #57606a;
+  background: #e2e8f0;
+  border-bottom-color: #cbd5e1;
+  color: #64748b;
 }
 
 :root.light-mode .cg-code-block pre {
-  color: #24292f;
+  color: #1e293b;
 }
 
 :root.light-mode .cg-copy-code-btn {
-  color: #57606a;
+  color: #64748b;
 }
 
 :root.light-mode .cg-copy-code-btn:hover {
   background: rgba(0, 0, 0, 0.06);
-  color: #24292f;
+  color: #1e293b;
 }
 
 :root.light-mode .chat-input-container-chatgpt {
-  background: #f6f8fa;
-  border-top-color: #d0d7de;
+  background: #f6f6f4;
+  border-top-color: #e8e8e3;
 }
 
 :root.light-mode .cg-input-wrapper {
   background: #ffffff;
-  border-color: #d0d7de;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-color: #d0dbe7;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
 :root.light-mode .cg-textarea {
-  color: #24292f;
+  color: #1e293b;
 }
 
 :root.light-mode .cg-pill-btn {
-  background: #eaeef2;
-  border-color: #d0d7de;
-  color: #24292f;
+  background: #ebf1f6;
+  border-color: #d0dbe7;
+  color: #1e293b;
 }
 
 :root.light-mode .cg-pill-btn:hover {
@@ -494,19 +495,19 @@
 }
 
 :root.light-mode .cg-disclaimer {
-  color: #57606a;
+  color: #64748b;
 }
 
 :root.light-mode .ai-suggest-chip {
-  background: #f1f3f5;
-  border-color: #d0d7de;
-  color: #24292f;
+  background: #ffffff;
+  border-color: #e1e7ed;
+  color: #475569;
 }
 
 :root.light-mode .ai-suggest-chip:hover {
-  background: rgba(212, 168, 67, 0.15);
+  background: #ebf1f6;
   border-color: var(--primary);
-  color: #000000;
+  color: #1e293b;
 }
 
 .hub-feature-card {

@@ -1,72 +1,51 @@
 const WorkspacePage = {
+  activeFolder: "All",
+  activeTag: "All",
+  activeNoteId: null,
+  searchQuery: "",
+  isEditing: false,
+  snippets: [],
+
   render() {
     Navbar.renderTopbar("My Workspace");
     const content = document.getElementById("page-content");
 
     content.innerHTML = `
             <div class="page-enter">
-                <div class="page-header flex-between" style="align-items:flex-start; flex-wrap:wrap; gap:16px;">
+                <div class="page-header flex-between" style="align-items:center; flex-wrap:wrap; gap:16px; margin-bottom: 20px;">
                     <div>
                         <h1>My <span class="text-gradient">Workspace</span></h1>
-                        <p>Assemble project folders, save notes, and bookmark APIs and tools for your upcoming builds.</p>
+                        <p>Organized workspace for project notes, code snippets, and bookmarks.</p>
                     </div>
-                    <button id="ws-create-folder-btn" class="btn btn-primary"><i class="fa-solid fa-folder-plus"></i> Create Folder</button>
+                    <div class="flex-gap">
+                        <button id="ws-create-folder-btn" class="btn btn-ghost" style="border:1px solid var(--border);"><i class="fa-solid fa-folder-plus"></i> New Folder</button>
+                        <button id="ws-create-note-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> New Note</button>
+                    </div>
                 </div>
                 
-                <div id="ws-tab-snippets">
-                    <!-- New Folder Form -->
-                    <div id="ws-new-folder-container" class="glass-card mb-lg" style="display:none; animation: slideDown 0.3s ease;">
-                        <h3 class="mb-sm"><i class="fa-solid fa-folder-plus text-primary"></i> Create Project Folder</h3>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="ws-new-folder-input" class="input-field" placeholder="Folder Name (e.g. My Next.js App)">
-                            <button id="ws-save-folder-btn" class="btn btn-primary">Create</button>
-                            <button id="ws-cancel-folder-btn" class="btn btn-ghost">Cancel</button>
-                        </div>
+                <!-- Quick New Folder Form (Hidden by default) -->
+                <div id="ws-new-folder-container" class="glass-card mb-lg" style="display:none; animation: slideDown 0.3s ease;">
+                    <h3 class="mb-sm"><i class="fa-solid fa-folder-plus text-primary"></i> Create Folder</h3>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="ws-new-folder-input" class="input-field" placeholder="Folder Name (e.g. Next.js App)">
+                        <button id="ws-save-folder-btn" class="btn btn-primary">Create</button>
+                        <button id="ws-cancel-folder-btn" class="btn btn-ghost">Cancel</button>
                     </div>
+                </div>
 
-                    <!-- Add Item Form (Hidden by default) -->
-                    <div class="glass-card mb-lg" id="ws-add-item-card" style="display:none; animation: slideDown 0.3s ease;">
-                        <div class="flex-between mb-sm">
-                            <h3 class="mb-0">Add Item to <span class="text-gradient" id="ws-active-folder-name"></span></h3>
-                            <button id="ws-close-add-item-btn" class="btn btn-ghost btn-sm"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                        <input type="hidden" id="snip-folder" value="">
-                        
-                        <div class="mb-sm" style="position: relative;">
-                            <i class="fa-solid fa-list-ul" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
-                            <select id="ws-item-source-select" class="input-field" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm); appearance: none; background: var(--bg-secondary) !important; color: var(--text); border: 1px solid var(--border);">
-                                <option value="custom" style="background:var(--bg-secondary); color:var(--text);">Custom Text / Code</option>
-                                <option value="api" style="background:var(--bg-secondary); color:var(--text);">Select from Free APIs</option>
-                                <option value="tool" style="background:var(--bg-secondary); color:var(--text);">Select from Tools Vault</option>
-                                <option value="history" style="background:var(--bg-secondary); color:var(--text);">Select from AI History</option>
-                            </select>
-                        </div>
-
-                        <div id="ws-preset-selector-container" class="mb-sm" style="display:none; position: relative;">
-                            <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
-                            <select id="ws-preset-select" class="input-field" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm); appearance: none; background: var(--bg-secondary) !important; color: var(--text); border: 1px solid var(--border);">
-                                <option value="">Loading...</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-sm" style="position: relative;">
-                            <input type="hidden" id="snip-title" value="">
-                            <i class="fa-solid fa-tags" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; z-index: 1;"></i>
-                            <input type="text" id="snip-tags" class="input-field" placeholder="Tags (comma separated)" style="width:100%; padding-left: 38px; border-radius: var(--radius-sm);">
-                        </div>
-                        <input type="hidden" id="snip-item-type" value="text">
-                        <textarea id="snip-code" class="input-field" placeholder="Write your note, link, or snippet here..." style="width:100%; height:120px; resize:vertical; border-radius: var(--radius-sm); margin-bottom: 12px; font-family:var(--font-mono); font-size:13px; background:var(--bg-secondary); border:1px solid var(--border); color:var(--text); padding:12px;"></textarea>
-                        <button id="save-snip-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save to Folder</button>
+                <!-- Main Workspace Layout -->
+                <div class="ws-vault-container mb-lg" id="ws-app-container">
+                    <div style="text-align:center; padding:60px 0; width:100%;">
+                        <div class="spinner" style="margin:0 auto 16px; width:40px; height:40px; border:4px solid rgba(212,168,67,0.1); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
+                        <p class="text-muted">Loading workspace...</p>
                     </div>
-                    
-                    <div id="snippets-grid"></div>
                 </div>
             </div>
         `;
 
     this.initDB().then(() => {
       this.loadSnippets().then(() => {
-        this.renderSnippets();
+        this.renderWorkspaceLayout();
         this._applyAuthGate();
       });
     });
@@ -77,16 +56,13 @@ const WorkspacePage = {
           this.snippets = [];
         }
         this._applyAuthGate();
-        if (document.getElementById("snippets-grid")) {
+        if (document.getElementById("ws-app-container")) {
           this.loadSnippets()
             .catch((err) => {
-              console.error(
-                "Workspace data load failed after auth change:",
-                err,
-              );
+              console.error("Workspace data load failed after auth change:", err);
             })
             .finally(() => {
-              this.renderSnippets();
+              this.renderWorkspaceLayout();
             });
         }
       });
@@ -97,177 +73,332 @@ const WorkspacePage = {
   },
 
   _applyAuthGate() {
-    const createBtn = document.getElementById("ws-create-folder-btn");
-    const grid = document.getElementById("snippets-grid");
+    const createFolderBtn = document.getElementById("ws-create-folder-btn");
+    const createNoteBtn = document.getElementById("ws-create-note-btn");
 
     if (API.getAuthToken()) {
-      if (createBtn) {
-        createBtn.disabled = false;
-        createBtn.style.opacity = "";
-      }
+      if (createFolderBtn) createFolderBtn.disabled = false;
+      if (createNoteBtn) createNoteBtn.disabled = false;
       return;
     }
 
-    if (createBtn) {
-      createBtn.disabled = true;
-      createBtn.style.opacity = "0.4";
-    }
+    if (createFolderBtn) createFolderBtn.disabled = true;
+    if (createNoteBtn) createNoteBtn.disabled = true;
 
-    // Hide forms if they are open
     const newFolder = document.getElementById("ws-new-folder-container");
-    const addItem = document.getElementById("ws-add-item-card");
     if (newFolder) newFolder.style.display = "none";
-    if (addItem) addItem.style.display = "none";
   },
 
-  renderSnippets() {
-    const grid = document.getElementById("snippets-grid");
-    if (!grid) return;
+  renderWorkspaceLayout() {
+    const container = document.getElementById("ws-app-container");
+    if (!container) return;
 
     if (!API.getAuthToken()) {
-      grid.innerHTML = `
-                <div class="empty-state" style="grid-column: span 2; padding: 60px 20px; text-align: center; position:relative;">
+      container.innerHTML = `
+                <div class="empty-state" style="width:100%; padding: 60px 20px; text-align: center; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                     <i class="fa-solid fa-lock" style="font-size:2.5rem; color:var(--primary-light); margin-bottom:16px;"></i>
-                    <h3 style="margin-bottom:8px;">Sign In to use Workspace</h3>
-                    <p style="max-width:400px; margin:0 auto 20px;" class="text-muted">Create a free account to assemble project folders, save notes, and bookmark APIs.</p>
-                    <button class="btn btn-primary" id="ws-gate-login" style="min-width:140px; margin:0 auto;">Sign In</button>
+                    <h3 style="margin-bottom:8px;">Sign In to Open Workspace</h3>
+                    <p style="max-width:400px; margin:0 auto 20px;" class="text-muted">Create a free account to create folders, write markdown notes, and save code snippets.</p>
+                    <button class="btn btn-primary" id="ws-gate-login" style="min-width:140px;">Sign In</button>
                 </div>`;
-      document
-        .getElementById("ws-gate-login")
-        ?.addEventListener("click", () => API.requireAuth());
+      document.getElementById("ws-gate-login")?.addEventListener("click", () => API.requireAuth());
       return;
     }
 
-    if (!this.snippets.length) {
-      grid.innerHTML = `
-                <div class="empty-state" style="grid-column: span 2; padding: 60px 20px; text-align: center;">
-                    <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px; opacity: 0.5;"></i>
-                    <h3 style="margin-bottom: 8px;">No projects yet</h3>
-                    <p class="text-muted" style="max-width: 400px; margin: 0 auto;">Click "Create Folder" above to start assembling your projects.</p>
-                </div>`;
-      return;
+    // Preserve search focus state
+    const activeElem = document.activeElement;
+    const isSearchFocused = activeElem && activeElem.id === "ws-search-input";
+    const cursorPos = isSearchFocused ? activeElem.selectionStart : null;
+
+    // Filter valid non-stub snippets
+    let validSnippets = this.snippets.filter((s) => s.itemType !== "folder-stub");
+
+    // Apply Search Filter
+    if (this.searchQuery) {
+      const q = this.searchQuery.toLowerCase();
+      validSnippets = validSnippets.filter(
+        (s) =>
+          s.title.toLowerCase().includes(q) ||
+          s.code.toLowerCase().includes(q) ||
+          (s.folder && s.folder.toLowerCase().includes(q)) ||
+          (s.tags && s.tags.toString().toLowerCase().includes(q)),
+      );
     }
 
+    // Apply Category/Tag Filter
+    if (this.activeTag !== "All") {
+      validSnippets = validSnippets.filter((s) => {
+        const typeMatch = s.itemType === this.activeTag.toLowerCase();
+        const tagMatch = Array.isArray(s.tags)
+          ? s.tags.includes(this.activeTag.toLowerCase())
+          : typeof s.tags === "string" && s.tags.toLowerCase().includes(this.activeTag.toLowerCase());
+        return typeMatch || tagMatch;
+      });
+    }
+
+    // Select active note
+    let activeNote = validSnippets.find((s) => s.id === this.activeNoteId);
+    if (!activeNote && validSnippets.length > 0) {
+      activeNote = validSnippets[0];
+      this.activeNoteId = activeNote.id;
+    }
+
+    // Build Folder Tree Map for matching notes
     const folders = {};
-    this.snippets.forEach((s) => {
-      const fName = s.folder || "Unassigned";
+    validSnippets.forEach((s) => {
+      const fName = s.folder || "Uncategorized";
       if (!folders[fName]) folders[fName] = [];
       folders[fName].push(s);
     });
 
+    // Also include empty folder stubs if not searching
+    if (!this.searchQuery && this.activeTag === "All") {
+      this.snippets.forEach((s) => {
+        const fName = s.folder || "Uncategorized";
+        if (!folders[fName]) folders[fName] = [];
+      });
+    }
+
     const folderNames = Object.keys(folders).sort();
 
-    let html = '<div style="display:flex; flex-direction:column; gap:24px;">';
-    folderNames.forEach((fName) => {
-      const folderSnips = folders[fName];
-      const activeSnips = folderSnips
-        .filter((s) => s.itemType !== "folder-stub")
-        .sort((a, b) => {
-          if (a.isPinned && !b.isPinned) return -1;
-          if (!a.isPinned && b.isPinned) return 1;
-          return 0;
-        });
+    // Icons map for note types
+    const typeIcons = {
+      text: "fa-file-lines",
+      code: "fa-code",
+      api: "fa-server",
+      command: "fa-terminal",
+      tool: "fa-wrench",
+      blueprint: "fa-folder-tree",
+    };
 
-      html += `
-            <div class="glass-card folder-card" style="padding:0; overflow:hidden; border-color:var(--border);">
-                <div class="flex-between" style="background:rgba(212,168,67,0.03); padding:16px 20px; border-bottom:1px solid var(--border);">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <i class="fa-solid fa-folder" style="color:var(--primary-light); font-size:1.1rem;"></i>
-                        <h3 style="margin:0; font-size:1.05rem;">${Helpers.escapeHtml(fName)}</h3>
-                        <span class="tag tag-primary text-xs">${activeSnips.length} items</span>
-                    </div>
-                    <div class="flex-gap">
-                        <button class="btn btn-ghost btn-sm add-to-folder-btn" data-folder="${Helpers.escapeHtml(fName)}"><i class="fa-solid fa-plus"></i> Add Item</button>
-                        <button class="btn btn-ghost btn-sm delete-folder-btn" data-folder="${Helpers.escapeHtml(fName)}" style="color:var(--error);" title="Delete Folder"><i class="fa-solid fa-trash"></i></button>
-                        <button class="btn btn-ghost btn-sm toggle-folder-btn"><i class="fa-solid fa-chevron-down"></i></button>
-                    </div>
-                </div>
-                <div class="folder-content" style="padding:20px; display:block;">
-                    <div class="grid-2">
-                        ${
-                          activeSnips.length === 0
-                            ? '<p class="text-muted text-sm" style="grid-column: span 2;">Folder is empty. Add notes, code, or tools here.</p>'
-                            : activeSnips
-                                .map((s) => {
-                                  const idx = this.snippets.indexOf(s);
-                                  const tagsArray = Array.isArray(s.tags)
-                                    ? s.tags
-                                    : typeof s.tags === "string"
-                                      ? s.tags.split(",")
-                                      : [];
-                                  const tagsHtml = tagsArray
-                                    .map(
-                                      (t) =>
-                                        `<span class="tag mb-sm" style="display:inline-block; font-size:0.7rem; font-weight:600; background:rgba(255,255,255,0.1); color:var(--text-muted); border: 1px solid var(--border); margin-left: 5px;">#${Helpers.escapeHtml(t.trim())}</span>`,
-                                    )
-                                    .join("");
+    // Render Clean Tag Bar HTML
+    const tagList = ["All", "Text", "Code", "API", "Command", "Blueprint", "Tool"];
+    const tagBarHtml = tagList
+      .map(
+        (t) =>
+          `<button class="ws-tag-pill ${this.activeTag === t ? "active" : ""}" data-tag="${t}">#${t}</button>`,
+      )
+      .join("");
 
-                                  let contentHtml = "";
-                                  if (s.itemType === "blueprint") {
-                                    contentHtml = `<pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted); white-space: pre-wrap; word-break: break-word;">${Helpers.escapeHtml(s.code)}</pre>`;
-                                  } else if (s.itemType === "api") {
-                                    contentHtml = `<div style="font-family:var(--font-mono); font-size:13px; color:var(--success);"><i class="fa-solid fa-link" style="margin-right:6px;"></i>${Helpers.escapeHtml(s.code)}</div>`;
-                                  } else if (s.itemType === "command") {
-                                    contentHtml = `<div style="font-family:var(--font-mono); font-size:13px; color:var(--warning);"><i class="fa-solid fa-terminal" style="margin-right:6px;"></i>${Helpers.escapeHtml(s.code)}</div>`;
-                                  } else if (s.itemType === "tool") {
-                                    contentHtml = `<a href="${Helpers.escapeHtml(s.code)}" target="_blank" style="color:var(--primary-light); font-weight:600; text-decoration:none;"><i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:6px;"></i>Open Link</a>`;
-                                  } else {
-                                    contentHtml = `<pre style="margin:0; font-family:var(--font-mono); font-size:12px; color:var(--text-muted); white-space: pre-wrap; word-break: break-word;">${Helpers.escapeHtml(s.code)}</pre>`;
-                                  }
+    // Render Folder Tree HTML
+    this.collapsedFolders = this.collapsedFolders || {};
+    let treeHtml = "";
 
-                                  const typeIcons = {
-                                    text: "fa-file-lines",
-                                    api: "fa-server",
-                                    command: "fa-terminal",
-                                    tool: "fa-wrench",
-                                    blueprint: "fa-folder-tree",
-                                  };
-                                  const typeIcon =
-                                    typeIcons[s.itemType || "text"];
+    if (folderNames.length === 0) {
+      treeHtml = `<span class="text-xs text-muted" style="padding:16px 12px; display:block; text-align:center;">No notes found</span>`;
+    } else {
+      folderNames.forEach((fName) => {
+        const fNotes = folders[fName] || [];
+        const isCollapsed = !!this.collapsedFolders[fName];
 
-                                  return `
-                            <div class="glass-card-static" style="${s.isPinned ? "border-color: var(--primary-light);" : ""} padding:16px; min-width: 0;">
-                                <div class="flex-between mb-sm" style="align-items: flex-start; gap: 10px;">
-                                    <div style="font-weight:600; display:flex; align-items:center; gap:8px; min-width: 0; flex: 1;">
-                                        <i class="fa-solid ${typeIcon}" style="color:var(--text-muted); font-size:0.9rem; flex-shrink: 0;"></i>
-                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${Helpers.escapeHtml(s.title)}</span>
-                                        ${s.isPinned ? '<i class="fa-solid fa-thumbtack" style="color:var(--primary-light); font-size:0.8rem; flex-shrink: 0;" title="Pinned"></i>' : ""}
-                                    </div>
-                                    <div class="flex-gap" style="flex-shrink: 0;">
-                                        <button class="btn btn-ghost btn-xs pin-snip-btn" data-id="${s.id}" data-idx="${idx}" title="${s.isPinned ? "Unpin" : "Pin"}" style="color:${s.isPinned ? "var(--primary-light)" : "var(--text-muted)"};"><i class="fa-solid fa-thumbtack"></i></button>
-                                        <button class="btn btn-ghost btn-xs toggle-snip-btn" data-idx="${idx}" title="Toggle details"><i class="fa-solid fa-eye toggle-icon-${idx}"></i></button>
-                                        <button class="btn btn-ghost btn-xs copy-snip-btn" data-idx="${idx}"><i class="fa-solid fa-copy"></i></button>
-                                        <button class="btn btn-ghost btn-xs del-snip-btn" data-id="${s.id}" data-idx="${idx}" style="color:var(--error);"><i class="fa-solid fa-trash"></i></button>
-                                    </div>
-                                </div>
-                                ${s.itemType === "text" && s.lang ? `<span class="tag mb-sm" style="display:inline-block; font-weight:600; background: ${Helpers.getExtColor(s.lang)}20; color: ${Helpers.getExtColor(s.lang)}; border: 1px solid ${Helpers.getExtColor(s.lang)}40;">${s.lang.toUpperCase()}</span>` : ""}
-                                ${s.itemType && s.itemType !== "text" ? `<span class="tag mb-sm" style="display:inline-block; font-weight:600; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border); text-transform:capitalize;">${s.itemType}</span>` : ""}
-                                ${tagsHtml}
-                                <div id="snip-code-${idx}" style="display:none; margin-top:12px; background:rgba(0,0,0,0.4); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); overflow-x:auto;">
-                                    ${contentHtml}
-                                </div>
-                            </div>
-                            `;
-                                })
-                                .join("")
-                        }
-                    </div>
-                </div>
+        treeHtml += `
+              <div class="ws-folder-group">
+                  <div class="ws-folder-header" data-folder="${Helpers.escapeHtml(fName)}" title="Click to ${isCollapsed ? "expand" : "collapse"} folder">
+                      <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                          <i class="fa-solid ${isCollapsed ? "fa-chevron-right" : "fa-chevron-down"}" style="font-size:0.75rem; color:var(--text-muted); width:10px; transition:transform 0.2s ease;"></i>
+                          <i class="fa-solid ${isCollapsed ? "fa-folder" : "fa-folder-open"}" style="color:var(--primary-light); font-size:0.85rem;"></i>
+                          <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${Helpers.escapeHtml(fName)}</span>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:6px;">
+                          <span class="tag tag-primary" style="font-size:0.68rem; padding:1px 6px;">${fNotes.length}</span>
+                          <button class="btn btn-ghost btn-xs add-to-folder-btn" data-folder="${Helpers.escapeHtml(fName)}" title="Add note to ${Helpers.escapeHtml(fName)}"><i class="fa-solid fa-plus"></i></button>
+                      </div>
+                  </div>
+                  <div class="ws-folder-items" style="display:${isCollapsed ? "none" : "flex"};">
+                      ${
+                        fNotes.length === 0
+                          ? '<span class="text-xs text-muted" style="padding:4px 8px; font-style:italic;">No notes</span>'
+                          : fNotes
+                              .map((n) => {
+                                const icon = typeIcons[n.itemType] || "fa-file-lines";
+                                const isSelected = activeNote && activeNote.id === n.id;
+                                return `
+                                  <div class="ws-tree-item ${isSelected ? "active" : ""}" data-note-id="${n.id}">
+                                      <div style="display:flex; align-items:center; gap:8px; min-width:0; flex:1;">
+                                          <i class="fa-solid ${icon}" style="font-size:0.8rem; color:${isSelected ? "var(--primary-light)" : "var(--text-muted)"}; flex-shrink:0;"></i>
+                                          <span class="item-title">${Helpers.escapeHtml(n.title)}</span>
+                                      </div>
+                                      ${n.isPinned ? '<i class="fa-solid fa-thumbtack" style="color:var(--primary-light); font-size:0.75rem; flex-shrink:0;" title="Pinned"></i>' : ""}
+                                  </div>
+                              `;
+                              })
+                              .join("")
+                      }
+                  </div>
+              </div>`;
+      });
+    }
+
+    // Render Right Panel (Note Editor / Preview)
+    let mainContentHtml = "";
+
+    if (!activeNote) {
+      mainContentHtml = `
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; text-align:center;">
+                <i class="fa-solid fa-file-signature" style="font-size:3rem; color:var(--text-muted); opacity:0.4; margin-bottom:16px;"></i>
+                <h3 style="margin-bottom:8px;">No note selected</h3>
+                <p class="text-muted" style="max-width:360px; margin-bottom:20px;">Select a note from the left folder tree or click New Note to create one.</p>
+                <button class="btn btn-primary" id="ws-empty-new-note"><i class="fa-solid fa-plus"></i> Create Note</button>
             </div>`;
-    });
+    } else {
+      const tagsArray = Array.isArray(activeNote.tags)
+        ? activeNote.tags
+        : typeof activeNote.tags === "string"
+          ? activeNote.tags.split(",")
+          : [];
 
-    html += "</div>";
-    grid.innerHTML = html;
+      const tagsHtml = tagsArray
+        .map(
+          (t) =>
+            `<span class="tag" style="font-size:0.7rem; background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text-muted);">#${Helpers.escapeHtml(t.trim())}</span>`,
+        )
+        .join("");
+
+      mainContentHtml = `
+            <!-- Header -->
+            <div class="ws-main-header">
+                <div class="ws-breadcrumbs">
+                    <i class="fa-solid fa-folder text-primary"></i>
+                    <span>${Helpers.escapeHtml(activeNote.folder || "Uncategorized")}</span>
+                    <span>/</span>
+                    <span class="active">${Helpers.escapeHtml(activeNote.title)}</span>
+                </div>
+                <div class="flex-gap" style="align-items:center;">
+                    <div class="ws-mode-switcher">
+                        <button class="ws-mode-btn ${!this.isEditing ? "active" : ""}" id="ws-mode-preview"><i class="fa-solid fa-eye"></i> Preview</button>
+                        <button class="ws-mode-btn ${this.isEditing ? "active" : ""}" id="ws-mode-edit"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                    </div>
+                    <div style="height:20px; width:1px; background:rgba(255,255,255,0.15); margin:0 4px;"></div>
+                    <button class="btn btn-ghost btn-xs" id="ws-pin-btn" data-id="${activeNote.id}" title="${activeNote.isPinned ? "Unpin Note" : "Pin Note"}" style="color:${activeNote.isPinned ? "var(--primary-light)" : "var(--text-muted)"};">
+                        <i class="fa-solid fa-thumbtack"></i> ${activeNote.isPinned ? "Pinned" : "Pin"}
+                    </button>
+                    <button class="btn btn-ghost btn-xs" id="ws-copy-btn" title="Copy Content"><i class="fa-regular fa-copy"></i> Copy</button>
+                    <button class="btn btn-ghost btn-xs" id="ws-delete-btn" data-id="${activeNote.id}" style="color:var(--error);" title="Delete Note"><i class="fa-solid fa-trash"></i> Delete</button>
+                </div>
+            </div>
+
+            <!-- Note Content Canvas -->
+            <div class="ws-editor-container">
+                <input type="text" id="ws-note-title" class="ws-note-title-input" value="${Helpers.escapeHtml(activeNote.title)}" placeholder="Note Title...">
+                
+                <div class="ws-note-meta">
+                    <span class="tag tag-primary" style="text-transform:uppercase; font-size:0.7rem; font-weight:700;">${activeNote.itemType || "text"}</span>
+                    ${tagsHtml}
+                </div>
+
+                <!-- Markdown Formatting Bar (in Edit mode) -->
+                ${
+                  this.isEditing
+                    ? `
+                <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="h2" title="Heading"><b>H2</b></button>
+                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="bold" title="Bold"><b>B</b></button>
+                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="code" title="Code block"><i class="fa-solid fa-code"></i></button>
+                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="list" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="check" title="Task List"><i class="fa-regular fa-square-check"></i></button>
+                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="link" title="Link"><i class="fa-solid fa-link"></i></button>
+                </div>
+                <textarea id="ws-note-editor" class="ws-editor-textarea" placeholder="Write markdown note here...">${Helpers.escapeHtml(activeNote.code || "")}</textarea>
+                <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:10px;">
+                    <button class="btn btn-ghost" id="ws-cancel-note-btn"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                    <button class="btn btn-primary" id="ws-save-note-btn"><i class="fa-solid fa-floppy-disk"></i> Save Note</button>
+                </div>
+                `
+                    : `
+                <div class="ws-preview-box">${this._formatMarkdownPreview(activeNote.code || "")}</div>
+                `
+                }
+            </div>`;
+    }
+
+    container.innerHTML = `
+            <!-- Left Sidebar -->
+            <div class="ws-sidebar">
+                <div class="ws-sidebar-header">
+                    <div class="flex-between mb-xs" style="align-items:center;">
+                        <span class="ws-sidebar-title"><i class="fa-solid fa-folder-tree"></i> Notes Explorer</span>
+                        <span class="text-xs text-muted" style="font-weight:600;">${validSnippets.length} notes</span>
+                    </div>
+                    <div class="search-container mb-xs" style="margin-top:8px;">
+                        <i class="fa-solid fa-magnifying-glass search-icon" style="font-size:0.78rem;"></i>
+                        <input type="text" id="ws-search-input" class="input-field" value="${Helpers.escapeHtml(this.searchQuery)}" placeholder="Search notes..." style="padding:6px 10px 6px 30px; font-size:0.8rem;">
+                    </div>
+                </div>
+
+                <div class="ws-tag-bar" id="ws-tag-bar">
+                    ${tagBarHtml}
+                </div>
+
+                <div class="ws-file-tree">
+                    ${treeHtml}
+                </div>
+            </div>
+
+            <!-- Right Main Panel -->
+            <div class="ws-main-panel">
+                ${mainContentHtml}
+            </div>`;
+
+    // Restore focus and cursor position on search input if it was active
+    if (isSearchFocused) {
+      const searchEl = document.getElementById("ws-search-input");
+      if (searchEl) {
+        searchEl.focus();
+        if (cursorPos !== null) {
+          searchEl.setSelectionRange(cursorPos, cursorPos);
+        }
+      }
+    }
   },
 
-  async saveSnippet(
-    title,
-    code,
-    lang,
-    folder = "Uncategorized",
-    tags = [],
-    itemType = "text",
-  ) {
+  _formatMarkdownPreview(text) {
+    if (!text) return '<span class="text-muted" style="font-style:italic;">Empty note. Click "Edit" to add content.</span>';
+    let html = Helpers.escapeHtml(text);
+
+    // Code blocks ```
+    html = html.replace(/```([\s\S]*?)```/g, (match, p1) => {
+      return `<div style="background:#0a0a0f; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-mono); font-size:0.85rem; color:#e2e8f0; margin:10px 0; overflow-x:auto;"><pre style="margin:0;">${p1.trim()}</pre></div>`;
+    });
+
+    // Inline code `
+    html = html.replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-family:var(--font-mono); font-size:0.85rem;">$1</code>');
+
+    // Headings
+    html = html.replace(/^### (.*$)/gim, '<h3 style="font-size:1.1rem; font-weight:700; color:var(--primary-light); margin:14px 0 6px;">$1</h3>');
+    html = html.replace(/^## (.*$)/gim, '<h2 style="font-size:1.25rem; font-weight:700; color:var(--text); margin:16px 0 8px;">$1</h2>');
+    html = html.replace(/^# (.*$)/gim, '<h1 style="font-size:1.4rem; font-weight:800; color:var(--text); margin:18px 0 10px;">$1</h1>');
+
+    // Checkboxes
+    html = html.replace(/- \[ \] (.*$)/gim, '<div style="display:flex; align-items:center; gap:8px; margin:4px 0;"><i class="fa-regular fa-square" style="color:var(--text-muted);"></i> <span>$1</span></div>');
+    html = html.replace(/- \[x\] (.*$)/gim, '<div style="display:flex; align-items:center; gap:8px; margin:4px 0;"><i class="fa-solid fa-square-check" style="color:var(--success);"></i> <span style="text-decoration:line-through; opacity:0.7;">$1</span></div>');
+
+    // Bullet lists
+    html = html.replace(/^- (.*$)/gim, '<li style="margin-left:18px;">$1</li>');
+
+    // URLs
+    html = html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" style="color:var(--primary-light); text-decoration:underline;">$1</a>');
+
+    return html;
+  },
+
+  async createNewNote(folderName = "Uncategorized") {
+    if (!API.requireAuth()) return;
+    const defaultTitle = "Untitled Note";
+    const defaultCode = "# Untitled Note\n\nStart typing your note here...";
+    await this.saveSnippet(defaultTitle, defaultCode, "text", folderName, [], "text");
+    this.isEditing = true;
+    this.renderWorkspaceLayout();
+    setTimeout(() => {
+      const textarea = document.getElementById("ws-note-editor");
+      if (textarea) {
+        textarea.focus();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      }
+    }, 100);
+    Toast.show("New note created!", "success");
+  },
+
+  async saveSnippet(title, code, lang, folder = "Uncategorized", tags = [], itemType = "text") {
     await this.initDB();
     let newSnip = {
       id: Date.now().toString(),
@@ -291,7 +422,6 @@ const WorkspacePage = {
           itemType,
         });
         newSnip.id = saved._id;
-        console.log("☁️ Snippet successfully synced to MongoDB!");
       } catch (e) {
         console.error("Failed to sync snippet to cloud:", e);
       }
@@ -299,393 +429,226 @@ const WorkspacePage = {
 
     this.snippets.push(newSnip);
     await this.saveToIndexedDB(newSnip);
-    if (document.getElementById("snippets-grid")) {
-      this.renderSnippets();
+    this.activeNoteId = newSnip.id;
+    if (document.getElementById("ws-app-container")) {
+      this.renderWorkspaceLayout();
     }
   },
 
   bindEvents() {
-    document
-      .getElementById("ws-create-folder-btn")
-      ?.addEventListener("click", () => {
-        document.getElementById("ws-new-folder-container").style.display =
-          "block";
-        document.getElementById("ws-new-folder-input").focus();
-      });
+    const pageContent = document.getElementById("page-content");
+    if (!pageContent) return;
 
-    document
-      .getElementById("ws-cancel-folder-btn")
-      ?.addEventListener("click", () => {
-        document.getElementById("ws-new-folder-container").style.display =
-          "none";
-      });
-
-    document
-      .getElementById("ws-save-folder-btn")
-      ?.addEventListener("click", () => {
-        const folderName = document
-          .getElementById("ws-new-folder-input")
-          .value.trim();
-        if (!folderName)
-          return Toast.show("Folder name cannot be empty", "warning");
-
-        this.saveSnippet(
-          `Folder created: ${folderName}`,
-          "",
-          "text",
-          folderName,
-          [],
-          "folder-stub",
-        );
-        document.getElementById("ws-new-folder-input").value = "";
-        document.getElementById("ws-new-folder-container").style.display =
-          "none";
-        Toast.show(`Folder "${folderName}" created`, "success");
-      });
-
-    document.getElementById("save-snip-btn")?.addEventListener("click", () => {
-      if (!API.requireAuth()) return;
-      let title = document.getElementById("snip-title").value.trim();
-      const folder =
-        document.getElementById("snip-folder").value.trim() || "Unassigned";
-      const tagsRaw = document.getElementById("snip-tags").value;
-      const tags = tagsRaw
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t);
-      const code = document.getElementById("snip-code").value.trim();
-      const itemType =
-        document.getElementById("snip-item-type").value || "text";
-
-      if (!code)
-        return Toast.show("Please provide a note or snippet content", "error");
-
-      if (!title) {
-        title =
-          code.substring(0, 40).replace(/\n/g, " ") +
-          (code.length > 40 ? "..." : "");
+    // Create Folder Toggle
+    document.getElementById("ws-create-folder-btn")?.addEventListener("click", () => {
+      const container = document.getElementById("ws-new-folder-container");
+      if (container) {
+        container.style.display = container.style.display === "none" ? "block" : "none";
+        document.getElementById("ws-new-folder-input")?.focus();
       }
-
-      this.saveSnippet(title, code, "text", folder, tags, itemType);
-
-      document.getElementById("snip-title").value = "";
-      document.getElementById("snip-tags").value = "";
-      document.getElementById("snip-code").value = "";
-      document.getElementById("ws-add-item-card").style.display = "none";
-      Toast.show(`Saved to ${folder}!`, "success");
     });
 
-    document
-      .getElementById("ws-item-source-select")
-      ?.addEventListener("change", async (e) => {
-        const source = e.target.value;
-        const presetContainer = document.getElementById(
-          "ws-preset-selector-container",
-        );
-        const presetSelect = document.getElementById("ws-preset-select");
+    // Create Instant Note Button
+    document.getElementById("ws-create-note-btn")?.addEventListener("click", () => {
+      this.createNewNote("Uncategorized");
+    });
 
-        if (source === "custom") {
-          presetContainer.style.display = "none";
-          document.getElementById("snip-title").value = "";
-          document.getElementById("snip-code").value = "";
-          document.getElementById("snip-tags").value = "";
-          document.getElementById("snip-item-type").value = "text";
-          return;
-        }
+    document.getElementById("ws-cancel-folder-btn")?.addEventListener("click", () => {
+      document.getElementById("ws-new-folder-container").style.display = "none";
+    });
 
-        presetContainer.style.display = "block";
-        presetSelect.innerHTML = '<option value="">Loading...</option>';
+    document.getElementById("ws-save-folder-btn")?.addEventListener("click", () => {
+      const folderName = document.getElementById("ws-new-folder-input").value.trim();
+      if (!folderName) return Toast.show("Folder name cannot be empty", "warning");
 
-        try {
-          if (source === "api") {
-            if (!this._cachedApis) {
-              const res = await fetch("/data/apis.json");
-              this._cachedApis = await res.json();
-            }
-            presetSelect.innerHTML =
-              '<option value="" style="background:var(--bg-secondary); color:var(--text);">-- Select an API --</option>' +
-              this._cachedApis
-                .map(
-                  (a, i) =>
-                    `<option value="${i}" style="background:var(--bg-secondary); color:var(--text);">${a.name} (${a.category})</option>`,
-                )
-                .join("");
-          } else if (source === "tool") {
-            if (!this._cachedTools) {
-              const res = await fetch("/data/tools.json");
-              this._cachedTools = await res.json();
-              // Flatten tools
-              this._flatTools = [];
-              this._cachedTools.forEach((cat) =>
-                cat.items.forEach((t) =>
-                  this._flatTools.push({ ...t, category: cat.cat }),
-                ),
-              );
-            }
-            presetSelect.innerHTML =
-              '<option value="" style="background:var(--bg-secondary); color:var(--text);">-- Select a Tool --</option>' +
-              this._flatTools
-                .map(
-                  (t, i) =>
-                    `<option value="${i}" style="background:var(--bg-secondary); color:var(--text);">${t.name} (${t.category})</option>`,
-                )
-                .join("");
-          } else if (source === "history") {
-            if (
-              !this._cachedHistory ||
-              Date.now() - (this._lastHistoryFetch || 0) > 60000
-            ) {
-              if (API.getAuthToken()) {
-                try {
-                  this._cachedHistory = await API.fetchAPI("/api/ai-history");
-                } catch (e) {
-                  this._cachedHistory = JSON.parse(
-                    localStorage.getItem("ai_history") || "[]",
-                  );
-                }
-              } else {
-                this._cachedHistory = JSON.parse(
-                  localStorage.getItem("ai_history") || "[]",
-                );
-              }
-              this._lastHistoryFetch = Date.now();
-            }
+      this.saveSnippet(`Folder created: ${folderName}`, "", "text", folderName, [], "folder-stub");
+      document.getElementById("ws-new-folder-input").value = "";
+      document.getElementById("ws-new-folder-container").style.display = "none";
+      Toast.show(`Folder "${folderName}" created`, "success");
+    });
 
-            if (!this._cachedHistory || this._cachedHistory.length === 0) {
-              presetSelect.innerHTML =
-                '<option value="" style="background:var(--bg-secondary); color:var(--text);">-- No AI History Found --</option>';
-            } else {
-              presetSelect.innerHTML =
-                '<option value="" style="background:var(--bg-secondary); color:var(--text);">-- Select from AI History --</option>' +
-                this._cachedHistory
-                  .map((h, i) => {
-                    const shortPrompt =
-                      h.prompt.length > 50
-                        ? h.prompt.substring(0, 50) + "..."
-                        : h.prompt;
-                    const moduleIcon =
-                      h.module === "architect" ? "Architecture" : "Chat";
-                    return `<option value="${i}" style="background:var(--bg-secondary); color:var(--text);">[${moduleIcon}] ${shortPrompt}</option>`;
-                  })
-                  .join("");
-            }
-          }
-        } catch (err) {
-          console.error("Failed to load presets", err);
-          presetSelect.innerHTML =
-            '<option value="">Error loading data</option>';
-        }
-      });
+    // Clean single event listener binding on pageContent
+    if (this._clickHandler) {
+      pageContent.removeEventListener("click", this._clickHandler);
+    }
 
-    document
-      .getElementById("ws-preset-select")
-      ?.addEventListener("change", (e) => {
-        const idx = e.target.value;
-        if (idx === "") return;
-        const source = document.getElementById("ws-item-source-select").value;
+    this._clickHandler = async (e) => {
+      // Tree Item Select
+      const treeItem = e.target.closest(".ws-tree-item");
+      if (treeItem) {
+        this.activeNoteId = treeItem.dataset.noteId;
+        this.isEditing = false;
+        this.renderWorkspaceLayout();
+        return;
+      }
 
-        if (source === "api" && this._cachedApis) {
-          const api = this._cachedApis[idx];
-          document.getElementById("snip-title").value = api.name + " API";
-          document.getElementById("snip-code").value = api.url;
-          document.getElementById("snip-tags").value =
-            "api, " + api.category.toLowerCase();
-          document.getElementById("snip-item-type").value = "api";
-        } else if (source === "tool" && this._flatTools) {
-          const tool = this._flatTools[idx];
-          document.getElementById("snip-title").value = tool.name;
-          document.getElementById("snip-code").value = tool.url;
-          document.getElementById("snip-tags").value =
-            "tool, " + tool.category.toLowerCase();
-          document.getElementById("snip-item-type").value = "tool";
-        } else if (source === "history" && this._cachedHistory) {
-          const historyItem = this._cachedHistory[idx];
-          document.getElementById("snip-title").value = historyItem.prompt;
+      // Tag Filter Select
+      const tagPill = e.target.closest(".ws-tag-pill");
+      if (tagPill) {
+        this.activeTag = tagPill.dataset.tag;
+        this.renderWorkspaceLayout();
+        return;
+      }
 
-          let content = historyItem.response;
-          let itemType = "text";
+      // Add to folder btn - create note in folder
+      const addFolderBtn = e.target.closest(".add-to-folder-btn");
+      if (addFolderBtn) {
+        e.stopPropagation();
+        const folder = addFolderBtn.dataset.folder;
+        this.createNewNote(folder);
+        return;
+      }
 
-          // Extract bash command from architect history html
-          if (historyItem.module === "architect") {
-            const match = content.match(
-              /<strong>Command:<\/strong>\n(.*?)\n\n<strong>Structure:<\/strong>/,
-            );
-            if (match && match[1]) {
-              content = match[1].trim();
-              itemType = "command";
-            } else {
-              itemType = "blueprint";
-            }
-          } else if (historyItem.module === "chat") {
-            // Extract plain text from the HTML chat response
-            const htmlWithNewlines = content
-              .replace(/<br\s*\/?>/gi, "\n")
-              .replace(/<\/p>|<\/li>|<\/div>/gi, "\n");
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = htmlWithNewlines;
-            content = (tempDiv.innerText || tempDiv.textContent).trim();
-            itemType = "text";
-          }
+      // Folder Collapse / Expand Toggle
+      const folderHeader = e.target.closest(".ws-folder-header");
+      if (folderHeader) {
+        const fName = folderHeader.dataset.folder;
+        this.collapsedFolders = this.collapsedFolders || {};
+        this.collapsedFolders[fName] = !this.collapsedFolders[fName];
+        this.renderWorkspaceLayout();
+        return;
+      }
 
-          document.getElementById("snip-code").value = content;
-          document.getElementById("snip-item-type").value = itemType;
-        }
-      });
+      // Segmented mode switcher
+      if (e.target.closest("#ws-mode-preview")) {
+        this.isEditing = false;
+        this.renderWorkspaceLayout();
+        return;
+      }
+      if (e.target.closest("#ws-mode-edit")) {
+        this.isEditing = true;
+        this.renderWorkspaceLayout();
+        return;
+      }
 
-    document
-      .getElementById("ws-close-add-item-btn")
-      ?.addEventListener("click", () => {
-        document.getElementById("ws-add-item-card").style.display = "none";
-      });
+      // Cancel Note edit
+      if (e.target.closest("#ws-cancel-note-btn")) {
+        this.isEditing = false;
+        this.renderWorkspaceLayout();
+        Toast.show("Editing cancelled", "info");
+        return;
+      }
 
-    document
-      .getElementById("page-content")
-      .addEventListener("click", async (e) => {
-        if (e.target.closest(".delete-folder-btn")) {
-          if (!API.requireAuth()) return;
-          const folderName =
-            e.target.closest(".delete-folder-btn").dataset.folder;
+      // Save Note changes
+      if (e.target.closest("#ws-save-note-btn")) {
+        const titleVal = document.getElementById("ws-note-title")?.value.trim();
+        const editorVal = document.getElementById("ws-note-editor")?.value.trim();
+        const note = this.snippets.find((s) => s.id === this.activeNoteId);
 
-          if (
-            !confirm(
-              `Are you sure you want to completely delete the folder "${folderName}" and ALL items inside it? This cannot be undone.`,
-            )
-          ) {
-            return;
-          }
-
-          // Find all snippets in this folder
-          const snipsToDelete = this.snippets.filter(
-            (s) => (s.folder || "Unassigned") === folderName,
-          );
-
-          // Remove from local array
-          this.snippets = this.snippets.filter(
-            (s) => (s.folder || "Unassigned") !== folderName,
-          );
-
-          // Remove from DBs
-          for (const snip of snipsToDelete) {
-            await this.deleteFromIndexedDB(snip.id);
-            if (API.getAuthToken()) {
-              try {
-                await API.fetchAPI(`/api/snippets/${snip.id}`, "DELETE");
-              } catch (err) {
-                console.error("Cloud delete fail", err);
-              }
-            }
-          }
-
-          this.renderSnippets();
-          Toast.show(`Folder "${folderName}" deleted`, "success");
-        }
-
-        if (e.target.closest(".toggle-folder-btn")) {
-          const btn = e.target.closest(".toggle-folder-btn");
-          const content = btn
-            .closest(".folder-card")
-            .querySelector(".folder-content");
-          if (content.style.display === "none") {
-            content.style.display = "block";
-            btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
-          } else {
-            content.style.display = "none";
-            btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
-          }
-        }
-
-        if (e.target.closest(".add-to-folder-btn")) {
-          const folder = e.target.closest(".add-to-folder-btn").dataset.folder;
-          document.getElementById("snip-folder").value = folder;
-          document.getElementById("ws-active-folder-name").textContent = folder;
-          document.getElementById("ws-add-item-card").style.display = "block";
-          document
-            .getElementById("ws-add-item-card")
-            .scrollIntoView({ behavior: "smooth" });
-        }
-
-        if (e.target.closest(".toggle-snip-btn")) {
-          const idx = e.target.closest(".toggle-snip-btn").dataset.idx;
-          const codeDiv = document.getElementById("snip-code-" + idx);
-          const icon = document.querySelector(".toggle-icon-" + idx);
-          if (codeDiv && codeDiv.style.display === "none") {
-            codeDiv.style.display = "block";
-            if (icon) {
-              icon.classList.remove("fa-eye");
-              icon.classList.add("fa-eye-slash");
-            }
-          } else if (codeDiv) {
-            codeDiv.style.display = "none";
-            if (icon) {
-              icon.classList.remove("fa-eye-slash");
-              icon.classList.add("fa-eye");
-            }
-          }
-        }
-
-        if (e.target.closest(".copy-snip-btn")) {
-          const idx = e.target.closest(".copy-snip-btn").dataset.idx;
-          Helpers.copyToClipboard(this.snippets[idx].code);
-          Toast.show("Snippet copied!", "success");
-        }
-        if (e.target.closest(".del-snip-btn")) {
-          if (!API.requireAuth()) return;
-          const btn = e.target.closest(".del-snip-btn");
-          const id = btn.dataset.id;
-          const idx = parseInt(btn.dataset.idx);
-
-          this.snippets.splice(idx, 1);
-          await this.deleteFromIndexedDB(id);
+        if (note && editorVal) {
+          note.title = titleVal || note.title;
+          note.code = editorVal;
+          await this.saveToIndexedDB(note);
 
           if (API.getAuthToken()) {
             try {
-              await API.fetchAPI(`/api/snippets/${id}`, "DELETE");
-            } catch (e) {
-              console.error("Cloud delete fail", e);
+              await API.fetchAPI(`/api/snippets/${note.id}`, "PUT", {
+                title: note.title,
+                code: note.code,
+                lang: note.lang,
+                folder: note.folder,
+                tags: note.tags,
+                itemType: note.itemType,
+              });
+            } catch (err) {
+              console.error("Cloud update failed:", err);
             }
           }
-
-          this.renderSnippets();
-          Toast.show("Snippet deleted", "success");
+          this.isEditing = false;
+          this.renderWorkspaceLayout();
+          Toast.show("Note saved", "success");
         }
-        if (e.target.closest(".pin-snip-btn")) {
-          if (!API.requireAuth()) return;
-          const btn = e.target.closest(".pin-snip-btn");
-          const id = btn.dataset.id;
-          const idx = parseInt(btn.dataset.idx);
+        return;
+      }
 
-          const isCurrentlyPinned = this.snippets[idx].isPinned;
-          if (!isCurrentlyPinned) {
-            const folderName = this.snippets[idx].folder || "Unassigned";
-            const pinnedCount = this.snippets.filter(
-              (s) => s.isPinned && (s.folder || "Unassigned") === folderName,
-            ).length;
-            if (pinnedCount >= 3) {
-              return Toast.show(
-                "You can only pin up to 3 items per folder.",
-                "warning",
-              );
-            }
-          }
-
-          this.snippets[idx].isPinned = !this.snippets[idx].isPinned;
-          await this.saveToIndexedDB(this.snippets[idx]);
-
+      // Pin Note
+      if (e.target.closest("#ws-pin-btn")) {
+        if (!API.requireAuth()) return;
+        const id = e.target.closest("#ws-pin-btn").dataset.id;
+        const note = this.snippets.find((s) => s.id === id);
+        if (note) {
+          note.isPinned = !note.isPinned;
+          await this.saveToIndexedDB(note);
           if (API.getAuthToken()) {
             try {
               await API.fetchAPI(`/api/snippets/${id}/pin`, "PATCH");
-            } catch (e) {
-              console.error("Cloud pin toggle fail", e);
-            }
+            } catch (err) {}
           }
-
-          this.renderSnippets();
-          Toast.show(
-            this.snippets[idx].isPinned ? "Snippet pinned" : "Snippet unpinned",
-            "success",
-          );
+          this.renderWorkspaceLayout();
+          Toast.show(note.isPinned ? "Note pinned" : "Note unpinned", "info");
         }
-      });
+        return;
+      }
+
+      // Copy Note
+      if (e.target.closest("#ws-copy-btn")) {
+        const note = this.snippets.find((s) => s.id === this.activeNoteId);
+        if (note) {
+          Helpers.copyToClipboard(note.code);
+          Toast.show("Note copied to clipboard!", "success");
+        }
+        return;
+      }
+
+      // Delete Note
+      if (e.target.closest("#ws-delete-btn")) {
+        if (!API.requireAuth()) return;
+        const id = e.target.closest("#ws-delete-btn").dataset.id;
+        if (!confirm("Are you sure you want to delete this note?")) return;
+
+        this.snippets = this.snippets.filter((s) => s.id !== id);
+        await this.deleteFromIndexedDB(id);
+
+        if (API.getAuthToken()) {
+          try {
+            await API.fetchAPI(`/api/snippets/${id}`, "DELETE");
+          } catch (err) {}
+        }
+        this.activeNoteId = null;
+        this.renderWorkspaceLayout();
+        Toast.show("Note deleted", "success");
+        return;
+      }
+
+      // Empty state create note
+      if (e.target.closest("#ws-empty-new-note")) {
+        this.createNewNote("Uncategorized");
+        return;
+      }
+
+      // Formatting Toolbar Buttons
+      const fmtBtn = e.target.closest(".fmt-btn");
+      if (fmtBtn) {
+        const textarea = document.getElementById("ws-note-editor");
+        if (!textarea) return;
+        const fmt = fmtBtn.dataset.fmt;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        let inserted = "";
+
+        if (fmt === "h2") inserted = "## ";
+        else if (fmt === "bold") inserted = "**bold text**";
+        else if (fmt === "code") inserted = "```js\n// code here\n```";
+        else if (fmt === "list") inserted = "- ";
+        else if (fmt === "check") inserted = "- [ ] ";
+        else if (fmt === "link") inserted = "[link text](https://example.com)";
+
+        textarea.value = text.substring(0, start) + inserted + text.substring(end);
+        textarea.focus();
+        return;
+      }
+    };
+
+    pageContent.addEventListener("click", this._clickHandler);
+
+    // Live Search Handler
+    pageContent.addEventListener("input", (e) => {
+      if (e.target.id === "ws-search-input") {
+        this.searchQuery = e.target.value;
+        this.renderWorkspaceLayout();
+      }
+    });
   },
 };
 

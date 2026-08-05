@@ -407,14 +407,22 @@
 .faq-row h3 {
   font-size: 1.02rem;
   font-weight: 500;
-  color: var(--text-primary);
+  color: #ffffff;
   margin: 0;
   line-height: 1.55;
   transition: color 0.2s ease;
 }
 
 .faq-row:hover h3 {
-  color: var(--primary-light);
+  color: #ffffff;
+}
+
+:root.light-mode .faq-row h3 {
+  color: #111827;
+}
+
+:root.light-mode .faq-row:hover h3 {
+  color: #000000;
 }
 
 .faq-toggle-icon {

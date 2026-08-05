@@ -4,6 +4,7 @@
 @import url('pages/ai.css');
 @import url('pages/git-explorer.css');
 @import url('pages/tools.css');
+@import url('pages/workspace.css');
 
 /* Common Page Header & Entry */
 .page-header {

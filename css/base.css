@@ -162,32 +162,32 @@ button {
 }
 
 :root.light-mode {
-  --bg-primary: #f6f8fa;
+  --bg-primary: #f6f6f4;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #f0f2f5;
+  --bg-tertiary: #ebf1f6;
   --surface: #ffffff;
-  --surface-hover: #f1f2f4;
-  --glass: rgba(0, 0, 0, 0.02);
-  --glass-border: #d0d7de;
-  --glass-hover: #eaeef2;
+  --surface-hover: #e2e8f0;
+  --glass: rgba(255, 255, 255, 0.9);
+  --glass-border: #e8e8e3;
+  --glass-hover: #ebf1f6;
   --primary: #d4a843;
-  --primary-light: #e6c87a;
-  --primary-dark: #b88d36;
-  --primary-glow: rgba(212, 168, 67, 0.1);
-  --secondary: #eaeef2;
-  --accent: #d4a843;
-  --accent-light: #e6c87a;
-  --success: #1a7f37;
-  --warning: #9a6700;
-  --error: #cf222e;
-  --text: #000000;
-  --text-secondary: #000000;
-  --text-muted: #000000;
-  --border: #d0d7de;
-  --border-light: #eaeef2;
-  --shadow: 0 8px 24px rgba(140, 149, 159, 0.12);
-  --shadow-lg: 0 12px 48px rgba(140, 149, 159, 0.2);
-  --shadow-gold: 0 4px 20px rgba(212, 168, 67, 0.1);
+  --primary-light: #b88d36;
+  --primary-dark: #8c6a21;
+  --primary-glow: rgba(212, 168, 67, 0.15);
+  --secondary: #ebf1f6;
+  --accent: #2563eb;
+  --accent-light: #3b82f6;
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #dc2626;
+  --text: #1e293b;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --border: #e8e8e3;
+  --border-light: #e1e7ed;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.05);
+  --shadow-gold: 0 4px 20px rgba(212, 168, 67, 0.12);
 }
 
 /* Theme option cards */
