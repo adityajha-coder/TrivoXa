@@ -35,9 +35,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/adityajha-coder/trivoxa-devloper-toolkit/issues"
-  },
-  "homepage": "https://github.com/adityajha-coder/trivoxa-devloper-toolkit#readme"
+  "type": "commonjs"
 }

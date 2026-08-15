@@ -1,9 +1,12 @@
 const WorkspacePage = {
   activeFolder: "All",
-  activeTag: "All",
   activeNoteId: null,
   searchQuery: "",
-  isEditing: false,
+  isEditing: true,
+  isCreatingFolder: false,
+  isSidebarCollapsed: localStorage.getItem("ws_sidebar_collapsed") === "true" || (window.innerWidth <= 768 && localStorage.getItem("ws_sidebar_collapsed") !== "false"),
+  collapsedFolders: {},
+  saveTimer: null,
   snippets: [],
 
   render() {
@@ -11,37 +14,27 @@ const WorkspacePage = {
     const content = document.getElementById("page-content");
 
     content.innerHTML = `
-            <div class="page-enter">
-                <div class="page-header flex-between" style="align-items:center; flex-wrap:wrap; gap:16px; margin-bottom: 20px;">
-                    <div>
-                        <h1>My <span class="text-gradient">Workspace</span></h1>
-                        <p>Organized workspace for project notes, code snippets, and bookmarks.</p>
-                    </div>
-                    <div class="flex-gap">
-                        <button id="ws-create-folder-btn" class="btn btn-ghost" style="border:1px solid var(--border);"><i class="fa-solid fa-folder-plus"></i> New Folder</button>
-                        <button id="ws-create-note-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> New Note</button>
-                    </div>
-                </div>
-                
-                <!-- Quick New Folder Form (Hidden by default) -->
-                <div id="ws-new-folder-container" class="glass-card mb-lg" style="display:none; animation: slideDown 0.3s ease;">
-                    <h3 class="mb-sm"><i class="fa-solid fa-folder-plus text-primary"></i> Create Folder</h3>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="ws-new-folder-input" class="input-field" placeholder="Folder Name (e.g. Next.js App)">
-                        <button id="ws-save-folder-btn" class="btn btn-primary">Create</button>
-                        <button id="ws-cancel-folder-btn" class="btn btn-ghost">Cancel</button>
-                    </div>
-                </div>
+      <div class="page-enter ws-page-wrapper">
+        <div class="ws-page-header">
+          <div>
+            <h1 class="ws-title">My <span class="text-gradient">Workspace</span></h1>
+            <p class="ws-subtitle">Clean, distraction-free notes, snippets, and project ideas.</p>
+          </div>
+          <div class="ws-header-actions">
+            <button id="ws-header-folder-btn" class="btn btn-ghost btn-sm" title="Create a new folder"><i class="fa-solid fa-folder-plus"></i> New Folder</button>
+            <button id="ws-header-note-btn" class="btn btn-primary btn-sm" title="Create a new note"><i class="fa-solid fa-plus"></i> New Note</button>
+          </div>
+        </div>
 
-                <!-- Main Workspace Layout -->
-                <div class="ws-vault-container mb-lg" id="ws-app-container">
-                    <div style="text-align:center; padding:60px 0; width:100%;">
-                        <div class="spinner" style="margin:0 auto 16px; width:40px; height:40px; border:4px solid rgba(212,168,67,0.1); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
-                        <p class="text-muted">Loading workspace...</p>
-                    </div>
-                </div>
-            </div>
-        `;
+        <!-- Main Workspace App Container -->
+        <div class="ws-vault-container ${this.isSidebarCollapsed ? "sidebar-collapsed" : ""}" id="ws-app-container">
+          <div class="ws-loading-state">
+            <div class="spinner" style="margin:0 auto 16px; width:36px; height:36px; border:3px solid rgba(212,168,67,0.15); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
+            <p class="text-muted text-sm">Loading workspace...</p>
+          </div>
+        </div>
+      </div>
+    `;
 
     this.initDB().then(() => {
       this.loadSnippets().then(() => {
@@ -73,8 +66,8 @@ const WorkspacePage = {
   },
 
   _applyAuthGate() {
-    const createFolderBtn = document.getElementById("ws-create-folder-btn");
-    const createNoteBtn = document.getElementById("ws-create-note-btn");
+    const createFolderBtn = document.getElementById("ws-header-folder-btn");
+    const createNoteBtn = document.getElementById("ws-header-note-btn");
 
     if (API.getAuthToken()) {
       if (createFolderBtn) createFolderBtn.disabled = false;
@@ -84,9 +77,20 @@ const WorkspacePage = {
 
     if (createFolderBtn) createFolderBtn.disabled = true;
     if (createNoteBtn) createNoteBtn.disabled = true;
+  },
 
-    const newFolder = document.getElementById("ws-new-folder-container");
-    if (newFolder) newFolder.style.display = "none";
+  toggleSidebar() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    localStorage.setItem("ws_sidebar_collapsed", this.isSidebarCollapsed ? "true" : "false");
+    const container = document.getElementById("ws-app-container");
+    if (container) {
+      container.classList.toggle("sidebar-collapsed", this.isSidebarCollapsed);
+    }
+    const toggleBtns = document.querySelectorAll("#ws-toggle-sidebar-btn");
+    toggleBtns.forEach((btn) => {
+      btn.title = this.isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar";
+      btn.classList.toggle("is-active", this.isSidebarCollapsed);
+    });
   },
 
   renderWorkspaceLayout() {
@@ -95,71 +99,72 @@ const WorkspacePage = {
 
     if (!API.getAuthToken()) {
       container.innerHTML = `
-                <div class="empty-state" style="width:100%; padding: 60px 20px; text-align: center; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                    <i class="fa-solid fa-lock" style="font-size:2.5rem; color:var(--primary-light); margin-bottom:16px;"></i>
-                    <h3 style="margin-bottom:8px;">Sign In to Open Workspace</h3>
-                    <p style="max-width:400px; margin:0 auto 20px;" class="text-muted">Create a free account to create folders, write markdown notes, and save code snippets.</p>
-                    <button class="btn btn-primary" id="ws-gate-login" style="min-width:140px;">Sign In</button>
-                </div>`;
+        <div class="ws-auth-gate">
+          <div class="ws-auth-gate-card">
+            <div class="ws-auth-icon-wrap">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3>Sign in to Access Workspace</h3>
+            <p class="text-muted">Create notes, organize folders, and sync code snippets across all your devices.</p>
+            <button class="btn btn-primary" id="ws-gate-login"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In</button>
+          </div>
+        </div>`;
       document.getElementById("ws-gate-login")?.addEventListener("click", () => API.requireAuth());
       return;
     }
 
+    // Ensure sidebar collapse class is in sync
+    container.classList.toggle("sidebar-collapsed", this.isSidebarCollapsed);
+
     // Preserve search focus state
     const activeElem = document.activeElement;
     const isSearchFocused = activeElem && activeElem.id === "ws-search-input";
-    const cursorPos = isSearchFocused ? activeElem.selectionStart : null;
+    const searchCursor = isSearchFocused ? activeElem.selectionStart : null;
 
     // Filter valid non-stub snippets
     let validSnippets = this.snippets.filter((s) => s.itemType !== "folder-stub");
 
-    // Apply Search Filter
+    // Apply Live Search Filter across title, code, folder, and tags
     if (this.searchQuery) {
       const q = this.searchQuery.toLowerCase();
-      validSnippets = validSnippets.filter(
-        (s) =>
-          s.title.toLowerCase().includes(q) ||
-          s.code.toLowerCase().includes(q) ||
-          (s.folder && s.folder.toLowerCase().includes(q)) ||
-          (s.tags && s.tags.toString().toLowerCase().includes(q)),
-      );
-    }
-
-    // Apply Category/Tag Filter
-    if (this.activeTag !== "All") {
       validSnippets = validSnippets.filter((s) => {
-        const typeMatch = s.itemType === this.activeTag.toLowerCase();
-        const tagMatch = Array.isArray(s.tags)
-          ? s.tags.includes(this.activeTag.toLowerCase())
-          : typeof s.tags === "string" && s.tags.toLowerCase().includes(this.activeTag.toLowerCase());
-        return typeMatch || tagMatch;
+        const titleMatch = (s.title || "").toLowerCase().includes(q);
+        const codeMatch = (s.code || "").toLowerCase().includes(q);
+        const folderMatch = (s.folder || "").toLowerCase().includes(q);
+        const tagsMatch = Array.isArray(s.tags)
+          ? s.tags.some((t) => t.toLowerCase().includes(q))
+          : (s.tags || "").toString().toLowerCase().includes(q);
+        return titleMatch || codeMatch || folderMatch || tagsMatch;
       });
     }
+
+    // Find all distinct folders
+    const allFoldersSet = new Set(["Uncategorized"]);
+    this.snippets.forEach((s) => {
+      if (s.folder && s.folder.trim()) allFoldersSet.add(s.folder.trim());
+    });
+    const allFolderNames = Array.from(allFoldersSet).sort();
 
     // Select active note
     let activeNote = validSnippets.find((s) => s.id === this.activeNoteId);
     if (!activeNote && validSnippets.length > 0) {
       activeNote = validSnippets[0];
       this.activeNoteId = activeNote.id;
+    } else if (validSnippets.length === 0) {
+      activeNote = null;
     }
 
-    // Build Folder Tree Map for matching notes
-    const folders = {};
-    validSnippets.forEach((s) => {
-      const fName = s.folder || "Uncategorized";
-      if (!folders[fName]) folders[fName] = [];
-      folders[fName].push(s);
+    // Build Folder Map for matching notes
+    const folderNotesMap = {};
+    allFolderNames.forEach((f) => {
+      folderNotesMap[f] = [];
     });
 
-    // Also include empty folder stubs if not searching
-    if (!this.searchQuery && this.activeTag === "All") {
-      this.snippets.forEach((s) => {
-        const fName = s.folder || "Uncategorized";
-        if (!folders[fName]) folders[fName] = [];
-      });
-    }
-
-    const folderNames = Object.keys(folders).sort();
+    validSnippets.forEach((s) => {
+      const fName = s.folder || "Uncategorized";
+      if (!folderNotesMap[fName]) folderNotesMap[fName] = [];
+      folderNotesMap[fName].push(s);
+    });
 
     // Icons map for note types
     const typeIcons = {
@@ -168,215 +173,283 @@ const WorkspacePage = {
       api: "fa-server",
       command: "fa-terminal",
       tool: "fa-wrench",
-      blueprint: "fa-folder-tree",
+      blueprint: "fa-cubes",
     };
 
-    // Render Clean Tag Bar HTML
-    const tagList = ["All", "Text", "Code", "API", "Command", "Blueprint", "Tool"];
-    const tagBarHtml = tagList
-      .map(
-        (t) =>
-          `<button class="ws-tag-pill ${this.activeTag === t ? "active" : ""}" data-tag="${t}">#${t}</button>`,
-      )
-      .join("");
-
-    // Render Folder Tree HTML
-    this.collapsedFolders = this.collapsedFolders || {};
+    // Render Folder Tree
     let treeHtml = "";
+    const visibleFolders = this.searchQuery
+      ? allFolderNames.filter((f) => (folderNotesMap[f] || []).length > 0)
+      : allFolderNames;
 
-    if (folderNames.length === 0) {
-      treeHtml = `<span class="text-xs text-muted" style="padding:16px 12px; display:block; text-align:center;">No notes found</span>`;
+    if (visibleFolders.length === 0 && validSnippets.length === 0) {
+      treeHtml = `
+        <div class="ws-empty-tree">
+          <i class="fa-regular fa-folder-open"></i>
+          <p>${this.searchQuery ? "No matching notes found" : "No notes yet"}</p>
+        </div>`;
     } else {
-      folderNames.forEach((fName) => {
-        const fNotes = folders[fName] || [];
+      visibleFolders.forEach((fName) => {
+        const fNotes = folderNotesMap[fName] || [];
         const isCollapsed = !!this.collapsedFolders[fName];
 
         treeHtml += `
-              <div class="ws-folder-group">
-                  <div class="ws-folder-header" data-folder="${Helpers.escapeHtml(fName)}" title="Click to ${isCollapsed ? "expand" : "collapse"} folder">
-                      <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-                          <i class="fa-solid ${isCollapsed ? "fa-chevron-right" : "fa-chevron-down"}" style="font-size:0.75rem; color:var(--text-muted); width:10px; transition:transform 0.2s ease;"></i>
-                          <i class="fa-solid ${isCollapsed ? "fa-folder" : "fa-folder-open"}" style="color:var(--primary-light); font-size:0.85rem;"></i>
-                          <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${Helpers.escapeHtml(fName)}</span>
-                      </div>
-                      <div style="display:flex; align-items:center; gap:6px;">
-                          <span class="tag tag-primary" style="font-size:0.68rem; padding:1px 6px;">${fNotes.length}</span>
-                          <button class="btn btn-ghost btn-xs add-to-folder-btn" data-folder="${Helpers.escapeHtml(fName)}" title="Add note to ${Helpers.escapeHtml(fName)}"><i class="fa-solid fa-plus"></i></button>
-                      </div>
-                  </div>
-                  <div class="ws-folder-items" style="display:${isCollapsed ? "none" : "flex"};">
-                      ${
-                        fNotes.length === 0
-                          ? '<span class="text-xs text-muted" style="padding:4px 8px; font-style:italic;">No notes</span>'
-                          : fNotes
-                              .map((n) => {
-                                const icon = typeIcons[n.itemType] || "fa-file-lines";
-                                const isSelected = activeNote && activeNote.id === n.id;
-                                return `
-                                  <div class="ws-tree-item ${isSelected ? "active" : ""}" data-note-id="${n.id}">
-                                      <div style="display:flex; align-items:center; gap:8px; min-width:0; flex:1;">
-                                          <i class="fa-solid ${icon}" style="font-size:0.8rem; color:${isSelected ? "var(--primary-light)" : "var(--text-muted)"}; flex-shrink:0;"></i>
-                                          <span class="item-title">${Helpers.escapeHtml(n.title)}</span>
-                                      </div>
-                                      ${n.isPinned ? '<i class="fa-solid fa-thumbtack" style="color:var(--primary-light); font-size:0.75rem; flex-shrink:0;" title="Pinned"></i>' : ""}
-                                  </div>
-                              `;
-                              })
-                              .join("")
-                      }
-                  </div>
-              </div>`;
+          <div class="ws-folder-group ${isCollapsed ? "is-collapsed" : ""}">
+            <div class="ws-folder-header" data-folder="${Helpers.escapeHtml(fName)}">
+              <div class="ws-folder-left">
+                <i class="fa-solid fa-chevron-right ws-folder-arrow"></i>
+                <i class="fa-solid ${isCollapsed ? "fa-folder" : "fa-folder-open"} ws-folder-icon"></i>
+                <span class="ws-folder-name" title="${Helpers.escapeHtml(fName)}">${Helpers.escapeHtml(fName)}</span>
+              </div>
+              <div class="ws-folder-right">
+                <span class="ws-count-badge">${fNotes.length}</span>
+                <button class="ws-icon-btn add-to-folder-btn" data-folder="${Helpers.escapeHtml(fName)}" title="Add note to ${Helpers.escapeHtml(fName)}"><i class="fa-solid fa-plus"></i></button>
+              </div>
+            </div>
+            <div class="ws-folder-items" style="${isCollapsed ? "display:none;" : ""}">
+              ${
+                fNotes.length === 0
+                  ? '<span class="ws-empty-folder-hint">No notes</span>'
+                  : fNotes
+                      .map((n) => {
+                        const icon = typeIcons[n.itemType] || "fa-file-lines";
+                        const isSelected = activeNote && activeNote.id === n.id;
+                        return `
+                          <div class="ws-tree-item ${isSelected ? "active" : ""}" data-note-id="${n.id}">
+                            <i class="fa-solid ${icon} ws-item-icon"></i>
+                            <span class="ws-item-title">${Helpers.escapeHtml(n.title || "Untitled")}</span>
+                            ${n.isPinned ? '<i class="fa-solid fa-thumbtack ws-item-pin" title="Pinned"></i>' : ""}
+                          </div>
+                        `;
+                      })
+                      .join("")
+              }
+            </div>
+          </div>`;
       });
     }
 
-    // Render Right Panel (Note Editor / Preview)
+    // Render Right Main Panel (Editor / Preview)
     let mainContentHtml = "";
 
     if (!activeNote) {
       mainContentHtml = `
-            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; text-align:center;">
-                <i class="fa-solid fa-file-signature" style="font-size:3rem; color:var(--text-muted); opacity:0.4; margin-bottom:16px;"></i>
-                <h3 style="margin-bottom:8px;">No note selected</h3>
-                <p class="text-muted" style="max-width:360px; margin-bottom:20px;">Select a note from the left folder tree or click New Note to create one.</p>
-                <button class="btn btn-primary" id="ws-empty-new-note"><i class="fa-solid fa-plus"></i> Create Note</button>
-            </div>`;
+        <div class="ws-main-header">
+          <div class="ws-header-left">
+            <button class="ws-action-btn ${this.isSidebarCollapsed ? "is-active" : ""}" id="ws-toggle-sidebar-btn" title="${this.isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="text-xs text-muted" style="font-weight:600;">Workspace</span>
+          </div>
+        </div>
+        <div class="ws-empty-note-view">
+          <div class="ws-empty-illustration">
+            <i class="fa-regular fa-note-sticky"></i>
+          </div>
+          <h3>Select or Create a Note</h3>
+          <p class="text-muted">Choose a note from the left sidebar or create a new one to start writing.</p>
+          <button class="btn btn-primary" id="ws-empty-new-note"><i class="fa-solid fa-plus"></i> Create Note</button>
+        </div>`;
     } else {
-      const tagsArray = Array.isArray(activeNote.tags)
-        ? activeNote.tags
-        : typeof activeNote.tags === "string"
-          ? activeNote.tags.split(",")
-          : [];
-
-      const tagsHtml = tagsArray
+      // Build folder options
+      const folderOptionsHtml = allFolderNames
         .map(
-          (t) =>
-            `<span class="tag" style="font-size:0.7rem; background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text-muted);">#${Helpers.escapeHtml(t.trim())}</span>`,
+          (f) =>
+            `<option value="${Helpers.escapeHtml(f)}" ${activeNote.folder === f ? "selected" : ""}>${Helpers.escapeHtml(f)}</option>`,
         )
         .join("");
 
       mainContentHtml = `
-            <!-- Header -->
-            <div class="ws-main-header">
-                <div class="ws-breadcrumbs">
-                    <i class="fa-solid fa-folder text-primary"></i>
-                    <span>${Helpers.escapeHtml(activeNote.folder || "Uncategorized")}</span>
-                    <span>/</span>
-                    <span class="active">${Helpers.escapeHtml(activeNote.title)}</span>
-                </div>
-                <div class="flex-gap" style="align-items:center;">
-                    <div class="ws-mode-switcher">
-                        <button class="ws-mode-btn ${!this.isEditing ? "active" : ""}" id="ws-mode-preview"><i class="fa-solid fa-eye"></i> Preview</button>
-                        <button class="ws-mode-btn ${this.isEditing ? "active" : ""}" id="ws-mode-edit"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                    </div>
-                    <div style="height:20px; width:1px; background:rgba(255,255,255,0.15); margin:0 4px;"></div>
-                    <button class="btn btn-ghost btn-xs" id="ws-pin-btn" data-id="${activeNote.id}" title="${activeNote.isPinned ? "Unpin Note" : "Pin Note"}" style="color:${activeNote.isPinned ? "var(--primary-light)" : "var(--text-muted)"};">
-                        <i class="fa-solid fa-thumbtack"></i> ${activeNote.isPinned ? "Pinned" : "Pin"}
-                    </button>
-                    <button class="btn btn-ghost btn-xs" id="ws-copy-btn" title="Copy Content"><i class="fa-regular fa-copy"></i> Copy</button>
-                    <button class="btn btn-ghost btn-xs" id="ws-delete-btn" data-id="${activeNote.id}" style="color:var(--error);" title="Delete Note"><i class="fa-solid fa-trash"></i> Delete</button>
-                </div>
+        <!-- Minimal Top Toolbar -->
+        <div class="ws-main-header">
+          <div class="ws-header-left">
+            <!-- Sidebar Toggle Button -->
+            <button class="ws-action-btn ${this.isSidebarCollapsed ? "is-active" : ""}" id="ws-toggle-sidebar-btn" title="${this.isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="ws-folder-badge" title="Move note to another folder">
+              <i class="fa-solid fa-folder text-primary"></i>
+              <select id="ws-note-folder-select" class="ws-folder-select">
+                ${folderOptionsHtml}
+              </select>
             </div>
+            <span id="ws-save-indicator" class="ws-save-indicator" title="Auto-saves automatically"><i class="fa-solid fa-check"></i> Saved</span>
+          </div>
 
-            <!-- Note Content Canvas -->
-            <div class="ws-editor-container">
-                <input type="text" id="ws-note-title" class="ws-note-title-input" value="${Helpers.escapeHtml(activeNote.title)}" placeholder="Note Title...">
-                
-                <div class="ws-note-meta">
-                    <span class="tag tag-primary" style="text-transform:uppercase; font-size:0.7rem; font-weight:700;">${activeNote.itemType || "text"}</span>
-                    ${tagsHtml}
-                </div>
+          <div class="ws-header-right">
+            <!-- Mode Switcher Toggle -->
+            <button class="ws-btn-pill ${!this.isEditing ? "active" : ""}" id="ws-toggle-preview" title="Toggle Preview / Edit">
+              <i class="fa-solid ${this.isEditing ? "fa-eye" : "fa-pen-to-square"}"></i>
+              <span>${this.isEditing ? "Preview" : "Edit"}</span>
+            </button>
 
-                <!-- Markdown Formatting Bar (in Edit mode) -->
-                ${
-                  this.isEditing
-                    ? `
-                <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
-                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="h2" title="Heading"><b>H2</b></button>
-                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="bold" title="Bold"><b>B</b></button>
-                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="code" title="Code block"><i class="fa-solid fa-code"></i></button>
-                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="list" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
-                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="check" title="Task List"><i class="fa-regular fa-square-check"></i></button>
-                    <button class="btn btn-ghost btn-xs fmt-btn" data-fmt="link" title="Link"><i class="fa-solid fa-link"></i></button>
-                </div>
-                <textarea id="ws-note-editor" class="ws-editor-textarea" placeholder="Write markdown note here...">${Helpers.escapeHtml(activeNote.code || "")}</textarea>
-                <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:10px;">
-                    <button class="btn btn-ghost" id="ws-cancel-note-btn"><i class="fa-solid fa-xmark"></i> Cancel</button>
-                    <button class="btn btn-primary" id="ws-save-note-btn"><i class="fa-solid fa-floppy-disk"></i> Save Note</button>
-                </div>
-                `
-                    : `
-                <div class="ws-preview-box">${this._formatMarkdownPreview(activeNote.code || "")}</div>
-                `
-                }
-            </div>`;
+            <div class="ws-header-divider"></div>
+
+            <button class="ws-action-btn ${activeNote.isPinned ? "is-pinned" : ""}" id="ws-pin-btn" data-id="${activeNote.id}" title="${activeNote.isPinned ? "Unpin Note" : "Pin Note"}">
+              <i class="fa-solid fa-thumbtack"></i>
+            </button>
+            <button class="ws-action-btn" id="ws-copy-btn" title="Copy Markdown Content">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+            <button class="ws-action-btn ws-btn-danger" id="ws-delete-btn" data-id="${activeNote.id}" title="Delete Note">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Note Canvas -->
+        <div class="ws-editor-container">
+          <!-- Frameless Note Title Input -->
+          <input type="text" id="ws-note-title" class="ws-title-input" value="${Helpers.escapeHtml(activeNote.title || "")}" placeholder="Untitled Note" spellcheck="false" autocomplete="off">
+
+          <!-- Formatting Bar (Edit Mode) -->
+          ${
+            this.isEditing
+              ? `
+            <div class="ws-fmt-toolbar">
+              <button class="ws-fmt-btn" data-fmt="h1" title="Heading 1"><span class="fmt-label">H1</span></button>
+              <button class="ws-fmt-btn" data-fmt="h2" title="Heading 2"><span class="fmt-label">H2</span></button>
+              <button class="ws-fmt-btn" data-fmt="bold" title="Bold text"><i class="fa-solid fa-bold"></i></button>
+              <button class="ws-fmt-btn" data-fmt="italic" title="Italic text"><i class="fa-solid fa-italic"></i></button>
+              <button class="ws-fmt-btn" data-fmt="code" title="Code Block"><i class="fa-solid fa-code"></i></button>
+              <button class="ws-fmt-btn" data-fmt="list" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+              <button class="ws-fmt-btn" data-fmt="check" title="Task Checklist"><i class="fa-regular fa-square-check"></i></button>
+              <button class="ws-fmt-btn" data-fmt="link" title="Insert Link"><i class="fa-solid fa-link"></i></button>
+            </div>
+            <textarea id="ws-note-editor" class="ws-editor-textarea" placeholder="Start typing your note... Markdown is fully supported.">${Helpers.escapeHtml(activeNote.code || "")}</textarea>
+            `
+              : `
+            <div class="ws-markdown-preview" id="ws-markdown-preview">
+              ${this._formatMarkdownPreview(activeNote.code || "")}
+            </div>
+            `
+          }
+        </div>
+      `;
     }
 
     container.innerHTML = `
-            <!-- Left Sidebar -->
-            <div class="ws-sidebar">
-                <div class="ws-sidebar-header">
-                    <div class="flex-between mb-xs" style="align-items:center;">
-                        <span class="ws-sidebar-title"><i class="fa-solid fa-folder-tree"></i> Notes Explorer</span>
-                        <span class="text-xs text-muted" style="font-weight:600;">${validSnippets.length} notes</span>
-                    </div>
-                    <div class="search-container mb-xs" style="margin-top:8px;">
-                        <i class="fa-solid fa-magnifying-glass search-icon" style="font-size:0.78rem;"></i>
-                        <input type="text" id="ws-search-input" class="input-field" value="${Helpers.escapeHtml(this.searchQuery)}" placeholder="Search notes..." style="padding:6px 10px 6px 30px; font-size:0.8rem;">
-                    </div>
-                </div>
+      <!-- Mobile Backdrop Overlay -->
+      <div class="ws-sidebar-backdrop" id="ws-sidebar-backdrop"></div>
 
-                <div class="ws-tag-bar" id="ws-tag-bar">
-                    ${tagBarHtml}
-                </div>
-
-                <div class="ws-file-tree">
-                    ${treeHtml}
-                </div>
+      <!-- Left Sidebar -->
+      <div class="ws-sidebar">
+        <!-- Sidebar Top Header -->
+        <div class="ws-sidebar-header">
+          <div class="ws-sidebar-title-row">
+            <span class="ws-sidebar-title">
+              <i class="fa-solid fa-layer-group text-primary"></i> Notes
+              <span class="ws-total-badge">${validSnippets.length}</span>
+            </span>
+            <div class="ws-sidebar-actions">
+              <button id="ws-sidebar-new-folder-btn" class="ws-icon-btn" title="Create Folder"><i class="fa-solid fa-folder-plus"></i></button>
+              <button id="ws-sidebar-new-note-btn" class="ws-icon-btn ws-btn-accent" title="Create Note"><i class="fa-solid fa-plus"></i></button>
+              <button id="ws-hide-sidebar-btn" class="ws-icon-btn" title="Hide Sidebar"><i class="fa-solid fa-chevron-left"></i></button>
             </div>
+          </div>
 
-            <!-- Right Main Panel -->
-            <div class="ws-main-panel">
-                ${mainContentHtml}
-            </div>`;
+          <!-- Inline Folder Creation Box -->
+          <div id="ws-inline-folder-form" class="ws-inline-folder-form" style="display:${this.isCreatingFolder ? "flex" : "none"};">
+            <input type="text" id="ws-inline-folder-input" class="ws-inline-input" placeholder="New folder name...">
+            <button id="ws-save-inline-folder" class="btn btn-primary btn-xs">Add</button>
+            <button id="ws-cancel-inline-folder" class="btn btn-ghost btn-xs"><i class="fa-solid fa-xmark"></i></button>
+          </div>
 
-    // Restore focus and cursor position on search input if it was active
+          <!-- Search Input -->
+          <div class="ws-search-wrap">
+            <i class="fa-solid fa-magnifying-glass ws-search-icon"></i>
+            <input type="text" id="ws-search-input" class="ws-search-input" value="${Helpers.escapeHtml(this.searchQuery)}" placeholder="Search notes...">
+            ${
+              this.searchQuery
+                ? `<button id="ws-clear-search-btn" class="ws-search-clear" title="Clear search"><i class="fa-solid fa-xmark"></i></button>`
+                : ""
+            }
+          </div>
+        </div>
+
+        <!-- File Tree -->
+        <div class="ws-file-tree" id="ws-file-tree">
+          ${treeHtml}
+        </div>
+      </div>
+
+      <!-- Right Main Panel -->
+      <div class="ws-main-panel">
+        ${mainContentHtml}
+      </div>
+    `;
+
+    // Restore search focus & cursor if active
     if (isSearchFocused) {
       const searchEl = document.getElementById("ws-search-input");
       if (searchEl) {
         searchEl.focus();
-        if (cursorPos !== null) {
-          searchEl.setSelectionRange(cursorPos, cursorPos);
+        if (searchCursor !== null) {
+          searchEl.setSelectionRange(searchCursor, searchCursor);
         }
       }
+    }
+
+    if (this.isCreatingFolder) {
+      setTimeout(() => {
+        document.getElementById("ws-inline-folder-input")?.focus();
+      }, 50);
     }
   },
 
   _formatMarkdownPreview(text) {
-    if (!text) return '<span class="text-muted" style="font-style:italic;">Empty note. Click "Edit" to add content.</span>';
+    if (!text || !text.trim()) {
+      return '<div class="ws-empty-preview"><i class="fa-solid fa-pen-nib"></i><p>This note is empty. Click <b>Edit</b> to start writing.</p></div>';
+    }
+
     let html = Helpers.escapeHtml(text);
 
-    // Code blocks ```
-    html = html.replace(/```([\s\S]*?)```/g, (match, p1) => {
-      return `<div style="background:#0a0a0f; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-mono); font-size:0.85rem; color:#e2e8f0; margin:10px 0; overflow-x:auto;"><pre style="margin:0;">${p1.trim()}</pre></div>`;
+    // Code blocks ```lang ... ```
+    html = html.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+      const cleanCode = code.replace(/^\n+|\n+$/g, "");
+      const langLabel = lang || "code";
+      return `
+        <div class="ws-preview-codeblock">
+          <div class="ws-codeblock-header">
+            <span class="ws-codeblock-lang">${langLabel}</span>
+            <button class="ws-code-copy-btn" onclick="navigator.clipboard.writeText(decodeURIComponent('${encodeURIComponent(cleanCode)}')); Toast.show('Code copied!', 'success');" title="Copy code"><i class="fa-regular fa-copy"></i> Copy</button>
+          </div>
+          <pre><code>${cleanCode}</code></pre>
+        </div>`;
     });
 
-    // Inline code `
-    html = html.replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-family:var(--font-mono); font-size:0.85rem;">$1</code>');
+    // Inline code `code`
+    html = html.replace(/`([^`]+)`/g, '<code class="ws-inline-code">$1</code>');
 
-    // Headings
-    html = html.replace(/^### (.*$)/gim, '<h3 style="font-size:1.1rem; font-weight:700; color:var(--primary-light); margin:14px 0 6px;">$1</h3>');
-    html = html.replace(/^## (.*$)/gim, '<h2 style="font-size:1.25rem; font-weight:700; color:var(--text); margin:16px 0 8px;">$1</h2>');
-    html = html.replace(/^# (.*$)/gim, '<h1 style="font-size:1.4rem; font-weight:800; color:var(--text); margin:18px 0 10px;">$1</h1>');
+    // Headings #, ##, ###
+    html = html.replace(/^### (.*$)/gim, '<h3 class="ws-h3">$1</h3>');
+    html = html.replace(/^## (.*$)/gim, '<h2 class="ws-h2">$1</h2>');
+    html = html.replace(/^# (.*$)/gim, '<h1 class="ws-h1">$1</h1>');
 
-    // Checkboxes
-    html = html.replace(/- \[ \] (.*$)/gim, '<div style="display:flex; align-items:center; gap:8px; margin:4px 0;"><i class="fa-regular fa-square" style="color:var(--text-muted);"></i> <span>$1</span></div>');
-    html = html.replace(/- \[x\] (.*$)/gim, '<div style="display:flex; align-items:center; gap:8px; margin:4px 0;"><i class="fa-solid fa-square-check" style="color:var(--success);"></i> <span style="text-decoration:line-through; opacity:0.7;">$1</span></div>');
+    // Interactive Checkboxes
+    let checkIdx = 0;
+    html = html.replace(/^- \[ \]\s+(.*$)/gim, () => {
+      const idx = checkIdx++;
+      return `<div class="ws-task-row" data-task-idx="${idx}"><i class="fa-regular fa-square ws-task-check" data-status="unchecked" data-idx="${idx}"></i> <span>$1</span></div>`;
+    });
+    html = html.replace(/^- \[x\]\s+(.*$)/gim, () => {
+      const idx = checkIdx++;
+      return `<div class="ws-task-row is-done" data-task-idx="${idx}"><i class="fa-solid fa-square-check ws-task-check" data-status="checked" data-idx="${idx}"></i> <span class="ws-task-done">$1</span></div>`;
+    });
 
-    // Bullet lists
-    html = html.replace(/^- (.*$)/gim, '<li style="margin-left:18px;">$1</li>');
+    // Bullet lists - item
+    html = html.replace(/^- (.*$)/gim, '<li class="ws-bullet-item">$1</li>');
 
-    // URLs
-    html = html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" style="color:var(--primary-light); text-decoration:underline;">$1</a>');
+    // Bold **text**
+    html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+
+    // Italic *text*
+    html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+
+    // Links [text](url) or naked URLs
+    html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="ws-link">$1 <i class="fa-solid fa-arrow-up-right-from-square ws-link-icon"></i></a>');
+    html = html.replace(/(^|[^">])(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer" class="ws-link">$2 <i class="fa-solid fa-arrow-up-right-from-square ws-link-icon"></i></a>');
 
     return html;
   },
@@ -385,49 +458,61 @@ const WorkspacePage = {
     if (!API.requireAuth()) return;
     const defaultTitle = "Untitled Note";
     const defaultCode = "# Untitled Note\n\nStart typing your note here...";
+
     await this.saveSnippet(defaultTitle, defaultCode, "text", folderName, [], "text");
     this.isEditing = true;
+
+    // On mobile, close the drawer so user sees the note canvas immediately
+    if (window.innerWidth <= 768) {
+      this.isSidebarCollapsed = true;
+      localStorage.setItem("ws_sidebar_collapsed", "true");
+    }
+
     this.renderWorkspaceLayout();
+
     setTimeout(() => {
       const textarea = document.getElementById("ws-note-editor");
       if (textarea) {
         textarea.focus();
         textarea.setSelectionRange(textarea.value.length, textarea.value.length);
       }
-    }, 100);
-    Toast.show("New note created!", "success");
+    }, 80);
+
+    Toast.show("New note created", "success");
   },
 
   async saveSnippet(title, code, lang, folder = "Uncategorized", tags = [], itemType = "text") {
     await this.initDB();
     let newSnip = {
       id: Date.now().toString(),
-      title,
-      code,
+      title: title || "Untitled Note",
+      code: code || "",
       lang: lang || "text",
-      folder,
-      tags,
-      itemType,
+      folder: folder || "Uncategorized",
+      tags: tags || [],
+      itemType: itemType || "text",
       isPinned: false,
     };
 
     if (API.getAuthToken()) {
       try {
         const saved = await API.fetchAPI("/api/snippets", "POST", {
-          title,
-          code,
-          lang: lang || "text",
-          folder,
-          tags,
-          itemType,
+          title: newSnip.title,
+          code: newSnip.code,
+          lang: newSnip.lang,
+          folder: newSnip.folder,
+          tags: newSnip.tags,
+          itemType: newSnip.itemType,
         });
-        newSnip.id = saved._id;
+        if (saved && saved._id) {
+          newSnip.id = saved._id;
+        }
       } catch (e) {
         console.error("Failed to sync snippet to cloud:", e);
       }
     }
 
-    this.snippets.push(newSnip);
+    this.snippets.unshift(newSnip);
     await this.saveToIndexedDB(newSnip);
     this.activeNoteId = newSnip.id;
     if (document.getElementById("ws-app-container")) {
@@ -435,133 +520,188 @@ const WorkspacePage = {
     }
   },
 
+  scheduleAutoSave() {
+    const indicator = document.getElementById("ws-save-indicator");
+    if (indicator) {
+      indicator.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin text-primary"></i> Saving...';
+    }
+
+    clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(async () => {
+      await this.saveActiveNoteChanges();
+      const updatedIndicator = document.getElementById("ws-save-indicator");
+      if (updatedIndicator) {
+        updatedIndicator.innerHTML = '<i class="fa-solid fa-check text-success"></i> Saved';
+      }
+    }, 450);
+  },
+
+  async saveActiveNoteChanges() {
+    if (!this.activeNoteId) return;
+    const note = this.snippets.find((s) => s.id === this.activeNoteId);
+    if (!note) return;
+
+    const titleInput = document.getElementById("ws-note-title");
+    const editorTextarea = document.getElementById("ws-note-editor");
+    const folderSelect = document.getElementById("ws-note-folder-select");
+
+    const newTitle = titleInput ? titleInput.value.trim() || "Untitled Note" : note.title;
+    const newCode = editorTextarea ? editorTextarea.value : note.code;
+    const newFolder = folderSelect ? folderSelect.value : note.folder;
+
+    note.title = newTitle;
+    note.code = newCode;
+    note.folder = newFolder;
+
+    await this.saveToIndexedDB(note);
+
+    if (API.getAuthToken()) {
+      try {
+        await API.fetchAPI(`/api/snippets/${note.id}`, "PUT", {
+          title: note.title,
+          code: note.code,
+          lang: note.lang,
+          folder: note.folder,
+          tags: note.tags,
+          itemType: note.itemType,
+        });
+      } catch (err) {
+        console.error("Cloud note save failed:", err);
+      }
+    }
+
+    // Update the sidebar note item text dynamically without re-rendering the whole tree
+    const sidebarItem = document.querySelector(`.ws-tree-item[data-note-id="${note.id}"] .ws-item-title`);
+    if (sidebarItem) {
+      sidebarItem.textContent = note.title;
+    }
+  },
+
   bindEvents() {
     const pageContent = document.getElementById("page-content");
     if (!pageContent) return;
 
-    // Create Folder Toggle
-    document.getElementById("ws-create-folder-btn")?.addEventListener("click", () => {
-      const container = document.getElementById("ws-new-folder-container");
-      if (container) {
-        container.style.display = container.style.display === "none" ? "block" : "none";
-        document.getElementById("ws-new-folder-input")?.focus();
-      }
-    });
-
-    // Create Instant Note Button
-    document.getElementById("ws-create-note-btn")?.addEventListener("click", () => {
-      this.createNewNote("Uncategorized");
-    });
-
-    document.getElementById("ws-cancel-folder-btn")?.addEventListener("click", () => {
-      document.getElementById("ws-new-folder-container").style.display = "none";
-    });
-
-    document.getElementById("ws-save-folder-btn")?.addEventListener("click", () => {
-      const folderName = document.getElementById("ws-new-folder-input").value.trim();
-      if (!folderName) return Toast.show("Folder name cannot be empty", "warning");
-
-      this.saveSnippet(`Folder created: ${folderName}`, "", "text", folderName, [], "folder-stub");
-      document.getElementById("ws-new-folder-input").value = "";
-      document.getElementById("ws-new-folder-container").style.display = "none";
-      Toast.show(`Folder "${folderName}" created`, "success");
-    });
-
-    // Clean single event listener binding on pageContent
     if (this._clickHandler) {
       pageContent.removeEventListener("click", this._clickHandler);
     }
 
     this._clickHandler = async (e) => {
-      // Tree Item Select
+      // 0. Backdrop click on mobile -> close sidebar
+      if (e.target.closest("#ws-sidebar-backdrop")) {
+        this.toggleSidebar();
+        return;
+      }
+
+      // 0.1 Toggle Sidebar
+      if (e.target.closest("#ws-toggle-sidebar-btn") || e.target.closest("#ws-hide-sidebar-btn")) {
+        this.toggleSidebar();
+        return;
+      }
+
+      // 1. Select Note Item in Sidebar Tree
       const treeItem = e.target.closest(".ws-tree-item");
       if (treeItem) {
-        this.activeNoteId = treeItem.dataset.noteId;
-        this.isEditing = false;
-        this.renderWorkspaceLayout();
-        return;
-      }
+        const noteId = treeItem.dataset.noteId;
+        if (this.activeNoteId !== noteId) {
+          await this.saveActiveNoteChanges();
+          this.activeNoteId = noteId;
 
-      // Tag Filter Select
-      const tagPill = e.target.closest(".ws-tag-pill");
-      if (tagPill) {
-        this.activeTag = tagPill.dataset.tag;
-        this.renderWorkspaceLayout();
-        return;
-      }
-
-      // Add to folder btn - create note in folder
-      const addFolderBtn = e.target.closest(".add-to-folder-btn");
-      if (addFolderBtn) {
-        e.stopPropagation();
-        const folder = addFolderBtn.dataset.folder;
-        this.createNewNote(folder);
-        return;
-      }
-
-      // Folder Collapse / Expand Toggle
-      const folderHeader = e.target.closest(".ws-folder-header");
-      if (folderHeader) {
-        const fName = folderHeader.dataset.folder;
-        this.collapsedFolders = this.collapsedFolders || {};
-        this.collapsedFolders[fName] = !this.collapsedFolders[fName];
-        this.renderWorkspaceLayout();
-        return;
-      }
-
-      // Segmented mode switcher
-      if (e.target.closest("#ws-mode-preview")) {
-        this.isEditing = false;
-        this.renderWorkspaceLayout();
-        return;
-      }
-      if (e.target.closest("#ws-mode-edit")) {
-        this.isEditing = true;
-        this.renderWorkspaceLayout();
-        return;
-      }
-
-      // Cancel Note edit
-      if (e.target.closest("#ws-cancel-note-btn")) {
-        this.isEditing = false;
-        this.renderWorkspaceLayout();
-        Toast.show("Editing cancelled", "info");
-        return;
-      }
-
-      // Save Note changes
-      if (e.target.closest("#ws-save-note-btn")) {
-        const titleVal = document.getElementById("ws-note-title")?.value.trim();
-        const editorVal = document.getElementById("ws-note-editor")?.value.trim();
-        const note = this.snippets.find((s) => s.id === this.activeNoteId);
-
-        if (note && editorVal) {
-          note.title = titleVal || note.title;
-          note.code = editorVal;
-          await this.saveToIndexedDB(note);
-
-          if (API.getAuthToken()) {
-            try {
-              await API.fetchAPI(`/api/snippets/${note.id}`, "PUT", {
-                title: note.title,
-                code: note.code,
-                lang: note.lang,
-                folder: note.folder,
-                tags: note.tags,
-                itemType: note.itemType,
-              });
-            } catch (err) {
-              console.error("Cloud update failed:", err);
-            }
+          // On mobile, automatically close the sidebar drawer when picking a note
+          if (window.innerWidth <= 768) {
+            this.isSidebarCollapsed = true;
+            localStorage.setItem("ws_sidebar_collapsed", "true");
           }
-          this.isEditing = false;
+
           this.renderWorkspaceLayout();
-          Toast.show("Note saved", "success");
+        } else if (window.innerWidth <= 768 && !this.isSidebarCollapsed) {
+          this.toggleSidebar();
         }
         return;
       }
 
-      // Pin Note
+      // 2. Folder Collapse/Expand
+      const folderHeader = e.target.closest(".ws-folder-header");
+      const addFolderBtn = e.target.closest(".add-to-folder-btn");
+
+      if (addFolderBtn) {
+        e.stopPropagation();
+        const fName = addFolderBtn.dataset.folder;
+        this.createNewNote(fName);
+        return;
+      }
+
+      if (folderHeader) {
+        const fName = folderHeader.dataset.folder;
+        this.collapsedFolders[fName] = !this.collapsedFolders[fName];
+        const group = folderHeader.closest(".ws-folder-group");
+        const items = group?.querySelector(".ws-folder-items");
+        const icon = folderHeader.querySelector(".ws-folder-icon");
+        if (group && items) {
+          const isCollapsed = this.collapsedFolders[fName];
+          group.classList.toggle("is-collapsed", isCollapsed);
+          items.style.display = isCollapsed ? "none" : "";
+          if (icon) {
+            icon.className = `fa-solid ${isCollapsed ? "fa-folder" : "fa-folder-open"} ws-folder-icon`;
+          }
+        }
+        return;
+      }
+
+      // 3. New Note Trigger (Page Header / Sidebar Button / Empty State)
+      if (e.target.closest("#ws-header-note-btn") || e.target.closest("#ws-sidebar-new-note-btn") || e.target.closest("#ws-empty-new-note")) {
+        const activeNote = this.snippets.find((s) => s.id === this.activeNoteId);
+        const folder = activeNote ? activeNote.folder : "Uncategorized";
+        this.createNewNote(folder);
+        return;
+      }
+
+      // 4. New Folder Trigger (Page Header or Sidebar)
+      if (e.target.closest("#ws-header-folder-btn") || e.target.closest("#ws-sidebar-new-folder-btn")) {
+        this.isCreatingFolder = true;
+        const inlineForm = document.getElementById("ws-inline-folder-form");
+        if (inlineForm) {
+          inlineForm.style.display = "flex";
+          document.getElementById("ws-inline-folder-input")?.focus();
+        }
+        return;
+      }
+
+      // 5. Cancel Inline Folder
+      if (e.target.closest("#ws-cancel-inline-folder")) {
+        this.isCreatingFolder = false;
+        const inlineForm = document.getElementById("ws-inline-folder-form");
+        if (inlineForm) inlineForm.style.display = "none";
+        return;
+      }
+
+      // 6. Save Inline Folder
+      if (e.target.closest("#ws-save-inline-folder")) {
+        const input = document.getElementById("ws-inline-folder-input");
+        const folderName = input ? input.value.trim() : "";
+        if (!folderName) return Toast.show("Folder name cannot be empty", "warning");
+
+        await this.saveSnippet(`Folder: ${folderName}`, `# ${folderName}\n\nStart adding notes to this folder.`, "text", folderName, [], "text");
+        this.isCreatingFolder = false;
+        Toast.show(`Folder "${folderName}" created`, "success");
+        return;
+      }
+
+      // 7. Clear Search Button
+      if (e.target.closest("#ws-clear-search-btn")) {
+        this.searchQuery = "";
+        this.renderWorkspaceLayout();
+        return;
+      }
+
+      // 8. Toggle Preview / Edit Mode
+      if (e.target.closest("#ws-toggle-preview")) {
+        await this.saveActiveNoteChanges();
+        this.isEditing = !this.isEditing;
+        this.renderWorkspaceLayout();
+        return;
+      }
+
+      // 9. Pin / Unpin Note
       if (e.target.closest("#ws-pin-btn")) {
         if (!API.requireAuth()) return;
         const id = e.target.closest("#ws-pin-btn").dataset.id;
@@ -580,17 +720,17 @@ const WorkspacePage = {
         return;
       }
 
-      // Copy Note
+      // 10. Copy Note Content
       if (e.target.closest("#ws-copy-btn")) {
         const note = this.snippets.find((s) => s.id === this.activeNoteId);
         if (note) {
           Helpers.copyToClipboard(note.code);
-          Toast.show("Note copied to clipboard!", "success");
+          Toast.show("Note copied to clipboard", "success");
         }
         return;
       }
 
-      // Delete Note
+      // 11. Delete Note
       if (e.target.closest("#ws-delete-btn")) {
         if (!API.requireAuth()) return;
         const id = e.target.closest("#ws-delete-btn").dataset.id;
@@ -610,14 +750,46 @@ const WorkspacePage = {
         return;
       }
 
-      // Empty state create note
-      if (e.target.closest("#ws-empty-new-note")) {
-        this.createNewNote("Uncategorized");
+      // 12. Interactive Task List Checkbox Toggle in Preview Mode
+      const taskCheck = e.target.closest(".ws-task-check");
+      if (taskCheck) {
+        const note = this.snippets.find((s) => s.id === this.activeNoteId);
+        if (!note || !note.code) return;
+
+        const currentStatus = taskCheck.dataset.status;
+        const targetIdx = parseInt(taskCheck.dataset.idx, 10);
+        let cur = 0;
+
+        note.code = note.code.replace(/^- \[( |x)\]/gim, (match) => {
+          if (cur === targetIdx) {
+            cur++;
+            return currentStatus === "checked" ? "- [ ]" : "- [x]";
+          }
+          cur++;
+          return match;
+        });
+
+        await this.saveToIndexedDB(note);
+        if (API.getAuthToken()) {
+          API.fetchAPI(`/api/snippets/${note.id}`, "PUT", {
+            title: note.title,
+            code: note.code,
+            lang: note.lang,
+            folder: note.folder,
+            tags: note.tags,
+            itemType: note.itemType,
+          }).catch(() => {});
+        }
+
+        const previewContainer = document.getElementById("ws-markdown-preview");
+        if (previewContainer) {
+          previewContainer.innerHTML = this._formatMarkdownPreview(note.code);
+        }
         return;
       }
 
-      // Formatting Toolbar Buttons
-      const fmtBtn = e.target.closest(".fmt-btn");
+      // 13. Formatting Toolbar Buttons
+      const fmtBtn = e.target.closest(".ws-fmt-btn");
       if (fmtBtn) {
         const textarea = document.getElementById("ws-note-editor");
         if (!textarea) return;
@@ -625,28 +797,75 @@ const WorkspacePage = {
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
         const text = textarea.value;
+        const selected = text.substring(start, end);
         let inserted = "";
+        let newCursorPos = start;
 
-        if (fmt === "h2") inserted = "## ";
-        else if (fmt === "bold") inserted = "**bold text**";
-        else if (fmt === "code") inserted = "```js\n// code here\n```";
-        else if (fmt === "list") inserted = "- ";
-        else if (fmt === "check") inserted = "- [ ] ";
-        else if (fmt === "link") inserted = "[link text](https://example.com)";
+        if (fmt === "h1") {
+          inserted = `# ${selected || "Heading 1"}\n`;
+          newCursorPos = start + inserted.length;
+        } else if (fmt === "h2") {
+          inserted = `## ${selected || "Heading 2"}\n`;
+          newCursorPos = start + inserted.length;
+        } else if (fmt === "bold") {
+          inserted = `**${selected || "bold text"}**`;
+          newCursorPos = start + (selected ? inserted.length : 2);
+        } else if (fmt === "italic") {
+          inserted = `*${selected || "italic text"}*`;
+          newCursorPos = start + (selected ? inserted.length : 1);
+        } else if (fmt === "code") {
+          inserted = `\n\`\`\`javascript\n${selected || "// Code snippet"}\n\`\`\`\n`;
+          newCursorPos = start + inserted.length;
+        } else if (fmt === "list") {
+          inserted = `\n- ${selected || "List item"}\n`;
+          newCursorPos = start + inserted.length;
+        } else if (fmt === "check") {
+          inserted = `\n- [ ] ${selected || "To-do task"}\n`;
+          newCursorPos = start + inserted.length;
+        } else if (fmt === "link") {
+          inserted = `[${selected || "Link text"}](https://)`;
+          newCursorPos = start + inserted.length - 1;
+        }
 
         textarea.value = text.substring(0, start) + inserted + text.substring(end);
         textarea.focus();
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+        this.scheduleAutoSave();
         return;
       }
     };
 
     pageContent.addEventListener("click", this._clickHandler);
 
-    // Live Search Handler
+    // Live Search Input Handler
     pageContent.addEventListener("input", (e) => {
       if (e.target.id === "ws-search-input") {
         this.searchQuery = e.target.value;
         this.renderWorkspaceLayout();
+      } else if (e.target.id === "ws-note-title" || e.target.id === "ws-note-editor") {
+        this.scheduleAutoSave();
+      }
+    });
+
+    // Folder Select Change Handler
+    pageContent.addEventListener("change", async (e) => {
+      if (e.target.id === "ws-note-folder-select") {
+        await this.saveActiveNoteChanges();
+        this.renderWorkspaceLayout();
+        Toast.show("Note moved to folder", "info");
+      }
+    });
+
+    // Keyboard shortcuts: Ctrl+\ or Cmd+\ to toggle sidebar, Enter/Esc for inline folder
+    pageContent.addEventListener("keydown", async (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "\\") {
+        e.preventDefault();
+        this.toggleSidebar();
+      } else if (e.target.id === "ws-inline-folder-input" && e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("ws-save-inline-folder")?.click();
+      } else if (e.target.id === "ws-inline-folder-input" && e.key === "Escape") {
+        document.getElementById("ws-cancel-inline-folder")?.click();
       }
     });
   },
