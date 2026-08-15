@@ -5,9 +5,19 @@ const WorkspacePage = {
   isEditing: true,
   isCreatingFolder: false,
   isSidebarCollapsed: localStorage.getItem("ws_sidebar_collapsed") === "true" || (window.innerWidth <= 768 && localStorage.getItem("ws_sidebar_collapsed") !== "false"),
-  collapsedFolders: {},
-  saveTimer: null,
-  snippets: [],
+  _getCollapsedFolders() {
+    try {
+      return JSON.parse(localStorage.getItem("ws_collapsed_folders") || "{}");
+    } catch (e) {
+      return {};
+    }
+  },
+
+  _saveCollapsedFolders() {
+    try {
+      localStorage.setItem("ws_collapsed_folders", JSON.stringify(this.collapsedFolders || {}));
+    } catch (e) {}
+  },
 
   render() {
     Navbar.renderTopbar("My Workspace");
@@ -116,6 +126,11 @@ const WorkspacePage = {
     // Ensure sidebar collapse class is in sync
     container.classList.toggle("sidebar-collapsed", this.isSidebarCollapsed);
 
+    // Ensure collapsed folders map is loaded from persistent storage
+    if (!this.collapsedFolders) {
+      this.collapsedFolders = this._getCollapsedFolders();
+    }
+
     // Preserve search focus state
     const activeElem = document.activeElement;
     const isSearchFocused = activeElem && activeElem.id === "ws-search-input";
@@ -138,6 +153,13 @@ const WorkspacePage = {
       });
     }
 
+    // Sort validSnippets: pinned items always on top
+    validSnippets.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return 0;
+    });
+
     // Find all distinct folders
     const allFoldersSet = new Set(["Uncategorized"]);
     this.snippets.forEach((s) => {
@@ -154,7 +176,7 @@ const WorkspacePage = {
       activeNote = null;
     }
 
-    // Build Folder Map for matching notes
+    // Build Folder Map for matching notes (pinned items first)
     const folderNotesMap = {};
     allFolderNames.forEach((f) => {
       folderNotesMap[f] = [];
@@ -164,6 +186,17 @@ const WorkspacePage = {
       const fName = s.folder || "Uncategorized";
       if (!folderNotesMap[fName]) folderNotesMap[fName] = [];
       folderNotesMap[fName].push(s);
+    });
+
+    // Ensure pinned items are explicitly sorted to top inside each folder
+    allFolderNames.forEach((f) => {
+      if (folderNotesMap[f]) {
+        folderNotesMap[f].sort((a, b) => {
+          if (a.isPinned && !b.isPinned) return -1;
+          if (!a.isPinned && b.isPinned) return 1;
+          return 0;
+        });
+      }
     });
 
     // Icons map for note types
@@ -236,8 +269,8 @@ const WorkspacePage = {
       mainContentHtml = `
         <div class="ws-main-header">
           <div class="ws-header-left">
-            <button class="ws-action-btn ${this.isSidebarCollapsed ? "is-active" : ""}" id="ws-toggle-sidebar-btn" title="${this.isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}">
-              <i class="fa-solid fa-bars"></i>
+            <button class="ws-action-btn ws-expand-sidebar-btn" id="ws-toggle-sidebar-btn" title="Show Sidebar (Ctrl+\)">
+              <i class="fa-solid fa-chevron-right"></i>
             </button>
             <span class="text-xs text-muted" style="font-weight:600;">Workspace</span>
           </div>
@@ -263,9 +296,9 @@ const WorkspacePage = {
         <!-- Minimal Top Toolbar -->
         <div class="ws-main-header">
           <div class="ws-header-left">
-            <!-- Sidebar Toggle Button -->
-            <button class="ws-action-btn ${this.isSidebarCollapsed ? "is-active" : ""}" id="ws-toggle-sidebar-btn" title="${this.isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}">
-              <i class="fa-solid fa-bars"></i>
+            <!-- Sidebar Expand Button (Shown only when collapsed) -->
+            <button class="ws-action-btn ws-expand-sidebar-btn" id="ws-toggle-sidebar-btn" title="Show Sidebar (Ctrl+\)">
+              <i class="fa-solid fa-chevron-right"></i>
             </button>
 
             <div class="ws-folder-badge" title="Move note to another folder">
@@ -459,6 +492,12 @@ const WorkspacePage = {
     const defaultTitle = "Untitled Note";
     const defaultCode = "# Untitled Note\n\nStart typing your note here...";
 
+    if (!this.collapsedFolders) this.collapsedFolders = this._getCollapsedFolders();
+    if (this.collapsedFolders[folderName]) {
+      this.collapsedFolders[folderName] = false;
+      this._saveCollapsedFolders();
+    }
+
     await this.saveSnippet(defaultTitle, defaultCode, "text", folderName, [], "text");
     this.isEditing = true;
 
@@ -632,7 +671,9 @@ const WorkspacePage = {
 
       if (folderHeader) {
         const fName = folderHeader.dataset.folder;
+        if (!this.collapsedFolders) this.collapsedFolders = this._getCollapsedFolders();
         this.collapsedFolders[fName] = !this.collapsedFolders[fName];
+        this._saveCollapsedFolders();
         const group = folderHeader.closest(".ws-folder-group");
         const items = group?.querySelector(".ws-folder-items");
         const icon = folderHeader.querySelector(".ws-folder-icon");

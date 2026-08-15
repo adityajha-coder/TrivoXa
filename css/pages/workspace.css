@@ -576,6 +576,15 @@
   color: var(--error);
 }
 
+/* Sidebar Expand Button: only visible when sidebar is collapsed */
+.ws-vault-container:not(.sidebar-collapsed) #ws-toggle-sidebar-btn {
+  display: none !important;
+}
+
+.ws-vault-container.sidebar-collapsed #ws-toggle-sidebar-btn {
+  display: flex !important;
+}
+
 .ws-editor-container {
   flex: 1;
   display: flex;

@@ -118,14 +118,10 @@ if (process.env.NODE_ENV !== 'production') {
 
     const server = app.listen(PORT, () => {
         console.log(`
-╔════════════════════════════════════════════════════╗
-║       TrivoXa API Server Started                    ║
-╚════════════════════════════════════════════════════╝
-
-  Server:    http://localhost:${PORT}
-  Health:    http://localhost:${PORT}/health
-  AI Chat:   POST http://localhost:${PORT}/api/groq/chat
-  Auth:      POST http://localhost:${PORT}/api/auth/login
+    Server:    http://localhost:${PORT}
+    Health:    http://localhost:${PORT}/health
+    AI Chat:   POST http://localhost:${PORT}/api/groq/chat
+    Auth:      POST http://localhost:${PORT}/api/auth/login
 
   Keep this terminal open while using the app.
         `);
@@ -151,5 +147,4 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-// Export the Express app for Vercel serverless functions
 module.exports = app;
