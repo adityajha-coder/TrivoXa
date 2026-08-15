@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npx -y serve . -l 8080",
     "start:local": "npx -y serve . -l 8080",
-    "proxy": "node server/index.js",
+    "proxy": "nodemon server/index.js",
     "proxy:dev": "nodemon server/index.js",
     "both": "concurrently \"npm run proxy\" \"npm run start:local\"",
     "test:api": "node scripts/test-groq-api.js",
@@ -30,7 +30,7 @@
   "main": "sw.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adityajha-coder/trivoxa-devloper-toolkit.git"
+    "url": "git+https://github.com/adityajha-coder/TrivoXa.git"
   },
   "keywords": [],
   "author": "",

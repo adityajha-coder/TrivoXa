@@ -30,18 +30,24 @@ app.use(cors({
         if (origin.endsWith('.vercel.app')) return callback(null, true);
         // During dev, allow any localhost/127 origin to make it easier
         if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) return callback(null, true);
-        return callback(new Error('CORS: Origin not allowed: ' + origin), false);
+        return callback(null, false);
     },
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
+app.options('*', cors());
 app.use(bodyParser.json({ limit: '5mb' }));
 
-// Rate Limiting — Global: 100 requests per 15 minutes per IP
+// Rate Limiting — Global (skip OPTIONS preflights and relaxed for dev)
+const isDev = process.env.NODE_ENV !== 'production';
+
 const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: isDev ? 5000 : 1000,
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req) => req.method === 'OPTIONS',
     message: { error: 'Too many requests. Please try again later.' }
 });
 app.use(globalLimiter);
@@ -49,14 +55,16 @@ app.use(globalLimiter);
 // Strict rate limit for auth endpoints (prevent brute-force)
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 10,
+    max: isDev ? 100 : 20,
+    skip: (req) => req.method === 'OPTIONS',
     message: { error: 'Too many login/register attempts. Please try again in 15 minutes.' }
 });
 
 // Strict rate limit for AI chat (protect Groq API key)
 const aiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 20,
+    max: isDev ? 200 : 50,
+    skip: (req) => req.method === 'OPTIONS',
     message: { error: 'AI request limit reached. Please try again in 15 minutes.' }
 });
 
@@ -113,8 +121,9 @@ app.get(['/health', '/api/health'], (req, res) => {
 
 // Start server only in local environment
 if (process.env.NODE_ENV !== 'production') {
-    const connectDB = require('./config/db');
-    connectDB();
+    connectDB().catch((err) => {
+        console.warn('  ⚠️ MongoDB connection notice:', err.message);
+    });
 
     const server = app.listen(PORT, () => {
         console.log(`
