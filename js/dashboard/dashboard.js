@@ -38,21 +38,74 @@ const DashboardPage = {
                                 A first time user should understand not only what the tools are, but when they matter. TrivoXa is organized around the natural rhythm of building software: think clearly, implement efficiently, then validate the technical choices around the work.
                             </p>
 
-                            <div class="journey-list">
-                                <div class="journey-row">
-                                    <div class="journey-index">01</div>
-                                    <h3>Think</h3>
-                                    <p>Use AI Hub to explore the problem, generate approaches, compare stacks, or unblock a bug before committing to a direction.</p>
+                            <div class="workflow-flow-container">
+                                <!-- Card 1: Think -->
+                                <div class="workflow-card wf-card-think">
+                                    <div class="workflow-card-top">
+                                        <span class="workflow-step-pill">STAGE 01</span>
+                                        <div class="workflow-icon-box">
+                                            <i class="fa-solid fa-lightbulb"></i>
+                                        </div>
+                                    </div>
+                                    <h3 class="workflow-card-title">Think</h3>
+                                    <p class="workflow-card-desc">Use AI Hub to explore the problem, generate approaches, compare stacks, or unblock a bug before committing to a direction.</p>
+                                    <div class="workflow-tags-row">
+                                        <span class="workflow-tag">AI Hub</span>
+                                        <span class="workflow-tag">AI Architect</span>
+                                        <span class="workflow-tag">Tech Stacks</span>
+                                    </div>
                                 </div>
-                                <div class="journey-row">
-                                    <div class="journey-index">02</div>
-                                    <h3>Build</h3>
-                                    <p>Move into Workspace, reference Commands, and reach for Tools Vault when you need a faster starting point.</p>
+
+                                <!-- Arrow 1 -> 2 -->
+                                <div class="workflow-arrow-connector">
+                                    <div class="workflow-arrow-line"></div>
+                                    <div class="workflow-arrow-node">
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </div>
+                                    <div class="workflow-arrow-line"></div>
                                 </div>
-                                <div class="journey-row">
-                                    <div class="journey-index">03</div>
-                                    <h3>Verify</h3>
-                                    <p>Check docs, evaluate dependencies in Commands, browse Free APIs, and understand repo structure with GitHub Explorer.</p>
+
+                                <!-- Card 2: Build -->
+                                <div class="workflow-card wf-card-build">
+                                    <div class="workflow-card-top">
+                                        <span class="workflow-step-pill">STAGE 02</span>
+                                        <div class="workflow-icon-box">
+                                            <i class="fa-solid fa-code"></i>
+                                        </div>
+                                    </div>
+                                    <h3 class="workflow-card-title">Build</h3>
+                                    <p class="workflow-card-desc">Move into Workspace, reference Commands, and reach for Tools Vault when you need a faster starting point.</p>
+                                    <div class="workflow-tags-row">
+                                        <span class="workflow-tag">Workspace</span>
+                                        <span class="workflow-tag">Commands</span>
+                                        <span class="workflow-tag">Tools Vault</span>
+                                    </div>
+                                </div>
+
+                                <!-- Arrow 2 -> 3 -->
+                                <div class="workflow-arrow-connector">
+                                    <div class="workflow-arrow-line"></div>
+                                    <div class="workflow-arrow-node">
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </div>
+                                    <div class="workflow-arrow-line"></div>
+                                </div>
+
+                                <!-- Card 3: Verify -->
+                                <div class="workflow-card wf-card-verify">
+                                    <div class="workflow-card-top">
+                                        <span class="workflow-step-pill">STAGE 03</span>
+                                        <div class="workflow-icon-box">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                        </div>
+                                    </div>
+                                    <h3 class="workflow-card-title">Verify</h3>
+                                    <p class="workflow-card-desc">Check docs, evaluate dependencies in Commands, browse Free APIs, and understand repo structure with GitHub Explorer.</p>
+                                    <div class="workflow-tags-row">
+                                        <span class="workflow-tag">Docs</span>
+                                        <span class="workflow-tag">Free APIs</span>
+                                        <span class="workflow-tag">GitHub Explorer</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

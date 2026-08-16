@@ -4,22 +4,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // register service worker + handle updates
   if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register('/public/sw.js', { scope: '/' })
-            .then(reg => {
-                // check for updates every 5 min
-                setInterval(() => reg.update(), 5 * 60 * 1000);
+    navigator.serviceWorker
+      .register("/public/sw.js")
+      .then((reg) => {
+        // check for updates every 5 min
+        setInterval(() => reg.update(), 5 * 60 * 1000);
 
-                reg.addEventListener('updatefound', () => {
-                    const newWorker = reg.installing;
-                    newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'activated') {
-                            Toast.show('App updated! Refresh to see changes.', 'info', 5000);
-                        }
-                    });
-                });
-            })
-            .catch(() => {});
-    }
+        reg.addEventListener("updatefound", () => {
+          const newWorker = reg.installing;
+          if (newWorker) {
+            newWorker.addEventListener("statechange", () => {
+              if (newWorker.state === "activated") {
+                Toast.show("App updated! Refresh to see changes.", "info", 5000);
+              }
+            });
+          }
+        });
+      })
+      .catch(() => {});
+  }
 
     // offline/online detection
     const showOfflineBanner = () => {

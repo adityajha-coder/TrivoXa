@@ -72,12 +72,14 @@ const CommandsPage = {
                             <div><h3 style="font-size:0.92rem;font-weight:600;">npm</h3><p class="text-xs text-muted">${this.npmCommands.length} commands</p></div>
                         </div>
                     </div>
+                    <!-- Linux Section (Commented Out)
                     <div class="glass-card cmd-type-card" data-cmd="linux" style="cursor:pointer;">
                         <div class="flex-gap">
                             <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(243,156,18,0.08);display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-linux" style="font-size:1.2rem;color:#f39c12;"></i></div>
                             <div><h3 style="font-size:0.92rem;font-weight:600;">Linux</h3><p class="text-xs text-muted">${this.linuxCommands.length} commands</p></div>
                         </div>
                     </div>
+                    -->
                     <div class="glass-card cmd-type-card" data-cmd="terminal" style="cursor:pointer;">
                         <div class="flex-gap">
                             <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(62,207,110,0.06);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-terminal" style="font-size:1rem;color:var(--success);"></i></div>
