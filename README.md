@@ -8,7 +8,6 @@
      ██║   ██║  ██║██║ ╚████╔╝ ╚██████╔╝██╔╝ ██╗██║  ██║
      ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
 </pre>
-  # TrivoXa
 
   **A unified, high-performance workspace for modern engineers**
 
