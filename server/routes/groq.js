@@ -10,7 +10,7 @@ router.post("/chat", auth, async (req, res) => {
   try {
     const {
       messages,
-      model = "llama-3.1-8b-instant",
+      model = "groq/compound-mini",
       temperature = 0.7,
       max_tokens = 2048,
     } = req.body;

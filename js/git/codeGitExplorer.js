@@ -470,7 +470,7 @@ Keep it concise (under 200 words). Do not use code blocks.`;
           },
           { role: "user", content: prompt },
         ],
-        "llama-3.1-8b-instant",
+        "groq/compound-mini",
         0.4,
       );
 

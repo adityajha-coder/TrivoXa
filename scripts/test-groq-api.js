@@ -46,7 +46,7 @@ console.log('\n🧪 Testing Groq API Connection...');
         const response = await axios.post(
             'https://api.groq.com/openai/v1/chat/completions',
             {
-                model: 'llama-3.1-8b-instant',
+                model: 'groq/compound-mini',
                 messages: [
                     {
                         role: 'user',

@@ -17,7 +17,7 @@ const API = {
         localStorage.setItem('trivoxa_groq_key', key);
     },
 
-    async fetchGroq(endpoint, body, model = 'llama-3.1-8b-instant') {
+    async fetchGroq(endpoint, body, model = 'groq/compound-mini') {
         // Proxy handles the API key server-side
         if (this.USE_PROXY) {
             return this.fetchGroqViaProxy(endpoint, body);
@@ -113,7 +113,7 @@ const API = {
         }
     },
 
-    async callGroqChat(messages, model = 'llama-3.1-8b-instant', temperature = 0.7) {
+    async callGroqChat(messages, model = 'groq/compound-mini', temperature = 0.7) {
         try {
             return await this.fetchGroq('/chat', {
                 model: model,

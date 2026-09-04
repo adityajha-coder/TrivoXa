@@ -356,7 +356,7 @@ IMPORTANT: Return ONLY the JSON array. Start your response with [ and end with ]
             { role: "system", content: systemPrompt },
             { role: "user", content: query },
           ],
-          "llama-3.1-8b-instant",
+          "groq/compound-mini",
           0.3,
         );
 

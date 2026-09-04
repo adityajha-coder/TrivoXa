@@ -297,7 +297,7 @@ async function testBackendAPI() {
     await test('Groq chat endpoint responds — POST /api/groq/chat', async () => {
         const res = await fetchPost(`${BACKEND}/api/groq/chat`, {
             messages: [{ role: 'user', content: 'test' }],
-            model: 'llama-3.1-8b-instant'
+            model: 'groq/compound-mini'
         });
         // Any response that isn't 404 or connection error means the route exists
         if (res.status === 404) throw new Error('Route not found (404)');

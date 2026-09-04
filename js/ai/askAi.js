@@ -135,12 +135,12 @@ const AskAiPage = {
     // Use Groq API models
     const activeModel = fallbackModelStr || localStorage.getItem("trivoxa_ai_model") || "mixtral";
     const modelMap = {
-      mixtral: "mixtral-8x7b-32768",
-      llama2: "llama2-70b-4096",
-      gemma: "gemma-7b-it",
-      llama: "llama2-70b-4096"
+      mixtral: "groq/compound-mini",
+      llama2: "groq/compound",
+      gemma: "qwen/qwen3.6-27b",
+      llama: "groq/compound"
     };
-    return modelMap[activeModel] || "llama-3.1-8b-instant";
+    return modelMap[activeModel] || "groq/compound-mini";
   },
 
   cleanAiResponse(text) {
@@ -201,10 +201,10 @@ const AskAiPage = {
                             <div class="flex-gap" style="align-items:center;">
                                 <div class="ai-bot-avatar" style="width:30px;height:30px;padding:0;overflow:hidden;"><img src="public/favicon.svg" alt="TrivoXa" style="width:100%;height:100%;object-fit:contain;border-radius:50%;" /></div>
                                 <select class="chat-model-select" id="ai-model-select">
-                                    <option value="mixtral">Llama 3.1 8B (Fast & Smart)</option>
-                                    <option value="llama2">Llama 2 70B (Deep Explanations)</option>
-                                    <option value="gemma">Gemma 7B (Lightweight)</option>
-                                    <option value="mixtral-large">Mixtral 8x7B (Reasoning & Code)</option>
+                                    <option value="mixtral">Compound Mini (Fast & Smart)</option>
+                                    <option value="llama2">Compound (Deep Explanations)</option>
+                                    <option value="gemma">Qwen 3.6 27B (Lightweight)</option>
+                                    <option value="mixtral-large">Compound (Reasoning & Code)</option>
                                 </select>
                             </div>
                             <div class="flex-gap">
