@@ -1,4 +1,4 @@
-const CACHE_NAME = "TrivoXa-v8";
+const CACHE_NAME = "TrivoXa-v12";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
@@ -7,11 +7,13 @@ const STATIC_ASSETS = [
   "/public/icons/icon-192.svg",
   "/public/icons/icon-512.svg",
   "/public/og-image.png",
+  "/public/hero-3d.jpg",
   "/css/base.css",
   "/css/layout.css",
   "/css/components.css",
   "/css/pages.css",
   "/css/pages/dashboard.css",
+  "/css/pages/hero.css",
   "/css/pages/ai.css",
   "/css/pages/git-explorer.css",
   "/css/pages/tools.css",
@@ -25,6 +27,8 @@ const STATIC_ASSETS = [
   "/js/ui/settingsModal.js",
   "/js/ui/navbar.js",
   "/js/ui/loader.js",
+  "/js/dashboard/heroSection.js",
+  "/js/dashboard/overviewSection.js",
   "/js/dashboard/dashboard.js",
   "/js/ai/aiChat.js",
   "/js/ai/aiArchitect.js",

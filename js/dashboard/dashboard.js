@@ -6,57 +6,32 @@ const DashboardPage = {
     content.innerHTML = `
             <div class="home-page">
                 <div class="home-shell">
-                    <section class="home-hero home-reveal">
-                        <div class="hero-content">
-                            <h1 class="hero-title">Accelerate Your Workflow. <br><span>Build Smarter.</span></h1>
-                            <p class="hero-copy">
-                                TrivoXa is a browser based developer platform that brings AI assistance, code execution, technical references, package research, public APIs, and repository exploration into one connected experience. If you are visiting for the first time, this page will show you exactly what the platform does and how it can help you work faster with less context switching.
-                            </p>
-                            <div class="hero-actions">
-                                <button class="hero-btn hero-btn-primary" onclick="document.getElementById('overview').scrollIntoView({ behavior: 'smooth' });">
-                                    See what is inside
-                                    
-                                </button>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="home-section home-reveal" id="overview" style="animation-delay: 0.08s;">
-                        <div class="section-label">01 / Overview</div>
-                        <div class="section-content">
-                            <h2>What is TrivoXa?</h2>
-                            <p>
-                                TrivoXa is an all-in-one toolkit for developers who want fewer fragmented tools and a clearer working environment. Instead of moving between separate sites for AI help, snippets, docs, APIs, package checks, and GitHub inspection, the platform keeps those capabilities together in one interface.
-                            </p>
-                                </div>
-                    </section>
+                    ${HeroSection.render()}
+                    ${OverviewSection.render()}
 
+                    <!-- ===== SECTION 02: WORKFLOW PIPELINE ===== -->
                     <section class="home-section home-reveal" style="animation-delay: 0.12s;">
-                        <div class="section-label">02 / Workflow</div>
+                        <div class="section-label">
+                            <span class="label-mono">02 / Workflow</span>
+                            <span class="hero-brand-tag section-tag">Momentum</span>
+                        </div>
                         <div class="section-content">
-                            <h2>How the platform fits into real development work.</h2>
-                            <p>
-                                A first time user should understand not only what the tools are, but when they matter. TrivoXa is organized around the natural rhythm of building software: think clearly, implement efficiently, then validate the technical choices around the work.
+                            <h2>The natural rhythm of <span class="gradient-headline">modern engineering.</span></h2>
+                            <p class="section-lead">
+                                TrivoXa aligns directly with how senior engineers think, build, and ship. Each phase transitions seamlessly into the next.
                             </p>
 
-                            <div class="workflow-flow-container">
-                                <!-- Card 1: Think -->
-                                <div class="workflow-card wf-card-think">
-                                    <div class="workflow-card-top">
-                                        <span class="workflow-step-pill">STAGE 01</span>
-                                        <div class="workflow-icon-box">
-                                            <i class="fa-solid fa-lightbulb"></i>
-                                        </div>
+                            <div class="workflow-circle-container">
+                                <!-- Stage 1: Idea -->
+                                <div class="workflow-circle-node" data-page="ask-ai">
+                                    <span class="wf-circle-step">01</span>
+                                    <div class="wf-circle-icon">
+                                        <i class="fa-solid fa-lightbulb"></i>
                                     </div>
-                                    <h3 class="workflow-card-title">Think</h3>
-                                    <p class="workflow-card-desc">Use AI Hub to explore the problem, generate approaches, compare stacks, or unblock a bug before committing to a direction.</p>
-                                    <div class="workflow-tags-row">
-                                        <span class="workflow-tag">AI Hub</span>
-                                        <span class="workflow-tag">AI Architect</span>
-                                        <span class="workflow-tag">Tech Stacks</span>
-                                    </div>
+                                    <span class="wf-circle-label">Idea</span>
                                 </div>
 
-                                <!-- Arrow 1 -> 2 -->
+                                <!-- Connector 1 -> 2 -->
                                 <div class="workflow-arrow-connector">
                                     <div class="workflow-arrow-line"></div>
                                     <div class="workflow-arrow-node">
@@ -65,24 +40,16 @@ const DashboardPage = {
                                     <div class="workflow-arrow-line"></div>
                                 </div>
 
-                                <!-- Card 2: Build -->
-                                <div class="workflow-card wf-card-build">
-                                    <div class="workflow-card-top">
-                                        <span class="workflow-step-pill">STAGE 02</span>
-                                        <div class="workflow-icon-box">
-                                            <i class="fa-solid fa-code"></i>
-                                        </div>
+                                <!-- Stage 2: Prototype -->
+                                <div class="workflow-circle-node" data-page="workspace">
+                                    <span class="wf-circle-step">02</span>
+                                    <div class="wf-circle-icon">
+                                        <i class="fa-solid fa-code"></i>
                                     </div>
-                                    <h3 class="workflow-card-title">Build</h3>
-                                    <p class="workflow-card-desc">Move into Workspace, reference Commands, and reach for Tools Vault when you need a faster starting point.</p>
-                                    <div class="workflow-tags-row">
-                                        <span class="workflow-tag">Workspace</span>
-                                        <span class="workflow-tag">Commands</span>
-                                        <span class="workflow-tag">Tools Vault</span>
-                                    </div>
+                                    <span class="wf-circle-label">Prototype</span>
                                 </div>
 
-                                <!-- Arrow 2 -> 3 -->
+                                <!-- Connector 2 -> 3 -->
                                 <div class="workflow-arrow-connector">
                                     <div class="workflow-arrow-line"></div>
                                     <div class="workflow-arrow-node">
@@ -91,162 +58,108 @@ const DashboardPage = {
                                     <div class="workflow-arrow-line"></div>
                                 </div>
 
-                                <!-- Card 3: Verify -->
-                                <div class="workflow-card wf-card-verify">
-                                    <div class="workflow-card-top">
-                                        <span class="workflow-step-pill">STAGE 03</span>
-                                        <div class="workflow-icon-box">
-                                            <i class="fa-solid fa-circle-check"></i>
-                                        </div>
+                                <!-- Stage 3: Verify -->
+                                <div class="workflow-circle-node" data-page="docs">
+                                    <span class="wf-circle-step">03</span>
+                                    <div class="wf-circle-icon">
+                                        <i class="fa-solid fa-circle-check"></i>
                                     </div>
-                                    <h3 class="workflow-card-title">Verify</h3>
-                                    <p class="workflow-card-desc">Check docs, evaluate dependencies in Commands, browse Free APIs, and understand repo structure with GitHub Explorer.</p>
-                                    <div class="workflow-tags-row">
-                                        <span class="workflow-tag">Docs</span>
-                                        <span class="workflow-tag">Free APIs</span>
-                                        <span class="workflow-tag">GitHub Explorer</span>
-                                    </div>
+                                    <span class="wf-circle-label">Verify</span>
                                 </div>
                             </div>
                         </div>
                     </section>
 
-                    <section class="home-section home-reveal" style="animation-delay: 0.16s;">
-                        <div class="section-label">03 / Modules</div>
-                        <div class="section-content">
-                            <h2>TrivoXa features you should know.</h2>
-                            <p>
-                                Each section exists for a different kind of developer need. Together they form a compact operating system for learning, building, and researching.
-                            </p>
-
-                            <div class="modules-list">
-                                <div class="module-row">
-                                    <span class="module-index">01</span>
-                                    <h3 class="module-title">AI Hub</h3>
-                                    <p class="module-desc">Conversational help, architecture generation, code creation, and stack guidance.</p>
-                                </div>
-                                <div class="module-row">
-                                    <span class="module-index">02</span>
-                                    <h3 class="module-title">Workspace</h3>
-                                    <p class="module-desc">A place to save reusable snippets and keep hands on coding work organized.</p>
-                                </div>
-                                <div class="module-row">
-                                    <span class="module-index">03</span>
-                                    <h3 class="module-title">Docs</h3>
-                                    <p class="module-desc">Quick access to technical references when implementation details matter.</p>
-                                </div>
-                                <div class="module-row">
-                                    <span class="module-index">04</span>
-                                    <h3 class="module-title">Commands</h3>
-                                    <p class="module-desc">Searchable Git, linux, npm, Docker, and CLI references for fast recall.</p>
-                                </div>
-                                <div class="module-row">
-                                    <span class="module-index">05</span>
-                                    <h3 class="module-title">Tools Vault</h3>
-                                    <p class="module-desc">Curated utilities, and useful developer resources.</p>
-                                </div>
-                                <div class="module-row">
-                                    <span class="module-index">06</span>
-                                    <h3 class="module-title">Free APIs</h3>
-                                    <p class="module-desc">A browsable directory of public endpoints for prototypes and integrations.</p>
-                                </div>
-                                <div class="module-row">
-                                    <span class="module-index">07</span>
-                                    <h3 class="module-title">GitHub Explorer</h3>
-                                    <p class="module-desc">Visualize repository structure and understand unfamiliar codebases faster.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="home-section home-reveal" style="animation-delay: 0.2s;">
-                        <div class="section-label">04 / Who it helps</div>
-                        <div class="section-content">
-                            <h2>Useful whether you are learning, shipping, or evaluating.</h2>
-                            <p>
-                                The homepage should answer the quiet question every visitor has: “Is this for someone like me?” TrivoXa is designed to be approachable for newer developers while still useful for experienced builders who value speed and concentration.
-                            </p>
-
-                            <div class="audience-grid">
-                                <div class="audience-item">
-                                    <h3>Students and beginners</h3>
-                                    <p>Learn faster with commands, docs, AI explanations, examples, and a safer place to experiment.</p>
-                                </div>
-                                <div class="audience-item">
-                                    <h3>Independent developers</h3>
-                                    <p>Move from idea to implementation with fewer scattered tools and less overhead.</p>
-                                </div>
-                                <div class="audience-item">
-                                    <h3>Teams and reviewers</h3>
-                                    <p>Inspect packages, APIs, and repositories more quickly before making technical decisions.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="faq-section home-reveal" style="animation-delay: 0.24s;">
+                    <!-- ===== SECTION 03: FAQ ===== -->
+                    <section class="faq-section home-reveal" style="animation-delay: 0.18s;">
                         <div class="faq-header">
-                            <span>05 / FAQ</span>
-                            <h2>Questions related to TrivoXa.</h2>
+                            <div class="section-label">
+                                <span class="label-mono">03 / FAQ</span>
+                                <span class="hero-brand-tag section-tag">Clear Answers</span>
+                            </div>
+                            <h2>Frequently asked <span class="gradient-headline">questions.</span></h2>
                         </div>
 
-                        <div class="faq-row">
-                            <div class="faq-question-container">
-                                <h3>Do I need to sign up to understand the platform?</h3>
-                                <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
-                            </div>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    <p>No. The homepage is designed to explain the product before you commit. Some features may require authentication, but the value of the platform should be clear before that point.</p>
+                        <div class="faq-container">
+                            <div class="faq-row">
+                                <div class="faq-question-container">
+                                    <h3>Do I need to sign up to use the platform?</h3>
+                                    <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <div class="faq-answer-content">
+                                        <p>No. You can explore technical documentation, browse command references, examine public APIs, and experiment with developer utilities immediately without an account. An account enables persistent cloud sync and customized features.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="faq-row">
-                            <div class="faq-question-container">
-                                <h3>What makes TrivoXa different from using separate tools?</h3>
-                                <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
-                            </div>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    <p>The value is not that each tool is impossible to find elsewhere; it is that the common parts of development are brought into one coherent workflow, which saves attention and time.</p>
+
+                            <div class="faq-row">
+                                <div class="faq-question-container">
+                                    <h3>What makes TrivoXa different from other developer tools?</h3>
+                                    <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <div class="faq-answer-content">
+                                        <p>Instead of forcing you to bookmark dozens of disconnected websites, TrivoXa unifies the core daily engineering toolset—AI assistance, snippet management, 3D repo exploration, CLI cheats, and API catalogs—into one cohesive, fast, and unified developer interface.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="faq-row">
-                            <div class="faq-question-container">
-                                <h3>Is this only for AI-related work?</h3>
-                                <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
-                            </div>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    <p>No. AI is one part of the product. TrivoXa also includes practical engineering utilities such as commands, docs, snippets, package research, APIs, and repo exploration.</p>
+
+                            <div class="faq-row">
+                                <div class="faq-question-container">
+                                    <h3>How does the multi-model AI system work?</h3>
+                                    <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <div class="faq-answer-content">
+                                        <p>TrivoXa features an intelligent backend provider router with automatic failover. Your requests are routed to your chosen model (Groq, Google Gemini 3.6, or OpenRouter). If a provider experiences high latency or rate limits, the system automatically routes to the next healthy provider without failing your request.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="faq-row">
-                            <div class="faq-question-container">
-                                <h3>Where should I begin after landing here?</h3>
-                                <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
-                            </div>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    <p>If you want to explore the platform, start with AI Hub or Workspace. If you already know what you need, the top navigation lets you jump directly into any module.</p>
+
+                            <div class="faq-row">
+                                <div class="faq-question-container">
+                                    <h3>Where should I begin after landing here?</h3>
+                                    <i class="fa-solid fa-chevron-down faq-toggle-icon"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <div class="faq-answer-content">
+                                        <p>You can use the top navigation to immediately jump into the AI Hub to ask questions or architect a project, explore a GitHub repository with 3D Explorer, or lookup CLI syntax in Commands.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- High-Impact Bottom CTA Banner matching Hero Style -->
                         <div class="signup-panel">
-                            <div class="signup-actions">
-                                <button class="hero-btn hero-btn-primary" onclick="DashboardPage.openSignup();">Create free account</button>
+                            <div class="signup-banner">
+                                <div class="signup-glow-orb"></div>
+                                <div class="signup-text">
+                                    <div class="hero-brand-tag" style="margin-bottom: 8px;">Ship Faster</div>
+                                    <h3>Supercharge your development workflow <span class="gradient-headline">today.</span></h3>
+                                    <p>Join developers building with TrivoXa's unified browser-native command center.</p>
+                                </div>
+                                <div class="signup-actions">
+                                    <div class="hero-launch-bar cta-launch-bar" onclick="DashboardPage.openSignup();">
+                                        <div class="launch-icon">
+                                            <i class="fa-solid fa-user-plus"></i>
+                                        </div>
+                                        <span class="launch-label">Create free account</span>
+                                        <button class="launch-action-btn" type="button" aria-label="Create account">
+                                            <i class="fa-solid fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
 
+                    <!-- ===== FOOTER ===== -->
                     <footer class="home-footer home-reveal" style="animation-delay: 0.28s;">
                         <div class="footer-content">
                             <div class="footer-left">
                                 <span class="footer-brand">TrivoXa</span>
-                                <p class="footer-tagline">Go from zero to shipping</p>
+                                <p class="footer-tagline">Go from zero to shipping <span class="hero-brand-tag" style="font-size: 1.15rem; margin-left: 4px; display: inline-block;">with confidence</span></p>
                             </div>
                             <div class="footer-center">
                                 <p class="footer-report-text">For issue reporting you can mail me at:</p>
@@ -282,6 +195,10 @@ const DashboardPage = {
   },
 
   bindEvents(content) {
+    if (window.OverviewSection && OverviewSection.bindEvents) {
+      OverviewSection.bindEvents(content);
+    }
+
     content.querySelectorAll("[data-page]").forEach((el) => {
       el.addEventListener("click", () => Router.navigate(el.dataset.page));
     });
