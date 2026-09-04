@@ -17,10 +17,10 @@ const API = {
         localStorage.setItem('trivoxa_groq_key', key);
     },
 
-    async fetchGroq(endpoint, body, model = 'groq/compound-mini') {
+    async fetchGroq(endpoint, body, model = 'groq/compound-mini', provider = 'groq') {
         // Proxy handles the API key server-side
         if (this.USE_PROXY) {
-            return this.fetchGroqViaProxy(endpoint, body);
+            return this.fetchGroqViaProxy(endpoint, { ...body, model: body.model || model, provider: body.provider || provider });
         }
 
         const apiKey = this.getGroqApiKey();
@@ -113,14 +113,14 @@ const API = {
         }
     },
 
-    async callGroqChat(messages, model = 'groq/compound-mini', temperature = 0.7) {
+    async callGroqChat(messages, model = 'groq/compound-mini', temperature = 0.7, provider = 'groq') {
         try {
             return await this.fetchGroq('/chat', {
                 model: model,
                 messages: messages,
                 temperature: temperature,
                 max_tokens: 2048
-            });
+            }, model, provider);
         } catch (error) {
             console.error('[Groq Chat Error]', error.message);
             throw error;

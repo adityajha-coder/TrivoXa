@@ -119,13 +119,19 @@ const AiArchitectMixin = {
       "flatFiles: flat path keys with actual file content strings.",
     ].join("\n");
 
-    const modelPref = localStorage.getItem("trivoxa_ai_model") || "mixtral";
+    const modelPref = localStorage.getItem("trivoxa_ai_model") || "fast";
     const modelMap = {
-      mixtral: "groq/compound-mini",
-      llama2: "groq/compound",
-      gemma: "qwen/qwen3.6-27b"
+      fast: { model: "groq/compound-mini", provider: "groq" },
+      smart: { model: "groq/compound", provider: "groq" },
+      deep: { model: "gemini-3.6-flash", provider: "gemini" },
+      research: { model: "openrouter/free", provider: "openrouter" },
+      // Legacy aliases
+      mixtral: { model: "groq/compound-mini", provider: "groq" },
+      llama2: { model: "gemini-3.6-flash", provider: "gemini" },
+      gemma: { model: "openrouter/free", provider: "openrouter" },
+      "mixtral-large": { model: "groq/compound", provider: "groq" }
     };
-    const activeModel = modelMap[modelPref] || "groq/compound-mini";
+    const selected = modelMap[modelPref] || modelMap.fast;
 
     const res = await API.callGroqChat(
       [
@@ -135,8 +141,9 @@ const AiArchitectMixin = {
           content: "Generate project architecture for: " + prompt,
         },
       ],
-      activeModel,
+      selected.model,
       0.7,
+      selected.provider
     );
 
     let raw = res.choices[0]?.message?.content || "";

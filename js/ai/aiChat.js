@@ -23,7 +23,7 @@ const AiChatMixin = {
 
     // Initialize Model Selector
     if (modelSelect) {
-      const savedModel = localStorage.getItem("trivoxa_ai_model") || "mixtral";
+      const savedModel = localStorage.getItem("trivoxa_ai_model") || "fast";
       modelSelect.value = savedModel;
       modelSelect.addEventListener("change", (e) => {
         const val = e.target.value;
@@ -310,19 +310,25 @@ const AiChatMixin = {
           this.chatHistory = this.chatHistory.slice(-this.MAX_HISTORY_TURNS * 2);
         }
 
-        const modelPref = localStorage.getItem("trivoxa_ai_model") || "mixtral";
+        const modelPref = localStorage.getItem("trivoxa_ai_model") || "fast";
         const modelMap = {
-          mixtral: "groq/compound-mini",
-          llama2: "groq/compound",
-          gemma: "qwen/qwen3.6-27b",
-          "mixtral-large": "groq/compound"
+          fast: { model: "groq/compound-mini", provider: "groq" },
+          smart: { model: "groq/compound", provider: "groq" },
+          deep: { model: "gemini-3.6-flash", provider: "gemini" },
+          research: { model: "openrouter/free", provider: "openrouter" },
+          // Legacy aliases
+          mixtral: { model: "groq/compound-mini", provider: "groq" },
+          llama2: { model: "gemini-3.6-flash", provider: "gemini" },
+          gemma: { model: "openrouter/free", provider: "openrouter" },
+          "mixtral-large": { model: "groq/compound", provider: "groq" }
         };
-        const activeModel = modelMap[modelPref] || "groq/compound-mini";
+        const selected = modelMap[modelPref] || modelMap.fast;
 
         const res = await API.callGroqChat(
           [{ role: "system", content: sysPrompt }, ...this.chatHistory],
-          activeModel,
-          0.7
+          selected.model,
+          0.7,
+          selected.provider
         );
 
         replyText = res.choices[0]?.message?.content || "No response generated";

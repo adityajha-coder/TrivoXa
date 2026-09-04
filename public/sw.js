@@ -1,4 +1,4 @@
-const CACHE_NAME = "TrivoXa-v2";
+const CACHE_NAME = "TrivoXa-v6";
 const STATIC_ASSETS = [
   "/",
   "/index.html",

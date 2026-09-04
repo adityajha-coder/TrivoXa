@@ -118,7 +118,7 @@ const AskAiPage = {
 
   currentProjectState: null,
   currentFramework: "html",
-  currentAiModel: localStorage.getItem("trivoxa_ai_model") || "mixtral",
+  currentAiModel: localStorage.getItem("trivoxa_ai_model") || "fast",
   apiKey: localStorage.getItem("trivoxa_groq_key") || "",
   aiHistory: [],
 
@@ -131,16 +131,21 @@ const AskAiPage = {
     "Express REST API template",
     "Fullstack SvelteKit store",
   ],
+  modelMap: {
+    fast: { model: "groq/compound-mini", provider: "groq", name: "Compound Mini (Fast)" },
+    smart: { model: "groq/compound", provider: "groq", name: "Compound (Smart & Code)" },
+    deep: { model: "gemini-3.6-flash", provider: "gemini", name: "Gemini 3.6 (Deep Explanations)" },
+    research: { model: "openrouter/free", provider: "openrouter", name: "OpenRouter (Research & Analysis)" },
+    // Backward compatibility aliases
+    mixtral: { model: "groq/compound-mini", provider: "groq", name: "Compound Mini (Fast)" },
+    llama2: { model: "gemini-3.6-flash", provider: "gemini", name: "Gemini 3.6 (Deep Explanations)" },
+    gemma: { model: "openrouter/free", provider: "openrouter", name: "OpenRouter (Research & Analysis)" },
+    "mixtral-large": { model: "groq/compound", provider: "groq", name: "Compound (Smart & Code)" }
+  },
+
   async getAirforceModel(fallbackModelStr = null) {
-    // Use Groq API models
-    const activeModel = fallbackModelStr || localStorage.getItem("trivoxa_ai_model") || "mixtral";
-    const modelMap = {
-      mixtral: "groq/compound-mini",
-      llama2: "groq/compound",
-      gemma: "qwen/qwen3.6-27b",
-      llama: "groq/compound"
-    };
-    return modelMap[activeModel] || "groq/compound-mini";
+    const activeModel = fallbackModelStr || localStorage.getItem("trivoxa_ai_model") || "fast";
+    return this.modelMap[activeModel] || this.modelMap.fast;
   },
 
   cleanAiResponse(text) {
@@ -201,10 +206,16 @@ const AskAiPage = {
                             <div class="flex-gap" style="align-items:center;">
                                 <div class="ai-bot-avatar" style="width:30px;height:30px;padding:0;overflow:hidden;"><img src="public/favicon.svg" alt="TrivoXa" style="width:100%;height:100%;object-fit:contain;border-radius:50%;" /></div>
                                 <select class="chat-model-select" id="ai-model-select">
-                                    <option value="mixtral">Compound Mini (Fast & Smart)</option>
-                                    <option value="llama2">Compound (Deep Explanations)</option>
-                                    <option value="gemma">Qwen 3.6 27B (Lightweight)</option>
-                                    <option value="mixtral-large">Compound (Reasoning & Code)</option>
+                                    <optgroup label="Groq">
+                                        <option value="fast" selected>Compound Mini (Fast)</option>
+                                        <option value="smart">Compound (Smart & Code)</option>
+                                    </optgroup>
+                                    <optgroup label="Google Gemini">
+                                        <option value="deep">Gemini 3.6 (Deep Explanations)</option>
+                                    </optgroup>
+                                    <optgroup label="OpenRouter">
+                                        <option value="research">OpenRouter (Research & Analysis)</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div class="flex-gap">

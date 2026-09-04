@@ -4,9 +4,8 @@ REM This script starts both the Groq Proxy and TrivoXa App in separate windows
 cd /d "%~dp0\.."
 
 echo.
-echo  ╔════════════════════════════════════════════════════╗
-echo  ║  Groq API + TrivoXa Launcher                        ║
-echo  ╚════════════════════════════════════════════════════╝
+echo   Groq API + TrivoXa Launcher                        
+echo  
 echo.
 
 REM Check if node is installed
@@ -38,22 +37,22 @@ if "%1"=="" (
 REM Run selected option
 if "%choice%"=="1" (
     echo.
-    echo 🚀 Starting Groq Proxy on localhost:3001...
+    echo  Starting Groq Proxy on localhost:3001...
     echo.
     node server\groq-proxy.js
 ) else if "%choice%"=="2" (
     echo.
-    echo 🚀 Starting TrivoXa App Server...
+    echo  Starting TrivoXa App Server...
     echo.
     npm start
 ) else if "%choice%"=="3" (
     echo.
-    echo 🚀 Starting Groq Proxy on localhost:3001...
+    echo  Starting Groq Proxy on localhost:3001...
     start "Groq Proxy" cmd /k "node server\groq-proxy.js"
     
     timeout /t 2 /nobreak
     
-    echo 🚀 Starting TrivoXa App Server (will open in 2 seconds)...
+    echo  Starting TrivoXa App Server (will open in 2 seconds)...
     start "TrivoXa App" cmd /k "npm start"
     
     echo.
