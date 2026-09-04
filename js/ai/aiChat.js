@@ -23,12 +23,28 @@ const AiChatMixin = {
 
     // Initialize Model Selector
     if (modelSelect) {
-      const savedModel = localStorage.getItem("trivoxa_ai_model") || "fast";
+      const legacyMap = {
+        mixtral: "fast",
+        "mixtral-large": "smart",
+        llama2: "deep",
+        gemma: "research"
+      };
+      let savedModel = localStorage.getItem("trivoxa_ai_model") || "fast";
+      if (legacyMap[savedModel]) {
+        savedModel = legacyMap[savedModel];
+        localStorage.setItem("trivoxa_ai_model", savedModel);
+      }
+
       modelSelect.value = savedModel;
+      if (!modelSelect.value) {
+        modelSelect.value = "fast";
+        localStorage.setItem("trivoxa_ai_model", "fast");
+      }
+
       modelSelect.addEventListener("change", (e) => {
         const val = e.target.value;
         localStorage.setItem("trivoxa_ai_model", val);
-        const selText = e.target.options[e.target.selectedIndex].text;
+        const selText = e.target.options[e.target.selectedIndex]?.text || val;
         if (typeof Toast !== "undefined") {
           Toast.show(`Model switched to ${selText}`, "info");
         }
