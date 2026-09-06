@@ -1,4 +1,4 @@
-const CACHE_NAME = "TrivoXa-v12";
+const CACHE_NAME = "TrivoXa-v13";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
@@ -28,7 +28,6 @@ const STATIC_ASSETS = [
   "/js/ui/navbar.js",
   "/js/ui/loader.js",
   "/js/dashboard/heroSection.js",
-  "/js/dashboard/overviewSection.js",
   "/js/dashboard/dashboard.js",
   "/js/ai/aiChat.js",
   "/js/ai/aiArchitect.js",

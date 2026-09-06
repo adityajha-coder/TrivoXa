@@ -16,12 +16,12 @@ const HeroSection = {
                             <p class="hero-copy">
                                 TrivoXa brings multi-model AI, 3D repository visualization, code execution, CLI references, and developer utilities into one unified workspace.
                             </p>
-                            <div class="hero-launch-bar" onclick="document.getElementById('overview').scrollIntoView({ behavior: 'smooth' });">
+                            <div class="hero-launch-bar" onclick="DashboardPage.openSignin();" role="button" tabindex="0">
                                 <div class="launch-icon">
-                                    <i class="fa-solid fa-terminal"></i>
+                                    <i class="fa-solid fa-user"></i>
                                 </div>
-                                <span class="launch-label">Explore</span>
-                                <button class="launch-action-btn" type="button" aria-label="Explore tools">
+                                <span class="launch-label">Sign In</span>
+                                <button class="launch-action-btn" type="button" aria-label="Sign In">
                                     <i class="fa-solid fa-arrow-right"></i>
                                 </button>
                             </div>
